@@ -98,6 +98,9 @@ Key rules:
 - Variadic attribute calls use `otel_attribute_t` values built with
   `otel_attr_string`, `otel_attr_bool`, `otel_attr_i64`, and `otel_attr_f64`,
   terminated by `OTEL_ATTR_END`.
+- Every variadic attribute API also has an `_arr` variant that takes
+  `const otel_attribute_t *attributes[], size_t count` for dynamically built
+  lists. Up to 1024 attributes are accepted per call.
 - `otel_version()` returns the library version; `otel_strerror()` provides a
   stable description for result codes. `otel_last_error()` is thread-local and
   valid only until the next fallible call on that thread.

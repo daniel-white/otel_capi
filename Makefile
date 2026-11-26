@@ -64,6 +64,7 @@ example-gcc: build | $(BUILD_DIR)
 	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'source: callback' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'observer.kind: array' $(BUILD_DIR)/stdout-gcc.log
 
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
@@ -86,6 +87,7 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'source: callback' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'observer.kind: array' $(BUILD_DIR)/stdout-clang.log
 
 compile-checks: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c

@@ -7,13 +7,13 @@ use std::collections::HashSet;
 use std::ffi::{VaList, c_char};
 use std::sync::{Arc, Mutex, OnceLock};
 
-use opentelemetry::Value;
 use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
+use opentelemetry::{KeyValue, Value};
 use opentelemetry_sdk::logs::{
     BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider, SimpleLogProcessor,
 };
 
-use crate::attributes::from_varargs;
+use crate::attributes::{from_array, from_varargs, otel_attribute_t};
 use crate::config::{
     build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
 };
@@ -81,11 +81,11 @@ fn interned(text: String) -> &'static str {
     leaked
 }
 
-unsafe fn emit_log(
+unsafe fn emit_log_with_attributes(
     logger: *const otel_logger_t,
     options: *const otel_log_record_options_t,
     body: *const c_char,
-    attributes: VaList,
+    attributes: Vec<KeyValue>,
 ) -> Result<()> {
     if options.is_null() {
         return Err(Error::invalid("log options must not be NULL"));
@@ -98,7 +98,6 @@ unsafe fn emit_log(
     }
     let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
     let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
-    let attributes = unsafe { from_varargs(attributes) }?;
     let (number, default_text) = severity(options.level)?;
     let timestamp = system_time(options.timestamp_unix_nano)?;
     let observed = system_time(options.observed_timestamp_unix_nano)?;
@@ -137,6 +136,27 @@ unsafe fn emit_log(
     }
     logger.emit(record);
     Ok(())
+}
+
+unsafe fn emit_log(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: *const c_char,
+    args: VaList,
+) -> Result<()> {
+    let attributes = unsafe { from_varargs(args) }?;
+    unsafe { emit_log_with_attributes(logger, options, body, attributes) }
+}
+
+unsafe fn emit_log_arr(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: *const c_char,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> Result<()> {
+    let attributes = unsafe { from_array(attributes, count) }?;
+    unsafe { emit_log_with_attributes(logger, options, body, attributes) }
 }
 
 fn severity(value: i32) -> Result<(Severity, &'static str)> {
@@ -295,6 +315,31 @@ pub unsafe extern "C" fn otel_logger_log(
     })
 }
 
+/// Array-based variant of [`otel_logger_log`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_arr(
+    logger: *const otel_logger_t,
+    span: *const otel_span_t,
+    level: i32,
+    body: *const c_char,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let options = otel_log_record_options_t {
+            size: std::mem::size_of::<otel_log_record_options_t>(),
+            level,
+            event_name: std::ptr::null(),
+            target: std::ptr::null(),
+            severity_text: std::ptr::null(),
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            span,
+        };
+        unsafe { emit_log_arr(logger, &options, body, attributes, count) }
+    })
+}
+
 /// Emits a structured log record with event name, target, timestamps, and
 /// optional span correlation configured through `options`.
 #[unsafe(no_mangle)]
@@ -305,6 +350,18 @@ pub unsafe extern "C" fn otel_logger_log_record(
     attributes: ...
 ) -> otel_result_t {
     guard(|| unsafe { emit_log(logger, options, body, attributes) })
+}
+
+/// Array-based variant of [`otel_logger_log_record`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_record_arr(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: *const c_char,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| unsafe { emit_log_arr(logger, options, body, attributes, count) })
 }
 
 #[cfg(test)]

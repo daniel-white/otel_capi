@@ -10,7 +10,7 @@ use std::sync::Arc;
 use opentelemetry::metrics::{AsyncInstrument, MeterProvider as _};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 
-use crate::attributes::from_varargs;
+use crate::attributes::{from_array, from_varargs, otel_attribute_t};
 use crate::config::{
     build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
 };
@@ -398,6 +398,19 @@ pub unsafe extern "C" fn otel_meter_observable_counter_u64(
     })
 }
 
+unsafe fn observe_with_attributes<T>(
+    context: otel_observe_context_t,
+    value: T,
+    attributes: Vec<opentelemetry::KeyValue>,
+) -> Result<()> {
+    if context.data.is_null() || context.vtable.is_null() {
+        return Err(Error::invalid("observation context is invalid or expired"));
+    }
+    let instrument = unsafe { instrument_from_context::<T>(context) };
+    instrument.observe(value, &attributes);
+    Ok(())
+}
+
 /// Records an f64 observation from inside an observable callback. The
 /// context is valid only for the duration of that callback.
 #[unsafe(no_mangle)]
@@ -407,13 +420,22 @@ pub unsafe extern "C" fn otel_observe_f64(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
-        if context.data.is_null() || context.vtable.is_null() {
-            return Err(Error::invalid("observation context is invalid or expired"));
-        }
         let attributes = unsafe { from_varargs(attributes) }?;
-        let instrument = unsafe { instrument_from_context::<f64>(context) };
-        instrument.observe(value, &attributes);
-        Ok(())
+        unsafe { observe_with_attributes(context, value, attributes) }
+    })
+}
+
+/// Array-based variant of [`otel_observe_f64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observe_f64_arr(
+    context: otel_observe_context_t,
+    value: f64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_array(attributes, count) }?;
+        unsafe { observe_with_attributes(context, value, attributes) }
     })
 }
 
@@ -426,13 +448,22 @@ pub unsafe extern "C" fn otel_observe_u64(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
-        if context.data.is_null() || context.vtable.is_null() {
-            return Err(Error::invalid("observation context is invalid or expired"));
-        }
         let attributes = unsafe { from_varargs(attributes) }?;
-        let instrument = unsafe { instrument_from_context::<u64>(context) };
-        instrument.observe(value, &attributes);
-        Ok(())
+        unsafe { observe_with_attributes(context, value, attributes) }
+    })
+}
+
+/// Array-based variant of [`otel_observe_u64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observe_u64_arr(
+    context: otel_observe_context_t,
+    value: u64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_array(attributes, count) }?;
+        unsafe { observe_with_attributes(context, value, attributes) }
     })
 }
 
@@ -446,6 +477,22 @@ pub unsafe extern "C" fn otel_counter_u64_add(
     guard(|| {
         let counter = unsafe { arc::<CounterU64Inner>(const_slot(counter)) }?;
         let attributes = unsafe { from_varargs(attributes) }?;
+        counter.add(value, &attributes);
+        Ok(())
+    })
+}
+
+/// Array-based variant of [`otel_counter_u64_add`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_u64_add_arr(
+    counter: *const otel_counter_u64_t,
+    value: u64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let counter = unsafe { arc::<CounterU64Inner>(const_slot(counter)) }?;
+        let attributes = unsafe { from_array(attributes, count) }?;
         counter.add(value, &attributes);
         Ok(())
     })
@@ -466,6 +513,22 @@ pub unsafe extern "C" fn otel_counter_f64_add(
     })
 }
 
+/// Array-based variant of [`otel_counter_f64_add`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_f64_add_arr(
+    counter: *const otel_counter_f64_t,
+    value: f64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let counter = unsafe { arc::<CounterF64Inner>(const_slot(counter)) }?;
+        let attributes = unsafe { from_array(attributes, count) }?;
+        counter.add(value, &attributes);
+        Ok(())
+    })
+}
+
 /// Adds to a signed 64-bit up/down counter with optional attributes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_updown_counter_i64_add(
@@ -476,6 +539,22 @@ pub unsafe extern "C" fn otel_updown_counter_i64_add(
     guard(|| {
         let counter = unsafe { arc::<UpDownCounterI64Inner>(const_slot(counter)) }?;
         let attributes = unsafe { from_varargs(attributes) }?;
+        counter.add(value, &attributes);
+        Ok(())
+    })
+}
+
+/// Array-based variant of [`otel_updown_counter_i64_add`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_updown_counter_i64_add_arr(
+    counter: *const otel_updown_counter_i64_t,
+    value: i64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let counter = unsafe { arc::<UpDownCounterI64Inner>(const_slot(counter)) }?;
+        let attributes = unsafe { from_array(attributes, count) }?;
         counter.add(value, &attributes);
         Ok(())
     })
@@ -496,6 +575,22 @@ pub unsafe extern "C" fn otel_histogram_f64_record(
     })
 }
 
+/// Array-based variant of [`otel_histogram_f64_record`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_histogram_f64_record_arr(
+    histogram: *const otel_histogram_f64_t,
+    value: f64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let histogram = unsafe { arc::<HistogramF64Inner>(const_slot(histogram)) }?;
+        let attributes = unsafe { from_array(attributes, count) }?;
+        histogram.record(value, &attributes);
+        Ok(())
+    })
+}
+
 /// Records a value in a gauge with optional attributes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_gauge_f64_record(
@@ -506,6 +601,22 @@ pub unsafe extern "C" fn otel_gauge_f64_record(
     guard(|| {
         let gauge = unsafe { arc::<GaugeF64Inner>(const_slot(gauge)) }?;
         let attributes = unsafe { from_varargs(attributes) }?;
+        gauge.record(value, &attributes);
+        Ok(())
+    })
+}
+
+/// Array-based variant of [`otel_gauge_f64_record`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_gauge_f64_record_arr(
+    gauge: *const otel_gauge_f64_t,
+    value: f64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let gauge = unsafe { arc::<GaugeF64Inner>(const_slot(gauge)) }?;
+        let attributes = unsafe { from_array(attributes, count) }?;
         gauge.record(value, &attributes);
         Ok(())
     })

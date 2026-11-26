@@ -316,6 +316,46 @@ typedef struct {
 } otel_observable_counter_u64_t;
 
 /**
+ * Tagged value payload. Only the member named by `kind` may be read.
+ */
+typedef union {
+  /**
+   * Borrowed NUL-terminated UTF-8 string.
+   */
+  const char *string;
+  /**
+   * Boolean stored as zero or non-zero.
+   */
+  int boolean;
+  /**
+   * Signed 64-bit integer.
+   */
+  int64_t integer;
+  /**
+   * Double-precision float.
+   */
+  double double_value;
+} otel_attribute_value_t;
+
+/**
+ * A tagged attribute. Use the `otel_attr_*` macros to initialize it.
+ */
+typedef struct {
+  /**
+   * Which member of `value` is active.
+   */
+  int32_t kind;
+  /**
+   * NUL-terminated UTF-8 attribute key. Must not be NULL.
+   */
+  const char *key;
+  /**
+   * Tagged value payload.
+   */
+  otel_attribute_value_t value;
+} otel_attribute_t;
+
+/**
  * Optional fields for a structured log record. Initialize with
  * `OTEL_LOG_RECORD_OPTIONS_INIT` and set `size` to
  * `sizeof(otel_log_record_options_t)`.
@@ -394,46 +434,6 @@ typedef struct {
    */
   int32_t end_on_release;
 } otel_span_options_t;
-
-/**
- * Tagged value payload. Only the member named by `kind` may be read.
- */
-typedef union {
-  /**
-   * Borrowed NUL-terminated UTF-8 string.
-   */
-  const char *string;
-  /**
-   * Boolean stored as zero or non-zero.
-   */
-  int boolean;
-  /**
-   * Signed 64-bit integer.
-   */
-  int64_t integer;
-  /**
-   * Double-precision float.
-   */
-  double double_value;
-} otel_attribute_value_t;
-
-/**
- * A tagged attribute. Use the `otel_attr_*` macros to initialize it.
- */
-typedef struct {
-  /**
-   * Which member of `value` is active.
-   */
-  int32_t kind;
-  /**
-   * NUL-terminated UTF-8 attribute key. Must not be NULL.
-   */
-  const char *key;
-  /**
-   * Tagged value payload.
-   */
-  otel_attribute_value_t value;
-} otel_attribute_t;
 
 /**
  * Returns the crate version as a NUL-terminated string.
@@ -827,6 +827,16 @@ OTEL_API otel_result_t otel_logger_log(const otel_logger_t *logger,
                               ...);
 
 /**
+ * Array-based variant of [`otel_logger_log`].
+ */
+OTEL_API otel_result_t otel_logger_log_arr(const otel_logger_t *logger,
+                                  const otel_span_t *span,
+                                  int32_t level,
+                                  const char *body,
+                                  const otel_attribute_t *const *attributes,
+                                  size_t count);
+
+/**
  * Emits a structured log record with event name, target, timestamps, and
  * optional span correlation configured through `options`.
  */
@@ -834,6 +844,15 @@ OTEL_API otel_result_t otel_logger_log_record(const otel_logger_t *logger,
                                      const otel_log_record_options_t *options,
                                      const char *body,
                                      ...);
+
+/**
+ * Array-based variant of [`otel_logger_log_record`].
+ */
+OTEL_API otel_result_t otel_logger_log_record_arr(const otel_logger_t *logger,
+                                         const otel_log_record_options_t *options,
+                                         const char *body,
+                                         const otel_attribute_t *const *attributes,
+                                         size_t count);
 
 /**
  * Creates a meter provider. `resource` and `runtime` may be NULL when the
@@ -939,10 +958,26 @@ OTEL_API otel_result_t otel_meter_observable_counter_u64(const otel_meter_t *met
 OTEL_API otel_result_t otel_observe_f64(otel_observe_context_t context, double value, ...);
 
 /**
+ * Array-based variant of [`otel_observe_f64`].
+ */
+OTEL_API otel_result_t otel_observe_f64_arr(otel_observe_context_t context,
+                                   double value,
+                                   const otel_attribute_t *const *attributes,
+                                   size_t count);
+
+/**
  * Records a u64 observation from inside an observable callback. The context
  * is valid only for the duration of that callback.
  */
 OTEL_API otel_result_t otel_observe_u64(otel_observe_context_t context, uint64_t value, ...);
+
+/**
+ * Array-based variant of [`otel_observe_u64`].
+ */
+OTEL_API otel_result_t otel_observe_u64_arr(otel_observe_context_t context,
+                                   uint64_t value,
+                                   const otel_attribute_t *const *attributes,
+                                   size_t count);
 
 /**
  * Adds to an unsigned 64-bit counter with optional attributes.
@@ -950,9 +985,25 @@ OTEL_API otel_result_t otel_observe_u64(otel_observe_context_t context, uint64_t
 OTEL_API otel_result_t otel_counter_u64_add(const otel_counter_u64_t *counter, uint64_t value, ...);
 
 /**
+ * Array-based variant of [`otel_counter_u64_add`].
+ */
+OTEL_API otel_result_t otel_counter_u64_add_arr(const otel_counter_u64_t *counter,
+                                       uint64_t value,
+                                       const otel_attribute_t *const *attributes,
+                                       size_t count);
+
+/**
  * Adds to a double-precision counter with optional attributes.
  */
 OTEL_API otel_result_t otel_counter_f64_add(const otel_counter_f64_t *counter, double value, ...);
+
+/**
+ * Array-based variant of [`otel_counter_f64_add`].
+ */
+OTEL_API otel_result_t otel_counter_f64_add_arr(const otel_counter_f64_t *counter,
+                                       double value,
+                                       const otel_attribute_t *const *attributes,
+                                       size_t count);
 
 /**
  * Adds to a signed 64-bit up/down counter with optional attributes.
@@ -962,14 +1013,38 @@ OTEL_API otel_result_t otel_updown_counter_i64_add(const otel_updown_counter_i64
                                           ...);
 
 /**
+ * Array-based variant of [`otel_updown_counter_i64_add`].
+ */
+OTEL_API otel_result_t otel_updown_counter_i64_add_arr(const otel_updown_counter_i64_t *counter,
+                                              int64_t value,
+                                              const otel_attribute_t *const *attributes,
+                                              size_t count);
+
+/**
  * Records a value in a histogram with optional attributes.
  */
 OTEL_API otel_result_t otel_histogram_f64_record(const otel_histogram_f64_t *histogram, double value, ...);
 
 /**
+ * Array-based variant of [`otel_histogram_f64_record`].
+ */
+OTEL_API otel_result_t otel_histogram_f64_record_arr(const otel_histogram_f64_t *histogram,
+                                            double value,
+                                            const otel_attribute_t *const *attributes,
+                                            size_t count);
+
+/**
  * Records a value in a gauge with optional attributes.
  */
 OTEL_API otel_result_t otel_gauge_f64_record(const otel_gauge_f64_t *gauge, double value, ...);
+
+/**
+ * Array-based variant of [`otel_gauge_f64_record`].
+ */
+OTEL_API otel_result_t otel_gauge_f64_record_arr(const otel_gauge_f64_t *gauge,
+                                        double value,
+                                        const otel_attribute_t *const *attributes,
+                                        size_t count);
 
 /**
  * Creates a resource from `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES`.
@@ -982,6 +1057,13 @@ OTEL_API otel_result_t otel_resource_new(otel_resource_t *handle);
  * standard environment configuration.
  */
 OTEL_API otel_result_t otel_resource_new_with_attributes(otel_resource_t *handle, ...);
+
+/**
+ * Array-based variant of [`otel_resource_new_with_attributes`].
+ */
+OTEL_API otel_result_t otel_resource_new_with_attributes_arr(otel_resource_t *handle,
+                                                    const otel_attribute_t *const *attributes,
+                                                    size_t count);
 
 /**
  * Creates a multi-threaded async runtime used by OTLP exporters.
@@ -1022,12 +1104,21 @@ OTEL_API otel_result_t otel_tracer_provider_tracer(const otel_tracer_provider_t 
                                           const char *name);
 
 /**
- * Starts a span with an optional `NULL`-terminated list of attributes.
+ * Starts a span with an optional `OTEL_ATTR_END`-terminated attribute list.
  */
 OTEL_API otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
                                      otel_span_t *handle,
                                      const char *name,
                                      ...);
+
+/**
+ * Array-based variant of [`otel_tracer_span_start`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_arr(const otel_tracer_t *tracer,
+                                         otel_span_t *handle,
+                                         const char *name,
+                                         const otel_attribute_t *const *attributes,
+                                         size_t count);
 
 /**
  * Starts a span with an explicit parent, kind, and start timestamp.
@@ -1039,14 +1130,39 @@ OTEL_API otel_result_t otel_tracer_span_start_with_options(const otel_tracer_t *
                                                   ...);
 
 /**
+ * Array-based variant of [`otel_tracer_span_start_with_options`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_with_options_arr(const otel_tracer_t *tracer,
+                                                      const otel_span_options_t *options,
+                                                      otel_span_t *handle,
+                                                      const char *name,
+                                                      const otel_attribute_t *const *attributes,
+                                                      size_t count);
+
+/**
  * Adds attributes to a started span.
  */
 OTEL_API otel_result_t otel_span_set_attributes(const otel_span_t *span, ...);
 
 /**
+ * Array-based variant of [`otel_span_set_attributes`].
+ */
+OTEL_API otel_result_t otel_span_set_attributes_arr(const otel_span_t *span,
+                                           const otel_attribute_t *const *attributes,
+                                           size_t count);
+
+/**
  * Adds a named event with optional attributes to a started span.
  */
 OTEL_API otel_result_t otel_span_add_event(const otel_span_t *span, const char *name, ...);
+
+/**
+ * Array-based variant of [`otel_span_add_event`].
+ */
+OTEL_API otel_result_t otel_span_add_event_arr(const otel_span_t *span,
+                                      const char *name,
+                                      const otel_attribute_t *const *attributes,
+                                      size_t count);
 
 /**
  * Sets the span status. `description` may be NULL.
@@ -1069,12 +1185,30 @@ OTEL_API otel_result_t otel_span_add_event_with_timestamp(const otel_span_t *spa
                                                  ...);
 
 /**
+ * Array-based variant of [`otel_span_add_event_with_timestamp`].
+ */
+OTEL_API otel_result_t otel_span_add_event_with_timestamp_arr(const otel_span_t *span,
+                                                     const char *name,
+                                                     int64_t timestamp_unix_nano,
+                                                     const otel_attribute_t *const *attributes,
+                                                     size_t count);
+
+/**
  * Adds a link to a span using hex-encoded trace and span IDs.
  */
 OTEL_API otel_result_t otel_span_add_link(const otel_span_t *span,
                                  const char *trace_id_hex,
                                  const char *span_id_hex,
                                  ...);
+
+/**
+ * Array-based variant of [`otel_span_add_link`].
+ */
+OTEL_API otel_result_t otel_span_add_link_arr(const otel_span_t *span,
+                                     const char *trace_id_hex,
+                                     const char *span_id_hex,
+                                     const otel_attribute_t *const *attributes,
+                                     size_t count);
 
 /**
  * Records an exception as an event with standard semantic attributes.
@@ -1084,6 +1218,16 @@ OTEL_API otel_result_t otel_span_record_exception(const otel_span_t *span,
                                          const char *message,
                                          const char *stacktrace,
                                          ...);
+
+/**
+ * Array-based variant of [`otel_span_record_exception`].
+ */
+OTEL_API otel_result_t otel_span_record_exception_arr(const otel_span_t *span,
+                                             const char *exception_type,
+                                             const char *message,
+                                             const char *stacktrace,
+                                             const otel_attribute_t *const *attributes,
+                                             size_t count);
 
 /**
  * Ends a span at an explicit Unix timestamp in nanoseconds.

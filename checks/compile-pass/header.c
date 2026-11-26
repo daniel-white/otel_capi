@@ -32,4 +32,6 @@ void use_public_header(void) {
   (void)otel_live_handle_count();
   (void)otel_ensure_all_released();
   (void)check_result_macro();
+  (void)otel_span_set_attributes_arr(NULL, &attr, 1);
+  (void)otel_counter_u64_add_arr(NULL, 1, &attr, 1);
 }

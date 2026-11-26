@@ -64,18 +64,24 @@ static void configure_environment(void) {
 }
 
 static void observe_temperature(otel_observe_context_t context, void *user_data) {
+  const otel_attribute_t *attributes[] = {
+      otel_attr_string("source", "callback"),
+      otel_attr_string("observer.kind", "array"),
+  };
   otel_result_t result =
-      otel_observe_f64(context, *(const double *)user_data,
-                       otel_attr_string("source", "callback"), OTEL_ATTR_END);
+      otel_observe_f64_arr(context, *(const double *)user_data, attributes, 2);
   if (result != OTEL_OK) {
     fprintf(stderr, "observe_f64 failed: %s\n", otel_strerror((int32_t)result));
   }
 }
 
 static void observe_requests(otel_observe_context_t context, void *user_data) {
+  const otel_attribute_t *attributes[] = {
+      otel_attr_string("source", "callback"),
+      otel_attr_string("observer.kind", "array"),
+  };
   otel_result_t result =
-      otel_observe_u64(context, *(const uint64_t *)user_data,
-                       otel_attr_string("source", "callback"), OTEL_ATTR_END);
+      otel_observe_u64_arr(context, *(const uint64_t *)user_data, attributes, 2);
   if (result != OTEL_OK) {
     fprintf(stderr, "observe_u64 failed: %s\n", otel_strerror((int32_t)result));
   }
@@ -158,9 +164,12 @@ int main(void) {
     printf("cotel version %s\n", otel_version());
 
     CHECK(otel_runtime_new(&runtime));
-    CHECK(otel_resource_new_with_attributes(
-        &resource, otel_attr_string("deployment.environment", "kitchen-sink"),
-        otel_attr_i64("cotel.kitchen_sink", 1), OTEL_ATTR_END));
+    const otel_attribute_t *resource_attributes[] = {
+        otel_attr_string("deployment.environment", "kitchen-sink"),
+        otel_attr_i64("cotel.kitchen_sink", 1),
+    };
+    CHECK(otel_resource_new_with_attributes_arr(
+        &resource, resource_attributes, 2));
     if (!otel_runtime_is_valid(&runtime) || !otel_resource_is_valid(&resource)) {
       fprintf(stderr, "runtime or resource handle is invalid\n");
       goto cleanup;
@@ -229,9 +238,11 @@ int main(void) {
         otel_attr_string("component", "example"),
         otel_attr_client_address("example.org"),
         otel_attr_i64("attempt", 1), OTEL_ATTR_END));
-    CHECK(otel_span_set_attributes(
-        &span, otel_attr_bool("cache.hit", 0), otel_attr_f64("weight", 1.25),
-        OTEL_ATTR_END));
+    const otel_attribute_t *span_attributes[] = {
+        otel_attr_bool("cache.hit", 0),
+        otel_attr_f64("weight", 1.25),
+    };
+    CHECK(otel_span_set_attributes_arr(&span, span_attributes, 2));
     CHECK(otel_span_add_event(
         &span, "validated", otel_attr_string("result", "ok"), OTEL_ATTR_END));
 
@@ -280,8 +291,10 @@ int main(void) {
         &meter, &observable_counter, "kitchen_sink.observed_requests", "1",
         "Observed requests", observe_requests, &observed_requests));
 
-    CHECK(otel_counter_u64_add(
-        &counter_u64, 3, otel_attr_http_request_method("GET"), OTEL_ATTR_END));
+    const otel_attribute_t *method_attributes[] = {
+        otel_attr_http_request_method("GET"),
+    };
+    CHECK(otel_counter_u64_add_arr(&counter_u64, 3, method_attributes, 1));
     CHECK(otel_counter_f64_add(&counter_f64, 2048.0, OTEL_ATTR_END));
     CHECK(otel_updown_counter_i64_add(&updown, 1, OTEL_ATTR_END));
     CHECK(otel_histogram_f64_record(&histogram, 0.042, OTEL_ATTR_END));
