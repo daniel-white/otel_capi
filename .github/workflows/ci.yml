@@ -36,7 +36,10 @@ jobs:
           targets: x86_64-unknown-linux-musl
       - run: sudo apt-get update && sudo apt-get install -y musl-tools
       - run: cargo build --release --locked --target x86_64-unknown-linux-musl
-      - run: make example-musl
+      - name: Build and run kitchen sink with musl
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work alpine:3 \
+            sh -c 'apk add --no-cache build-base make && make example-musl MUSL_GCC=gcc'
 
   check-windows:
     name: cargo check (windows-latest)

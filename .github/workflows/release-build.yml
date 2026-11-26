@@ -54,7 +54,9 @@ jobs:
 
       - name: Test musl kitchen sink
         if: matrix.target == 'x86_64-unknown-linux-musl'
-        run: make example-musl
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/work" -w /work alpine:3 \
+            sh -c 'apk add --no-cache build-base make && make example-musl MUSL_GCC=gcc'
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
