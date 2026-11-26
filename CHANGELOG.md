@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.1](https://github.com/daniel-white/otel_capi/compare/v0.2.0...v0.2.1) (2026-11-26)
+
+
+### Bug Fixes
+
+* **ci:** inline release asset uploads ([e6d32db](https://github.com/daniel-white/otel_capi/commit/e6d32db1f8e264901363a14042a9bea1daa1dda0))
+* **ci:** upload release assets with gh CLI ([d488ebf](https://github.com/daniel-white/otel_capi/commit/d488ebf9a13d5f2bcccf4b111b83cc8e02a7a7ac))
+* **ci:** use inline gh release upload commands ([554190e](https://github.com/daniel-white/otel_capi/commit/554190e1b917d93315ef06850e4c35a1dfb25ffe))
+
+
+### Documentation
+
+* clarify release workflow trigger ([b0244d6](https://github.com/daniel-white/otel_capi/commit/b0244d66462a2d1cb89dd769e327142cb00fc76f))
+
+
+### Continuous Integration
+
+* dispatch release builds after tagging ([b7dba8a](https://github.com/daniel-white/otel_capi/commit/b7dba8a91cc81f104908a04575ef6f29b0438f6e))
+
 ## [0.2.0](https://github.com/daniel-white/otel_capi/compare/v0.1.0...v0.2.0) (2026-11-26)
 
 
