@@ -9,7 +9,12 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, fenix }:
-    flake-utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachSystem [
+      "x86_64-darwin"
+      "aarch64-darwin"
+      "x86_64-linux"
+      "aarch64-linux"
+    ] (system:
       let
         pkgs = import nixpkgs { inherit system; };
         rustToolchain = fenix.packages.${system}.stable.toolchain;
