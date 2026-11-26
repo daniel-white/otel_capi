@@ -174,6 +174,16 @@ Standard OpenTelemetry environment variables are read at provider creation:
 OTLP exporters require a runtime handle passed to the provider constructor;
 without one, construction fails with `OTEL_ERR_CONFIG`.
 
+### Explicit providers instead of globals
+
+`cotel` does not install process-global tracer, meter, or logger providers.
+Handles make initialization order, exporter/runtime lifetime, and shutdown
+deterministic, and avoid hidden global state when the library is embedded.
+Pass provider and scope handles through your C call graph; the standard
+environment variables above still configure each provider when it is created.
+The only implicit context is the thread-local one managed by
+`otel_context_attach` / `otel_context_detach`.
+
 ## Kitchen sink
 
 ```sh
