@@ -339,8 +339,8 @@ every handle was released.
 
 ## Release archives
 
-Each GitHub release publishes archives for Linux (x86_64), macOS (x86_64 and
-arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
+Each GitHub release publishes archives for Linux (x86_64 glibc and musl), macOS
+(x86_64 and arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
 contains the generated headers, static and shared libraries, a relocatable
 `otel-capi.pc`, `LICENSE`, and `README.md`. A separate
 `otel-capi-<version>-docs.tar.gz` contains the Doxygen HTML reference for the
