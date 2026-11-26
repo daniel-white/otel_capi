@@ -12,6 +12,7 @@ include = [
   "otel_result_t",
   "otel_runtime_t",
   "otel_span_status_t",
+  "otel_severity_t",
   "otel_attribute_type_t",
   "otel_attribute_value_t",
   "otel_attribute_t",

@@ -10,6 +10,7 @@ pub mod attributes;
 mod config;
 pub mod error;
 pub mod handles;
+pub mod logs;
 pub mod metrics;
 pub mod resource;
 pub mod runtime;

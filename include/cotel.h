@@ -24,6 +24,36 @@ typedef enum {
 } otel_result_t;
 
 /**
+ * Log severity exported to C. Values match the OpenTelemetry severity scale.
+ */
+typedef enum {
+  /**
+   * Trace-level detail.
+   */
+  OTEL_SEVERITY_TRACE = 1,
+  /**
+   * Debug-level detail.
+   */
+  OTEL_SEVERITY_DEBUG = 5,
+  /**
+   * Informational message.
+   */
+  OTEL_SEVERITY_INFO = 9,
+  /**
+   * Warning.
+   */
+  OTEL_SEVERITY_WARN = 13,
+  /**
+   * Error.
+   */
+  OTEL_SEVERITY_ERROR = 17,
+  /**
+   * Fatal error.
+   */
+  OTEL_SEVERITY_FATAL = 21,
+} otel_severity_t;
+
+/**
  * Explicit span status exported to C.
  */
 typedef enum {
@@ -399,6 +429,41 @@ otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_
  * Releases one reference to a `otel_gauge_f64_t` and clears the slot.
  */
 void otel_gauge_f64_release(otel_gauge_f64_t *handle);
+
+/**
+ * Creates a logger provider. `resource` and `runtime` may be NULL when the
+ * selected exporter does not need them.
+ */
+otel_result_t otel_logger_provider_new(otel_logger_provider_t *out,
+                                       const otel_resource_t *resource,
+                                       const otel_runtime_t *runtime);
+
+/**
+ * Flushes all pending log records.
+ */
+otel_result_t otel_logger_provider_force_flush(const otel_logger_provider_t *provider);
+
+/**
+ * Shuts down the provider and its processors.
+ */
+otel_result_t otel_logger_provider_shutdown(const otel_logger_provider_t *provider);
+
+/**
+ * Creates a logger for an instrumentation scope.
+ */
+otel_result_t otel_logger_provider_logger(const otel_logger_provider_t *provider,
+                                          otel_logger_t *out,
+                                          const char *name);
+
+/**
+ * Emits a log record with optional attributes. `span` may be NULL; when set,
+ * the record carries that span's trace and span IDs.
+ */
+otel_result_t otel_logger_log(const otel_logger_t *logger,
+                              const otel_span_t *span,
+                              otel_severity_t level,
+                              const char *body,
+                              ...);
 
 /**
  * Creates a meter provider. `resource` and `runtime` may be NULL when the
