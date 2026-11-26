@@ -125,7 +125,7 @@ jobs:
 
   publish-pages:
     name: Publish API docs to GitHub Pages
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     needs: docs
     runs-on: ubuntu-latest
     permissions:
