@@ -1,7 +1,14 @@
 #include "otel_capi.h"
 
-_Static_assert(OTEL_VERSION_MAJOR == 0 && OTEL_VERSION_MINOR == 1 &&
-                   OTEL_VERSION_PATCH == 0,
+#ifndef OTEL_EXPECTED_VERSION_MAJOR
+#define OTEL_EXPECTED_VERSION_MAJOR OTEL_VERSION_MAJOR
+#define OTEL_EXPECTED_VERSION_MINOR OTEL_VERSION_MINOR
+#define OTEL_EXPECTED_VERSION_PATCH OTEL_VERSION_PATCH
+#endif
+
+_Static_assert(OTEL_VERSION_MAJOR == OTEL_EXPECTED_VERSION_MAJOR &&
+                   OTEL_VERSION_MINOR == OTEL_EXPECTED_VERSION_MINOR &&
+                   OTEL_VERSION_PATCH == OTEL_EXPECTED_VERSION_PATCH,
                "version macros must match the library version");
 _Static_assert(OTEL_VERSION_AT_LEAST(0, 1, 0),
                "version check must accept the current version");

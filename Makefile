@@ -21,6 +21,14 @@ CPPFLAGS ?= -I$(INCLUDE_DIR)
 LDFLAGS ?=
 LDLIBS ?= -pthread -ldl -lm
 VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+VERSION_PARTS := $(shell printf '%s\n' '$(VERSION)' | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+).*/\1 \2 \3/')
+VERSION_MAJOR := $(word 1,$(VERSION_PARTS))
+VERSION_MINOR := $(word 2,$(VERSION_PARTS))
+VERSION_PATCH := $(word 3,$(VERSION_PARTS))
+VERSION_CPPFLAGS := $(CPPFLAGS) \
+	-DOTEL_EXPECTED_VERSION_MAJOR=$(VERSION_MAJOR) \
+	-DOTEL_EXPECTED_VERSION_MINOR=$(VERSION_MINOR) \
+	-DOTEL_EXPECTED_VERSION_PATCH=$(VERSION_PATCH)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -108,9 +116,9 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'observer.kind: array' $(BUILD_DIR)/stdout-clang.log
 
 compile-checks: build | $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c
+	$(CC) $(CFLAGS) $(VERSION_CPPFLAGS) -fsyntax-only checks/compile-pass/*.c
 	@for src in checks/compile-fail/*.c; do \
-		if $(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only $$src >/dev/null 2>&1; then \
+		if $(CC) $(CFLAGS) $(VERSION_CPPFLAGS) -fsyntax-only $$src >/dev/null 2>&1; then \
 			echo "unexpectedly compiled $$src"; exit 1; \
 		fi; \
 	done
