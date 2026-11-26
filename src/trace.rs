@@ -166,7 +166,7 @@ pub unsafe extern "C" fn otel_tracer_provider_tracer(
 ) -> otel_result_t {
     guard(|| {
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
-        let name = utf8(c_str(name, "tracer name")?, "tracer name")?;
+        let name = utf8(unsafe { c_str(name, "tracer name")? }, "tracer name")?;
         unsafe { init(slot(out), provider.provider.tracer(name)) }?;
         Ok(())
     })
@@ -182,7 +182,7 @@ pub unsafe extern "C" fn otel_tracer_span_start(
 ) -> otel_result_t {
     guard(|| {
         let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
-        let name = utf8(c_str(name, "span name")?, "span name")?;
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
         let attributes = unsafe { from_varargs(attributes) }?;
         let mut builder = tracer.span_builder(name);
         builder.attributes = Some(attributes);
@@ -223,7 +223,7 @@ pub unsafe extern "C" fn otel_span_add_event(
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
-        let name = utf8(c_str(name, "event name")?, "event name")?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
         let attributes = unsafe { from_varargs(attributes) }?;
         span.add_event(name, attributes);
         Ok(())
@@ -243,7 +243,7 @@ pub unsafe extern "C" fn otel_span_set_status(
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
-        let description = optional_utf8(description, "status description")?.unwrap_or_default();
+        let description = unsafe { optional_utf8(description, "status description")? }.unwrap_or_default();
         let status = match status {
             otel_span_status_t::OTEL_SPAN_STATUS_UNSET => Status::Unset,
             otel_span_status_t::OTEL_SPAN_STATUS_OK => Status::Ok,

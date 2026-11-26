@@ -401,6 +401,103 @@ otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_
 void otel_gauge_f64_release(otel_gauge_f64_t *handle);
 
 /**
+ * Creates a meter provider. `resource` and `runtime` may be NULL when the
+ * selected exporter does not need them.
+ */
+otel_result_t otel_meter_provider_new(otel_meter_provider_t *out,
+                                      const otel_resource_t *resource,
+                                      const otel_runtime_t *runtime);
+
+/**
+ * Flushes all pending metric data.
+ */
+otel_result_t otel_meter_provider_force_flush(const otel_meter_provider_t *provider);
+
+/**
+ * Shuts down the provider and its readers.
+ */
+otel_result_t otel_meter_provider_shutdown(const otel_meter_provider_t *provider);
+
+/**
+ * Creates a meter for an instrumentation scope.
+ */
+otel_result_t otel_meter_provider_meter(const otel_meter_provider_t *provider,
+                                        otel_meter_t *out,
+                                        const char *name);
+
+/**
+ * Creates an unsigned 64-bit counter. `unit` and `description` may be NULL.
+ */
+otel_result_t otel_meter_counter_u64(const otel_meter_t *meter,
+                                     otel_counter_u64_t *out,
+                                     const char *name,
+                                     const char *unit,
+                                     const char *description);
+
+/**
+ * Creates a double-precision counter. `unit` and `description` may be NULL.
+ */
+otel_result_t otel_meter_counter_f64(const otel_meter_t *meter,
+                                     otel_counter_f64_t *out,
+                                     const char *name,
+                                     const char *unit,
+                                     const char *description);
+
+/**
+ * Creates a signed 64-bit up/down counter. Metadata may be NULL.
+ */
+otel_result_t otel_meter_updown_counter_i64(const otel_meter_t *meter,
+                                            otel_updown_counter_i64_t *out,
+                                            const char *name,
+                                            const char *unit,
+                                            const char *description);
+
+/**
+ * Creates a double-precision histogram. Metadata may be NULL.
+ */
+otel_result_t otel_meter_histogram_f64(const otel_meter_t *meter,
+                                       otel_histogram_f64_t *out,
+                                       const char *name,
+                                       const char *unit,
+                                       const char *description);
+
+/**
+ * Creates a double-precision gauge. Metadata may be NULL.
+ */
+otel_result_t otel_meter_gauge_f64(const otel_meter_t *meter,
+                                   otel_gauge_f64_t *out,
+                                   const char *name,
+                                   const char *unit,
+                                   const char *description);
+
+/**
+ * Adds to an unsigned 64-bit counter with optional attributes.
+ */
+otel_result_t otel_counter_u64_add(const otel_counter_u64_t *counter, uint64_t value, ...);
+
+/**
+ * Adds to a double-precision counter with optional attributes.
+ */
+otel_result_t otel_counter_f64_add(const otel_counter_f64_t *counter, double value, ...);
+
+/**
+ * Adds to a signed 64-bit up/down counter with optional attributes.
+ */
+otel_result_t otel_updown_counter_i64_add(const otel_updown_counter_i64_t *counter,
+                                          int64_t value,
+                                          ...);
+
+/**
+ * Records a value in a histogram with optional attributes.
+ */
+otel_result_t otel_histogram_f64_record(const otel_histogram_f64_t *histogram, double value, ...);
+
+/**
+ * Records a value in a gauge with optional attributes.
+ */
+otel_result_t otel_gauge_f64_record(const otel_gauge_f64_t *gauge, double value, ...);
+
+/**
  * Creates a resource from `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES`.
  */
 otel_result_t otel_resource_new(otel_resource_t *out);
