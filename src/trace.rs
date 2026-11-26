@@ -1232,9 +1232,15 @@ mod tests {
     use crate::handles::{
         otel_span_release, otel_span_retain, otel_tracer_provider_release, otel_tracer_release,
     };
+    use std::sync::Mutex;
+
+    static TRACE_ENV_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn end_on_release_ends_retained_span() {
+        let _guard = TRACE_ENV_LOCK
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
         unsafe { env::set_var("OTEL_TRACES_EXPORTER", "none") };
         let mut provider = crate::handles::otel_tracer_provider_t {
             inner: std::ptr::null_mut(),
@@ -1293,6 +1299,9 @@ mod tests {
     #[test]
     fn no_exporter_provider_creates_tracer_and_span() {
         // Isolate this test from ambient configuration.
+        let _guard = TRACE_ENV_LOCK
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
         unsafe {
             env::set_var("OTEL_TRACES_EXPORTER", "none");
         }
