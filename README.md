@@ -11,6 +11,8 @@ structs.
 - `src/` — Rust implementation. `build.rs` generates the header with cbindgen.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
+- `checks/` — compile-pass and compile-fail checks for the C API.
+- `cotel.pc.in` — pkg-config metadata template.
 - `flake.nix` — optional dev shell that provides Rust 1.100.0 and C compilers.
 
 ## Build and test
@@ -34,11 +36,12 @@ With direnv and nix-direnv installed, the repo's `.envrc` enters that dev
 shell automatically. Run `direnv allow` once after cloning, then plain
 `make build` / `make check` work in that directory.
 
-`make check` runs the Rust unit tests, then compiles the kitchen-sink example
-with both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, and runs it
-with both `COTEL_EXPORTER=none` and `COTEL_EXPORTER=stdout`.
+`make check` runs the Rust unit tests, compiles the kitchen-sink example with
+both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, runs it with both
+`COTEL_EXPORTER=none` and `COTEL_EXPORTER=stdout`, and verifies the
+compile-pass/compile-fail checks in `checks/`.
 
-Install the library and header with:
+Install the library, headers, and pkg-config metadata with:
 
 ```sh
 nix develop --command make install PREFIX=/path/to/prefix
@@ -57,7 +60,7 @@ otel_tracer_provider_t provider = {0};
 
 otel_result_t result = otel_runtime_new(&runtime);
 if (result != OTEL_OK) {
-    fprintf(stderr, "%s\n", otel_last_error());
+    fprintf(stderr, "%s: %s\n", otel_strerror(result), otel_last_error());
 }
 
 /* ... use provider ... */
@@ -76,11 +79,19 @@ Key rules:
 - Use `otel_*_retain` to create an additional reference in another
   zero-initialized handle.
 - Strings are borrowed for the duration of a call only.
-- All exported enums are non-exhaustive so new variants can be added without
-  breaking existing callers.
+- All exported enums have explicit numeric values and `OTEL_<ENUM>_SENTINEL`
+  macros, so new variants can be added without disturbing existing values.
+- Status, severity, and attribute-kind inputs are plain `int32_t` values that
+  the library validates; passing an out-of-range integer returns
+  `OTEL_ERR_INVALID_ARGUMENT`.
+- Use `OTEL_<TYPE>_INIT` for zero-initialized handle storage, and
+  `otel_<type>_is_valid()` to check whether a handle holds an object.
 - Variadic attribute calls use `otel_attribute_t` values built with
   `otel_attr_string`, `otel_attr_bool`, `otel_attr_i64`, and `otel_attr_f64`,
-  terminated by `NULL`.
+  terminated by `OTEL_ATTR_END` (or `NULL`).
+- `otel_version()` returns the library version; `otel_strerror()` provides a
+  stable description for result codes. `otel_last_error()` is thread-local and
+  valid only until the next fallible call on that thread.
 
 `cotel.h` includes `cotel_semconv.h`, which `build.rs` generates from the
 `opentelemetry-semantic-conventions` crate at build time. Macro names are
@@ -132,4 +143,6 @@ COTEL_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
 
 The example creates a resource, all three providers, a correlated span/log
 pair, all five metric instruments, retains/releases a span, and flushes and
-shuts down every provider.
+shuts down every provider. It also starts four pthread workers that create
+concurrent spans, correlated logs, and counter updates against shared scopes,
+which exercises handle reference counting and instrument thread safety.
