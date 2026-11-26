@@ -2,13 +2,10 @@
 
 use std::env;
 use std::fmt::Display;
-use std::sync::OnceLock;
 use std::time::Duration;
 
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::error::OTelSdkError;
-use tokio::runtime::{Runtime, Builder as RuntimeBuilder};
-
 use crate::error::{Error, Result, otel_result_t};
 
 /// Exporter selected by `OTEL_<SIGNAL>_EXPORTER`.
@@ -20,26 +17,6 @@ pub(crate) enum ExporterKind {
     Stdout,
     /// No exporter; telemetry is created but not exported.
     None,
-}
-
-static RUNTIME: OnceLock<Runtime> = OnceLock::new();
-
-/// Shared runtime used when building and running async OTLP exporters.
-pub(crate) fn runtime() -> &'static Runtime {
-    RUNTIME.get_or_init(|| {
-        RuntimeBuilder::new_multi_thread()
-            .worker_threads(2)
-            .thread_name("cotel-otlp")
-            .enable_all()
-            .build()
-            .expect("should be able to start the cotel Tokio runtime")
-    })
-}
-
-/// Enters the shared runtime for the duration of a closure.
-pub(crate) fn with_runtime<T>(f: impl FnOnce() -> T) -> T {
-    let _guard = runtime().enter();
-    f()
 }
 
 /// Builds a resource from `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`,

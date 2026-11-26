@@ -10,5 +10,8 @@ pub mod attributes;
 mod config;
 pub mod error;
 pub mod handles;
+pub mod resource;
+pub mod runtime;
+pub mod trace;
 
 pub use error::otel_result_t;

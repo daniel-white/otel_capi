@@ -11,6 +11,7 @@ use opentelemetry::{Key, KeyValue, Value};
 use crate::error::{Error, Result, c_str, utf8};
 
 /// Discriminator for the active member of [`otel_attribute_value_t`].
+#[non_exhaustive]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum otel_attribute_type_t {

@@ -24,6 +24,24 @@ typedef enum {
 } otel_result_t;
 
 /**
+ * Explicit span status exported to C.
+ */
+typedef enum {
+  /**
+   * No status has been set.
+   */
+  OTEL_SPAN_STATUS_UNSET,
+  /**
+   * The operation succeeded.
+   */
+  OTEL_SPAN_STATUS_OK,
+  /**
+   * The operation failed.
+   */
+  OTEL_SPAN_STATUS_ERROR,
+} otel_span_status_t;
+
+/**
  * Discriminator for the active member of [`otel_attribute_value_t`].
  */
 typedef enum {
@@ -54,6 +72,16 @@ typedef struct {
    */
   void *inner;
 } otel_resource_t;
+
+/**
+ * Explicit async runtime used by OTLP exporters.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_runtime_t;
 
 /**
  * Provider used to create tracers and control trace export.
@@ -239,6 +267,16 @@ otel_result_t otel_resource_retain(const otel_resource_t *src, otel_resource_t *
 void otel_resource_release(otel_resource_t *handle);
 
 /**
+ * Retains a `otel_runtime_t` into caller-provided storage.
+ */
+otel_result_t otel_runtime_retain(const otel_runtime_t *src, otel_runtime_t *out);
+
+/**
+ * Releases one reference to a `otel_runtime_t` and clears the slot.
+ */
+void otel_runtime_release(otel_runtime_t *handle);
+
+/**
  * Retains a `otel_tracer_provider_t` into caller-provided storage.
  */
 otel_result_t otel_tracer_provider_retain(const otel_tracer_provider_t *src,
@@ -361,6 +399,87 @@ otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_
  * Releases one reference to a `otel_gauge_f64_t` and clears the slot.
  */
 void otel_gauge_f64_release(otel_gauge_f64_t *handle);
+
+/**
+ * Creates a resource from `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES`.
+ */
+otel_result_t otel_resource_new(otel_resource_t *out);
+
+/**
+ * Creates a multi-threaded async runtime used by OTLP exporters.
+ */
+otel_result_t otel_runtime_new(otel_runtime_t *out);
+
+/**
+ * Returns `OK` when the runtime handle is usable.
+ */
+otel_result_t otel_runtime_is_valid(const otel_runtime_t *runtime);
+
+/**
+ * Creates a tracer provider using the current environment configuration.
+ * `resource` may be NULL to build one from the environment. `runtime` may be
+ * NULL unless `OTEL_TRACES_EXPORTER=otlp`.
+ */
+otel_result_t otel_tracer_provider_new(otel_tracer_provider_t *out,
+                                       const otel_resource_t *resource,
+                                       const otel_runtime_t *runtime);
+
+/**
+ * Flushes all pending spans.
+ */
+otel_result_t otel_tracer_provider_force_flush(const otel_tracer_provider_t *provider);
+
+/**
+ * Shuts down the provider and its processors.
+ */
+otel_result_t otel_tracer_provider_shutdown(const otel_tracer_provider_t *provider);
+
+/**
+ * Creates a tracer for an instrumentation scope.
+ */
+otel_result_t otel_tracer_provider_tracer(const otel_tracer_provider_t *provider,
+                                          otel_tracer_t *out,
+                                          const char *name);
+
+/**
+ * Starts a span with an optional `NULL`-terminated list of attributes.
+ */
+otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
+                                     otel_span_t *out,
+                                     const char *name,
+                                     ...);
+
+/**
+ * Adds attributes to a started span.
+ */
+otel_result_t otel_span_set_attributes(const otel_span_t *span, ...);
+
+/**
+ * Adds a named event with optional attributes to a started span.
+ */
+otel_result_t otel_span_add_event(const otel_span_t *span, const char *name, ...);
+
+/**
+ * Sets the span status. `description` may be NULL.
+ */
+otel_result_t otel_span_set_status(const otel_span_t *span,
+                                   otel_span_status_t status,
+                                   const char *description);
+
+/**
+ * Ends a span. Calling this more than once is harmless.
+ */
+otel_result_t otel_span_end(const otel_span_t *span);
+
+/**
+ * Copies the 32-hex-digit trace ID (plus NUL) into `buf`.
+ */
+otel_result_t otel_span_trace_id(const otel_span_t *span, char *buf, size_t capacity);
+
+/**
+ * Copies the 16-hex-digit span ID (plus NUL) into `buf`.
+ */
+otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capacity);
 
 
 /* Attribute builders. Pass a NULL-terminated list of these to any function

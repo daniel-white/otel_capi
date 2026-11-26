@@ -4,6 +4,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::ptr;
 
 /// Status returned by every fallible `cotel` function.
+#[non_exhaustive]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum otel_result_t {
@@ -42,6 +43,10 @@ impl Error {
         Self::new(otel_result_t::OTEL_ERR_INVALID_ARGUMENT, message)
     }
 
+    pub(crate) fn internal(message: impl Into<String>) -> Self {
+        Self::new(otel_result_t::OTEL_ERR_INTERNAL, message)
+    }
+
     pub(crate) fn report(self) -> otel_result_t {
         set_error(self.status, &self.message)
     }
@@ -64,13 +69,15 @@ pub(crate) fn set_error(status: otel_result_t, message: &str) -> otel_result_t {
     status
 }
 
-/// Keeps Rust panics from unwinding across the C ABI boundary.
+/// Keeps Rust panics from unwinding across the C ABI boundary and reports
+/// internal errors to the calling thread.
 pub(crate) fn guard<F>(f: F) -> otel_result_t
 where
-    F: FnOnce() -> otel_result_t,
+    F: FnOnce() -> Result<()>,
 {
     match catch_unwind(AssertUnwindSafe(f)) {
-        Ok(status) => status,
+        Ok(Ok(())) => ok(),
+        Ok(Err(err)) => err.report(),
         Err(_) => set_error(otel_result_t::OTEL_ERR_PANIC, "panic while calling cotel"),
     }
 }
@@ -92,6 +99,16 @@ pub(crate) fn utf8(value: &CStr, name: &str) -> Result<String> {
             format!("{name} is not valid UTF-8"),
         )
     })
+}
+
+/// Borrows an optional C string; NULL yields `None`.
+pub(crate) unsafe fn optional_utf8(ptr: *const c_char, name: &str) -> Result<Option<String>> {
+    if ptr.is_null() {
+        return Ok(None);
+    }
+    // SAFETY: caller guarantees `ptr` is NULL or a NUL-terminated string.
+    let raw = unsafe { c_str(ptr, name)? };
+    Ok(Some(utf8(raw, name)?))
 }
 
 /// Returns the last error message for the calling thread. The pointer remains
