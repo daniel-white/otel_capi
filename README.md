@@ -29,6 +29,10 @@ nix develop --command make build
 nix develop --command make check
 ```
 
+With direnv and nix-direnv installed, the repo's `.envrc` enters that dev
+shell automatically. Run `direnv allow` once after cloning, then plain
+`make build` / `make check` work in that directory.
+
 `make check` runs the Rust unit tests, then compiles the kitchen-sink example
 with both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, and runs it
 with both `COTEL_EXPORTER=none` and `COTEL_EXPORTER=stdout`.
