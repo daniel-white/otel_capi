@@ -1,0 +1,27 @@
+[package]
+name = "cotel"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "C bindings for the OpenTelemetry Rust SDK"
+
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[build-dependencies]
+cbindgen = "0.29.4"
+
+[dependencies]
+opentelemetry = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
+opentelemetry_sdk = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
+opentelemetry-otlp = { version = "0.33.1", features = [
+  "grpc-tonic",
+  "http-proto",
+  "http-json",
+  "trace",
+  "metrics",
+  "logs",
+  "tls-webpki-roots",
+] }
+opentelemetry-stdout = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
+tokio = { version = "1", features = ["rt-multi-thread", "time", "sync"] }
