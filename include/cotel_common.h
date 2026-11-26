@@ -151,6 +151,34 @@ typedef struct {
 } otel_span_t;
 
 /**
+ * Full `traceparent` header: 55 characters plus a NUL terminator.
+ */
+typedef struct {
+  char value[56];
+} otel_traceparent_t;
+
+/**
+ * Full `tracestate` header: 512 characters plus a NUL terminator.
+ */
+typedef struct {
+  char value[513];
+} otel_tracestate_t;
+
+/**
+ * Full `baggage` header. The 1024-byte cap keeps it usable as stack storage.
+ */
+typedef struct {
+  char value[1025];
+} otel_baggage_t;
+
+/**
+ * A single baggage value, capped at 256 bytes to keep it stack-friendly.
+ */
+typedef struct {
+  char value[257];
+} otel_baggage_value_t;
+
+/**
  * Scope token for a context attached to the current thread.
  */
 typedef struct {
@@ -430,6 +458,20 @@ typedef struct {
   int32_t end_on_release;
 } otel_span_options_t;
 
+/**
+ * 32-hex-digit trace ID plus a NUL terminator.
+ */
+typedef struct {
+  char value[33];
+} otel_trace_id_t;
+
+/**
+ * 16-hex-digit span ID plus a NUL terminator.
+ */
+typedef struct {
+  char value[17];
+} otel_span_id_t;
+
 
 /* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
  * function that takes variadic attributes, for example:
@@ -483,6 +525,21 @@ typedef struct {
 #define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }
 #define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
+
+/* Typed propagation buffer initializers. The *_STR forms are checked by the
+ * compiler: a literal longer than the fixed storage is a hard error. */
+#define OTEL_TRACE_ID_INIT { { 0 } }
+#define OTEL_SPAN_ID_INIT { { 0 } }
+#define OTEL_TRACEPARENT_INIT { { 0 } }
+#define OTEL_TRACESTATE_INIT { { 0 } }
+#define OTEL_BAGGAGE_INIT { { 0 } }
+#define OTEL_BAGGAGE_VALUE_INIT { { 0 } }
+#define OTEL_TRACE_ID_INIT_STR(s) { { s } }
+#define OTEL_SPAN_ID_INIT_STR(s) { { s } }
+#define OTEL_TRACEPARENT_INIT_STR(s) { { s } }
+#define OTEL_TRACESTATE_INIT_STR(s) { { s } }
+#define OTEL_BAGGAGE_INIT_STR(s) { { s } }
+#define OTEL_BAGGAGE_VALUE_INIT_STR(s) { { s } }
 
 /* Compile-time version and error helpers. */
 #define OTEL_VERSION_STRING "0.1.0"

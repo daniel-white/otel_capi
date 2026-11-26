@@ -72,6 +72,23 @@ fn main() {
     }
 }
 
+const TYPED_BUFFER_MACROS: &str = r#"
+/* Typed propagation buffer initializers. The *_STR forms are checked by the
+ * compiler: a literal longer than the fixed storage is a hard error. */
+#define OTEL_TRACE_ID_INIT { { 0 } }
+#define OTEL_SPAN_ID_INIT { { 0 } }
+#define OTEL_TRACEPARENT_INIT { { 0 } }
+#define OTEL_TRACESTATE_INIT { { 0 } }
+#define OTEL_BAGGAGE_INIT { { 0 } }
+#define OTEL_BAGGAGE_VALUE_INIT { { 0 } }
+#define OTEL_TRACE_ID_INIT_STR(s) { { s } }
+#define OTEL_SPAN_ID_INIT_STR(s) { { s } }
+#define OTEL_TRACEPARENT_INIT_STR(s) { { s } }
+#define OTEL_TRACESTATE_INIT_STR(s) { { s } }
+#define OTEL_BAGGAGE_INIT_STR(s) { { s } }
+#define OTEL_BAGGAGE_VALUE_INIT_STR(s) { { s } }
+"#;
+
 const OWNERSHIP_DOC: &str = r#"/* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a
@@ -127,6 +144,7 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     );
     common_body.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
     common_body.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
+    common_body.push_str(TYPED_BUFFER_MACROS);
     common_body.push_str("\n/* Compile-time version and error helpers. */\n");
     common_body.push_str(&version_macros());
     common_body
@@ -298,7 +316,11 @@ fn area_for_block(block: &str) -> &'static str {
     ) {
         return "cotel_error.h";
     }
-    if name.starts_with("otel_context_") {
+    if name.starts_with("otel_context_")
+        || name.starts_with("otel_traceparent_")
+        || name.starts_with("otel_tracestate_")
+        || name.starts_with("otel_baggage_")
+    {
         return "cotel_context.h";
     }
     if name.starts_with("otel_logger_") {
@@ -309,6 +331,9 @@ fn area_for_block(block: &str) -> &'static str {
     }
     if name.starts_with("otel_runtime_") {
         return "cotel_runtime.h";
+    }
+    if name.starts_with("otel_trace_id_") || name.starts_with("otel_span_id_") {
+        return "cotel_trace.h";
     }
     if name.starts_with("otel_meter_")
         || name.starts_with("otel_metric_")

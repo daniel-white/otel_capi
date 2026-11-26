@@ -24,13 +24,54 @@ use crate::config::{
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
 use crate::handles::ContextInner;
 use crate::handles::{
-    RuntimeInner, SpanInner, TracerInner, TracerProviderInner, arc, const_slot, copy_string, init,
+    RuntimeInner, SpanInner, TracerInner, TracerProviderInner, arc, const_slot, init,
     optional_resource, optional_runtime, slot,
 };
 use crate::handles::{
     otel_context_t, otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_tracer_t,
 };
+use crate::propagation::{TypedBuffer, buffer_str, copy_into_buffer};
 use crate::util::system_time;
+
+/// 32-hex-digit trace ID plus a NUL terminator.
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct otel_trace_id_t {
+    pub value: [c_char; 33],
+}
+
+/// 16-hex-digit span ID plus a NUL terminator.
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct otel_span_id_t {
+    pub value: [c_char; 17],
+}
+
+impl TypedBuffer for otel_trace_id_t {
+    const NAME: &'static str = "trace ID";
+    const CAPACITY: usize = 33;
+
+    fn bytes(&self) -> &[c_char] {
+        &self.value
+    }
+
+    fn bytes_mut(&mut self) -> &mut [c_char] {
+        &mut self.value
+    }
+}
+
+impl TypedBuffer for otel_span_id_t {
+    const NAME: &'static str = "span ID";
+    const CAPACITY: usize = 17;
+
+    fn bytes(&self) -> &[c_char] {
+        &self.value
+    }
+
+    fn bytes_mut(&mut self) -> &mut [c_char] {
+        &mut self.value
+    }
+}
 
 /// Explicit span status exported to C.
 #[non_exhaustive]
@@ -691,12 +732,11 @@ pub unsafe extern "C" fn otel_span_end(span: *const otel_span_t) -> otel_result_
     })
 }
 
-/// Copies the 32-hex-digit trace ID (plus NUL) into `buf`.
+/// Copies the 32-hex-digit trace ID into typed storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_trace_id(
     span: *const otel_span_t,
-    buf: *mut c_char,
-    capacity: usize,
+    out: *mut otel_trace_id_t,
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
@@ -707,17 +747,15 @@ pub unsafe extern "C" fn otel_span_trace_id(
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
         let id = span.span_context().trace_id().to_string();
-        copy_string(&id, buf, capacity)?;
-        Ok(())
+        unsafe { copy_into_buffer(&id, out) }
     })
 }
 
-/// Copies the 16-hex-digit span ID (plus NUL) into `buf`.
+/// Copies the 16-hex-digit span ID into typed storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_span_id(
     span: *const otel_span_t,
-    buf: *mut c_char,
-    capacity: usize,
+    out: *mut otel_span_id_t,
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
@@ -728,9 +766,20 @@ pub unsafe extern "C" fn otel_span_span_id(
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
         let id = span.span_context().span_id().to_string();
-        copy_string(&id, buf, capacity)?;
-        Ok(())
+        unsafe { copy_into_buffer(&id, out) }
     })
+}
+
+/// Returns the stored trace ID, or NULL if it is not terminated.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_trace_id_str(value: *const otel_trace_id_t) -> *const c_char {
+    unsafe { buffer_str(value) }
+}
+
+/// Returns the stored span ID, or NULL if it is not terminated.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_id_str(value: *const otel_span_id_t) -> *const c_char {
+    unsafe { buffer_str(value) }
 }
 
 #[cfg(test)]

@@ -5,7 +5,7 @@
 //! it never allocates the handle itself. `*_retain` duplicates into another
 //! caller-owned slot and `*_release` drops the `Arc` and nulls the slot.
 
-use std::ffi::{c_char, c_void};
+use std::ffi::c_void;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 use std::sync::Arc;
@@ -357,22 +357,6 @@ pub(crate) fn optional_runtime(handle: *const otel_runtime_t) -> Result<Option<A
         return Ok(None);
     }
     Ok(Some(unsafe { arc::<RuntimeInner>(const_slot(handle)) }?))
-}
-
-pub(crate) fn copy_string(value: &str, buf: *mut c_char, capacity: usize) -> Result<usize> {
-    if buf.is_null() || capacity == 0 {
-        return Err(Error::invalid("buf and capacity must be non-zero"));
-    }
-    let needed = value.len() + 1;
-    if capacity < needed {
-        return Err(Error::invalid("buffer is too small"));
-    }
-    // SAFETY: caller guarantees `buf` can hold `needed` bytes.
-    unsafe {
-        ptr::copy_nonoverlapping(value.as_ptr().cast::<c_char>(), buf, value.len());
-        *buf.add(value.len()) = 0;
-    }
-    Ok(needed)
 }
 
 /// Returns the number of live handles created by this library.

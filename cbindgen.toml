@@ -49,6 +49,12 @@ include = [
   "otel_attribute_type_t",
   "otel_attribute_value_t",
   "otel_attribute_t",
+  "otel_baggage_t",
+  "otel_baggage_value_t",
+  "otel_span_id_t",
+  "otel_trace_id_t",
+  "otel_traceparent_t",
+  "otel_tracestate_t",
 ]
 item_types = ["enums", "unions", "structs", "typedefs", "functions", "constants"]
 

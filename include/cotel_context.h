@@ -24,41 +24,38 @@ OTEL_API otel_result_t otel_context_current(otel_context_t *handle);
 OTEL_API otel_result_t otel_context_from_span(const otel_span_t *span, otel_context_t *handle);
 
 /**
- * Extracts W3C `traceparent`, `tracestate`, and `baggage` headers. NULL
- * headers are ignored. The result is independent of the current context.
+ * Extracts W3C `traceparent`, `tracestate`, and `baggage` headers from typed
+ * buffers. NULL headers are ignored. The result is independent of the current
+ * context.
  */
-OTEL_API otel_result_t otel_context_extract(const char *traceparent,
-                                   const char *tracestate,
-                                   const char *baggage,
+OTEL_API otel_result_t otel_context_extract(const otel_traceparent_t *traceparent,
+                                   const otel_tracestate_t *tracestate,
+                                   const otel_baggage_t *baggage,
                                    otel_context_t *handle);
 
 /**
- * Injects W3C headers from `context` into caller-provided buffers. Pass NULL
- * with capacity zero for headers you do not want.
+ * Injects W3C headers from `context` into typed buffers. Pass NULL for a
+ * header you do not want.
  */
 OTEL_API otel_result_t otel_context_inject(const otel_context_t *context,
-                                  char *traceparent,
-                                  size_t traceparent_capacity,
-                                  char *tracestate,
-                                  size_t tracestate_capacity,
-                                  char *baggage,
-                                  size_t baggage_capacity);
+                                  otel_traceparent_t *traceparent,
+                                  otel_tracestate_t *tracestate,
+                                  otel_baggage_t *baggage);
 
 /**
  * Returns a copy of `context` with one baggage member added or replaced.
  */
 OTEL_API otel_result_t otel_context_set_baggage(const otel_context_t *context,
                                        const char *key,
-                                       const char *value,
+                                       const otel_baggage_value_t *value,
                                        otel_context_t *handle);
 
 /**
- * Copies a baggage value into `buf`.
+ * Copies a baggage value into typed storage.
  */
 OTEL_API otel_result_t otel_context_get_baggage(const otel_context_t *context,
                                        const char *key,
-                                       char *buf,
-                                       size_t capacity);
+                                       otel_baggage_value_t *value);
 
 /**
  * Attaches `context` to the calling thread until `otel_context_detach`.
@@ -69,6 +66,46 @@ OTEL_API otel_result_t otel_context_attach(const otel_context_t *context, otel_c
  * Detaches the context scope from the thread that attached it.
  */
 OTEL_API otel_result_t otel_context_detach(otel_context_scope_t *handle);
+
+/**
+ * Copies a NUL-terminated string into typed `traceparent` storage.
+ */
+OTEL_API otel_result_t otel_traceparent_from_str(const char *src, otel_traceparent_t *out);
+
+/**
+ * Copies a NUL-terminated string into typed `tracestate` storage.
+ */
+OTEL_API otel_result_t otel_tracestate_from_str(const char *src, otel_tracestate_t *out);
+
+/**
+ * Copies a NUL-terminated string into typed `baggage` header storage.
+ */
+OTEL_API otel_result_t otel_baggage_from_str(const char *src, otel_baggage_t *out);
+
+/**
+ * Copies a NUL-terminated string into typed baggage-value storage.
+ */
+OTEL_API otel_result_t otel_baggage_value_from_str(const char *src, otel_baggage_value_t *out);
+
+/**
+ * Returns the stored `traceparent` string, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_traceparent_str(const otel_traceparent_t *value);
+
+/**
+ * Returns the stored `tracestate` string, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_tracestate_str(const otel_tracestate_t *value);
+
+/**
+ * Returns the stored `baggage` header, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_baggage_str(const otel_baggage_t *value);
+
+/**
+ * Returns the stored baggage value, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_baggage_value_str(const otel_baggage_value_t *value);
 
 
 #ifdef __cplusplus

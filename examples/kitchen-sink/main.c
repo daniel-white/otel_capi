@@ -192,24 +192,26 @@ int main(void) {
     }
 
     /* Propagation: extract a remote parent, carry baggage, and inject it. */
-    const char *remote_traceparent =
-        "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
-    char baggage_value[32];
-    char injected_traceparent[64];
-    CHECK(otel_context_extract(remote_traceparent, NULL, "tenant=acme", &extracted));
-    CHECK(otel_context_get_baggage(&extracted, "tenant", baggage_value,
-                                   sizeof(baggage_value)));
-    printf("extracted tenant=%s\n", baggage_value);
-    CHECK(otel_context_set_baggage(&extracted, "request.id", "req-1", &with_baggage));
-    CHECK(otel_context_inject(&with_baggage, injected_traceparent,
-                              sizeof(injected_traceparent), NULL, 0, NULL, 0));
-    printf("injected traceparent=%s\n", injected_traceparent);
+    otel_traceparent_t remote_traceparent = OTEL_TRACEPARENT_INIT_STR(
+        "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01");
+    otel_baggage_t remote_baggage = OTEL_BAGGAGE_INIT_STR("tenant=acme");
+    otel_baggage_value_t baggage_value = OTEL_BAGGAGE_VALUE_INIT;
+    otel_baggage_value_t request_id = OTEL_BAGGAGE_VALUE_INIT_STR("req-1");
+    otel_traceparent_t injected_traceparent = OTEL_TRACEPARENT_INIT;
+    CHECK(otel_context_extract(&remote_traceparent, NULL, &remote_baggage,
+                               &extracted));
+    CHECK(otel_context_get_baggage(&extracted, "tenant", &baggage_value));
+    printf("extracted tenant=%s\n", otel_baggage_value_str(&baggage_value));
+    CHECK(otel_context_set_baggage(&extracted, "request.id", &request_id,
+                                   &with_baggage));
+    CHECK(otel_context_inject(&with_baggage, &injected_traceparent, NULL, NULL));
+    printf("injected traceparent=%s\n",
+           otel_traceparent_str(&injected_traceparent));
 
     CHECK(otel_context_attach(&with_baggage, &scope));
     CHECK(otel_context_current(&current));
-    CHECK(otel_context_get_baggage(&current, "request.id", baggage_value,
-                                   sizeof(baggage_value)));
-    printf("attached request.id=%s\n", baggage_value);
+    CHECK(otel_context_get_baggage(&current, "request.id", &baggage_value));
+    printf("attached request.id=%s\n", otel_baggage_value_str(&baggage_value));
     CHECK(otel_context_detach(&scope));
 
     otel_span_options_t options = OTEL_SPAN_OPTIONS_INIT;
@@ -246,11 +248,12 @@ int main(void) {
     CHECK(otel_span_add_event(
         &span, "validated", otel_attr_string("result", "ok"), OTEL_ATTR_END));
 
-    char trace_id[33];
-    char span_id[17];
-    CHECK(otel_span_trace_id(&span, trace_id, sizeof(trace_id)));
-    CHECK(otel_span_span_id(&span, span_id, sizeof(span_id)));
-    printf("trace_id=%s span_id=%s\n", trace_id, span_id);
+    otel_trace_id_t trace_id = OTEL_TRACE_ID_INIT;
+    otel_span_id_t span_id = OTEL_SPAN_ID_INIT;
+    CHECK(otel_span_trace_id(&span, &trace_id));
+    CHECK(otel_span_span_id(&span, &span_id));
+    printf("trace_id=%s span_id=%s\n", otel_trace_id_str(&trace_id),
+           otel_span_id_str(&span_id));
 
     /* Retain the span so the original handle can be released early. */
     CHECK(otel_span_retain(&span, &span_copy));

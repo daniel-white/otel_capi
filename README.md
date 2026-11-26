@@ -152,11 +152,22 @@ severity text are interned for the process lifetime because the SDK requires
 
 ### Propagation and span options
 
-`otel_context_t` carries W3C trace context and baggage. Use
-`otel_context_extract` / `otel_context_inject` for HTTP-style carriers,
-`otel_context_set_baggage` / `otel_context_get_baggage` to edit baggage, and
-`otel_context_attach` / `otel_context_detach` to make a context current on a
-thread. `otel_context_from_span` builds a context from a live span.
+`otel_context_t` carries W3C trace context and baggage. Propagation values use
+fixed-size structs instead of raw buffers: `otel_traceparent_t` (56 bytes),
+`otel_tracestate_t` (513 bytes), `otel_baggage_t` (1025 bytes), and
+`otel_baggage_value_t` (257 bytes). Their capacities include the NUL terminator.
+Initialize them with `OTEL_TRACEPARENT_INIT`, `OTEL_BAGGAGE_VALUE_INIT`, and so
+on, or with the `_INIT_STR("...")` forms for string literals; the literal forms
+fail to compile when the value does not fit. `otel_traceparent_from_str` and the
+other `_from_str` functions validate/copy runtime strings. `_str` accessors
+return the stored C string.
+
+Use `otel_context_extract` / `otel_context_inject` with those typed buffers,
+`otel_context_set_baggage` / `otel_context_get_baggage` to edit baggage values,
+and `otel_context_attach` / `otel_context_detach` to make a context current on
+a thread. `otel_context_from_span` builds a context from a live span.
+`otel_span_trace_id` and `otel_span_span_id` now write `otel_trace_id_t` and
+`otel_span_id_t` storage rather than caller-sized buffers.
 
 `otel_span_options_t` (initialize with `OTEL_SPAN_OPTIONS_INIT`) can set a
 parent context, span kind, start timestamp, and `end_on_release`. With

@@ -172,14 +172,24 @@ OTEL_API otel_result_t otel_span_end_with_timestamp(const otel_span_t *span, int
 OTEL_API otel_result_t otel_span_end(const otel_span_t *span);
 
 /**
- * Copies the 32-hex-digit trace ID (plus NUL) into `buf`.
+ * Copies the 32-hex-digit trace ID into typed storage.
  */
-OTEL_API otel_result_t otel_span_trace_id(const otel_span_t *span, char *buf, size_t capacity);
+OTEL_API otel_result_t otel_span_trace_id(const otel_span_t *span, otel_trace_id_t *out);
 
 /**
- * Copies the 16-hex-digit span ID (plus NUL) into `buf`.
+ * Copies the 16-hex-digit span ID into typed storage.
  */
-OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capacity);
+OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, otel_span_id_t *out);
+
+/**
+ * Returns the stored trace ID, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_trace_id_str(const otel_trace_id_t *value);
+
+/**
+ * Returns the stored span ID, or NULL if it is not terminated.
+ */
+OTEL_API const char *otel_span_id_str(const otel_span_id_t *value);
 
 
 #ifdef __cplusplus

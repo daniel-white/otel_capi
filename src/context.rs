@@ -16,12 +16,15 @@ use opentelemetry::propagation::TextMapPropagator;
 use opentelemetry::trace::TraceContextExt;
 use opentelemetry_sdk::propagation::{BaggagePropagator, TraceContextPropagator};
 
-use crate::error::{Error, Result, c_str, guard, otel_result_t, utf8};
+use crate::error::{Error, c_str, guard, otel_result_t, utf8};
 use crate::handles::{
-    ContextInner, ContextScopeInner, arc, const_slot, init, otel_context_scope_t,
-    otel_context_t, otel_span_t, release, slot,
+    ContextInner, ContextScopeInner, arc, const_slot, init, otel_context_scope_t, otel_context_t,
+    otel_span_t, release, slot,
 };
-use crate::util::{copy_to_buffer, optional_str};
+use crate::propagation::{
+    buffer_utf8, copy_into_buffer, optional_buffer_utf8, otel_baggage_t, otel_baggage_value_t,
+    otel_traceparent_t, otel_tracestate_t,
+};
 
 thread_local! {
     /// Guards must be dropped on the thread that attached them.
@@ -38,13 +41,6 @@ fn propagator() -> &'static TextMapCompositePropagator {
             Box::new(BaggagePropagator::new()),
         ])
     })
-}
-
-fn copy_optional(value: &str, buf: *mut c_char, capacity: usize) -> Result<()> {
-    if buf.is_null() && capacity == 0 {
-        return Ok(());
-    }
-    copy_to_buffer(value, buf, capacity)
 }
 
 /// Creates an empty context in caller-owned storage.
@@ -73,7 +69,12 @@ pub unsafe extern "C" fn otel_context_from_span(
 ) -> otel_result_t {
     guard(|| {
         let span_context = unsafe { crate::trace::span_context(span)? };
-        unsafe { init(slot(handle), Context::new().with_remote_span_context(span_context)) }?;
+        unsafe {
+            init(
+                slot(handle),
+                Context::new().with_remote_span_context(span_context),
+            )
+        }?;
         Ok(())
     })
 }
@@ -84,9 +85,7 @@ pub unsafe extern "C" fn otel_context_retain(
     src: *const otel_context_t,
     handle: *mut otel_context_t,
 ) -> otel_result_t {
-    guard(|| {
-        unsafe { crate::handles::retain::<ContextInner>(const_slot(src), slot(handle)) }
-    })
+    guard(|| unsafe { crate::handles::retain::<ContextInner>(const_slot(src), slot(handle)) })
 }
 
 /// Releases one reference to a context.
@@ -95,25 +94,26 @@ pub unsafe extern "C" fn otel_context_release(handle: *mut otel_context_t) {
     unsafe { release::<ContextInner>(slot(handle)) };
 }
 
-/// Extracts W3C `traceparent`, `tracestate`, and `baggage` headers. NULL
-/// headers are ignored. The result is independent of the current context.
+/// Extracts W3C `traceparent`, `tracestate`, and `baggage` headers from typed
+/// buffers. NULL headers are ignored. The result is independent of the current
+/// context.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_context_extract(
-    traceparent: *const c_char,
-    tracestate: *const c_char,
-    baggage: *const c_char,
+    traceparent: *const otel_traceparent_t,
+    tracestate: *const otel_tracestate_t,
+    baggage: *const otel_baggage_t,
     handle: *mut otel_context_t,
 ) -> otel_result_t {
     guard(|| {
         let mut carrier = HashMap::new();
-        for (name, value) in [
-            ("traceparent", traceparent),
-            ("tracestate", tracestate),
-            ("baggage", baggage),
-        ] {
-            if let Some(value) = unsafe { optional_str(value, name)? } {
-                carrier.insert(name.to_string(), value.to_string());
-            }
+        if let Some(value) = unsafe { optional_buffer_utf8(traceparent)? } {
+            carrier.insert("traceparent".to_string(), value);
+        }
+        if let Some(value) = unsafe { optional_buffer_utf8(tracestate)? } {
+            carrier.insert("tracestate".to_string(), value);
+        }
+        if let Some(value) = unsafe { optional_buffer_utf8(baggage)? } {
+            carrier.insert("baggage".to_string(), value);
         }
         let context = propagator().extract_with_context(&Context::new(), &carrier);
         unsafe { init(slot(handle), context) }?;
@@ -121,29 +121,32 @@ pub unsafe extern "C" fn otel_context_extract(
     })
 }
 
-/// Injects W3C headers from `context` into caller-provided buffers. Pass NULL
-/// with capacity zero for headers you do not want.
+/// Injects W3C headers from `context` into typed buffers. Pass NULL for a
+/// header you do not want.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_context_inject(
     context: *const otel_context_t,
-    traceparent: *mut c_char,
-    traceparent_capacity: usize,
-    tracestate: *mut c_char,
-    tracestate_capacity: usize,
-    baggage: *mut c_char,
-    baggage_capacity: usize,
+    traceparent: *mut otel_traceparent_t,
+    tracestate: *mut otel_tracestate_t,
+    baggage: *mut otel_baggage_t,
 ) -> otel_result_t {
     guard(|| {
         let context = unsafe { arc::<ContextInner>(const_slot(context)) }?;
         let mut carrier = HashMap::new();
         propagator().inject_context(&context, &mut carrier);
-        for (key, buf, capacity) in [
-            ("traceparent", traceparent, traceparent_capacity),
-            ("tracestate", tracestate, tracestate_capacity),
-            ("baggage", baggage, baggage_capacity),
-        ] {
-            if let Some(value) = carrier.get(key) {
-                copy_optional(value, buf, capacity)?;
+        if !traceparent.is_null() {
+            if let Some(value) = carrier.get("traceparent") {
+                unsafe { copy_into_buffer(value, traceparent) }?;
+            }
+        }
+        if !tracestate.is_null() {
+            if let Some(value) = carrier.get("tracestate") {
+                unsafe { copy_into_buffer(value, tracestate) }?;
+            }
+        }
+        if !baggage.is_null() {
+            if let Some(value) = carrier.get("baggage") {
+                unsafe { copy_into_buffer(value, baggage) }?;
             }
         }
         Ok(())
@@ -155,13 +158,13 @@ pub unsafe extern "C" fn otel_context_inject(
 pub unsafe extern "C" fn otel_context_set_baggage(
     context: *const otel_context_t,
     key: *const c_char,
-    value: *const c_char,
+    value: *const otel_baggage_value_t,
     handle: *mut otel_context_t,
 ) -> otel_result_t {
     guard(|| {
         let context = unsafe { arc::<ContextInner>(const_slot(context)) }?;
         let key = utf8(unsafe { c_str(key, "baggage key")? }, "baggage key")?;
-        let value = utf8(unsafe { c_str(value, "baggage value")? }, "baggage value")?;
+        let value = unsafe { buffer_utf8(value)? };
         let mut pairs: Vec<KeyValue> = context
             .baggage()
             .iter()
@@ -176,22 +179,21 @@ pub unsafe extern "C" fn otel_context_set_baggage(
     })
 }
 
-/// Copies a baggage value into `buf`.
+/// Copies a baggage value into typed storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_context_get_baggage(
     context: *const otel_context_t,
     key: *const c_char,
-    buf: *mut c_char,
-    capacity: usize,
+    value: *mut otel_baggage_value_t,
 ) -> otel_result_t {
     guard(|| {
         let context = unsafe { arc::<ContextInner>(const_slot(context)) }?;
         let key = utf8(unsafe { c_str(key, "baggage key")? }, "baggage key")?;
-        let value = context
+        let baggage_value = context
             .baggage()
             .get(&key)
             .ok_or_else(|| Error::invalid("baggage key is not present"))?;
-        copy_to_buffer(value.as_ref(), buf, capacity)
+        unsafe { copy_into_buffer(baggage_value.as_ref(), value) }
     })
 }
 
@@ -209,7 +211,9 @@ pub unsafe extern "C" fn otel_context_attach(
         let token = NEXT_SCOPE.fetch_add(1, Ordering::Relaxed);
         unsafe { init(slot(handle), token) }?;
         ATTACHED.with(|attached| {
-            attached.borrow_mut().insert(token, context.as_ref().clone().attach());
+            attached
+                .borrow_mut()
+                .insert(token, context.as_ref().clone().attach());
         });
         Ok(())
     })
