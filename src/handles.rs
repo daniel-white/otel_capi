@@ -21,6 +21,9 @@ use crate::error::{Error, Result, guard, otel_result_t};
 
 pub(crate) type ResourceInner = opentelemetry_sdk::Resource;
 pub(crate) type RuntimeInner = Runtime;
+pub(crate) type ContextInner = opentelemetry::Context;
+/// Thread-local scope token; the guard itself lives in `context.rs`.
+pub(crate) type ContextScopeInner = u64;
 
 pub(crate) struct TracerProviderInner {
     pub(crate) provider: SdkTracerProvider,
@@ -52,6 +55,20 @@ pub(crate) type GaugeF64Inner = Gauge<f64>;
 /// A resource describing the entity producing telemetry.
 #[repr(C)]
 pub struct otel_resource_t {
+    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    pub inner: *mut c_void,
+}
+
+/// Immutable propagation context carrying trace context and baggage.
+#[repr(C)]
+pub struct otel_context_t {
+    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    pub inner: *mut c_void,
+}
+
+/// Scope token for a context attached to the current thread.
+#[repr(C)]
+pub struct otel_context_scope_t {
     /// Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
@@ -526,6 +543,18 @@ mod tests {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_resource_is_valid(handle: *const otel_resource_t) -> bool {
     unsafe { valid::<ResourceInner>(const_slot(handle)) }
+}
+
+/// Returns whether the context handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_is_valid(handle: *const otel_context_t) -> bool {
+    unsafe { valid::<ContextInner>(const_slot(handle)) }
+}
+
+/// Returns whether the context scope handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_scope_is_valid(handle: *const otel_context_scope_t) -> bool {
+    unsafe { valid::<ContextScopeInner>(const_slot(handle)) }
 }
 
 /// Returns whether the tracer provider handle is usable.

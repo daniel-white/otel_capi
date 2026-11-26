@@ -88,7 +88,7 @@ Key rules:
   `otel_<type>_is_valid()` to check whether a handle holds an object.
 - Variadic attribute calls use `otel_attribute_t` values built with
   `otel_attr_string`, `otel_attr_bool`, `otel_attr_i64`, and `otel_attr_f64`,
-  terminated by `OTEL_ATTR_END` (or `NULL`).
+  terminated by `OTEL_ATTR_END`.
 - `otel_version()` returns the library version; `otel_strerror()` provides a
   stable description for result codes. `otel_last_error()` is thread-local and
   valid only until the next fallible call on that thread.
@@ -108,6 +108,24 @@ the type explicitly.
 Metric constants with complete semconv metadata get matching helpers such as
 `otel_metric_http_server_request_duration(&meter, &histogram)`, which uses the
 standard instrument, unit, and description from the semantic conventions.
+
+### Propagation and span options
+
+`otel_context_t` carries W3C trace context and baggage. Use
+`otel_context_extract` / `otel_context_inject` for HTTP-style carriers,
+`otel_context_set_baggage` / `otel_context_get_baggage` to edit baggage, and
+`otel_context_attach` / `otel_context_detach` to make a context current on a
+thread. `otel_context_from_span` builds a context from a live span.
+
+`otel_span_options_t` (initialize with `OTEL_SPAN_OPTIONS_INIT`) can set a
+parent context, span kind, and start timestamp for
+`otel_tracer_span_start_with_options`. Started spans also support
+`otel_span_update_name`, timestamped events, links, exception events, and
+timestamped ends via the `otel_span_*` APIs.
+
+Resources can include caller attributes with
+`otel_resource_new_with_attributes`; environment-derived attributes are still
+applied.
 
 ### Async runtime
 
@@ -143,6 +161,9 @@ COTEL_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
 
 The example creates a resource, all three providers, a correlated span/log
 pair, all five metric instruments, retains/releases a span, and flushes and
-shuts down every provider. It also starts four pthread workers that create
+shuts down every provider. It extracts and injects a remote W3C context,
+attaches baggage to the current thread, and starts a child span with an
+explicit parent, kind, link, timestamped event, exception event, and
+timestamped end. It also starts four pthread workers that create
 concurrent spans, correlated logs, and counter updates against shared scopes,
 which exercises handle reference counting and instrument thread safety.

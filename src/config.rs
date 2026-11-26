@@ -4,6 +4,7 @@ use std::env;
 use std::fmt::Display;
 use std::time::Duration;
 
+use opentelemetry::KeyValue;
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::error::OTelSdkError;
 use crate::error::{Error, Result, otel_result_t};
@@ -22,7 +23,12 @@ pub(crate) enum ExporterKind {
 /// Builds a resource from `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`,
 /// and the SDK's built-in detectors.
 pub(crate) fn resource_from_env() -> Resource {
-    Resource::builder().build()
+    resource_from_env_with(Vec::new())
+}
+
+/// Builds a resource from the environment plus caller-supplied attributes.
+pub(crate) fn resource_from_env_with(attributes: Vec<KeyValue>) -> Resource {
+    Resource::builder().with_attributes(attributes).build()
 }
 
 /// Reads `OTEL_<SIGNAL>_EXPORTER`. Unset and empty mean `otlp`; `console` is

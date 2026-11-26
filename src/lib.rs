@@ -8,6 +8,7 @@
 
 pub mod attributes;
 mod config;
+pub mod context;
 pub mod error;
 pub mod handles;
 pub mod logs;
@@ -15,6 +16,7 @@ pub mod metrics;
 pub mod resource;
 pub mod runtime;
 pub mod trace;
+mod util;
 
 use std::ffi::{CString, c_char};
 use std::sync::OnceLock;

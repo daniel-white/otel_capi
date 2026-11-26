@@ -1385,2509 +1385,4387 @@
 #define OTEL_METRIC_VCS_REPOSITORY_COUNT "vcs.repository.count"
 
 /* Typed helpers inferred from semantic-convention examples. */
-static inline otel_attribute_t otel_attr_android_app_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ANDROID_APP_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_android_app_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ANDROID_APP_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_android_os_api_level(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL, (value));
+#define otel_attr_android_app_state(value) otel_attr_value_android_app_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_android_os_api_level(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL, (value));
+    return slot;
+}
+
+#define otel_attr_android_os_api_level(value) otel_attr_value_android_os_api_level((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_build_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_BUILD_ID, (value));
+    return slot;
+}
+
+#define otel_attr_app_build_id(value) otel_attr_value_app_build_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_crash_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_CRASH_ID, (value));
+    return slot;
+}
+
+#define otel_attr_app_crash_id(value) otel_attr_value_app_crash_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_installation_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_INSTALLATION_ID, (value));
+    return slot;
+}
+
+#define otel_attr_app_installation_id(value) otel_attr_value_app_installation_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_jank_frame_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT, (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_frame_count(value) otel_attr_value_app_jank_frame_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_jank_period(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_PERIOD, (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_period(value) otel_attr_value_app_jank_period((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_jank_threshold(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD, (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_threshold(value) otel_attr_value_app_jank_threshold((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_x(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X, (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_coordinate_x(value) otel_attr_value_app_screen_coordinate_x((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_y(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y, (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_coordinate_y(value) otel_attr_value_app_screen_coordinate_y((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_ID, (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_id(value) otel_attr_value_app_screen_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_name(value) otel_attr_value_app_screen_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_widget_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_ID, (value));
+    return slot;
+}
+
+#define otel_attr_app_widget_id(value) otel_attr_value_app_widget_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_widget_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_app_widget_name(value) otel_attr_value_app_widget_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_filename(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_filename(value) otel_attr_value_artifact_attestation_filename((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_hash(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_hash(value) otel_attr_value_artifact_attestation_hash((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_id(value) otel_attr_value_artifact_attestation_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_filename(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_FILENAME, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_filename(value) otel_attr_value_artifact_filename((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_hash(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_HASH, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_hash(value) otel_attr_value_artifact_hash((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_purl(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_PURL, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_purl(value) otel_attr_value_artifact_purl((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_VERSION, (value));
+    return slot;
+}
+
+#define otel_attr_artifact_version(value) otel_attr_value_artifact_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authentication_result(value) otel_attr_value_aspnetcore_authentication_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_scheme(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authentication_scheme(value) otel_attr_value_aspnetcore_authentication_scheme((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_policy(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authorization_policy(value) otel_attr_value_aspnetcore_authorization_policy((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authorization_result(value) otel_attr_value_aspnetcore_authorization_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_exception_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_diagnostics_exception_result(value) otel_attr_value_aspnetcore_diagnostics_exception_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_handler_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_diagnostics_handler_type(value) otel_attr_value_aspnetcore_diagnostics_handler_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_error_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_error_code(value) otel_attr_value_aspnetcore_identity_error_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_result(value) otel_attr_value_aspnetcore_identity_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_sign_in_result(value) otel_attr_value_aspnetcore_identity_sign_in_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_sign_in_type(value) otel_attr_value_aspnetcore_identity_sign_in_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_purpose(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_token_purpose(value) otel_attr_value_aspnetcore_identity_token_purpose((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_verified(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_token_verified(value) otel_attr_value_aspnetcore_identity_token_verified((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_user_type(value) otel_attr_value_aspnetcore_identity_user_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_update_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_user_update_type(value) otel_attr_value_aspnetcore_identity_user_update_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_memory_pool_owner(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_memory_pool_owner(value) otel_attr_value_aspnetcore_memory_pool_owner((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_policy(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_rate_limiting_policy(value) otel_attr_value_aspnetcore_rate_limiting_policy((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_rate_limiting_result(value) otel_attr_value_aspnetcore_rate_limiting_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_request_is_unhandled(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_request_is_unhandled(value) otel_attr_value_aspnetcore_request_is_unhandled((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_is_fallback(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_routing_is_fallback(value) otel_attr_value_aspnetcore_routing_is_fallback((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_match_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_routing_match_status(value) otel_attr_value_aspnetcore_routing_match_status((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_user_is_authenticated(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED, (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_user_is_authenticated(value) otel_attr_value_aspnetcore_user_is_authenticated((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_bedrock_guardrail_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_bedrock_guardrail_id(value) otel_attr_value_aws_bedrock_guardrail_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_bedrock_knowledge_base_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_bedrock_knowledge_base_id(value) otel_attr_value_aws_bedrock_knowledge_base_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_count(value) otel_attr_value_aws_dynamodb_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_exclusive_start_table(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_exclusive_start_table(value) otel_attr_value_aws_dynamodb_exclusive_start_table((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_index_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_index_name(value) otel_attr_value_aws_dynamodb_index_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_item_collection_metrics(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_item_collection_metrics(value) otel_attr_value_aws_dynamodb_item_collection_metrics((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_limit(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_limit(value) otel_attr_value_aws_dynamodb_limit((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_projection(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_projection(value) otel_attr_value_aws_dynamodb_projection((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_read_capacity(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_provisioned_read_capacity(value) otel_attr_value_aws_dynamodb_provisioned_read_capacity((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_write_capacity(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_provisioned_write_capacity(value) otel_attr_value_aws_dynamodb_provisioned_write_capacity((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_scanned_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_scanned_count(value) otel_attr_value_aws_dynamodb_scanned_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_segment(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_segment(value) otel_attr_value_aws_dynamodb_segment((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_select(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_select(value) otel_attr_value_aws_dynamodb_select((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_table_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_table_count(value) otel_attr_value_aws_dynamodb_table_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_total_segments(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS, (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_total_segments(value) otel_attr_value_aws_dynamodb_total_segments((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_cluster_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_cluster_arn(value) otel_attr_value_aws_ecs_cluster_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_container_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_container_arn(value) otel_attr_value_aws_ecs_container_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_arn(value) otel_attr_value_aws_ecs_task_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_family(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_family(value) otel_attr_value_aws_ecs_task_family((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_id(value) otel_attr_value_aws_ecs_task_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_revision(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION, (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_revision(value) otel_attr_value_aws_ecs_task_revision((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_eks_cluster_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_eks_cluster_arn(value) otel_attr_value_aws_eks_cluster_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_extended_request_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_extended_request_id(value) otel_attr_value_aws_extended_request_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_kinesis_stream_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_aws_kinesis_stream_name(value) otel_attr_value_aws_kinesis_stream_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_lambda_invoked_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_lambda_invoked_arn(value) otel_attr_value_aws_lambda_invoked_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_lambda_resource_mapping_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_lambda_resource_mapping_id(value) otel_attr_value_aws_lambda_resource_mapping_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_request_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_REQUEST_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_request_id(value) otel_attr_value_aws_request_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_bucket(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_BUCKET, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_bucket(value) otel_attr_value_aws_s3_bucket((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_copy_source(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_copy_source(value) otel_attr_value_aws_s3_copy_source((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_delete(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_DELETE, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_delete(value) otel_attr_value_aws_s3_delete((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_key(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_KEY, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_key(value) otel_attr_value_aws_s3_key((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_part_number(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_part_number(value) otel_attr_value_aws_s3_part_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_upload_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID, (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_upload_id(value) otel_attr_value_aws_s3_upload_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_secretsmanager_secret_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_secretsmanager_secret_arn(value) otel_attr_value_aws_secretsmanager_secret_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_sns_topic_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_sns_topic_arn(value) otel_attr_value_aws_sns_topic_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_sqs_queue_url(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL, (value));
+    return slot;
+}
+
+#define otel_attr_aws_sqs_queue_url(value) otel_attr_value_aws_sqs_queue_url((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_step_functions_activity_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_step_functions_activity_arn(value) otel_attr_value_aws_step_functions_activity_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_step_functions_state_machine_arn(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN, (value));
+    return slot;
+}
+
+#define otel_attr_aws_step_functions_state_machine_arn(value) otel_attr_value_aws_step_functions_state_machine_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_client_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_CLIENT_ID, (value));
+    return slot;
+}
+
+#define otel_attr_azure_client_id(value) otel_attr_value_azure_client_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_consistency_level(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL, (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_consistency_level(value) otel_attr_value_azure_cosmosdb_consistency_level((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_operation_request_charge(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE, (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_operation_request_charge(value) otel_attr_value_azure_cosmosdb_operation_request_charge((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_response_sub_status_code(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_response_sub_status_code(value) otel_attr_value_azure_cosmosdb_response_sub_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_resource_provider_namespace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE, (value));
+    return slot;
+}
+
+#define otel_attr_azure_resource_provider_namespace(value) otel_attr_value_azure_resource_provider_namespace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_service_request_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID, (value));
+    return slot;
+}
+
+#define otel_attr_azure_service_request_id(value) otel_attr_value_azure_service_request_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_browser_document_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL, (value));
+    return slot;
+}
+
+#define otel_attr_browser_document_url_full(value) otel_attr_value_browser_document_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_browser_language(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_LANGUAGE, (value));
+    return slot;
+}
+
+#define otel_attr_browser_language(value) otel_attr_value_browser_language((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_browser_platform(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_PLATFORM, (value));
+    return slot;
+}
+
+#define otel_attr_browser_platform(value) otel_attr_value_browser_platform((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_dc(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC, (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_coordinator_dc(value) otel_attr_value_cassandra_coordinator_dc((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_coordinator_id(value) otel_attr_value_cassandra_coordinator_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_page_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE, (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_page_size(value) otel_attr_value_cassandra_page_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_speculative_execution_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT, (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_speculative_execution_count(value) otel_attr_value_cassandra_speculative_execution_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_action_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_action_name(value) otel_attr_value_cicd_pipeline_action_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_name(value) otel_attr_value_cicd_pipeline_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_result(value) otel_attr_value_cicd_pipeline_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_id(value) otel_attr_value_cicd_pipeline_run_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_state(value) otel_attr_value_cicd_pipeline_run_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_url_full(value) otel_attr_value_cicd_pipeline_run_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_name(value) otel_attr_value_cicd_pipeline_task_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_id(value) otel_attr_value_cicd_pipeline_task_run_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_result(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_result(value) otel_attr_value_cicd_pipeline_task_run_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_url_full(value) otel_attr_value_cicd_pipeline_task_run_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_type(value) otel_attr_value_cicd_pipeline_task_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_system_component(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_system_component(value) otel_attr_value_cicd_system_component((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_id(value) otel_attr_value_cicd_worker_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_name(value) otel_attr_value_cicd_worker_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_state(value) otel_attr_value_cicd_worker_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL, (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_url_full(value) otel_attr_value_cicd_worker_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_client_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, (value));
+    return slot;
+}
+
+#define otel_attr_client_address(value) otel_attr_value_client_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_client_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CLIENT_PORT, (value));
+    return slot;
+}
+
+#define otel_attr_client_port(value) otel_attr_value_client_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_account_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloud_account_id(value) otel_attr_value_cloud_account_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_availability_zone(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE, (value));
+    return slot;
+}
+
+#define otel_attr_cloud_availability_zone(value) otel_attr_value_cloud_availability_zone((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_region(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_REGION, (value));
+    return slot;
+}
+
+#define otel_attr_cloud_region(value) otel_attr_value_cloud_region((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_resource_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloud_resource_id(value) otel_attr_value_cloud_resource_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_id(value) otel_attr_value_cloudevents_event_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_source(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE, (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_source(value) otel_attr_value_cloudevents_event_source((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_spec_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION, (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_spec_version(value) otel_attr_value_cloudevents_event_spec_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_subject(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT, (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_subject(value) otel_attr_value_cloudevents_event_subject((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_type(value) otel_attr_value_cloudevents_event_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_id(value) otel_attr_value_cloudfoundry_app_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_instance_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_instance_id(value) otel_attr_value_cloudfoundry_app_instance_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_name(value) otel_attr_value_cloudfoundry_app_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_org_id(value) otel_attr_value_cloudfoundry_org_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_org_name(value) otel_attr_value_cloudfoundry_org_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_process_id(value) otel_attr_value_cloudfoundry_process_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_process_type(value) otel_attr_value_cloudfoundry_process_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_space_id(value) otel_attr_value_cloudfoundry_space_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_space_name(value) otel_attr_value_cloudfoundry_space_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_system_id(value) otel_attr_value_cloudfoundry_system_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_instance_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_system_instance_id(value) otel_attr_value_cloudfoundry_system_instance_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_column_number(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER, (value));
+    return slot;
+}
+
+#define otel_attr_code_column_number(value) otel_attr_value_code_column_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_file_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_FILE_PATH, (value));
+    return slot;
+}
+
+#define otel_attr_code_file_path(value) otel_attr_value_code_file_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_function_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_code_function_name(value) otel_attr_value_code_function_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_line_number(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CODE_LINE_NUMBER, (value));
+    return slot;
+}
+
+#define otel_attr_code_line_number(value) otel_attr_value_code_line_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_stacktrace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_STACKTRACE, (value));
+    return slot;
+}
+
+#define otel_attr_code_stacktrace(value) otel_attr_value_code_stacktrace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_command(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND, (value));
+    return slot;
+}
+
+#define otel_attr_container_command(value) otel_attr_value_container_command((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_command_line(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE, (value));
+    return slot;
+}
+
+#define otel_attr_container_command_line(value) otel_attr_value_container_command_line((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_cpu_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_container_cpu_state(value) otel_attr_value_container_cpu_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_csi_plugin_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_container_csi_plugin_name(value) otel_attr_value_container_csi_plugin_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_csi_volume_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID, (value));
+    return slot;
+}
+
+#define otel_attr_container_csi_volume_id(value) otel_attr_value_container_csi_volume_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_ID, (value));
+    return slot;
+}
+
+#define otel_attr_container_id(value) otel_attr_value_container_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_image_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_container_image_id(value) otel_attr_value_container_image_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_image_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_container_image_name(value) otel_attr_value_container_image_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_LABEL, (value));
+    return slot;
+}
+
+#define otel_attr_container_label(value) otel_attr_value_container_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_container_name(value) otel_attr_value_container_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_runtime_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION, (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_description(value) otel_attr_value_container_runtime_description((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_runtime_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_name(value) otel_attr_value_container_runtime_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_runtime_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION, (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_version(value) otel_attr_value_container_runtime_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cpu_logical_number(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER, (value));
+    return slot;
+}
+
+#define otel_attr_cpu_logical_number(value) otel_attr_value_cpu_logical_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cpu_mode(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_CPU_MODE, (value));
+    return slot;
+}
+
+#define otel_attr_cpu_mode(value) otel_attr_value_cpu_mode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cpython_gc_generation(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION, (value));
+    return slot;
+}
+
+#define otel_attr_cpython_gc_generation(value) otel_attr_value_cpython_gc_generation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_client_connection_pool_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_client_connection_pool_name(value) otel_attr_value_db_client_connection_pool_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_client_connection_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_db_client_connection_state(value) otel_attr_value_db_client_connection_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_collection_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_COLLECTION_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_collection_name(value) otel_attr_value_db_collection_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_cosmosdb_status_code(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_db_cosmosdb_status_code(value) otel_attr_value_db_cosmosdb_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_jdbc_driver_classname(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_jdbc_driver_classname(value) otel_attr_value_db_jdbc_driver_classname((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_mssql_instance_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_mssql_instance_name(value) otel_attr_value_db_mssql_instance_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_namespace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_NAMESPACE, (value));
+    return slot;
+}
+
+#define otel_attr_db_namespace(value) otel_attr_value_db_namespace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_operation_batch_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE, (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_batch_size(value) otel_attr_value_db_operation_batch_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_operation_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_name(value) otel_attr_value_db_operation_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_operation_parameter(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER, (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_parameter(value) otel_attr_value_db_operation_parameter((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_query_parameter(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER, (value));
+    return slot;
+}
+
+#define otel_attr_db_query_parameter(value) otel_attr_value_db_query_parameter((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_query_summary(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY, (value));
+    return slot;
+}
+
+#define otel_attr_db_query_summary(value) otel_attr_value_db_query_summary((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_query_text(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_TEXT, (value));
+    return slot;
+}
+
+#define otel_attr_db_query_text(value) otel_attr_value_db_query_text((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_redis_database_index(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX, (value));
+    return slot;
+}
+
+#define otel_attr_db_redis_database_index(value) otel_attr_value_db_redis_database_index((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_response_returned_rows(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS, (value));
+    return slot;
+}
+
+#define otel_attr_db_response_returned_rows(value) otel_attr_value_db_response_returned_rows((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_response_status_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_db_response_status_code(value) otel_attr_value_db_response_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_stored_procedure_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_db_stored_procedure_name(value) otel_attr_value_db_stored_procedure_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_user(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_USER, (value));
+    return slot;
+}
+
+#define otel_attr_db_user(value) otel_attr_value_db_user((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_deployment_environment_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_deployment_environment_name(value) otel_attr_value_deployment_environment_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_deployment_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ID, (value));
+    return slot;
+}
+
+#define otel_attr_deployment_id(value) otel_attr_value_deployment_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_deployment_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_deployment_name(value) otel_attr_value_deployment_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_destination_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DESTINATION_ADDRESS, (value));
+    return slot;
+}
+
+#define otel_attr_destination_address(value) otel_attr_value_destination_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_destination_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DESTINATION_PORT, (value));
+    return slot;
+}
+
+#define otel_attr_destination_port(value) otel_attr_value_destination_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_device_id(value) otel_attr_value_device_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_manufacturer(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER, (value));
+    return slot;
+}
+
+#define otel_attr_device_manufacturer(value) otel_attr_value_device_manufacturer((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_model_identifier(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER, (value));
+    return slot;
+}
+
+#define otel_attr_device_model_identifier(value) otel_attr_value_device_model_identifier((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_model_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_device_model_name(value) otel_attr_value_device_model_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_disk_io_direction(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DISK_IO_DIRECTION, (value));
+    return slot;
+}
+
+#define otel_attr_disk_io_direction(value) otel_attr_value_disk_io_direction((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_dns_question_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DNS_QUESTION_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_dns_question_name(value) otel_attr_value_dns_question_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_dotnet_gc_heap_generation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION, (value));
+    return slot;
+}
+
+#define otel_attr_dotnet_gc_heap_generation(value) otel_attr_value_dotnet_gc_heap_generation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_elasticsearch_node_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_elasticsearch_node_name(value) otel_attr_value_elasticsearch_node_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ID, (value));
+    return slot;
+}
+
+#define otel_attr_enduser_id(value) otel_attr_value_enduser_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_pseudo_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID, (value));
+    return slot;
+}
+
+#define otel_attr_enduser_pseudo_id(value) otel_attr_value_enduser_pseudo_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_role(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ROLE, (value));
+    return slot;
+}
+
+#define otel_attr_enduser_role(value) otel_attr_value_enduser_role((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_scope(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_SCOPE, (value));
+    return slot;
+}
+
+#define otel_attr_enduser_scope(value) otel_attr_value_enduser_scope((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_error_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ERROR_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_error_type(value) otel_attr_value_error_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_exception_message(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE, (value));
+    return slot;
+}
+
+#define otel_attr_exception_message(value) otel_attr_value_exception_message((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_exception_stacktrace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE, (value));
+    return slot;
+}
+
+#define otel_attr_exception_stacktrace(value) otel_attr_value_exception_stacktrace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_exception_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_exception_type(value) otel_attr_value_exception_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_cron(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_CRON, (value));
+    return slot;
+}
+
+#define otel_attr_faas_cron(value) otel_attr_value_faas_cron((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_document_collection(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION, (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_collection(value) otel_attr_value_faas_document_collection((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_document_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_name(value) otel_attr_value_faas_document_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_document_time(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME, (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_time(value) otel_attr_value_faas_document_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_instance(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INSTANCE, (value));
+    return slot;
+}
+
+#define otel_attr_faas_instance(value) otel_attr_value_faas_instance((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_invocation_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID, (value));
+    return slot;
+}
+
+#define otel_attr_faas_invocation_id(value) otel_attr_value_faas_invocation_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_invoked_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_faas_invoked_name(value) otel_attr_value_faas_invoked_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_invoked_region(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION, (value));
+    return slot;
+}
+
+#define otel_attr_faas_invoked_region(value) otel_attr_value_faas_invoked_region((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_max_memory(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY, (value));
+    return slot;
+}
+
+#define otel_attr_faas_max_memory(value) otel_attr_value_faas_max_memory((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_faas_name(value) otel_attr_value_faas_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_time(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_TIME, (value));
+    return slot;
+}
+
+#define otel_attr_faas_time(value) otel_attr_value_faas_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_VERSION, (value));
+    return slot;
+}
+
+#define otel_attr_faas_version(value) otel_attr_value_faas_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_context_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_context_id(value) otel_attr_value_feature_flag_context_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_error_message(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_error_message(value) otel_attr_value_feature_flag_error_message((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_key(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_key(value) otel_attr_value_feature_flag_key((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_provider_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_provider_name(value) otel_attr_value_feature_flag_provider_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_result_reason(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_result_reason(value) otel_attr_value_feature_flag_result_reason((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_result_variant(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_result_variant(value) otel_attr_value_feature_flag_result_variant((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_set_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_set_id(value) otel_attr_value_feature_flag_set_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION, (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_version(value) otel_attr_value_feature_flag_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_accessed(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_ACCESSED, (value));
+    return slot;
+}
+
+#define otel_attr_file_accessed(value) otel_attr_value_file_accessed((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_changed(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_CHANGED, (value));
+    return slot;
+}
+
+#define otel_attr_file_changed(value) otel_attr_value_file_changed((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_created(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_CREATED, (value));
+    return slot;
+}
+
+#define otel_attr_file_created(value) otel_attr_value_file_created((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_directory(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_DIRECTORY, (value));
+    return slot;
+}
+
+#define otel_attr_file_directory(value) otel_attr_value_file_directory((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_extension(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_EXTENSION, (value));
+    return slot;
+}
+
+#define otel_attr_file_extension(value) otel_attr_value_file_extension((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_fork_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_FORK_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_file_fork_name(value) otel_attr_value_file_fork_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_group_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_ID, (value));
+    return slot;
+}
+
+#define otel_attr_file_group_id(value) otel_attr_value_file_group_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_group_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_file_group_name(value) otel_attr_value_file_group_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_inode(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_INODE, (value));
+    return slot;
+}
+
+#define otel_attr_file_inode(value) otel_attr_value_file_inode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_lock_mechanism(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM, (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_mechanism(value) otel_attr_value_file_lock_mechanism((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_lock_mode(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MODE, (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_mode(value) otel_attr_value_file_lock_mode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_lock_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_type(value) otel_attr_value_file_lock_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_mode(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_MODE, (value));
+    return slot;
+}
+
+#define otel_attr_file_mode(value) otel_attr_value_file_mode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_modified(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_MODIFIED, (value));
+    return slot;
+}
+
+#define otel_attr_file_modified(value) otel_attr_value_file_modified((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_file_name(value) otel_attr_value_file_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_owner_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_ID, (value));
+    return slot;
+}
+
+#define otel_attr_file_owner_id(value) otel_attr_value_file_owner_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_owner_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_file_owner_name(value) otel_attr_value_file_owner_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_PATH, (value));
+    return slot;
+}
+
+#define otel_attr_file_path(value) otel_attr_value_file_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_symbolic_link_target_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH, (value));
+    return slot;
+}
+
+#define otel_attr_file_symbolic_link_target_path(value) otel_attr_value_file_symbolic_link_target_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_container(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_container(value) otel_attr_value_gcp_apphub_application_container((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_id(value) otel_attr_value_gcp_apphub_application_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_location(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_location(value) otel_attr_value_gcp_apphub_application_location((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_application_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_application_id(value) otel_attr_value_gcp_apphub_destination_application_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_service_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_service_id(value) otel_attr_value_gcp_apphub_destination_service_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_workload_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_workload_id(value) otel_attr_value_gcp_apphub_destination_workload_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_service_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_service_id(value) otel_attr_value_gcp_apphub_service_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_workload_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_workload_id(value) otel_attr_value_gcp_apphub_workload_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_client_service(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_client_service(value) otel_attr_value_gcp_client_service((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_execution(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_cloud_run_job_execution(value) otel_attr_value_gcp_cloud_run_job_execution((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_task_index(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_cloud_run_job_task_index(value) otel_attr_value_gcp_cloud_run_job_task_index((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_name(value) otel_attr_value_gcp_gce_instance_group_manager_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_region(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_region(value) otel_attr_value_gcp_gce_instance_group_manager_region((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_zone(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_zone(value) otel_attr_value_gcp_gce_instance_group_manager_zone((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_hostname(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_hostname(value) otel_attr_value_gcp_gce_instance_hostname((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_labels(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_labels(value) otel_attr_value_gcp_gce_instance_labels((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_name(value) otel_attr_value_gcp_gce_instance_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gen_ai_completion(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_COMPLETION, (value));
+    return slot;
+}
+
+#define otel_attr_gen_ai_completion(value) otel_attr_value_gen_ai_completion((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gen_ai_prompt(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_PROMPT, (value));
+    return slot;
+}
+
+#define otel_attr_gen_ai_prompt(value) otel_attr_value_gen_ai_prompt((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_country_iso_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_geo_country_iso_code(value) otel_attr_value_geo_country_iso_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_locality_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME, (value));
+    return slot;
+}
+
+#define otel_attr_geo_locality_name(value) otel_attr_value_geo_locality_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_location_lat(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LAT, (value));
+    return slot;
+}
+
+#define otel_attr_geo_location_lat(value) otel_attr_value_geo_location_lat((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_location_lon(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LON, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_build_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_BUILD_ID, (value));
+#define otel_attr_geo_location_lon(value) otel_attr_value_geo_location_lon((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_postal_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_POSTAL_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_geo_postal_code(value) otel_attr_value_geo_postal_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_region_iso_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE, (value));
+    return slot;
+}
+
+#define otel_attr_geo_region_iso_code(value) otel_attr_value_geo_region_iso_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_cpu_detailed_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_go_cpu_detailed_state(value) otel_attr_value_go_cpu_detailed_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_cpu_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_STATE, (value));
+    return slot;
+}
+
+#define otel_attr_go_cpu_state(value) otel_attr_value_go_cpu_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_memory_detailed_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE, (value));
+    return slot;
+}
+
+#define otel_attr_go_memory_detailed_type(value) otel_attr_value_go_memory_detailed_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_memory_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_crash_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_CRASH_ID, (value));
+#define otel_attr_go_memory_type(value) otel_attr_value_go_memory_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_graphql_document(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT, (value));
+    return slot;
+}
+
+#define otel_attr_graphql_document(value) otel_attr_value_graphql_document((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_graphql_operation_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_installation_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_INSTALLATION_ID, (value));
+#define otel_attr_graphql_operation_name(value) otel_attr_value_graphql_operation_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_graphql_operation_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE, (value));
+    return slot;
 }
+
+#define otel_attr_graphql_operation_type(value) otel_attr_value_graphql_operation_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_app_jank_frame_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT, (value));
+static inline const otel_attribute_t *otel_attr_value_heroku_app_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_APP_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_jank_period(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_PERIOD, (value));
+#define otel_attr_heroku_app_id(value) otel_attr_value_heroku_app_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_heroku_release_commit(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT, (value));
+    return slot;
 }
+
+#define otel_attr_heroku_release_commit(value) otel_attr_value_heroku_release_commit((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_app_jank_threshold(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD, (value));
+static inline const otel_attribute_t *otel_attr_value_heroku_release_creation_timestamp(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_screen_coordinate_x(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X, (value));
+#define otel_attr_heroku_release_creation_timestamp(value) otel_attr_value_heroku_release_creation_timestamp((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_cache_l2_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE, (value));
+    return slot;
 }
+
+#define otel_attr_host_cpu_cache_l2_size(value) otel_attr_value_host_cpu_cache_l2_size((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_app_screen_coordinate_y(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y, (value));
+static inline const otel_attribute_t *otel_attr_value_host_cpu_family(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_FAMILY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_screen_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_ID, (value));
+#define otel_attr_host_cpu_family(value) otel_attr_value_host_cpu_family((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_model_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID, (value));
+    return slot;
 }
+
+#define otel_attr_host_cpu_model_id(value) otel_attr_value_host_cpu_model_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_app_screen_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_host_cpu_model_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_app_widget_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_ID, (value));
+#define otel_attr_host_cpu_model_name(value) otel_attr_value_host_cpu_model_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_stepping(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_STEPPING, (value));
+    return slot;
 }
+
+#define otel_attr_host_cpu_stepping(value) otel_attr_value_host_cpu_stepping((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_app_widget_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_host_cpu_vendor_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_artifact_attestation_filename(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME, (value));
+#define otel_attr_host_cpu_vendor_id(value) otel_attr_value_host_cpu_vendor_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_ID, (value));
+    return slot;
 }
+
+#define otel_attr_host_id(value) otel_attr_value_host_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_artifact_attestation_hash(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH, (value));
+static inline const otel_attribute_t *otel_attr_value_host_image_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_artifact_attestation_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID, (value));
+#define otel_attr_host_image_id(value) otel_attr_value_host_image_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_image_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_host_image_name(value) otel_attr_value_host_image_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_artifact_filename(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_FILENAME, (value));
+static inline const otel_attribute_t *otel_attr_value_host_image_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_artifact_hash(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_HASH, (value));
+#define otel_attr_host_image_version(value) otel_attr_value_host_image_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_host_name(value) otel_attr_value_host_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_artifact_purl(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_PURL, (value));
+static inline const otel_attribute_t *otel_attr_value_host_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_artifact_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_VERSION, (value));
+#define otel_attr_host_type(value) otel_attr_value_host_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_connection_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE, (value));
+    return slot;
 }
+
+#define otel_attr_http_connection_state(value) otel_attr_value_http_connection_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_authentication_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_http_request_body_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_authentication_scheme(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME, (value));
+#define otel_attr_http_request_body_size(value) otel_attr_value_http_request_body_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_request_method(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD, (value));
+    return slot;
 }
+
+#define otel_attr_http_request_method(value) otel_attr_value_http_request_method((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_authorization_policy(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY, (value));
+static inline const otel_attribute_t *otel_attr_value_http_request_method_original(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_authorization_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT, (value));
+#define otel_attr_http_request_method_original(value) otel_attr_value_http_request_method_original((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_request_resend_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT, (value));
+    return slot;
 }
+
+#define otel_attr_http_request_resend_count(value) otel_attr_value_http_request_resend_count((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_diagnostics_exception_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_http_request_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_diagnostics_handler_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE, (value));
+#define otel_attr_http_request_size(value) otel_attr_value_http_request_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_response_body_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE, (value));
+    return slot;
 }
+
+#define otel_attr_http_response_body_size(value) otel_attr_value_http_response_body_size((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_error_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE, (value));
+static inline const otel_attribute_t *otel_attr_value_http_response_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT, (value));
+#define otel_attr_http_response_size(value) otel_attr_value_http_response_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_response_status_code(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE, (value));
+    return slot;
 }
+
+#define otel_attr_http_response_status_code(value) otel_attr_value_http_response_status_code((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_sign_in_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_http_route(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_ROUTE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_sign_in_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE, (value));
+#define otel_attr_http_route(value) otel_attr_value_http_route((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_scheme(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_SCHEME, (value));
+    return slot;
 }
+
+#define otel_attr_http_scheme(value) otel_attr_value_http_scheme((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_token_purpose(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE, (value));
+static inline const otel_attribute_t *otel_attr_value_http_target(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_TARGET, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_token_verified(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED, (value));
+#define otel_attr_http_target(value) otel_attr_value_http_target((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_url(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_URL, (value));
+    return slot;
 }
+
+#define otel_attr_http_url(value) otel_attr_value_http_url((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_user_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_battery_capacity(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_identity_user_update_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE, (value));
+#define otel_attr_hw_battery_capacity(value) otel_attr_value_hw_battery_capacity((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_battery_chemistry(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY, (value));
+    return slot;
 }
+
+#define otel_attr_hw_battery_chemistry(value) otel_attr_value_hw_battery_chemistry((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_memory_pool_owner(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_bios_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BIOS_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_rate_limiting_policy(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY, (value));
+#define otel_attr_hw_bios_version(value) otel_attr_value_hw_bios_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_driver_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_DRIVER_VERSION, (value));
+    return slot;
 }
+
+#define otel_attr_hw_driver_version(value) otel_attr_value_hw_driver_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_rate_limiting_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_enclosure_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_request_is_unhandled(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED, (value));
+#define otel_attr_hw_enclosure_type(value) otel_attr_value_hw_enclosure_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_firmware_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION, (value));
+    return slot;
 }
+
+#define otel_attr_hw_firmware_version(value) otel_attr_value_hw_firmware_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_routing_is_fallback(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aspnetcore_routing_match_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS, (value));
+#define otel_attr_hw_id(value) otel_attr_value_hw_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_logical_disk_raid_level(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL, (value));
+    return slot;
 }
+
+#define otel_attr_hw_logical_disk_raid_level(value) otel_attr_value_hw_logical_disk_raid_level((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aspnetcore_user_is_authenticated(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_memory_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_MEMORY_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_bedrock_guardrail_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID, (value));
+#define otel_attr_hw_memory_type(value) otel_attr_value_hw_memory_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_model(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_MODEL, (value));
+    return slot;
 }
+
+#define otel_attr_hw_model(value) otel_attr_value_hw_model((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_bedrock_knowledge_base_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT, (value));
+#define otel_attr_hw_name(value) otel_attr_value_hw_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_network_physical_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS, (value));
+    return slot;
 }
+
+#define otel_attr_hw_network_physical_address(value) otel_attr_value_hw_network_physical_address((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_exclusive_start_table(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_parent(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PARENT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_index_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME, (value));
+#define otel_attr_hw_parent(value) otel_attr_value_hw_parent((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_smart_attribute(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE, (value));
+    return slot;
 }
+
+#define otel_attr_hw_physical_disk_smart_attribute(value) otel_attr_value_hw_physical_disk_smart_attribute((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_item_collection_metrics(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_limit(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT, (value));
+#define otel_attr_hw_physical_disk_type(value) otel_attr_value_hw_physical_disk_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_sensor_location(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION, (value));
+    return slot;
 }
+
+#define otel_attr_hw_sensor_location(value) otel_attr_value_hw_sensor_location((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_projection(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION, (value));
+static inline const otel_attribute_t *otel_attr_value_hw_serial_number(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_provisioned_read_capacity(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY, (value));
+#define otel_attr_hw_serial_number(value) otel_attr_value_hw_serial_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_vendor(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_VENDOR, (value));
+    return slot;
 }
+
+#define otel_attr_hw_vendor(value) otel_attr_value_hw_vendor((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_provisioned_write_capacity(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY, (value));
+static inline const otel_attribute_t *otel_attr_value_jsonrpc_protocol_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_scanned_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT, (value));
+#define otel_attr_jsonrpc_protocol_version(value) otel_attr_value_jsonrpc_protocol_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jsonrpc_request_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID, (value));
+    return slot;
 }
+
+#define otel_attr_jsonrpc_request_id(value) otel_attr_value_jsonrpc_request_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_segment(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT, (value));
+static inline const otel_attribute_t *otel_attr_value_jvm_buffer_pool_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_select(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT, (value));
+#define otel_attr_jvm_buffer_pool_name(value) otel_attr_value_jvm_buffer_pool_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_action(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_ACTION, (value));
+    return slot;
 }
+
+#define otel_attr_jvm_gc_action(value) otel_attr_value_jvm_gc_action((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_table_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT, (value));
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_cause(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_CAUSE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_dynamodb_total_segments(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS, (value));
+#define otel_attr_jvm_gc_cause(value) otel_attr_value_jvm_gc_cause((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_jvm_gc_name(value) otel_attr_value_jvm_gc_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_ecs_cluster_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN, (value));
+static inline const otel_attribute_t *otel_attr_value_jvm_memory_pool_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_ecs_container_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN, (value));
+#define otel_attr_jvm_memory_pool_name(value) otel_attr_value_jvm_memory_pool_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_memory_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE, (value));
+    return slot;
 }
+
+#define otel_attr_jvm_memory_type(value) otel_attr_value_jvm_memory_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_ecs_task_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN, (value));
+static inline const otel_attribute_t *otel_attr_value_jvm_thread_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_THREAD_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_ecs_task_family(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY, (value));
+#define otel_attr_jvm_thread_state(value) otel_attr_value_jvm_thread_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cluster_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_cluster_name(value) otel_attr_value_k8s_cluster_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_ecs_task_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_cluster_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_ecs_task_revision(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION, (value));
+#define otel_attr_k8s_cluster_uid(value) otel_attr_value_k8s_cluster_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_container_ephemeral_storage_fs_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_container_ephemeral_storage_fs_type(value) otel_attr_value_k8s_container_ephemeral_storage_fs_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_eks_cluster_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_container_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_extended_request_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID, (value));
+#define otel_attr_k8s_container_name(value) otel_attr_value_k8s_container_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_container_status_reason(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_container_status_reason(value) otel_attr_value_k8s_container_status_reason((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_kinesis_stream_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_container_status_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_lambda_invoked_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN, (value));
+#define otel_attr_k8s_container_status_state(value) otel_attr_value_k8s_container_status_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_cronjob_annotation(value) otel_attr_value_k8s_cronjob_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_lambda_resource_mapping_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_request_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_REQUEST_ID, (value));
+#define otel_attr_k8s_cronjob_label(value) otel_attr_value_k8s_cronjob_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_cronjob_name(value) otel_attr_value_k8s_cronjob_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_s3_bucket(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_BUCKET, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_s3_copy_source(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE, (value));
+#define otel_attr_k8s_cronjob_uid(value) otel_attr_value_k8s_cronjob_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_daemonset_annotation(value) otel_attr_value_k8s_daemonset_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_s3_delete(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_DELETE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_s3_key(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_KEY, (value));
+#define otel_attr_k8s_daemonset_label(value) otel_attr_value_k8s_daemonset_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_daemonset_name(value) otel_attr_value_k8s_daemonset_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_s3_part_number(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_s3_upload_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID, (value));
+#define otel_attr_k8s_daemonset_uid(value) otel_attr_value_k8s_daemonset_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_deployment_annotation(value) otel_attr_value_k8s_deployment_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_secretsmanager_secret_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_sns_topic_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN, (value));
+#define otel_attr_k8s_deployment_label(value) otel_attr_value_k8s_deployment_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_deployment_name(value) otel_attr_value_k8s_deployment_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_sqs_queue_url(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_aws_step_functions_activity_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN, (value));
+#define otel_attr_k8s_deployment_uid(value) otel_attr_value_k8s_deployment_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_metric_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_hpa_metric_type(value) otel_attr_value_k8s_hpa_metric_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_aws_step_functions_state_machine_arn(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_azure_client_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_CLIENT_ID, (value));
+#define otel_attr_k8s_hpa_name(value) otel_attr_value_k8s_hpa_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_api_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_hpa_scaletargetref_api_version(value) otel_attr_value_k8s_hpa_scaletargetref_api_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_azure_cosmosdb_consistency_level(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_kind(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_azure_cosmosdb_operation_request_charge(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE, (value));
+#define otel_attr_k8s_hpa_scaletargetref_kind(value) otel_attr_value_k8s_hpa_scaletargetref_kind((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_hpa_scaletargetref_name(value) otel_attr_value_k8s_hpa_scaletargetref_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_azure_cosmosdb_response_sub_status_code(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_azure_resource_provider_namespace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE, (value));
+#define otel_attr_k8s_hpa_uid(value) otel_attr_value_k8s_hpa_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hugepage_size(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_hugepage_size(value) otel_attr_value_k8s_hugepage_size((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_azure_service_request_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_job_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_browser_document_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL, (value));
+#define otel_attr_k8s_job_annotation(value) otel_attr_value_k8s_job_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_job_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_LABEL, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_job_label(value) otel_attr_value_k8s_job_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_browser_language(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_LANGUAGE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_job_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_browser_platform(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_PLATFORM, (value));
+#define otel_attr_k8s_job_name(value) otel_attr_value_k8s_job_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_job_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_UID, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_job_uid(value) otel_attr_value_k8s_job_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cassandra_coordinator_dc(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cassandra_coordinator_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID, (value));
+#define otel_attr_k8s_namespace_annotation(value) otel_attr_value_k8s_namespace_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_namespace_label(value) otel_attr_value_k8s_namespace_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cassandra_page_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cassandra_speculative_execution_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT, (value));
+#define otel_attr_k8s_namespace_name(value) otel_attr_value_k8s_namespace_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_phase(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_namespace_phase(value) otel_attr_value_k8s_namespace_phase((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_action_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_node_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME, (value));
+#define otel_attr_k8s_node_annotation(value) otel_attr_value_k8s_node_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_node_condition_status(value) otel_attr_value_k8s_node_condition_status((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_run_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID, (value));
+#define otel_attr_k8s_node_condition_type(value) otel_attr_value_k8s_node_condition_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_LABEL, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_node_label(value) otel_attr_value_k8s_node_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_run_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_node_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_run_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL, (value));
+#define otel_attr_k8s_node_name(value) otel_attr_value_k8s_node_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_system_container_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_node_system_container_name(value) otel_attr_value_k8s_node_system_container_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_task_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_node_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID, (value));
+#define otel_attr_k8s_node_uid(value) otel_attr_value_k8s_node_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_persistentvolume_annotation(value) otel_attr_value_k8s_persistentvolume_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_result(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL, (value));
+#define otel_attr_k8s_persistentvolume_label(value) otel_attr_value_k8s_persistentvolume_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_persistentvolume_name(value) otel_attr_value_k8s_persistentvolume_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_pipeline_task_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_reclaim_policy(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_system_component(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT, (value));
+#define otel_attr_k8s_persistentvolume_reclaim_policy(value) otel_attr_value_k8s_persistentvolume_reclaim_policy((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_status_phase(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_persistentvolume_status_phase(value) otel_attr_value_k8s_persistentvolume_status_phase((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_worker_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_worker_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_NAME, (value));
+#define otel_attr_k8s_persistentvolume_uid(value) otel_attr_value_k8s_persistentvolume_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_persistentvolumeclaim_annotation(value) otel_attr_value_k8s_persistentvolumeclaim_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cicd_worker_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cicd_worker_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL, (value));
+#define otel_attr_k8s_persistentvolumeclaim_label(value) otel_attr_value_k8s_persistentvolumeclaim_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_persistentvolumeclaim_name(value) otel_attr_value_k8s_persistentvolumeclaim_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_client_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_status_phase(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_client_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CLIENT_PORT, (value));
+#define otel_attr_k8s_persistentvolumeclaim_status_phase(value) otel_attr_value_k8s_persistentvolumeclaim_status_phase((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloud_account_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID, (value));
+#define otel_attr_k8s_persistentvolumeclaim_uid(value) otel_attr_value_k8s_persistentvolumeclaim_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION, (value));
+    return slot;
 }
+
+#define otel_attr_k8s_pod_annotation(value) otel_attr_value_k8s_pod_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloud_availability_zone(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_hostname(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloud_region(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_REGION, (value));
-}
+#define otel_attr_k8s_pod_hostname(value) otel_attr_value_k8s_pod_hostname((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloud_resource_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_ip(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_IP, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudevents_event_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID, (value));
-}
+#define otel_attr_k8s_pod_ip(value) otel_attr_value_k8s_pod_ip((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudevents_event_source(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudevents_event_spec_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION, (value));
-}
+#define otel_attr_k8s_pod_label(value) otel_attr_value_k8s_pod_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudevents_event_subject(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudevents_event_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE, (value));
-}
+#define otel_attr_k8s_pod_name(value) otel_attr_value_k8s_pod_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_app_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_start_time(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_START_TIME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudfoundry_app_instance_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID, (value));
-}
+#define otel_attr_k8s_pod_start_time(value) otel_attr_value_k8s_pod_start_time((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_app_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_phase(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudfoundry_org_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID, (value));
-}
+#define otel_attr_k8s_pod_status_phase(value) otel_attr_value_k8s_pod_status_phase((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_org_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_reason(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudfoundry_process_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID, (value));
-}
+#define otel_attr_k8s_pod_status_reason(value) otel_attr_value_k8s_pod_status_reason((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_process_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudfoundry_space_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID, (value));
-}
+#define otel_attr_k8s_pod_uid(value) otel_attr_value_k8s_pod_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_space_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cloudfoundry_system_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID, (value));
-}
+#define otel_attr_k8s_replicaset_annotation(value) otel_attr_value_k8s_replicaset_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cloudfoundry_system_instance_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_code_column_number(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER, (value));
-}
+#define otel_attr_k8s_replicaset_label(value) otel_attr_value_k8s_replicaset_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_code_file_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CODE_FILE_PATH, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_code_function_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME, (value));
-}
+#define otel_attr_k8s_replicaset_name(value) otel_attr_value_k8s_replicaset_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_code_line_number(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CODE_LINE_NUMBER, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_code_stacktrace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CODE_STACKTRACE, (value));
-}
+#define otel_attr_k8s_replicaset_uid(value) otel_attr_value_k8s_replicaset_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_command(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_command_line(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE, (value));
-}
+#define otel_attr_k8s_replicationcontroller_name(value) otel_attr_value_k8s_replicationcontroller_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_cpu_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_csi_plugin_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME, (value));
-}
+#define otel_attr_k8s_replicationcontroller_uid(value) otel_attr_value_k8s_replicationcontroller_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_csi_volume_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_ID, (value));
-}
+#define otel_attr_k8s_resourcequota_name(value) otel_attr_value_k8s_resourcequota_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_image_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_resource_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_image_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME, (value));
-}
+#define otel_attr_k8s_resourcequota_resource_name(value) otel_attr_value_k8s_resourcequota_resource_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_NAME, (value));
-}
+#define otel_attr_k8s_resourcequota_uid(value) otel_attr_value_k8s_resourcequota_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_runtime_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_container_runtime_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME, (value));
-}
+#define otel_attr_k8s_service_annotation(value) otel_attr_value_k8s_service_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_container_runtime_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_address_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cpu_logical_number(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER, (value));
-}
+#define otel_attr_k8s_service_endpoint_address_type(value) otel_attr_value_k8s_service_endpoint_address_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_cpu_mode(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_CPU_MODE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_condition(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_cpython_gc_generation(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION, (value));
-}
+#define otel_attr_k8s_service_endpoint_condition(value) otel_attr_value_k8s_service_endpoint_condition((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_client_connection_pool_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_zone(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_client_connection_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE, (value));
-}
+#define otel_attr_k8s_service_endpoint_zone(value) otel_attr_value_k8s_service_endpoint_zone((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_collection_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_COLLECTION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_cosmosdb_status_code(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE, (value));
-}
+#define otel_attr_k8s_service_label(value) otel_attr_value_k8s_service_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_jdbc_driver_classname(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_mssql_instance_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME, (value));
-}
+#define otel_attr_k8s_service_name(value) otel_attr_value_k8s_service_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_namespace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_NAMESPACE, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_publish_not_ready_addresses(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_operation_batch_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE, (value));
-}
+#define otel_attr_k8s_service_publish_not_ready_addresses(value) otel_attr_value_k8s_service_publish_not_ready_addresses((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_operation_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_selector(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_operation_parameter(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER, (value));
-}
+#define otel_attr_k8s_service_selector(value) otel_attr_value_k8s_service_selector((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_query_parameter(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_traffic_distribution(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_query_summary(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY, (value));
-}
+#define otel_attr_k8s_service_traffic_distribution(value) otel_attr_value_k8s_service_traffic_distribution((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_query_text(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_TEXT, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_redis_database_index(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX, (value));
-}
+#define otel_attr_k8s_service_type(value) otel_attr_value_k8s_service_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_response_returned_rows(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_service_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_response_status_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE, (value));
-}
+#define otel_attr_k8s_service_uid(value) otel_attr_value_k8s_service_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_db_stored_procedure_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_annotation(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_db_user(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DB_USER, (value));
-}
+#define otel_attr_k8s_statefulset_annotation(value) otel_attr_value_k8s_statefulset_annotation((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_deployment_environment_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_label(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_deployment_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ID, (value));
-}
+#define otel_attr_k8s_statefulset_label(value) otel_attr_value_k8s_statefulset_label((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_deployment_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_destination_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DESTINATION_ADDRESS, (value));
-}
+#define otel_attr_k8s_statefulset_name(value) otel_attr_value_k8s_statefulset_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_destination_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_DESTINATION_PORT, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_device_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_ID, (value));
-}
+#define otel_attr_k8s_statefulset_uid(value) otel_attr_value_k8s_statefulset_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_device_manufacturer(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_storageclass_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_device_model_identifier(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER, (value));
-}
+#define otel_attr_k8s_storageclass_name(value) otel_attr_value_k8s_storageclass_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_device_model_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_volume_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_disk_io_direction(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DISK_IO_DIRECTION, (value));
-}
+#define otel_attr_k8s_volume_name(value) otel_attr_value_k8s_volume_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_dns_question_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DNS_QUESTION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_k8s_volume_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_dotnet_gc_heap_generation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION, (value));
-}
+#define otel_attr_k8s_volume_type(value) otel_attr_value_k8s_volume_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_elasticsearch_node_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_log_file_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_enduser_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ID, (value));
-}
+#define otel_attr_log_file_name(value) otel_attr_value_log_file_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_enduser_pseudo_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_log_file_name_resolved(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_enduser_role(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ROLE, (value));
-}
+#define otel_attr_log_file_name_resolved(value) otel_attr_value_log_file_name_resolved((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_enduser_scope(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_SCOPE, (value));
+static inline const otel_attribute_t *otel_attr_value_log_file_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_error_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ERROR_TYPE, (value));
-}
+#define otel_attr_log_file_path(value) otel_attr_value_log_file_path((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_exception_message(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE, (value));
+static inline const otel_attribute_t *otel_attr_value_log_file_path_resolved(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_exception_stacktrace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE, (value));
-}
+#define otel_attr_log_file_path_resolved(value) otel_attr_value_log_file_path_resolved((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_exception_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_log_record_original(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_cron(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_CRON, (value));
-}
+#define otel_attr_log_record_original(value) otel_attr_value_log_record_original((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_document_collection(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION, (value));
+static inline const otel_attribute_t *otel_attr_value_log_record_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_document_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME, (value));
-}
+#define otel_attr_log_record_uid(value) otel_attr_value_log_record_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_document_time(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME, (value));
+static inline const otel_attribute_t *otel_attr_value_mainframe_lpar_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_instance(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INSTANCE, (value));
-}
+#define otel_attr_mainframe_lpar_name(value) otel_attr_value_mainframe_lpar_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_invocation_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_batch_message_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_invoked_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME, (value));
-}
+#define otel_attr_messaging_batch_message_count(value) otel_attr_value_messaging_batch_message_count((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_invoked_region(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_client_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_max_memory(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY, (value));
-}
+#define otel_attr_messaging_client_id(value) otel_attr_value_messaging_client_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_consumer_group_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_faas_time(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_TIME, (value));
-}
+#define otel_attr_messaging_consumer_group_name(value) otel_attr_value_messaging_consumer_group_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_faas_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_feature_flag_context_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID, (value));
-}
+#define otel_attr_messaging_destination_name(value) otel_attr_value_messaging_destination_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_feature_flag_error_message(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_partition_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_feature_flag_key(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY, (value));
-}
+#define otel_attr_messaging_destination_partition_id(value) otel_attr_value_messaging_destination_partition_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_feature_flag_provider_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_publish_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_feature_flag_result_reason(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON, (value));
-}
+#define otel_attr_messaging_destination_publish_name(value) otel_attr_value_messaging_destination_publish_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_feature_flag_result_variant(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_subscription_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_feature_flag_set_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID, (value));
-}
+#define otel_attr_messaging_destination_subscription_name(value) otel_attr_value_messaging_destination_subscription_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_feature_flag_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_template(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_accessed(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_ACCESSED, (value));
-}
+#define otel_attr_messaging_destination_template(value) otel_attr_value_messaging_destination_template((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_changed(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_CHANGED, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_gcp_pubsub_message_ack_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_created(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_CREATED, (value));
-}
+#define otel_attr_messaging_gcp_pubsub_message_ack_id(value) otel_attr_value_messaging_gcp_pubsub_message_ack_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_directory(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_DIRECTORY, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_kafka_message_key(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_extension(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_EXTENSION, (value));
-}
+#define otel_attr_messaging_kafka_message_key(value) otel_attr_value_messaging_kafka_message_key((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_fork_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_FORK_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_kafka_offset(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_group_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_ID, (value));
-}
+#define otel_attr_messaging_kafka_offset(value) otel_attr_value_messaging_kafka_offset((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_group_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_message_body_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_inode(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_INODE, (value));
-}
+#define otel_attr_messaging_message_body_size(value) otel_attr_value_messaging_message_body_size((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_lock_mechanism(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_message_conversation_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_lock_mode(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MODE, (value));
-}
+#define otel_attr_messaging_message_conversation_id(value) otel_attr_value_messaging_message_conversation_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_lock_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_message_envelope_size(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_mode(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_MODE, (value));
-}
+#define otel_attr_messaging_message_envelope_size(value) otel_attr_value_messaging_message_envelope_size((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_modified(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_MODIFIED, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_message_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_NAME, (value));
-}
+#define otel_attr_messaging_message_id(value) otel_attr_value_messaging_message_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_owner_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_operation_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_owner_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_NAME, (value));
-}
+#define otel_attr_messaging_operation_name(value) otel_attr_value_messaging_operation_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_file_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_PATH, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_rabbitmq_message_delivery_tag(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_file_symbolic_link_target_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH, (value));
-}
+#define otel_attr_messaging_rabbitmq_message_delivery_tag(value) otel_attr_value_messaging_rabbitmq_message_delivery_tag((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_apphub_application_container(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_group(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_apphub_application_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID, (value));
-}
+#define otel_attr_messaging_rocketmq_message_group(value) otel_attr_value_messaging_rocketmq_message_group((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_apphub_application_location(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_tag(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_apphub_destination_application_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID, (value));
-}
+#define otel_attr_messaging_rocketmq_message_tag(value) otel_attr_value_messaging_rocketmq_message_tag((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_apphub_destination_service_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_namespace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_apphub_destination_workload_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID, (value));
-}
+#define otel_attr_messaging_rocketmq_namespace(value) otel_attr_value_messaging_rocketmq_namespace((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_apphub_service_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_net_host_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NET_HOST_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_apphub_workload_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID, (value));
-}
+#define otel_attr_net_host_port(value) otel_attr_value_net_host_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_client_service(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE, (value));
+static inline const otel_attribute_t *otel_attr_value_net_sock_peer_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_cloud_run_job_execution(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION, (value));
-}
+#define otel_attr_net_sock_peer_name(value) otel_attr_value_net_sock_peer_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_cloud_run_job_task_index(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX, (value));
+static inline const otel_attribute_t *otel_attr_value_network_carrier_icc(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME, (value));
-}
+#define otel_attr_network_carrier_icc(value) otel_attr_value_network_carrier_icc((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_region(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION, (value));
+static inline const otel_attribute_t *otel_attr_value_network_carrier_mcc(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_zone(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE, (value));
-}
+#define otel_attr_network_carrier_mcc(value) otel_attr_value_network_carrier_mcc((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_hostname(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME, (value));
+static inline const otel_attribute_t *otel_attr_value_network_carrier_mnc(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_labels(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS, (value));
-}
+#define otel_attr_network_carrier_mnc(value) otel_attr_value_network_carrier_mnc((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gcp_gce_instance_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_network_carrier_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_gen_ai_completion(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_COMPLETION, (value));
-}
+#define otel_attr_network_carrier_name(value) otel_attr_value_network_carrier_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_gen_ai_prompt(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_PROMPT, (value));
+static inline const otel_attribute_t *otel_attr_value_network_connection_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_geo_country_iso_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE, (value));
-}
+#define otel_attr_network_connection_state(value) otel_attr_value_network_connection_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_geo_locality_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_network_connection_subtype(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_geo_location_lat(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LAT, (value));
-}
+#define otel_attr_network_connection_subtype(value) otel_attr_value_network_connection_subtype((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_geo_location_lon(double value) {
-    return otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LON, (value));
+static inline const otel_attribute_t *otel_attr_value_network_connection_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_geo_postal_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEO_POSTAL_CODE, (value));
-}
+#define otel_attr_network_connection_type(value) otel_attr_value_network_connection_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_geo_region_iso_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE, (value));
+static inline const otel_attribute_t *otel_attr_value_network_interface_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_go_cpu_detailed_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE, (value));
-}
+#define otel_attr_network_interface_name(value) otel_attr_value_network_interface_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_go_cpu_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_network_io_direction(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_go_memory_detailed_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE, (value));
-}
+#define otel_attr_network_io_direction(value) otel_attr_value_network_io_direction((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_go_memory_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_network_local_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_graphql_document(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT, (value));
-}
+#define otel_attr_network_local_address(value) otel_attr_value_network_local_address((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_graphql_operation_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_network_local_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_graphql_operation_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE, (value));
-}
+#define otel_attr_network_local_port(value) otel_attr_value_network_local_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_heroku_app_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_APP_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_network_peer_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_heroku_release_commit(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT, (value));
-}
+#define otel_attr_network_peer_address(value) otel_attr_value_network_peer_address((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_heroku_release_creation_timestamp(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP, (value));
+static inline const otel_attribute_t *otel_attr_value_network_peer_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_PEER_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_cpu_cache_l2_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE, (value));
-}
+#define otel_attr_network_peer_port(value) otel_attr_value_network_peer_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_cpu_family(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_FAMILY, (value));
+static inline const otel_attribute_t *otel_attr_value_network_protocol_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_cpu_model_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID, (value));
-}
+#define otel_attr_network_protocol_name(value) otel_attr_value_network_protocol_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_cpu_model_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_network_protocol_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_cpu_stepping(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_STEPPING, (value));
-}
+#define otel_attr_network_protocol_version(value) otel_attr_value_network_protocol_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_cpu_vendor_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_network_transport(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TRANSPORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_ID, (value));
-}
+#define otel_attr_network_transport(value) otel_attr_value_network_transport((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_image_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_network_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_image_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_NAME, (value));
-}
+#define otel_attr_network_type(value) otel_attr_value_network_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_image_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_nfs_operation_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NFS_OPERATION_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_host_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_NAME, (value));
-}
+#define otel_attr_nfs_operation_name(value) otel_attr_value_nfs_operation_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_host_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HOST_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_nfs_server_repcache_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_connection_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE, (value));
-}
+#define otel_attr_nfs_server_repcache_status(value) otel_attr_value_nfs_server_repcache_status((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_request_body_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_oci_manifest_digest(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_request_method(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD, (value));
-}
+#define otel_attr_oci_manifest_digest(value) otel_attr_value_oci_manifest_digest((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_request_method_original(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL, (value));
+static inline const otel_attribute_t *otel_attr_value_onc_rpc_procedure_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_request_resend_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT, (value));
-}
+#define otel_attr_onc_rpc_procedure_name(value) otel_attr_value_onc_rpc_procedure_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_request_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_onc_rpc_program_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_response_body_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE, (value));
-}
+#define otel_attr_onc_rpc_program_name(value) otel_attr_value_onc_rpc_program_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_response_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_response_status_code(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE, (value));
-}
+#define otel_attr_openshift_clusterquota_name(value) otel_attr_value_openshift_clusterquota_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_route(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_ROUTE, (value));
+static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_uid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_scheme(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_SCHEME, (value));
-}
+#define otel_attr_openshift_clusterquota_uid(value) otel_attr_value_openshift_clusterquota_uid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_http_target(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_TARGET, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_cloud_realm(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_http_url(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_URL, (value));
-}
+#define otel_attr_oracle_cloud_realm(value) otel_attr_value_oracle_cloud_realm((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_battery_capacity(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_db_domain(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_battery_chemistry(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY, (value));
-}
+#define otel_attr_oracle_db_domain(value) otel_attr_value_oracle_db_domain((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_bios_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_BIOS_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_db_instance_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_driver_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_DRIVER_VERSION, (value));
-}
+#define otel_attr_oracle_db_instance_name(value) otel_attr_value_oracle_db_instance_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_enclosure_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_db_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_firmware_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION, (value));
-}
+#define otel_attr_oracle_db_name(value) otel_attr_value_oracle_db_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_db_pdb(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_PDB, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_logical_disk_raid_level(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL, (value));
-}
+#define otel_attr_oracle_db_pdb(value) otel_attr_value_oracle_db_pdb((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_memory_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_MEMORY_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_oracle_db_service(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_model(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_MODEL, (value));
-}
+#define otel_attr_oracle_db_service(value) otel_attr_value_oracle_db_service((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_os_build_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_BUILD_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_network_physical_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS, (value));
-}
+#define otel_attr_os_build_id(value) otel_attr_value_os_build_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_parent(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_PARENT, (value));
+static inline const otel_attribute_t *otel_attr_value_os_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_DESCRIPTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_physical_disk_smart_attribute(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE, (value));
-}
+#define otel_attr_os_description(value) otel_attr_value_os_description((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_physical_disk_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_os_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_sensor_location(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION, (value));
-}
+#define otel_attr_os_name(value) otel_attr_value_os_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_hw_serial_number(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER, (value));
+static inline const otel_attribute_t *otel_attr_value_os_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_hw_vendor(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_HW_VENDOR, (value));
-}
+#define otel_attr_os_version(value) otel_attr_value_os_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_jsonrpc_protocol_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_component_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_jsonrpc_request_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID, (value));
-}
+#define otel_attr_otel_component_name(value) otel_attr_value_otel_component_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_jvm_buffer_pool_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_component_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_jvm_gc_action(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_ACTION, (value));
-}
+#define otel_attr_otel_component_type(value) otel_attr_value_otel_component_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_jvm_gc_cause(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_CAUSE, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_event_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_EVENT_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_jvm_gc_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_NAME, (value));
-}
+#define otel_attr_otel_event_name(value) otel_attr_value_otel_event_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_jvm_memory_pool_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_scope_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_jvm_memory_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE, (value));
-}
+#define otel_attr_otel_scope_name(value) otel_attr_value_otel_scope_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_jvm_thread_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_JVM_THREAD_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_scope_schema_url(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_cluster_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME, (value));
-}
+#define otel_attr_otel_scope_schema_url(value) otel_attr_value_otel_scope_schema_url((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_cluster_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_scope_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_container_ephemeral_storage_fs_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE, (value));
-}
+#define otel_attr_otel_scope_version(value) otel_attr_value_otel_scope_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_container_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_otel_status_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_container_status_reason(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON, (value));
-}
+#define otel_attr_otel_status_description(value) otel_attr_value_otel_status_description((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_container_status_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_doc_url(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_cronjob_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION, (value));
-}
+#define otel_attr_pprof_profile_doc_url(value) otel_attr_value_pprof_profile_doc_url((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_cronjob_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_drop_frames(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_cronjob_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME, (value));
-}
+#define otel_attr_pprof_profile_drop_frames(value) otel_attr_value_pprof_profile_drop_frames((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_cronjob_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_keep_frames(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_daemonset_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION, (value));
-}
+#define otel_attr_pprof_profile_keep_frames(value) otel_attr_value_pprof_profile_keep_frames((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_daemonset_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_pprof_scope_default_sample_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_daemonset_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME, (value));
-}
+#define otel_attr_pprof_scope_default_sample_type(value) otel_attr_value_pprof_scope_default_sample_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_daemonset_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_args_count(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_deployment_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION, (value));
-}
+#define otel_attr_process_args_count(value) otel_attr_value_process_args_count((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_deployment_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_process_command(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_deployment_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME, (value));
-}
+#define otel_attr_process_command(value) otel_attr_value_process_command((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_deployment_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_command_line(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_hpa_metric_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE, (value));
-}
+#define otel_attr_process_command_line(value) otel_attr_value_process_command_line((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_hpa_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_creation_time(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_api_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION, (value));
-}
+#define otel_attr_process_creation_time(value) otel_attr_value_process_creation_time((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_kind(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND, (value));
+static inline const otel_attribute_t *otel_attr_value_process_environment_variable(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME, (value));
-}
+#define otel_attr_process_environment_variable(value) otel_attr_value_process_environment_variable((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_hpa_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_gnu(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_hugepage_size(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE, (value));
-}
+#define otel_attr_process_executable_build_id_gnu(value) otel_attr_value_process_executable_build_id_gnu((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_job_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_go(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_job_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_LABEL, (value));
-}
+#define otel_attr_process_executable_build_id_go(value) otel_attr_value_process_executable_build_id_go((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_job_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_htlhash(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_job_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_UID, (value));
-}
+#define otel_attr_process_executable_build_id_htlhash(value) otel_attr_value_process_executable_build_id_htlhash((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_namespace_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_executable_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_namespace_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL, (value));
-}
+#define otel_attr_process_executable_name(value) otel_attr_value_process_executable_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_namespace_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_executable_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_namespace_phase(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE, (value));
-}
+#define otel_attr_process_executable_path(value) otel_attr_value_process_executable_path((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_node_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_exit_code(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_node_condition_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS, (value));
-}
+#define otel_attr_process_exit_code(value) otel_attr_value_process_exit_code((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_node_condition_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_process_exit_time(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_node_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_LABEL, (value));
-}
+#define otel_attr_process_exit_time(value) otel_attr_value_process_exit_time((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_node_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_group_leader_pid(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_node_system_container_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME, (value));
-}
+#define otel_attr_process_group_leader_pid(value) otel_attr_value_process_group_leader_pid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_node_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_linux_cgroup(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION, (value));
-}
+#define otel_attr_process_linux_cgroup(value) otel_attr_value_process_linux_cgroup((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_process_owner(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_OWNER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME, (value));
-}
+#define otel_attr_process_owner(value) otel_attr_value_process_owner((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_reclaim_policy(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY, (value));
+static inline const otel_attribute_t *otel_attr_value_process_parent_pid(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PARENT_PID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_status_phase(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE, (value));
-}
+#define otel_attr_process_parent_pid(value) otel_attr_value_process_parent_pid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolume_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_pid(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION, (value));
-}
+#define otel_attr_process_pid(value) otel_attr_value_process_pid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_process_real_user_id(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME, (value));
-}
+#define otel_attr_process_real_user_id(value) otel_attr_value_process_real_user_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_status_phase(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, (value));
+static inline const otel_attribute_t *otel_attr_value_process_real_user_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID, (value));
-}
+#define otel_attr_process_real_user_name(value) otel_attr_value_process_real_user_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_pod_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_runtime_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_pod_hostname(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME, (value));
-}
+#define otel_attr_process_runtime_description(value) otel_attr_value_process_runtime_description((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_pod_ip(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_IP, (value));
+static inline const otel_attribute_t *otel_attr_value_process_runtime_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_pod_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_LABEL, (value));
-}
+#define otel_attr_process_runtime_name(value) otel_attr_value_process_runtime_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_pod_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_runtime_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_pod_start_time(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_START_TIME, (value));
-}
+#define otel_attr_process_runtime_version(value) otel_attr_value_process_runtime_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_pod_status_phase(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE, (value));
+static inline const otel_attribute_t *otel_attr_value_process_saved_user_id(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_pod_status_reason(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON, (value));
-}
+#define otel_attr_process_saved_user_id(value) otel_attr_value_process_saved_user_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_pod_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_saved_user_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_replicaset_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION, (value));
-}
+#define otel_attr_process_saved_user_name(value) otel_attr_value_process_saved_user_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_replicaset_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_process_session_leader_pid(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_replicaset_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME, (value));
-}
+#define otel_attr_process_session_leader_pid(value) otel_attr_value_process_session_leader_pid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_replicaset_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_replicationcontroller_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME, (value));
-}
+#define otel_attr_process_state(value) otel_attr_value_process_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_replicationcontroller_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_process_title(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_TITLE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_resourcequota_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME, (value));
-}
+#define otel_attr_process_title(value) otel_attr_value_process_title((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_resourcequota_resource_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_process_user_id(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_USER_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_resourcequota_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID, (value));
-}
+#define otel_attr_process_user_id(value) otel_attr_value_process_user_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_user_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_USER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_service_endpoint_address_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE, (value));
-}
+#define otel_attr_process_user_name(value) otel_attr_value_process_user_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_endpoint_condition(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION, (value));
+static inline const otel_attribute_t *otel_attr_value_process_vpid(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_VPID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_service_endpoint_zone(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE, (value));
-}
+#define otel_attr_process_vpid(value) otel_attr_value_process_vpid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_process_working_directory(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_service_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_NAME, (value));
-}
+#define otel_attr_process_working_directory(value) otel_attr_value_process_working_directory((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_publish_not_ready_addresses(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES, (value));
+static inline const otel_attribute_t *otel_attr_value_profile_frame_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_service_selector(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR, (value));
-}
+#define otel_attr_profile_frame_type(value) otel_attr_value_profile_frame_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_traffic_distribution(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION, (value));
+static inline const otel_attribute_t *otel_attr_value_rpc_method(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_service_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE, (value));
-}
+#define otel_attr_rpc_method(value) otel_attr_value_rpc_method((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_service_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_rpc_method_original(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_statefulset_annotation(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION, (value));
-}
+#define otel_attr_rpc_method_original(value) otel_attr_value_rpc_method_original((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_statefulset_label(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL, (value));
+static inline const otel_attribute_t *otel_attr_value_rpc_response_status_code(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_statefulset_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME, (value));
-}
+#define otel_attr_rpc_response_status_code(value) otel_attr_value_rpc_response_status_code((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_statefulset_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_category(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_storageclass_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME, (value));
-}
+#define otel_attr_security_rule_category(value) otel_attr_value_security_rule_category((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_k8s_volume_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_k8s_volume_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE, (value));
-}
+#define otel_attr_security_rule_description(value) otel_attr_value_security_rule_description((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_log_file_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_license(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_log_file_name_resolved(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED, (value));
-}
+#define otel_attr_security_rule_license(value) otel_attr_value_security_rule_license((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_log_file_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_log_file_path_resolved(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED, (value));
-}
+#define otel_attr_security_rule_name(value) otel_attr_value_security_rule_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_log_record_original(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_reference(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_log_record_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_UID, (value));
-}
+#define otel_attr_security_rule_reference(value) otel_attr_value_security_rule_reference((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_mainframe_lpar_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_ruleset_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_batch_message_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT, (value));
-}
+#define otel_attr_security_rule_ruleset_name(value) otel_attr_value_security_rule_ruleset_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_client_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_uuid(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_UUID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_consumer_group_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME, (value));
-}
+#define otel_attr_security_rule_uuid(value) otel_attr_value_security_rule_uuid((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_destination_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_security_rule_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_destination_partition_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID, (value));
-}
+#define otel_attr_security_rule_version(value) otel_attr_value_security_rule_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_destination_publish_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_server_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVER_ADDRESS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_destination_subscription_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME, (value));
-}
+#define otel_attr_server_address(value) otel_attr_value_server_address((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_destination_template(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE, (value));
+static inline const otel_attribute_t *otel_attr_value_server_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_SERVER_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_gcp_pubsub_message_ack_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, (value));
-}
+#define otel_attr_server_port(value) otel_attr_value_server_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_kafka_message_key(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY, (value));
+static inline const otel_attribute_t *otel_attr_value_service_criticality(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_CRITICALITY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_kafka_offset(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET, (value));
-}
+#define otel_attr_service_criticality(value) otel_attr_value_service_criticality((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_message_body_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_service_instance_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_message_conversation_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID, (value));
-}
+#define otel_attr_service_instance_id(value) otel_attr_value_service_instance_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_message_envelope_size(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE, (value));
+static inline const otel_attribute_t *otel_attr_value_service_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_message_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID, (value));
-}
+#define otel_attr_service_name(value) otel_attr_value_service_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_operation_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_service_namespace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAMESPACE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_rabbitmq_message_delivery_tag(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG, (value));
-}
+#define otel_attr_service_namespace(value) otel_attr_value_service_namespace((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_rocketmq_message_group(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP, (value));
+static inline const otel_attribute_t *otel_attr_value_service_peer_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_messaging_rocketmq_message_tag(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG, (value));
-}
+#define otel_attr_service_peer_name(value) otel_attr_value_service_peer_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_messaging_rocketmq_namespace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE, (value));
+static inline const otel_attribute_t *otel_attr_value_service_peer_namespace(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_net_host_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_NET_HOST_PORT, (value));
-}
+#define otel_attr_service_peer_namespace(value) otel_attr_value_service_peer_namespace((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_net_sock_peer_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_service_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_carrier_icc(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC, (value));
-}
+#define otel_attr_service_version(value) otel_attr_value_service_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_carrier_mcc(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC, (value));
+static inline const otel_attribute_t *otel_attr_value_session_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SESSION_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_carrier_mnc(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC, (value));
-}
+#define otel_attr_session_id(value) otel_attr_value_session_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_carrier_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_session_previous_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_connection_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE, (value));
-}
+#define otel_attr_session_previous_id(value) otel_attr_value_session_previous_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_connection_subtype(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_signalr_connection_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_connection_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE, (value));
-}
+#define otel_attr_signalr_connection_status(value) otel_attr_value_signalr_connection_status((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_interface_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_signalr_transport(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_io_direction(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION, (value));
-}
+#define otel_attr_signalr_transport(value) otel_attr_value_signalr_transport((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_local_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS, (value));
+static inline const otel_attribute_t *otel_attr_value_source_address(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SOURCE_ADDRESS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_local_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT, (value));
-}
+#define otel_attr_source_address(value) otel_attr_value_source_address((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_peer_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS, (value));
+static inline const otel_attribute_t *otel_attr_value_source_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_SOURCE_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_peer_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_PEER_PORT, (value));
-}
+#define otel_attr_source_port(value) otel_attr_value_source_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_protocol_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_system_cpu_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_protocol_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION, (value));
-}
+#define otel_attr_system_cpu_state(value) otel_attr_value_system_cpu_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_network_transport(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TRANSPORT, (value));
+static inline const otel_attribute_t *otel_attr_value_system_device(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_DEVICE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_network_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TYPE, (value));
-}
+#define otel_attr_system_device(value) otel_attr_value_system_device((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_nfs_operation_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NFS_OPERATION_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_mode(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_nfs_server_repcache_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS, (value));
-}
+#define otel_attr_system_filesystem_mode(value) otel_attr_value_system_filesystem_mode((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_oci_manifest_digest(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST, (value));
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_mountpoint(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_onc_rpc_procedure_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME, (value));
-}
+#define otel_attr_system_filesystem_mountpoint(value) otel_attr_value_system_filesystem_mountpoint((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_onc_rpc_program_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_openshift_clusterquota_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME, (value));
-}
+#define otel_attr_system_filesystem_state(value) otel_attr_value_system_filesystem_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_openshift_clusterquota_uid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID, (value));
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_oracle_cloud_realm(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM, (value));
-}
+#define otel_attr_system_filesystem_type(value) otel_attr_value_system_filesystem_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_oracle_db_domain(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN, (value));
+static inline const otel_attribute_t *otel_attr_value_system_memory_linux_hugepages_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_oracle_db_instance_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME, (value));
-}
+#define otel_attr_system_memory_linux_hugepages_state(value) otel_attr_value_system_memory_linux_hugepages_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_oracle_db_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_system_memory_linux_slab_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_oracle_db_pdb(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_PDB, (value));
-}
+#define otel_attr_system_memory_linux_slab_state(value) otel_attr_value_system_memory_linux_slab_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_oracle_db_service(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE, (value));
+static inline const otel_attribute_t *otel_attr_value_system_memory_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_os_build_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OS_BUILD_ID, (value));
-}
+#define otel_attr_system_memory_state(value) otel_attr_value_system_memory_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_os_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OS_DESCRIPTION, (value));
+static inline const otel_attribute_t *otel_attr_value_system_paging_direction(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_os_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OS_NAME, (value));
-}
+#define otel_attr_system_paging_direction(value) otel_attr_value_system_paging_direction((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_os_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OS_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_system_paging_fault_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_otel_component_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME, (value));
-}
+#define otel_attr_system_paging_fault_type(value) otel_attr_value_system_paging_fault_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_otel_component_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_system_paging_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_otel_event_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_EVENT_NAME, (value));
-}
+#define otel_attr_system_paging_state(value) otel_attr_value_system_paging_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_otel_scope_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_telemetry_distro_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_otel_scope_schema_url(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL, (value));
-}
+#define otel_attr_telemetry_distro_name(value) otel_attr_value_telemetry_distro_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_otel_scope_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_telemetry_distro_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_otel_status_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION, (value));
-}
+#define otel_attr_telemetry_distro_version(value) otel_attr_value_telemetry_distro_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_pprof_profile_doc_url(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL, (value));
+static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_pprof_profile_drop_frames(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES, (value));
-}
+#define otel_attr_telemetry_sdk_name(value) otel_attr_value_telemetry_sdk_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_pprof_profile_keep_frames(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES, (value));
+static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_pprof_scope_default_sample_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE, (value));
-}
+#define otel_attr_telemetry_sdk_version(value) otel_attr_value_telemetry_sdk_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_args_count(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT, (value));
+static inline const otel_attribute_t *otel_attr_value_test_case_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_command(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND, (value));
-}
+#define otel_attr_test_case_name(value) otel_attr_value_test_case_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_command_line(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE, (value));
+static inline const otel_attribute_t *otel_attr_value_test_case_result_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_creation_time(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME, (value));
-}
+#define otel_attr_test_case_result_status(value) otel_attr_value_test_case_result_status((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_environment_variable(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE, (value));
+static inline const otel_attribute_t *otel_attr_value_test_suite_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_executable_build_id_gnu(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU, (value));
-}
+#define otel_attr_test_suite_name(value) otel_attr_value_test_suite_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_executable_build_id_go(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO, (value));
+static inline const otel_attribute_t *otel_attr_value_test_suite_run_status(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_executable_build_id_htlhash(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH, (value));
-}
+#define otel_attr_test_suite_run_status(value) otel_attr_value_test_suite_run_status((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_executable_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_thread_id(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_THREAD_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_executable_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH, (value));
-}
+#define otel_attr_thread_id(value) otel_attr_value_thread_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_exit_code(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE, (value));
+static inline const otel_attribute_t *otel_attr_value_thread_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_THREAD_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_exit_time(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME, (value));
-}
+#define otel_attr_thread_name(value) otel_attr_value_thread_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_group_leader_pid(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_cipher(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CIPHER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_linux_cgroup(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP, (value));
-}
+#define otel_attr_tls_cipher(value) otel_attr_value_tls_cipher((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_owner(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_OWNER, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_certificate(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_parent_pid(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PARENT_PID, (value));
-}
+#define otel_attr_tls_client_certificate(value) otel_attr_value_tls_client_certificate((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_pid(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_md5(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_real_user_id(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID, (value));
-}
+#define otel_attr_tls_client_hash_md5(value) otel_attr_value_tls_client_hash_md5((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_real_user_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha1(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_runtime_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION, (value));
-}
+#define otel_attr_tls_client_hash_sha1(value) otel_attr_value_tls_client_hash_sha1((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_runtime_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha256(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_runtime_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION, (value));
-}
+#define otel_attr_tls_client_hash_sha256(value) otel_attr_value_tls_client_hash_sha256((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_saved_user_id(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_issuer(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_saved_user_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME, (value));
-}
+#define otel_attr_tls_client_issuer(value) otel_attr_value_tls_client_issuer((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_session_leader_pid(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_ja3(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_JA3, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_STATE, (value));
-}
+#define otel_attr_tls_client_ja3(value) otel_attr_value_tls_client_ja3((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_title(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_TITLE, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_not_after(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_user_id(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_USER_ID, (value));
-}
+#define otel_attr_tls_client_not_after(value) otel_attr_value_tls_client_not_after((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_user_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_USER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_not_before(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_process_vpid(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_VPID, (value));
-}
+#define otel_attr_tls_client_not_before(value) otel_attr_value_tls_client_not_before((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_process_working_directory(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_client_subject(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_profile_frame_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE, (value));
-}
+#define otel_attr_tls_client_subject(value) otel_attr_value_tls_client_subject((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_rpc_method(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_curve(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CURVE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_rpc_method_original(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL, (value));
-}
+#define otel_attr_tls_curve(value) otel_attr_value_tls_curve((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_rpc_response_status_code(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_established(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_TLS_ESTABLISHED, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_security_rule_category(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY, (value));
-}
+#define otel_attr_tls_established(value) otel_attr_value_tls_established((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_security_rule_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_next_protocol(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_security_rule_license(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE, (value));
-}
+#define otel_attr_tls_next_protocol(value) otel_attr_value_tls_next_protocol((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_security_rule_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_protocol_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_security_rule_reference(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE, (value));
-}
+#define otel_attr_tls_protocol_version(value) otel_attr_value_tls_protocol_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_security_rule_ruleset_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_resumed(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool(OTEL_ATTRIBUTE_TLS_RESUMED, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_security_rule_uuid(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_UUID, (value));
-}
+#define otel_attr_tls_resumed(value) otel_attr_value_tls_resumed((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_security_rule_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_certificate(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_server_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVER_ADDRESS, (value));
-}
+#define otel_attr_tls_server_certificate(value) otel_attr_value_tls_server_certificate((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_server_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_SERVER_PORT, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_md5(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_service_criticality(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_CRITICALITY, (value));
-}
+#define otel_attr_tls_server_hash_md5(value) otel_attr_value_tls_server_hash_md5((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_service_instance_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha1(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_service_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAME, (value));
-}
+#define otel_attr_tls_server_hash_sha1(value) otel_attr_value_tls_server_hash_sha1((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_service_namespace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAMESPACE, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha256(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_service_peer_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAME, (value));
-}
+#define otel_attr_tls_server_hash_sha256(value) otel_attr_value_tls_server_hash_sha256((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_service_peer_namespace(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_issuer(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_service_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_VERSION, (value));
-}
+#define otel_attr_tls_server_issuer(value) otel_attr_value_tls_server_issuer((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_session_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SESSION_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_ja3s(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_JA3S, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_session_previous_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID, (value));
-}
+#define otel_attr_tls_server_ja3s(value) otel_attr_value_tls_server_ja3s((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_signalr_connection_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_not_after(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_signalr_transport(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT, (value));
-}
+#define otel_attr_tls_server_not_after(value) otel_attr_value_tls_server_not_after((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_source_address(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SOURCE_ADDRESS, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_not_before(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_source_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_SOURCE_PORT, (value));
-}
+#define otel_attr_tls_server_not_before(value) otel_attr_value_tls_server_not_before((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_cpu_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_tls_server_subject(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_device(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_DEVICE, (value));
-}
+#define otel_attr_tls_server_subject(value) otel_attr_value_tls_server_subject((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_filesystem_mode(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE, (value));
+static inline const otel_attribute_t *otel_attr_value_url_domain(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_DOMAIN, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_filesystem_mountpoint(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT, (value));
-}
+#define otel_attr_url_domain(value) otel_attr_value_url_domain((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_filesystem_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_url_extension(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_EXTENSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_filesystem_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE, (value));
-}
+#define otel_attr_url_extension(value) otel_attr_value_url_extension((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_memory_linux_hugepages_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_url_fragment(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_FRAGMENT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_memory_linux_slab_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE, (value));
-}
+#define otel_attr_url_fragment(value) otel_attr_value_url_fragment((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_memory_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_FULL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_paging_direction(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION, (value));
-}
+#define otel_attr_url_full(value) otel_attr_value_url_full((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_system_paging_fault_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_url_original(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_ORIGINAL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_system_paging_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE, (value));
-}
+#define otel_attr_url_original(value) otel_attr_value_url_original((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_telemetry_distro_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_url_path(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_PATH, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_telemetry_distro_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION, (value));
-}
+#define otel_attr_url_path(value) otel_attr_value_url_path((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_telemetry_sdk_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_url_port(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64(OTEL_ATTRIBUTE_URL_PORT, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_telemetry_sdk_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION, (value));
-}
+#define otel_attr_url_port(value) otel_attr_value_url_port((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_test_case_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_url_query(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_QUERY, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_test_case_result_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS, (value));
-}
+#define otel_attr_url_query(value) otel_attr_value_url_query((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_test_suite_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_url_registered_domain(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_test_suite_run_status(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS, (value));
-}
+#define otel_attr_url_registered_domain(value) otel_attr_value_url_registered_domain((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_thread_id(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_THREAD_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_url_scheme(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_SCHEME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_thread_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_THREAD_NAME, (value));
-}
+#define otel_attr_url_scheme(value) otel_attr_value_url_scheme((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_cipher(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CIPHER, (value));
+static inline const otel_attribute_t *otel_attr_value_url_subdomain(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_SUBDOMAIN, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_client_certificate(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE, (value));
-}
+#define otel_attr_url_subdomain(value) otel_attr_value_url_subdomain((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_client_hash_md5(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5, (value));
+static inline const otel_attribute_t *otel_attr_value_url_template(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_TEMPLATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_client_hash_sha1(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1, (value));
-}
+#define otel_attr_url_template(value) otel_attr_value_url_template((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_client_hash_sha256(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256, (value));
+static inline const otel_attribute_t *otel_attr_value_url_top_level_domain(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_client_issuer(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER, (value));
-}
+#define otel_attr_url_top_level_domain(value) otel_attr_value_url_top_level_domain((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_client_ja3(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_JA3, (value));
+static inline const otel_attribute_t *otel_attr_value_user_agent_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_client_not_after(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER, (value));
-}
+#define otel_attr_user_agent_name(value) otel_attr_value_user_agent_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_client_not_before(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE, (value));
+static inline const otel_attribute_t *otel_attr_value_user_agent_original(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_client_subject(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT, (value));
-}
+#define otel_attr_user_agent_original(value) otel_attr_value_user_agent_original((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_curve(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CURVE, (value));
+static inline const otel_attribute_t *otel_attr_value_user_agent_os_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_established(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_TLS_ESTABLISHED, (value));
-}
+#define otel_attr_user_agent_os_name(value) otel_attr_value_user_agent_os_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_next_protocol(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL, (value));
+static inline const otel_attribute_t *otel_attr_value_user_agent_os_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_protocol_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION, (value));
-}
+#define otel_attr_user_agent_os_version(value) otel_attr_value_user_agent_os_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_resumed(int value) {
-    return otel_attr_bool(OTEL_ATTRIBUTE_TLS_RESUMED, (value));
+static inline const otel_attribute_t *otel_attr_value_user_agent_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_server_certificate(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE, (value));
-}
+#define otel_attr_user_agent_version(value) otel_attr_value_user_agent_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_server_hash_md5(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5, (value));
+static inline const otel_attribute_t *otel_attr_value_user_email(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_EMAIL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_server_hash_sha1(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1, (value));
-}
+#define otel_attr_user_email(value) otel_attr_value_user_email((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_server_hash_sha256(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256, (value));
+static inline const otel_attribute_t *otel_attr_value_user_full_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_FULL_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_server_issuer(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER, (value));
-}
+#define otel_attr_user_full_name(value) otel_attr_value_user_full_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_server_ja3s(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_JA3S, (value));
+static inline const otel_attribute_t *otel_attr_value_user_hash(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_HASH, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_server_not_after(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER, (value));
-}
+#define otel_attr_user_hash(value) otel_attr_value_user_hash((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_tls_server_not_before(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE, (value));
+static inline const otel_attribute_t *otel_attr_value_user_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_tls_server_subject(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT, (value));
-}
+#define otel_attr_user_id(value) otel_attr_value_user_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_domain(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_DOMAIN, (value));
+static inline const otel_attribute_t *otel_attr_value_user_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_extension(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_EXTENSION, (value));
-}
+#define otel_attr_user_name(value) otel_attr_value_user_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_fragment(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_FRAGMENT, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_change_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_FULL, (value));
-}
+#define otel_attr_vcs_change_id(value) otel_attr_value_vcs_change_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_original(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_ORIGINAL, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_change_state(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_STATE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_path(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_PATH, (value));
-}
+#define otel_attr_vcs_change_state(value) otel_attr_value_vcs_change_state((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_port(int64_t value) {
-    return otel_attr_i64(OTEL_ATTRIBUTE_URL_PORT, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_change_title(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_query(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_QUERY, (value));
-}
+#define otel_attr_vcs_change_title(value) otel_attr_value_vcs_change_title((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_registered_domain(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_line_change_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_scheme(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_SCHEME, (value));
-}
+#define otel_attr_vcs_line_change_type(value) otel_attr_value_vcs_line_change_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_subdomain(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_SUBDOMAIN, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_owner_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_OWNER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_url_template(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_TEMPLATE, (value));
-}
+#define otel_attr_vcs_owner_name(value) otel_attr_value_vcs_owner_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_url_top_level_domain(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_provider_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_user_agent_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_NAME, (value));
-}
+#define otel_attr_vcs_provider_name(value) otel_attr_value_vcs_provider_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_user_agent_original(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_user_agent_os_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME, (value));
-}
+#define otel_attr_vcs_ref_base_name(value) otel_attr_value_vcs_ref_base_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_user_agent_os_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_revision(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_user_agent_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_VERSION, (value));
-}
+#define otel_attr_vcs_ref_base_revision(value) otel_attr_value_vcs_ref_base_revision((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_user_email(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_EMAIL, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_user_full_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_FULL_NAME, (value));
-}
+#define otel_attr_vcs_ref_base_type(value) otel_attr_value_vcs_ref_base_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_user_hash(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_HASH, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_user_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_ID, (value));
-}
+#define otel_attr_vcs_ref_head_name(value) otel_attr_value_vcs_ref_head_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_user_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_USER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_revision(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_change_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_ID, (value));
-}
+#define otel_attr_vcs_ref_head_revision(value) otel_attr_value_vcs_ref_head_revision((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_change_state(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_STATE, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_change_title(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE, (value));
-}
+#define otel_attr_vcs_ref_head_type(value) otel_attr_value_vcs_ref_head_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_line_change_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_type(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_TYPE, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_owner_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_OWNER_NAME, (value));
-}
+#define otel_attr_vcs_ref_type(value) otel_attr_value_vcs_ref_type((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_provider_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_repository_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_ref_base_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME, (value));
-}
+#define otel_attr_vcs_repository_name(value) otel_attr_value_vcs_repository_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_ref_base_revision(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_repository_url_full(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_ref_base_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE, (value));
-}
+#define otel_attr_vcs_repository_url_full(value) otel_attr_value_vcs_repository_url_full((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_ref_head_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_vcs_revision_delta_direction(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_ref_head_revision(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION, (value));
-}
+#define otel_attr_vcs_revision_delta_direction(value) otel_attr_value_vcs_revision_delta_direction((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_ref_head_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE, (value));
+static inline const otel_attribute_t *otel_attr_value_webengine_description(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_ref_type(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_TYPE, (value));
-}
+#define otel_attr_webengine_description(value) otel_attr_value_webengine_description((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_repository_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_webengine_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_vcs_repository_url_full(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL, (value));
-}
+#define otel_attr_webengine_name(value) otel_attr_value_webengine_name((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_vcs_revision_delta_direction(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION, (value));
+static inline const otel_attribute_t *otel_attr_value_webengine_version(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_VERSION, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_webengine_description(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION, (value));
-}
+#define otel_attr_webengine_version(value) otel_attr_value_webengine_version((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_webengine_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_NAME, (value));
+static inline const otel_attribute_t *otel_attr_value_zos_smf_id(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ZOS_SMF_ID, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_webengine_version(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_VERSION, (value));
-}
+#define otel_attr_zos_smf_id(value) otel_attr_value_zos_smf_id((value), &(otel_attribute_t){0})
 
-static inline otel_attribute_t otel_attr_zos_smf_id(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ZOS_SMF_ID, (value));
+static inline const otel_attribute_t *otel_attr_value_zos_sysplex_name(const char *value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME, (value));
+    return slot;
 }
 
-static inline otel_attribute_t otel_attr_zos_sysplex_name(const char *value) {
-    return otel_attr_string(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME, (value));
-}
+#define otel_attr_zos_sysplex_name(value) otel_attr_value_zos_sysplex_name((value), &(otel_attribute_t){0})
 
 
 /* Metric helpers using the semconv instrument, unit, and description. */

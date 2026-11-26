@@ -1,16 +1,24 @@
 //! Trace provider, tracer, and span APIs.
 
 use std::env;
-use std::ffi::c_char;
+use std::ffi::{VaList, c_char};
+use std::ptr;
 use std::sync::{Arc, Mutex};
+use std::time::SystemTime;
 
-use opentelemetry::trace::{Span as _, Status, Tracer as _, TracerProvider as _};
+use opentelemetry::Context;
+use opentelemetry::KeyValue;
+use opentelemetry::trace::{
+    Span as _, SpanContext, SpanId, SpanKind, Status, TraceFlags, TraceId, TraceState,
+    Tracer as _, TracerProvider as _,
+};
 use opentelemetry_sdk::trace::{
     BatchConfigBuilder, BatchSpanProcessor, Sampler, SimpleSpanProcessor, SdkTracerProvider,
     Span as SdkSpan,
 };
 
 use crate::attributes::from_varargs;
+use crate::handles::ContextInner;
 use crate::config::{
     build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
 };
@@ -19,7 +27,10 @@ use crate::handles::{
     RuntimeInner, SpanInner, TracerInner, TracerProviderInner, arc, const_slot, copy_string, init,
     optional_resource, optional_runtime, slot,
 };
-use crate::handles::{otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_tracer_t};
+use crate::handles::{
+    otel_context_t, otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_tracer_t,
+};
+use crate::util::system_time;
 
 /// Explicit span status exported to C.
 #[non_exhaustive]
@@ -32,6 +43,99 @@ pub enum otel_span_status_t {
     OTEL_SPAN_STATUS_OK = 1,
     /// The operation failed.
     OTEL_SPAN_STATUS_ERROR = 2,
+}
+
+/// Span kind. Pass `-1` in `otel_span_options_t` to use the SDK default.
+#[non_exhaustive]
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum otel_span_kind_t {
+    OTEL_SPAN_KIND_INTERNAL = 0,
+    OTEL_SPAN_KIND_SERVER = 1,
+    OTEL_SPAN_KIND_CLIENT = 2,
+    OTEL_SPAN_KIND_PRODUCER = 3,
+    OTEL_SPAN_KIND_CONSUMER = 4,
+}
+
+/// Optional span-start configuration. Initialize with
+/// `OTEL_SPAN_OPTIONS_INIT` and set `size` to `sizeof(otel_span_options_t)`.
+#[repr(C)]
+pub struct otel_span_options_t {
+    pub size: usize,
+    /// One of `otel_span_kind_t`, or `-1` for the SDK default.
+    pub kind: i32,
+    /// Unix timestamp in nanoseconds; zero means "now".
+    pub start_time_unix_nano: i64,
+    /// Optional parent context; NULL uses the context attached to this thread.
+    pub parent: *const otel_context_t,
+}
+
+fn span_kind(value: i32) -> Result<Option<SpanKind>> {
+    match value {
+        -1 => Ok(None),
+        0 => Ok(Some(SpanKind::Internal)),
+        1 => Ok(Some(SpanKind::Server)),
+        2 => Ok(Some(SpanKind::Client)),
+        3 => Ok(Some(SpanKind::Producer)),
+        4 => Ok(Some(SpanKind::Consumer)),
+        other => Err(Error::invalid(format!("invalid span kind {other}"))),
+    }
+}
+
+unsafe fn span_options(
+    options: *const otel_span_options_t,
+) -> Result<(Option<SpanKind>, Option<SystemTime>, Option<Context>)> {
+    if options.is_null() {
+        return Ok((None, None, None));
+    }
+    let options = unsafe { &*options };
+    if options.size < std::mem::size_of::<otel_span_options_t>() {
+        return Err(Error::invalid("otel_span_options_t.size is too small"));
+    }
+    let kind = span_kind(options.kind)?;
+    let start = system_time(options.start_time_unix_nano)?;
+    let parent = if options.parent.is_null() {
+        None
+    } else {
+        let context = unsafe { arc::<ContextInner>(const_slot(options.parent)) }?;
+        Some(context.as_ref().clone())
+    };
+    Ok((kind, start, parent))
+}
+
+unsafe fn start_span(
+    tracer: *const otel_tracer_t,
+    options: *const otel_span_options_t,
+    handle: *mut otel_span_t,
+    name: *const c_char,
+    attributes: VaList,
+) -> Result<()> {
+    let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
+    let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+    let attributes = unsafe { from_varargs(attributes) }?;
+    let (kind, start, parent) = unsafe { span_options(options)? };
+    let mut builder = tracer.span_builder(name).with_attributes(attributes);
+    if let Some(kind) = kind {
+        builder = builder.with_kind(kind);
+    }
+    if let Some(start) = start {
+        builder = builder.with_start_time(start);
+    }
+    let span: SdkSpan = match parent {
+        Some(parent) => tracer.build_with_context(builder, &parent),
+        None => tracer.build(builder),
+    };
+    unsafe { init(slot(handle), Mutex::new(Some(span))) }
+}
+
+/// Returns the `SpanContext` behind a handle, including ended spans.
+pub(crate) unsafe fn span_context(span: *const otel_span_t) -> Result<SpanContext> {
+    let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+    let guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+    let span = guard
+        .as_ref()
+        .ok_or_else(|| Error::invalid("span has already ended"))?;
+    Ok(span.span_context().clone())
 }
 
 fn sampler_from_env() -> Result<Sampler> {
@@ -181,16 +285,19 @@ pub unsafe extern "C" fn otel_tracer_span_start(
     name: *const c_char,
     attributes: ...,
 ) -> otel_result_t {
-    guard(|| {
-        let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
-        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
-        let attributes = unsafe { from_varargs(attributes) }?;
-        let mut builder = tracer.span_builder(name);
-        builder.attributes = Some(attributes);
-        let span: SdkSpan = tracer.build(builder);
-        unsafe { init(slot(handle), Mutex::new(Some(span))) }?;
-        Ok(())
-    })
+    guard(|| unsafe { start_span(tracer, ptr::null(), handle, name, attributes) })
+}
+
+/// Starts a span with an explicit parent, kind, and start timestamp.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_span_start_with_options(
+    tracer: *const otel_tracer_t,
+    options: *const otel_span_options_t,
+    handle: *mut otel_span_t,
+    name: *const c_char,
+    attributes: ...,
+) -> otel_result_t {
+    guard(|| unsafe { start_span(tracer, options, handle, name, attributes) })
 }
 
 /// Adds attributes to a started span.
@@ -256,6 +363,142 @@ pub unsafe extern "C" fn otel_span_set_status(
             }
         };
         span.set_status(status);
+        Ok(())
+    })
+}
+
+/// Updates the name of a started span.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_update_name(
+    span: *const otel_span_t,
+    name: *const c_char,
+) -> otel_result_t {
+    guard(|| {
+        let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let span = guard
+            .as_mut()
+            .ok_or_else(|| Error::invalid("span has already ended"))?;
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        span.update_name(name);
+        Ok(())
+    })
+}
+
+/// Adds an event with an explicit Unix timestamp in nanoseconds.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
+    span: *const otel_span_t,
+    name: *const c_char,
+    timestamp_unix_nano: i64,
+    attributes: ...,
+) -> otel_result_t {
+    guard(|| {
+        let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let span = guard
+            .as_mut()
+            .ok_or_else(|| Error::invalid("span has already ended"))?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        let timestamp = system_time(timestamp_unix_nano)?
+            .ok_or_else(|| Error::invalid("event timestamp must be non-zero"))?;
+        let attributes = unsafe { from_varargs(attributes) }?;
+        span.add_event_with_timestamp(name, timestamp, attributes);
+        Ok(())
+    })
+}
+
+/// Adds a link to a span using hex-encoded trace and span IDs.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_link(
+    span: *const otel_span_t,
+    trace_id_hex: *const c_char,
+    span_id_hex: *const c_char,
+    attributes: ...,
+) -> otel_result_t {
+    guard(|| {
+        let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let span = guard
+            .as_mut()
+            .ok_or_else(|| Error::invalid("span has already ended"))?;
+        let trace_id = utf8(
+            unsafe { c_str(trace_id_hex, "link trace ID")? },
+            "link trace ID",
+        )?;
+        let span_id = utf8(
+            unsafe { c_str(span_id_hex, "link span ID")? },
+            "link span ID",
+        )?;
+        let trace_id = TraceId::from_hex(&trace_id)
+            .map_err(|_| Error::invalid("link trace ID must be 32 hex digits"))?;
+        let span_id = SpanId::from_hex(&span_id)
+            .map_err(|_| Error::invalid("link span ID must be 16 hex digits"))?;
+        let context = SpanContext::new(
+            trace_id,
+            span_id,
+            TraceFlags::SAMPLED,
+            false,
+            TraceState::NONE,
+        );
+        if !context.is_valid() {
+            return Err(Error::invalid("link span context is not valid"));
+        }
+        let attributes = unsafe { from_varargs(attributes) }?;
+        span.add_link(context, attributes);
+        Ok(())
+    })
+}
+
+/// Records an exception as an event with standard semantic attributes.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_record_exception(
+    span: *const otel_span_t,
+    exception_type: *const c_char,
+    message: *const c_char,
+    stacktrace: *const c_char,
+    attributes: ...,
+) -> otel_result_t {
+    guard(|| {
+        let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let span = guard
+            .as_mut()
+            .ok_or_else(|| Error::invalid("span has already ended"))?;
+        let mut values = unsafe { from_varargs(attributes) }?;
+        for (key, pointer) in [
+            ("exception.type", exception_type),
+            ("exception.message", message),
+            ("exception.stacktrace", stacktrace),
+        ] {
+            if !pointer.is_null() {
+                let value = utf8(
+                    unsafe { c_str(pointer, key)? },
+                    key,
+                )?;
+                values.push(KeyValue::new(key, value));
+            }
+        }
+        span.add_event("exception", values);
+        Ok(())
+    })
+}
+
+/// Ends a span at an explicit Unix timestamp in nanoseconds.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_end_with_timestamp(
+    span: *const otel_span_t,
+    timestamp_unix_nano: i64,
+) -> otel_result_t {
+    guard(|| {
+        let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
+        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        if let Some(span) = guard.as_mut() {
+            match system_time(timestamp_unix_nano)? {
+                Some(timestamp) => span.end_with_timestamp(timestamp),
+                None => span.end(),
+            }
+        }
         Ok(())
     })
 }

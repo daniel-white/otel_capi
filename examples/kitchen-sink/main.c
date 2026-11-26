@@ -12,6 +12,7 @@
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 _Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_PANIC,
                "result sentinel must follow the last result code");
@@ -101,6 +102,11 @@ int main(void) {
   otel_logger_t logger = OTEL_LOGGER_T_INIT;
   otel_span_t span = OTEL_SPAN_T_INIT;
   otel_span_t span_copy = OTEL_SPAN_T_INIT;
+  otel_span_t child = OTEL_SPAN_T_INIT;
+  otel_context_t extracted = OTEL_CONTEXT_T_INIT;
+  otel_context_t with_baggage = OTEL_CONTEXT_T_INIT;
+  otel_context_t current = OTEL_CONTEXT_T_INIT;
+  otel_context_scope_t scope = OTEL_CONTEXT_SCOPE_T_INIT;
   otel_counter_u64_t counter_u64 = OTEL_COUNTER_U64_T_INIT;
   otel_counter_f64_t counter_f64 = OTEL_COUNTER_F64_T_INIT;
   otel_updown_counter_i64_t updown = OTEL_UPDOWN_COUNTER_I64_T_INIT;
@@ -111,7 +117,9 @@ int main(void) {
   printf("cotel version %s\n", otel_version());
 
   CHECK(otel_runtime_new(&runtime));
-  CHECK(otel_resource_new(&resource));
+  CHECK(otel_resource_new_with_attributes(
+      &resource, otel_attr_string("deployment.environment", "kitchen-sink"),
+      otel_attr_i64("cotel.kitchen_sink", 1), OTEL_ATTR_END));
   if (!otel_runtime_is_valid(&runtime) || !otel_resource_is_valid(&resource)) {
     fprintf(stderr, "runtime or resource handle is invalid\n");
     goto cleanup;
@@ -132,6 +140,46 @@ int main(void) {
     fprintf(stderr, "signal scope handle is invalid\n");
     goto cleanup;
   }
+
+  /* Propagation: extract a remote parent, carry baggage, and inject it. */
+  const char *remote_traceparent =
+      "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+  char baggage_value[32];
+  char injected_traceparent[64];
+  CHECK(otel_context_extract(remote_traceparent, NULL, "tenant=acme", &extracted));
+  CHECK(otel_context_get_baggage(&extracted, "tenant", baggage_value,
+                                 sizeof(baggage_value)));
+  printf("extracted tenant=%s\n", baggage_value);
+  CHECK(otel_context_set_baggage(&extracted, "request.id", "req-1", &with_baggage));
+  CHECK(otel_context_inject(&with_baggage, injected_traceparent,
+                            sizeof(injected_traceparent), NULL, 0, NULL, 0));
+  printf("injected traceparent=%s\n", injected_traceparent);
+
+  CHECK(otel_context_attach(&with_baggage, &scope));
+  CHECK(otel_context_current(&current));
+  CHECK(otel_context_get_baggage(&current, "request.id", baggage_value,
+                                 sizeof(baggage_value)));
+  printf("attached request.id=%s\n", baggage_value);
+  CHECK(otel_context_detach(&scope));
+
+  otel_span_options_t options = OTEL_SPAN_OPTIONS_INIT;
+  options.kind = OTEL_SPAN_KIND_CLIENT;
+  options.parent = &with_baggage;
+  options.start_time_unix_nano = (int64_t)time(NULL) * 1000000000LL;
+  CHECK(otel_tracer_span_start_with_options(
+      &tracer, &options, &child, "kitchen-sink.remote-child",
+      otel_attr_string("rpc.system", "http"), OTEL_ATTR_END));
+  CHECK(otel_span_update_name(&child, "kitchen-sink.remote-child.updated"));
+  CHECK(otel_span_add_link(
+      &child, "4bf92f3577b34da6a3ce929d0e0e4736", "00f067aa0ba902b7",
+      otel_attr_string("link.kind", "parent"), OTEL_ATTR_END));
+  CHECK(otel_span_add_event_with_timestamp(
+      &child, "queued", options.start_time_unix_nano,
+      otel_attr_string("queue", "default"), OTEL_ATTR_END));
+  CHECK(otel_span_record_exception(&child, "ExampleError", "recovered", NULL,
+                                   OTEL_ATTR_END));
+  CHECK(otel_span_end_with_timestamp(&child,
+                                     options.start_time_unix_nano + 1000000LL));
 
   /* Traces: every attribute kind, events, status, and ID access. */
   CHECK(otel_tracer_span_start(
@@ -219,8 +267,13 @@ cleanup:
   otel_updown_counter_i64_release(&updown);
   otel_counter_f64_release(&counter_f64);
   otel_counter_u64_release(&counter_u64);
+  otel_span_release(&child);
   otel_span_release(&span_copy);
   otel_span_release(&span);
+  otel_context_scope_release(&scope);
+  otel_context_release(&current);
+  otel_context_release(&with_baggage);
+  otel_context_release(&extracted);
   otel_logger_release(&logger);
   otel_meter_release(&meter);
   otel_tracer_release(&tracer);

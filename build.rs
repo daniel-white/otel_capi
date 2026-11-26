@@ -7,28 +7,28 @@ use std::process::Command;
 /// Convenience constructors for the C `otel_attribute_t` struct. cbindgen
 /// cannot parse macro-generated Rust functions, so these are appended here.
 const ATTRIBUTE_MACROS: &str = r#"
-/* Attribute builders. Pass a NULL-terminated list of these to any function
- * that takes variadic attributes, for example:
+/* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
+ * function that takes variadic attributes, for example:
  *
  *   otel_span_set_attributes(span,
  *       otel_attr_string("endpoint", "/checkout"),
  *       otel_attr_i64("retries", 2),
- *       NULL);
+ *       OTEL_ATTR_END);
  */
 #define otel_attr_string(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
                        (const char *)(key), \
                        { .string = (const char *)(value) } })
 #define otel_attr_bool(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
                        (const char *)(key), \
                        { .boolean = !!(value) } })
 #define otel_attr_i64(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
                        (const char *)(key), \
                        { .integer = (int64_t)(value) } })
 #define otel_attr_f64(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
                        (const char *)(key), \
                        { .double_value = (double)(value) } })
 "#;
@@ -68,6 +68,7 @@ fn main() {
     injected.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     injected.push_str(&sentinel_macros(&header));
     injected.push_str(&handle_init_macros(&header));
+    injected.push_str("#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL }\n");
     injected.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
     injected.push_str("\n/* Generated semantic-convention helpers. */\n");
     injected.push_str("#include \"cotel_semconv.h\"\n");
@@ -121,6 +122,7 @@ fn sentinel_macros(header: &str) -> String {
         "otel_result_t",
         "otel_severity_t",
         "otel_span_status_t",
+        "otel_span_kind_t",
         "otel_attribute_type_t",
     ] {
         let marker = format!("}} {ty};");
@@ -316,9 +318,14 @@ fn generate_semconv_header(root: &Path) -> String {
             "f64" => "double value",
             other => panic!("unexpected attribute builder {other}"),
         };
+        let value_helper = format!("otel_attr_value_{}", helper.trim_start_matches("otel_attr_"));
         header.push_str(&format!(
-            "static inline otel_attribute_t {}({}) {{\n    return otel_attr_{}({}, (value));\n}}\n\n",
-            helper, parameter, builder, constant
+            "static inline const otel_attribute_t *{}({}, otel_attribute_t *slot) {{\n    *slot = *otel_attr_{}({}, (value));\n    return slot;\n}}\n\n",
+            value_helper, parameter, builder, constant
+        ));
+        header.push_str(&format!(
+            "#define {}(value) {}((value), &(otel_attribute_t){{0}})\n\n",
+            helper, value_helper
         ));
     }
     header.push_str("\n/* Metric helpers using the semconv instrument, unit, and description. */\n");

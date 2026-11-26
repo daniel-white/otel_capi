@@ -2,7 +2,8 @@
 //!
 //! `otel_attribute_t` is a tagged union: `kind` selects which member of
 //! `value` is active. C callers use the `otel_attr_*` macros to initialize it
-//! and pass a `NULL`-terminated list to any function that accepts attributes.
+//! and pass an `OTEL_ATTR_END`-terminated list to any function that accepts
+//! attributes.
 
 use std::ffi::{VaList, c_char, c_int};
 
@@ -87,16 +88,16 @@ impl otel_attribute_t {
     }
 }
 
-/// Consumes a `NULL`-terminated variadic list of attribute pointers.
+/// Consumes an `OTEL_ATTR_END`-terminated variadic list of attribute pointers.
 ///
 /// # Safety
-/// Every non-NULL pointer must reference a live, initialized
-/// [`otel_attribute_t`] for the duration of the call.
+/// Every non-NULL argument must point to an initialized [`otel_attribute_t`],
+/// and its borrowed strings must stay valid for the duration of the call.
 pub(crate) unsafe fn from_varargs(mut args: VaList) -> Result<Vec<KeyValue>> {
     let mut attributes = Vec::new();
     loop {
         // SAFETY: caller guarantees each argument is an attribute pointer and
-        // that the list is terminated by NULL.
+        // that the list is terminated by an `OTEL_ATTR_END` sentinel.
         let raw = unsafe { args.next_arg::<*const otel_attribute_t>() };
         if raw.is_null() {
             return Ok(attributes);
@@ -149,6 +150,14 @@ mod tests {
         attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64 as i32;
         attr.value = otel_attribute_value_t { double_value: 1.5 };
         assert_eq!(unsafe { attr.to_key_value() }.unwrap().value, Value::F64(1.5));
+    }
+
+    #[test]
+    fn rejects_invalid_kind() {
+        let mut attr = attribute(c"k", c"v");
+        attr.kind = 99;
+        let error = unsafe { attr.to_key_value() }.unwrap_err();
+        assert_eq!(error.status, crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
     }
 
     #[test]

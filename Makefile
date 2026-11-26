@@ -51,6 +51,11 @@ example-gcc: build | $(BUILD_DIR)
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-gcc.log
+	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-gcc.log
+	grep -q ' ->  component: String' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'extracted tenant=acme' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'kitchen-sink.remote-child.updated' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'Links:' $(BUILD_DIR)/stdout-gcc.log
 
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
@@ -60,6 +65,11 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-clang.log
+	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-clang.log
+	grep -q ' ->  component: String' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'extracted tenant=acme' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'kitchen-sink.remote-child.updated' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'Links:' $(BUILD_DIR)/stdout-clang.log
 
 compile-checks: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c

@@ -69,6 +69,17 @@ typedef enum {
 } otel_span_status_t;
 
 /**
+ * Span kind. Pass `-1` in `otel_span_options_t` to use the SDK default.
+ */
+typedef enum {
+  OTEL_SPAN_KIND_INTERNAL = 0,
+  OTEL_SPAN_KIND_SERVER = 1,
+  OTEL_SPAN_KIND_CLIENT = 2,
+  OTEL_SPAN_KIND_PRODUCER = 3,
+  OTEL_SPAN_KIND_CONSUMER = 4,
+} otel_span_kind_t;
+
+/**
  * Log severity exported to C. Values match the OpenTelemetry severity scale.
  */
 typedef enum {
@@ -119,6 +130,36 @@ typedef enum {
    */
   OTEL_ATTRIBUTE_TYPE_F64 = 3,
 } otel_attribute_type_t;
+
+/**
+ * Immutable propagation context carrying trace context and baggage.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_context_t;
+
+/**
+ * A started span. Ending is idempotent across retained handles.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_span_t;
+
+/**
+ * Scope token for a context attached to the current thread.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_context_scope_t;
 
 /**
  * A resource describing the entity producing telemetry.
@@ -201,16 +242,6 @@ typedef struct {
 } otel_logger_t;
 
 /**
- * A started span. Ending is idempotent across retained handles.
- */
-typedef struct {
-  /**
-   * Internal pointer. Treat as opaque; do not read or write it directly.
-   */
-  void *inner;
-} otel_span_t;
-
-/**
  * Unsigned 64-bit monotonic counter instrument.
  */
 typedef struct {
@@ -261,6 +292,26 @@ typedef struct {
 } otel_gauge_f64_t;
 
 /**
+ * Optional span-start configuration. Initialize with
+ * `OTEL_SPAN_OPTIONS_INIT` and set `size` to `sizeof(otel_span_options_t)`.
+ */
+typedef struct {
+  size_t size;
+  /**
+   * One of `otel_span_kind_t`, or `-1` for the SDK default.
+   */
+  int32_t kind;
+  /**
+   * Unix timestamp in nanoseconds; zero means "now".
+   */
+  int64_t start_time_unix_nano;
+  /**
+   * Optional parent context; NULL uses the context attached to this thread.
+   */
+  const otel_context_t *parent;
+} otel_span_options_t;
+
+/**
  * Tagged value payload. Only the member named by `kind` may be read.
  */
 typedef union {
@@ -304,6 +355,83 @@ typedef struct {
  * Returns the crate version as a NUL-terminated string.
  */
 OTEL_API const char *otel_version(void);
+
+/**
+ * Creates an empty context in caller-owned storage.
+ */
+OTEL_API otel_result_t otel_context_new(otel_context_t *handle);
+
+/**
+ * Copies the context attached to the calling thread.
+ */
+OTEL_API otel_result_t otel_context_current(otel_context_t *handle);
+
+/**
+ * Builds a context whose active span is a clone of `span`.
+ */
+OTEL_API otel_result_t otel_context_from_span(const otel_span_t *span, otel_context_t *handle);
+
+/**
+ * Retains a context into caller-owned storage.
+ */
+OTEL_API otel_result_t otel_context_retain(const otel_context_t *src, otel_context_t *handle);
+
+/**
+ * Releases one reference to a context.
+ */
+OTEL_API void otel_context_release(otel_context_t *handle);
+
+/**
+ * Extracts W3C `traceparent`, `tracestate`, and `baggage` headers. NULL
+ * headers are ignored. The result is independent of the current context.
+ */
+OTEL_API otel_result_t otel_context_extract(const char *traceparent,
+                                   const char *tracestate,
+                                   const char *baggage,
+                                   otel_context_t *handle);
+
+/**
+ * Injects W3C headers from `context` into caller-provided buffers. Pass NULL
+ * with capacity zero for headers you do not want.
+ */
+OTEL_API otel_result_t otel_context_inject(const otel_context_t *context,
+                                  char *traceparent,
+                                  size_t traceparent_capacity,
+                                  char *tracestate,
+                                  size_t tracestate_capacity,
+                                  char *baggage,
+                                  size_t baggage_capacity);
+
+/**
+ * Returns a copy of `context` with one baggage member added or replaced.
+ */
+OTEL_API otel_result_t otel_context_set_baggage(const otel_context_t *context,
+                                       const char *key,
+                                       const char *value,
+                                       otel_context_t *handle);
+
+/**
+ * Copies a baggage value into `buf`.
+ */
+OTEL_API otel_result_t otel_context_get_baggage(const otel_context_t *context,
+                                       const char *key,
+                                       char *buf,
+                                       size_t capacity);
+
+/**
+ * Attaches `context` to the calling thread until `otel_context_detach`.
+ */
+OTEL_API otel_result_t otel_context_attach(const otel_context_t *context, otel_context_scope_t *handle);
+
+/**
+ * Detaches the context scope from the thread that attached it.
+ */
+OTEL_API otel_result_t otel_context_detach(otel_context_scope_t *handle);
+
+/**
+ * Detaches the scope if it is still attached, then releases the handle.
+ */
+OTEL_API void otel_context_scope_release(otel_context_scope_t *handle);
 
 /**
  * Returns the last error message for the calling thread. The pointer remains
@@ -473,6 +601,16 @@ OTEL_API void otel_gauge_f64_release(otel_gauge_f64_t *handle);
  * Returns whether the resource handle is usable.
  */
 OTEL_API bool otel_resource_is_valid(const otel_resource_t *handle);
+
+/**
+ * Returns whether the context handle is usable.
+ */
+OTEL_API bool otel_context_is_valid(const otel_context_t *handle);
+
+/**
+ * Returns whether the context scope handle is usable.
+ */
+OTEL_API bool otel_context_scope_is_valid(const otel_context_scope_t *handle);
 
 /**
  * Returns whether the tracer provider handle is usable.
@@ -675,6 +813,12 @@ OTEL_API otel_result_t otel_gauge_f64_record(const otel_gauge_f64_t *gauge, doub
 OTEL_API otel_result_t otel_resource_new(otel_resource_t *handle);
 
 /**
+ * Creates a resource with caller-supplied attributes in addition to the
+ * standard environment configuration.
+ */
+OTEL_API otel_result_t otel_resource_new_with_attributes(otel_resource_t *handle, ...);
+
+/**
  * Creates a multi-threaded async runtime used by OTLP exporters.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
@@ -721,6 +865,15 @@ OTEL_API otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
                                      ...);
 
 /**
+ * Starts a span with an explicit parent, kind, and start timestamp.
+ */
+OTEL_API otel_result_t otel_tracer_span_start_with_options(const otel_tracer_t *tracer,
+                                                  const otel_span_options_t *options,
+                                                  otel_span_t *handle,
+                                                  const char *name,
+                                                  ...);
+
+/**
  * Adds attributes to a started span.
  */
 OTEL_API otel_result_t otel_span_set_attributes(const otel_span_t *span, ...);
@@ -738,6 +891,41 @@ OTEL_API otel_result_t otel_span_set_status(const otel_span_t *span,
                                    const char *description);
 
 /**
+ * Updates the name of a started span.
+ */
+OTEL_API otel_result_t otel_span_update_name(const otel_span_t *span, const char *name);
+
+/**
+ * Adds an event with an explicit Unix timestamp in nanoseconds.
+ */
+OTEL_API otel_result_t otel_span_add_event_with_timestamp(const otel_span_t *span,
+                                                 const char *name,
+                                                 int64_t timestamp_unix_nano,
+                                                 ...);
+
+/**
+ * Adds a link to a span using hex-encoded trace and span IDs.
+ */
+OTEL_API otel_result_t otel_span_add_link(const otel_span_t *span,
+                                 const char *trace_id_hex,
+                                 const char *span_id_hex,
+                                 ...);
+
+/**
+ * Records an exception as an event with standard semantic attributes.
+ */
+OTEL_API otel_result_t otel_span_record_exception(const otel_span_t *span,
+                                         const char *exception_type,
+                                         const char *message,
+                                         const char *stacktrace,
+                                         ...);
+
+/**
+ * Ends a span at an explicit Unix timestamp in nanoseconds.
+ */
+OTEL_API otel_result_t otel_span_end_with_timestamp(const otel_span_t *span, int64_t timestamp_unix_nano);
+
+/**
  * Ends a span. Calling this more than once is harmless.
  */
 OTEL_API otel_result_t otel_span_end(const otel_span_t *span);
@@ -753,28 +941,28 @@ OTEL_API otel_result_t otel_span_trace_id(const otel_span_t *span, char *buf, si
 OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capacity);
 
 
-/* Attribute builders. Pass a NULL-terminated list of these to any function
- * that takes variadic attributes, for example:
+/* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
+ * function that takes variadic attributes, for example:
  *
  *   otel_span_set_attributes(span,
  *       otel_attr_string("endpoint", "/checkout"),
  *       otel_attr_i64("retries", 2),
- *       NULL);
+ *       OTEL_ATTR_END);
  */
 #define otel_attr_string(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
                        (const char *)(key), \
                        { .string = (const char *)(value) } })
 #define otel_attr_bool(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
                        (const char *)(key), \
                        { .boolean = !!(value) } })
 #define otel_attr_i64(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
                        (const char *)(key), \
                        { .integer = (int64_t)(value) } })
 #define otel_attr_f64(key, value) \
-  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
+  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
                        (const char *)(key), \
                        { .double_value = (double)(value) } })
 
@@ -782,7 +970,11 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_RESULT_SENTINEL 8
 #define OTEL_SEVERITY_SENTINEL 22
 #define OTEL_SPAN_STATUS_SENTINEL 3
+#define OTEL_SPAN_KIND_SENTINEL 5
 #define OTEL_ATTRIBUTE_TYPE_SENTINEL 4
+#define OTEL_CONTEXT_T_INIT { NULL }
+#define OTEL_SPAN_T_INIT { NULL }
+#define OTEL_CONTEXT_SCOPE_T_INIT { NULL }
 #define OTEL_RESOURCE_T_INIT { NULL }
 #define OTEL_RUNTIME_T_INIT { NULL }
 #define OTEL_TRACER_PROVIDER_T_INIT { NULL }
@@ -791,12 +983,12 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_TRACER_T_INIT { NULL }
 #define OTEL_METER_T_INIT { NULL }
 #define OTEL_LOGGER_T_INIT { NULL }
-#define OTEL_SPAN_T_INIT { NULL }
 #define OTEL_COUNTER_U64_T_INIT { NULL }
 #define OTEL_COUNTER_F64_T_INIT { NULL }
 #define OTEL_UPDOWN_COUNTER_I64_T_INIT { NULL }
 #define OTEL_HISTOGRAM_F64_T_INIT { NULL }
 #define OTEL_GAUGE_F64_T_INIT { NULL }
+#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
 
 /* Generated semantic-convention helpers. */

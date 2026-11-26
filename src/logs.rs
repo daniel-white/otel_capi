@@ -227,6 +227,12 @@ mod tests {
     };
 
     #[test]
+    fn rejects_invalid_severity() {
+        let error = severity(999).unwrap_err();
+        assert_eq!(error.status, crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+    }
+
+    #[test]
     fn no_exporter_logger_emits() {
         unsafe { env::set_var("OTEL_LOGS_EXPORTER", "none") };
         let mut provider = otel_logger_provider_t {
