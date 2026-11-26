@@ -22,6 +22,7 @@ thread_local! {
 }
 
 /// Internal error with a status and a human-readable message for C callers.
+#[derive(Debug)]
 pub(crate) struct Error {
     pub(crate) status: otel_result_t,
     pub(crate) message: String,

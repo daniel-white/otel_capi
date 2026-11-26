@@ -7,5 +7,6 @@
 #![allow(non_camel_case_types, non_upper_case_globals)]
 
 pub mod error;
+pub mod handles;
 
 pub use error::otel_result_t;

@@ -12,7 +12,7 @@
 /**
  * Status returned by every fallible `cotel` function.
  */
-typedef enum otel_result_t {
+typedef enum {
   OTEL_OK = 0,
   OTEL_ERR_INVALID_ARGUMENT = 1,
   OTEL_ERR_INVALID_UTF8 = 2,
@@ -22,6 +22,136 @@ typedef enum otel_result_t {
   OTEL_ERR_INTERNAL = 6,
   OTEL_ERR_PANIC = 7,
 } otel_result_t;
+
+/**
+ * A resource describing the entity producing telemetry.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_resource_t;
+
+/**
+ * Provider used to create tracers and control trace export.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_tracer_provider_t;
+
+/**
+ * Provider used to create meters and control metric export.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_meter_provider_t;
+
+/**
+ * Provider used to create loggers and control log export.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_logger_provider_t;
+
+/**
+ * Instrumentation scope for starting spans.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_tracer_t;
+
+/**
+ * Instrumentation scope for creating metric instruments.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_meter_t;
+
+/**
+ * Instrumentation scope for emitting log records.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_logger_t;
+
+/**
+ * A started span. Ending is idempotent across retained handles.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_span_t;
+
+/**
+ * Unsigned 64-bit monotonic counter instrument.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_counter_u64_t;
+
+/**
+ * Double-precision monotonic counter instrument.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_counter_f64_t;
+
+/**
+ * Signed 64-bit up/down counter instrument.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_updown_counter_i64_t;
+
+/**
+ * Double-precision histogram instrument.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_histogram_f64_t;
+
+/**
+ * Double-precision gauge instrument.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_gauge_f64_t;
 
 /**
  * Returns the last error message for the calling thread. The pointer remains
@@ -35,5 +165,139 @@ const char *otel_last_error(void);
  * NULL or `capacity` is too small; otherwise returns the bytes written.
  */
 size_t otel_copy_last_error(char *buf, size_t capacity);
+
+/**
+ * Retains a `otel_resource_t` into caller-provided storage.
+ */
+otel_result_t otel_resource_retain(const otel_resource_t *src, otel_resource_t *out);
+
+/**
+ * Releases one reference to a `otel_resource_t` and clears the slot.
+ */
+void otel_resource_release(otel_resource_t *handle);
+
+/**
+ * Retains a `otel_tracer_provider_t` into caller-provided storage.
+ */
+otel_result_t otel_tracer_provider_retain(const otel_tracer_provider_t *src,
+                                          otel_tracer_provider_t *out);
+
+/**
+ * Releases one reference to a `otel_tracer_provider_t` and clears the slot.
+ */
+void otel_tracer_provider_release(otel_tracer_provider_t *handle);
+
+/**
+ * Retains a `otel_meter_provider_t` into caller-provided storage.
+ */
+otel_result_t otel_meter_provider_retain(const otel_meter_provider_t *src,
+                                         otel_meter_provider_t *out);
+
+/**
+ * Releases one reference to a `otel_meter_provider_t` and clears the slot.
+ */
+void otel_meter_provider_release(otel_meter_provider_t *handle);
+
+/**
+ * Retains a `otel_logger_provider_t` into caller-provided storage.
+ */
+otel_result_t otel_logger_provider_retain(const otel_logger_provider_t *src,
+                                          otel_logger_provider_t *out);
+
+/**
+ * Releases one reference to a `otel_logger_provider_t` and clears the slot.
+ */
+void otel_logger_provider_release(otel_logger_provider_t *handle);
+
+/**
+ * Retains a `otel_tracer_t` into caller-provided storage.
+ */
+otel_result_t otel_tracer_retain(const otel_tracer_t *src, otel_tracer_t *out);
+
+/**
+ * Releases one reference to a `otel_tracer_t` and clears the slot.
+ */
+void otel_tracer_release(otel_tracer_t *handle);
+
+/**
+ * Retains a `otel_meter_t` into caller-provided storage.
+ */
+otel_result_t otel_meter_retain(const otel_meter_t *src, otel_meter_t *out);
+
+/**
+ * Releases one reference to a `otel_meter_t` and clears the slot.
+ */
+void otel_meter_release(otel_meter_t *handle);
+
+/**
+ * Retains a `otel_logger_t` into caller-provided storage.
+ */
+otel_result_t otel_logger_retain(const otel_logger_t *src, otel_logger_t *out);
+
+/**
+ * Releases one reference to a `otel_logger_t` and clears the slot.
+ */
+void otel_logger_release(otel_logger_t *handle);
+
+/**
+ * Retains a `otel_span_t` into caller-provided storage.
+ */
+otel_result_t otel_span_retain(const otel_span_t *src, otel_span_t *out);
+
+/**
+ * Releases one reference to a `otel_span_t` and clears the slot.
+ */
+void otel_span_release(otel_span_t *handle);
+
+/**
+ * Retains a `otel_counter_u64_t` into caller-provided storage.
+ */
+otel_result_t otel_counter_u64_retain(const otel_counter_u64_t *src, otel_counter_u64_t *out);
+
+/**
+ * Releases one reference to a `otel_counter_u64_t` and clears the slot.
+ */
+void otel_counter_u64_release(otel_counter_u64_t *handle);
+
+/**
+ * Retains a `otel_counter_f64_t` into caller-provided storage.
+ */
+otel_result_t otel_counter_f64_retain(const otel_counter_f64_t *src, otel_counter_f64_t *out);
+
+/**
+ * Releases one reference to a `otel_counter_f64_t` and clears the slot.
+ */
+void otel_counter_f64_release(otel_counter_f64_t *handle);
+
+/**
+ * Retains a `otel_updown_counter_i64_t` into caller-provided storage.
+ */
+otel_result_t otel_updown_counter_i64_retain(const otel_updown_counter_i64_t *src,
+                                             otel_updown_counter_i64_t *out);
+
+/**
+ * Releases one reference to a `otel_updown_counter_i64_t` and clears the slot.
+ */
+void otel_updown_counter_i64_release(otel_updown_counter_i64_t *handle);
+
+/**
+ * Retains a `otel_histogram_f64_t` into caller-provided storage.
+ */
+otel_result_t otel_histogram_f64_retain(const otel_histogram_f64_t *src, otel_histogram_f64_t *out);
+
+/**
+ * Releases one reference to a `otel_histogram_f64_t` and clears the slot.
+ */
+void otel_histogram_f64_release(otel_histogram_f64_t *handle);
+
+/**
+ * Retains a `otel_gauge_f64_t` into caller-provided storage.
+ */
+otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_t *out);
+
+/**
+ * Releases one reference to a `otel_gauge_f64_t` and clears the slot.
+ */
+void otel_gauge_f64_release(otel_gauge_f64_t *handle);
 
 #endif  /* COTEL_H */
