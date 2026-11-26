@@ -6,6 +6,10 @@
  *   OTEL_CAPI_EXPORTER=none ./kitchen-sink
  */
 
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "otel_capi.h"
 
 #include <pthread.h>
