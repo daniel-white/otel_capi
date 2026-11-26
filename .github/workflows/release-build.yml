@@ -72,15 +72,17 @@ jobs:
           VERSION: ${{ env.RELEASE_REF }}
         run: python scripts/package_release.py --target $env:TARGET --version $env:VERSION --target-dir "target/$env:TARGET/release"
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.RELEASE_REF }}
-          files: |
-            dist/*.tar.gz
-            dist/*.tar.gz.sha256
-            dist/*.zip
-            dist/*.zip.sha256
+      - name: Upload release assets (Unix)
+        if: runner.os != 'Windows'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/upload_release_assets.py --tag "$RELEASE_REF" --dir dist
+
+      - name: Upload release assets (Windows)
+        if: runner.os == 'Windows'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/upload_release_assets.py --tag $env:RELEASE_REF --dir dist
 
   docs:
     name: API documentation
@@ -109,12 +111,9 @@ jobs:
           (cd dist && shasum -a 256 "otel-capi-${version}-docs.tar.gz" > "otel-capi-${version}-docs.tar.gz.sha256")
 
       - name: Upload documentation
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.RELEASE_REF }}
-          files: |
-            dist/otel-capi-*-docs.tar.gz
-            dist/otel-capi-*-docs.tar.gz.sha256
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/upload_release_assets.py --tag "$RELEASE_REF" --dir dist
 
       - uses: actions/configure-pages@v5
 
