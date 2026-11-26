@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "rust",
+      "package-name": "otel-capi",
+      "include-component-in-tag": false,
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "Formula/otel-capi.rb",
+        "bucket/otel-capi.json",
+        "conanfile.py",
+        "ports/otel-capi/vcpkg.json"
+      ]
+    }
+  }
+}

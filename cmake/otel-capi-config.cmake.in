@@ -1,0 +1,19 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+set_and_check(OTEL_CAPI_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set_and_check(OTEL_CAPI_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
+
+find_library(OTEL_CAPI_LIBRARY
+  NAMES otel_capi
+  PATHS "${OTEL_CAPI_LIBRARY_DIR}"
+  NO_DEFAULT_PATH
+  REQUIRED)
+
+if(NOT TARGET otel-capi::otel-capi)
+  add_library(otel-capi::otel-capi UNKNOWN IMPORTED)
+  set_target_properties(otel-capi::otel-capi PROPERTIES
+    IMPORTED_LOCATION "${OTEL_CAPI_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${OTEL_CAPI_INCLUDE_DIR}")
+endif()

@@ -1,0 +1,28 @@
+{
+  "version": "0.1.0",
+  "description": "C API for OpenTelemetry",
+  "homepage": "https://github.com/daniel-white/otel_capi",
+  "license": "Apache-2.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/daniel-white/otel_capi/releases/download/v0.1.0/otel-capi-0.1.0-x86_64-pc-windows-msvc.zip"
+    }
+  },
+  "extras": [
+    ["*/include/*", "include"],
+    ["*/lib/*", "lib"],
+    ["*/bin/*", "bin"],
+    ["*/LICENSE", "."],
+    ["*/README.md", "."]
+  ],
+  "checkver": {
+    "github": "https://github.com/daniel-white/otel_capi"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/daniel-white/otel_capi/releases/download/v$version/otel-capi-$version-x86_64-pc-windows-msvc.zip"
+      }
+    }
+  }
+}

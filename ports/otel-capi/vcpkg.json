@@ -1,0 +1,11 @@
+{
+  "name": "otel-capi",
+  "version-string": "0.1.0",
+  "description": "C API for OpenTelemetry",
+  "homepage": "https://github.com/daniel-white/otel_capi",
+  "license": "Apache-2.0",
+  "dependencies": [
+    { "name": "vcpkg-cmake", "host": true },
+    { "name": "vcpkg-cmake-config", "host": true }
+  ]
+}

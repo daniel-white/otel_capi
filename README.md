@@ -16,8 +16,13 @@ through generated headers and caller-owned handle structs.
 - `src/` — Rust implementation.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
+- `CMakeLists.txt`, `cmake/` — CMake build/install with `find_package` support.
 - `checks/` — compile-pass and compile-fail checks for the C API.
 - `otel-capi.pc.in` — pkg-config metadata template.
+- `scripts/package_release.py` — packages Cargo release output into archives.
+- `.github/workflows/` — CI, release-please, and release artifact builds.
+- `Formula/`, `bucket/`, `conanfile.py`, `ports/otel-capi/` — package-manager
+  manifests for Homebrew, Scoop, Conan, and vcpkg.
 - `flake.nix` — optional dev shell that provides Rust 1.100.0 and C compilers.
 
 ## Build and test
@@ -322,6 +327,74 @@ which exercises handle reference counting and instrument thread safety. Handles
 use `OTEL_AUTO_<TYPE>` declarations so they are released when the example’s
 inner scope exits. It finishes with `otel_ensure_all_released()` to verify that
 every handle was released.
+
+## Release archives
+
+Each GitHub release publishes archives for Linux (x86_64), macOS (x86_64 and
+arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
+contains the generated headers, static and shared libraries, a relocatable
+`otel-capi.pc`, `LICENSE`, and `README.md`. For example:
+
+```sh
+version=0.1.0
+target=x86_64-unknown-linux-gnu
+curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}.tar.gz"
+tar xzf "otel-capi-${version}-${target}.tar.gz"
+```
+
+## Package managers
+
+The repo includes manifests for common package managers. Each one builds from
+the published tag or release using the standard CMake install rules, so no
+prebuilt binary is required.
+
+- Homebrew tap:
+
+  ```sh
+  brew tap daniel-white/otel_capi https://github.com/daniel-white/otel_capi.git
+  brew install otel-capi
+  ```
+
+- vcpkg overlay port:
+
+  ```sh
+  vcpkg install otel-capi --overlay-ports=/path/to/otel-capi/ports
+  ```
+
+- Conan recipe:
+
+  ```sh
+  conan create . --version 0.1.0
+  ```
+
+- Scoop bucket (Windows):
+
+  ```sh
+  scoop bucket add otel-capi https://github.com/daniel-white/otel_capi.git
+  scoop install otel-capi
+  ```
+
+Downstream CMake projects can use the installed package directly:
+
+```cmake
+find_package(otel-capi CONFIG REQUIRED)
+target_link_libraries(my_app PRIVATE otel-capi::otel-capi)
+```
+
+pkg-config is also installed:
+
+```sh
+cc app.c $(pkg-config --cflags --libs otel-capi)
+```
+
+## Releasing
+
+Versioning and changelogs are handled by
+[release-please](https://github.com/googleapis/release-please). Use Conventional
+Commit messages (`feat:`, `fix:`, `chore:`, and so on); release-please opens a
+release PR that updates `Cargo.toml`, `Cargo.lock`, `CHANGELOG.md`, and the
+package-manager manifests. Merging that PR creates the tag and GitHub release,
+which triggers the cross-platform artifact build workflow.
 
 ## License
 

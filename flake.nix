@@ -28,6 +28,7 @@
         devShells.default = pkgs.mkShell {
           packages = [
             rustToolchain
+            pkgs.cmake
             pkgs.pkg-config
             pkgs.gcc
             pkgs.clang
