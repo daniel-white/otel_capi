@@ -88,9 +88,15 @@ Key rules:
 `OTEL_ATTRIBUTE_RPC_SYSTEM`, and `OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION`.
 
 Where the generated docs make the value type unambiguous, it also emits a
-typed helper such as `otel_attr_client_address("example.org")` or
-`otel_attr_http_response_status_code(200)`. The original key macros remain
-available so you can still choose the type explicitly.
+typed `static inline` helper such as `otel_attr_client_address("example.org")`
+or `otel_attr_http_response_status_code(200)`. These are functions rather than
+macros, so C checks that you pass a string, `int64_t`, `double`, or `int` as
+appropriate. The original key macros remain available so you can still choose
+the type explicitly.
+
+Metric constants with complete semconv metadata get matching helpers such as
+`otel_metric_http_server_request_duration(&meter, &histogram)`, which uses the
+standard instrument, unit, and description from the semantic conventions.
 
 ### Async runtime
 

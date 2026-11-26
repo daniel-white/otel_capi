@@ -1385,631 +1385,4099 @@
 #define OTEL_METRIC_VCS_REPOSITORY_COUNT "vcs.repository.count"
 
 /* Typed helpers inferred from semantic-convention examples. */
-#define otel_attr_android_app_state(value) otel_attr_string(OTEL_ATTRIBUTE_ANDROID_APP_STATE, (value))
-#define otel_attr_android_os_api_level(value) otel_attr_string(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL, (value))
-#define otel_attr_app_build_id(value) otel_attr_string(OTEL_ATTRIBUTE_APP_BUILD_ID, (value))
-#define otel_attr_app_crash_id(value) otel_attr_string(OTEL_ATTRIBUTE_APP_CRASH_ID, (value))
-#define otel_attr_app_installation_id(value) otel_attr_string(OTEL_ATTRIBUTE_APP_INSTALLATION_ID, (value))
-#define otel_attr_app_jank_frame_count(value) otel_attr_i64(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT, (value))
-#define otel_attr_app_jank_period(value) otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_PERIOD, (value))
-#define otel_attr_app_jank_threshold(value) otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD, (value))
-#define otel_attr_app_screen_coordinate_x(value) otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X, (value))
-#define otel_attr_app_screen_coordinate_y(value) otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y, (value))
-#define otel_attr_app_screen_id(value) otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_ID, (value))
-#define otel_attr_app_screen_name(value) otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_NAME, (value))
-#define otel_attr_app_widget_id(value) otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_ID, (value))
-#define otel_attr_app_widget_name(value) otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_NAME, (value))
-#define otel_attr_artifact_attestation_filename(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME, (value))
-#define otel_attr_artifact_attestation_hash(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH, (value))
-#define otel_attr_artifact_attestation_id(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID, (value))
-#define otel_attr_artifact_filename(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_FILENAME, (value))
-#define otel_attr_artifact_hash(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_HASH, (value))
-#define otel_attr_artifact_purl(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_PURL, (value))
-#define otel_attr_artifact_version(value) otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_VERSION, (value))
-#define otel_attr_aspnetcore_authentication_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT, (value))
-#define otel_attr_aspnetcore_authentication_scheme(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME, (value))
-#define otel_attr_aspnetcore_authorization_policy(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY, (value))
-#define otel_attr_aspnetcore_authorization_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT, (value))
-#define otel_attr_aspnetcore_diagnostics_exception_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT, (value))
-#define otel_attr_aspnetcore_diagnostics_handler_type(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE, (value))
-#define otel_attr_aspnetcore_identity_error_code(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE, (value))
-#define otel_attr_aspnetcore_identity_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT, (value))
-#define otel_attr_aspnetcore_identity_sign_in_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT, (value))
-#define otel_attr_aspnetcore_identity_sign_in_type(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE, (value))
-#define otel_attr_aspnetcore_identity_token_purpose(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE, (value))
-#define otel_attr_aspnetcore_identity_token_verified(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED, (value))
-#define otel_attr_aspnetcore_identity_user_type(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE, (value))
-#define otel_attr_aspnetcore_identity_user_update_type(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE, (value))
-#define otel_attr_aspnetcore_memory_pool_owner(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER, (value))
-#define otel_attr_aspnetcore_rate_limiting_policy(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY, (value))
-#define otel_attr_aspnetcore_rate_limiting_result(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT, (value))
-#define otel_attr_aspnetcore_request_is_unhandled(value) otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED, (value))
-#define otel_attr_aspnetcore_routing_is_fallback(value) otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK, (value))
-#define otel_attr_aspnetcore_routing_match_status(value) otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS, (value))
-#define otel_attr_aspnetcore_user_is_authenticated(value) otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED, (value))
-#define otel_attr_aws_bedrock_guardrail_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID, (value))
-#define otel_attr_aws_bedrock_knowledge_base_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID, (value))
-#define otel_attr_aws_dynamodb_count(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT, (value))
-#define otel_attr_aws_dynamodb_exclusive_start_table(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE, (value))
-#define otel_attr_aws_dynamodb_index_name(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME, (value))
-#define otel_attr_aws_dynamodb_item_collection_metrics(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS, (value))
-#define otel_attr_aws_dynamodb_limit(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT, (value))
-#define otel_attr_aws_dynamodb_projection(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION, (value))
-#define otel_attr_aws_dynamodb_provisioned_read_capacity(value) otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY, (value))
-#define otel_attr_aws_dynamodb_provisioned_write_capacity(value) otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY, (value))
-#define otel_attr_aws_dynamodb_scanned_count(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT, (value))
-#define otel_attr_aws_dynamodb_segment(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT, (value))
-#define otel_attr_aws_dynamodb_select(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT, (value))
-#define otel_attr_aws_dynamodb_table_count(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT, (value))
-#define otel_attr_aws_dynamodb_total_segments(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS, (value))
-#define otel_attr_aws_ecs_cluster_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN, (value))
-#define otel_attr_aws_ecs_container_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN, (value))
-#define otel_attr_aws_ecs_task_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN, (value))
-#define otel_attr_aws_ecs_task_family(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY, (value))
-#define otel_attr_aws_ecs_task_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID, (value))
-#define otel_attr_aws_ecs_task_revision(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION, (value))
-#define otel_attr_aws_eks_cluster_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN, (value))
-#define otel_attr_aws_extended_request_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID, (value))
-#define otel_attr_aws_kinesis_stream_name(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME, (value))
-#define otel_attr_aws_lambda_invoked_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN, (value))
-#define otel_attr_aws_lambda_resource_mapping_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID, (value))
-#define otel_attr_aws_request_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_REQUEST_ID, (value))
-#define otel_attr_aws_s3_bucket(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_BUCKET, (value))
-#define otel_attr_aws_s3_copy_source(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE, (value))
-#define otel_attr_aws_s3_delete(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_DELETE, (value))
-#define otel_attr_aws_s3_key(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_KEY, (value))
-#define otel_attr_aws_s3_part_number(value) otel_attr_i64(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER, (value))
-#define otel_attr_aws_s3_upload_id(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID, (value))
-#define otel_attr_aws_secretsmanager_secret_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN, (value))
-#define otel_attr_aws_sns_topic_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN, (value))
-#define otel_attr_aws_sqs_queue_url(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL, (value))
-#define otel_attr_aws_step_functions_activity_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN, (value))
-#define otel_attr_aws_step_functions_state_machine_arn(value) otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN, (value))
-#define otel_attr_azure_client_id(value) otel_attr_string(OTEL_ATTRIBUTE_AZURE_CLIENT_ID, (value))
-#define otel_attr_azure_cosmosdb_consistency_level(value) otel_attr_string(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL, (value))
-#define otel_attr_azure_cosmosdb_operation_request_charge(value) otel_attr_f64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE, (value))
-#define otel_attr_azure_cosmosdb_response_sub_status_code(value) otel_attr_i64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE, (value))
-#define otel_attr_azure_resource_provider_namespace(value) otel_attr_string(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE, (value))
-#define otel_attr_azure_service_request_id(value) otel_attr_string(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID, (value))
-#define otel_attr_browser_document_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL, (value))
-#define otel_attr_browser_language(value) otel_attr_string(OTEL_ATTRIBUTE_BROWSER_LANGUAGE, (value))
-#define otel_attr_browser_platform(value) otel_attr_string(OTEL_ATTRIBUTE_BROWSER_PLATFORM, (value))
-#define otel_attr_cassandra_coordinator_dc(value) otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC, (value))
-#define otel_attr_cassandra_coordinator_id(value) otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID, (value))
-#define otel_attr_cassandra_page_size(value) otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE, (value))
-#define otel_attr_cassandra_speculative_execution_count(value) otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT, (value))
-#define otel_attr_cicd_pipeline_action_name(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME, (value))
-#define otel_attr_cicd_pipeline_name(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME, (value))
-#define otel_attr_cicd_pipeline_result(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT, (value))
-#define otel_attr_cicd_pipeline_run_id(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID, (value))
-#define otel_attr_cicd_pipeline_run_state(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE, (value))
-#define otel_attr_cicd_pipeline_run_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL, (value))
-#define otel_attr_cicd_pipeline_task_name(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME, (value))
-#define otel_attr_cicd_pipeline_task_run_id(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID, (value))
-#define otel_attr_cicd_pipeline_task_run_result(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT, (value))
-#define otel_attr_cicd_pipeline_task_run_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL, (value))
-#define otel_attr_cicd_pipeline_task_type(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE, (value))
-#define otel_attr_cicd_system_component(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT, (value))
-#define otel_attr_cicd_worker_id(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_ID, (value))
-#define otel_attr_cicd_worker_name(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_NAME, (value))
-#define otel_attr_cicd_worker_state(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_STATE, (value))
-#define otel_attr_cicd_worker_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL, (value))
-#define otel_attr_client_address(value) otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, (value))
-#define otel_attr_client_port(value) otel_attr_i64(OTEL_ATTRIBUTE_CLIENT_PORT, (value))
-#define otel_attr_cloud_account_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID, (value))
-#define otel_attr_cloud_availability_zone(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE, (value))
-#define otel_attr_cloud_region(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUD_REGION, (value))
-#define otel_attr_cloud_resource_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID, (value))
-#define otel_attr_cloudevents_event_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID, (value))
-#define otel_attr_cloudevents_event_source(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE, (value))
-#define otel_attr_cloudevents_event_spec_version(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION, (value))
-#define otel_attr_cloudevents_event_subject(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT, (value))
-#define otel_attr_cloudevents_event_type(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE, (value))
-#define otel_attr_cloudfoundry_app_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID, (value))
-#define otel_attr_cloudfoundry_app_instance_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID, (value))
-#define otel_attr_cloudfoundry_app_name(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME, (value))
-#define otel_attr_cloudfoundry_org_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID, (value))
-#define otel_attr_cloudfoundry_org_name(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME, (value))
-#define otel_attr_cloudfoundry_process_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID, (value))
-#define otel_attr_cloudfoundry_process_type(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE, (value))
-#define otel_attr_cloudfoundry_space_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID, (value))
-#define otel_attr_cloudfoundry_space_name(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME, (value))
-#define otel_attr_cloudfoundry_system_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID, (value))
-#define otel_attr_cloudfoundry_system_instance_id(value) otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID, (value))
-#define otel_attr_code_column_number(value) otel_attr_i64(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER, (value))
-#define otel_attr_code_file_path(value) otel_attr_string(OTEL_ATTRIBUTE_CODE_FILE_PATH, (value))
-#define otel_attr_code_function_name(value) otel_attr_string(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME, (value))
-#define otel_attr_code_line_number(value) otel_attr_i64(OTEL_ATTRIBUTE_CODE_LINE_NUMBER, (value))
-#define otel_attr_code_stacktrace(value) otel_attr_string(OTEL_ATTRIBUTE_CODE_STACKTRACE, (value))
-#define otel_attr_container_command(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND, (value))
-#define otel_attr_container_command_line(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE, (value))
-#define otel_attr_container_cpu_state(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE, (value))
-#define otel_attr_container_csi_plugin_name(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME, (value))
-#define otel_attr_container_csi_volume_id(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID, (value))
-#define otel_attr_container_id(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_ID, (value))
-#define otel_attr_container_image_id(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID, (value))
-#define otel_attr_container_image_name(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME, (value))
-#define otel_attr_container_label(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_LABEL, (value))
-#define otel_attr_container_name(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_NAME, (value))
-#define otel_attr_container_runtime_description(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION, (value))
-#define otel_attr_container_runtime_name(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME, (value))
-#define otel_attr_container_runtime_version(value) otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION, (value))
-#define otel_attr_cpu_logical_number(value) otel_attr_i64(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER, (value))
-#define otel_attr_cpu_mode(value) otel_attr_string(OTEL_ATTRIBUTE_CPU_MODE, (value))
-#define otel_attr_cpython_gc_generation(value) otel_attr_i64(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION, (value))
-#define otel_attr_db_client_connection_pool_name(value) otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME, (value))
-#define otel_attr_db_client_connection_state(value) otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE, (value))
-#define otel_attr_db_collection_name(value) otel_attr_string(OTEL_ATTRIBUTE_DB_COLLECTION_NAME, (value))
-#define otel_attr_db_cosmosdb_status_code(value) otel_attr_i64(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE, (value))
-#define otel_attr_db_jdbc_driver_classname(value) otel_attr_string(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME, (value))
-#define otel_attr_db_mssql_instance_name(value) otel_attr_string(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME, (value))
-#define otel_attr_db_namespace(value) otel_attr_string(OTEL_ATTRIBUTE_DB_NAMESPACE, (value))
-#define otel_attr_db_operation_batch_size(value) otel_attr_i64(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE, (value))
-#define otel_attr_db_operation_name(value) otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_NAME, (value))
-#define otel_attr_db_operation_parameter(value) otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER, (value))
-#define otel_attr_db_query_parameter(value) otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER, (value))
-#define otel_attr_db_query_summary(value) otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY, (value))
-#define otel_attr_db_query_text(value) otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_TEXT, (value))
-#define otel_attr_db_redis_database_index(value) otel_attr_i64(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX, (value))
-#define otel_attr_db_response_returned_rows(value) otel_attr_i64(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS, (value))
-#define otel_attr_db_response_status_code(value) otel_attr_string(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE, (value))
-#define otel_attr_db_stored_procedure_name(value) otel_attr_string(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME, (value))
-#define otel_attr_db_user(value) otel_attr_string(OTEL_ATTRIBUTE_DB_USER, (value))
-#define otel_attr_deployment_environment_name(value) otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME, (value))
-#define otel_attr_deployment_id(value) otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ID, (value))
-#define otel_attr_deployment_name(value) otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_NAME, (value))
-#define otel_attr_destination_address(value) otel_attr_string(OTEL_ATTRIBUTE_DESTINATION_ADDRESS, (value))
-#define otel_attr_destination_port(value) otel_attr_i64(OTEL_ATTRIBUTE_DESTINATION_PORT, (value))
-#define otel_attr_device_id(value) otel_attr_string(OTEL_ATTRIBUTE_DEVICE_ID, (value))
-#define otel_attr_device_manufacturer(value) otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER, (value))
-#define otel_attr_device_model_identifier(value) otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER, (value))
-#define otel_attr_device_model_name(value) otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME, (value))
-#define otel_attr_disk_io_direction(value) otel_attr_string(OTEL_ATTRIBUTE_DISK_IO_DIRECTION, (value))
-#define otel_attr_dns_question_name(value) otel_attr_string(OTEL_ATTRIBUTE_DNS_QUESTION_NAME, (value))
-#define otel_attr_dotnet_gc_heap_generation(value) otel_attr_string(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION, (value))
-#define otel_attr_elasticsearch_node_name(value) otel_attr_string(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME, (value))
-#define otel_attr_enduser_id(value) otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ID, (value))
-#define otel_attr_enduser_pseudo_id(value) otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID, (value))
-#define otel_attr_enduser_role(value) otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ROLE, (value))
-#define otel_attr_enduser_scope(value) otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_SCOPE, (value))
-#define otel_attr_error_type(value) otel_attr_string(OTEL_ATTRIBUTE_ERROR_TYPE, (value))
-#define otel_attr_exception_message(value) otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE, (value))
-#define otel_attr_exception_stacktrace(value) otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE, (value))
-#define otel_attr_exception_type(value) otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_TYPE, (value))
-#define otel_attr_faas_cron(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_CRON, (value))
-#define otel_attr_faas_document_collection(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION, (value))
-#define otel_attr_faas_document_name(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME, (value))
-#define otel_attr_faas_document_time(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME, (value))
-#define otel_attr_faas_instance(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_INSTANCE, (value))
-#define otel_attr_faas_invocation_id(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID, (value))
-#define otel_attr_faas_invoked_name(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME, (value))
-#define otel_attr_faas_invoked_region(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION, (value))
-#define otel_attr_faas_max_memory(value) otel_attr_i64(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY, (value))
-#define otel_attr_faas_name(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_NAME, (value))
-#define otel_attr_faas_time(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_TIME, (value))
-#define otel_attr_faas_version(value) otel_attr_string(OTEL_ATTRIBUTE_FAAS_VERSION, (value))
-#define otel_attr_feature_flag_context_id(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID, (value))
-#define otel_attr_feature_flag_error_message(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE, (value))
-#define otel_attr_feature_flag_key(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY, (value))
-#define otel_attr_feature_flag_provider_name(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME, (value))
-#define otel_attr_feature_flag_result_reason(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON, (value))
-#define otel_attr_feature_flag_result_variant(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT, (value))
-#define otel_attr_feature_flag_set_id(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID, (value))
-#define otel_attr_feature_flag_version(value) otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION, (value))
-#define otel_attr_file_accessed(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_ACCESSED, (value))
-#define otel_attr_file_changed(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_CHANGED, (value))
-#define otel_attr_file_created(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_CREATED, (value))
-#define otel_attr_file_directory(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_DIRECTORY, (value))
-#define otel_attr_file_extension(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_EXTENSION, (value))
-#define otel_attr_file_fork_name(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_FORK_NAME, (value))
-#define otel_attr_file_group_id(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_ID, (value))
-#define otel_attr_file_group_name(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_NAME, (value))
-#define otel_attr_file_inode(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_INODE, (value))
-#define otel_attr_file_lock_mechanism(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM, (value))
-#define otel_attr_file_lock_mode(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MODE, (value))
-#define otel_attr_file_lock_type(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_TYPE, (value))
-#define otel_attr_file_mode(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_MODE, (value))
-#define otel_attr_file_modified(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_MODIFIED, (value))
-#define otel_attr_file_name(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_NAME, (value))
-#define otel_attr_file_owner_id(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_ID, (value))
-#define otel_attr_file_owner_name(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_NAME, (value))
-#define otel_attr_file_path(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_PATH, (value))
-#define otel_attr_file_symbolic_link_target_path(value) otel_attr_string(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH, (value))
-#define otel_attr_gcp_apphub_application_container(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER, (value))
-#define otel_attr_gcp_apphub_application_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID, (value))
-#define otel_attr_gcp_apphub_application_location(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION, (value))
-#define otel_attr_gcp_apphub_destination_application_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID, (value))
-#define otel_attr_gcp_apphub_destination_service_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID, (value))
-#define otel_attr_gcp_apphub_destination_workload_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID, (value))
-#define otel_attr_gcp_apphub_service_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID, (value))
-#define otel_attr_gcp_apphub_workload_id(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID, (value))
-#define otel_attr_gcp_client_service(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE, (value))
-#define otel_attr_gcp_cloud_run_job_execution(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION, (value))
-#define otel_attr_gcp_cloud_run_job_task_index(value) otel_attr_i64(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX, (value))
-#define otel_attr_gcp_gce_instance_group_manager_name(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME, (value))
-#define otel_attr_gcp_gce_instance_group_manager_region(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION, (value))
-#define otel_attr_gcp_gce_instance_group_manager_zone(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE, (value))
-#define otel_attr_gcp_gce_instance_hostname(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME, (value))
-#define otel_attr_gcp_gce_instance_labels(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS, (value))
-#define otel_attr_gcp_gce_instance_name(value) otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME, (value))
-#define otel_attr_gen_ai_completion(value) otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_COMPLETION, (value))
-#define otel_attr_gen_ai_prompt(value) otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_PROMPT, (value))
-#define otel_attr_geo_country_iso_code(value) otel_attr_string(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE, (value))
-#define otel_attr_geo_locality_name(value) otel_attr_string(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME, (value))
-#define otel_attr_geo_location_lat(value) otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LAT, (value))
-#define otel_attr_geo_location_lon(value) otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LON, (value))
-#define otel_attr_geo_postal_code(value) otel_attr_string(OTEL_ATTRIBUTE_GEO_POSTAL_CODE, (value))
-#define otel_attr_geo_region_iso_code(value) otel_attr_string(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE, (value))
-#define otel_attr_go_cpu_detailed_state(value) otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE, (value))
-#define otel_attr_go_cpu_state(value) otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_STATE, (value))
-#define otel_attr_go_memory_detailed_type(value) otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE, (value))
-#define otel_attr_go_memory_type(value) otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_TYPE, (value))
-#define otel_attr_graphql_document(value) otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT, (value))
-#define otel_attr_graphql_operation_name(value) otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME, (value))
-#define otel_attr_graphql_operation_type(value) otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE, (value))
-#define otel_attr_heroku_app_id(value) otel_attr_string(OTEL_ATTRIBUTE_HEROKU_APP_ID, (value))
-#define otel_attr_heroku_release_commit(value) otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT, (value))
-#define otel_attr_heroku_release_creation_timestamp(value) otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP, (value))
-#define otel_attr_host_cpu_cache_l2_size(value) otel_attr_i64(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE, (value))
-#define otel_attr_host_cpu_family(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_FAMILY, (value))
-#define otel_attr_host_cpu_model_id(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID, (value))
-#define otel_attr_host_cpu_model_name(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME, (value))
-#define otel_attr_host_cpu_stepping(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_STEPPING, (value))
-#define otel_attr_host_cpu_vendor_id(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID, (value))
-#define otel_attr_host_id(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_ID, (value))
-#define otel_attr_host_image_id(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_ID, (value))
-#define otel_attr_host_image_name(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_NAME, (value))
-#define otel_attr_host_image_version(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION, (value))
-#define otel_attr_host_name(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_NAME, (value))
-#define otel_attr_host_type(value) otel_attr_string(OTEL_ATTRIBUTE_HOST_TYPE, (value))
-#define otel_attr_http_connection_state(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE, (value))
-#define otel_attr_http_request_body_size(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE, (value))
-#define otel_attr_http_request_method(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD, (value))
-#define otel_attr_http_request_method_original(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL, (value))
-#define otel_attr_http_request_resend_count(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT, (value))
-#define otel_attr_http_request_size(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE, (value))
-#define otel_attr_http_response_body_size(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE, (value))
-#define otel_attr_http_response_size(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE, (value))
-#define otel_attr_http_response_status_code(value) otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE, (value))
-#define otel_attr_http_route(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_ROUTE, (value))
-#define otel_attr_http_scheme(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_SCHEME, (value))
-#define otel_attr_http_target(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_TARGET, (value))
-#define otel_attr_http_url(value) otel_attr_string(OTEL_ATTRIBUTE_HTTP_URL, (value))
-#define otel_attr_hw_battery_capacity(value) otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY, (value))
-#define otel_attr_hw_battery_chemistry(value) otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY, (value))
-#define otel_attr_hw_bios_version(value) otel_attr_string(OTEL_ATTRIBUTE_HW_BIOS_VERSION, (value))
-#define otel_attr_hw_driver_version(value) otel_attr_string(OTEL_ATTRIBUTE_HW_DRIVER_VERSION, (value))
-#define otel_attr_hw_enclosure_type(value) otel_attr_string(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE, (value))
-#define otel_attr_hw_firmware_version(value) otel_attr_string(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION, (value))
-#define otel_attr_hw_id(value) otel_attr_string(OTEL_ATTRIBUTE_HW_ID, (value))
-#define otel_attr_hw_logical_disk_raid_level(value) otel_attr_string(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL, (value))
-#define otel_attr_hw_memory_type(value) otel_attr_string(OTEL_ATTRIBUTE_HW_MEMORY_TYPE, (value))
-#define otel_attr_hw_model(value) otel_attr_string(OTEL_ATTRIBUTE_HW_MODEL, (value))
-#define otel_attr_hw_name(value) otel_attr_string(OTEL_ATTRIBUTE_HW_NAME, (value))
-#define otel_attr_hw_network_physical_address(value) otel_attr_string(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS, (value))
-#define otel_attr_hw_parent(value) otel_attr_string(OTEL_ATTRIBUTE_HW_PARENT, (value))
-#define otel_attr_hw_physical_disk_smart_attribute(value) otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE, (value))
-#define otel_attr_hw_physical_disk_type(value) otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE, (value))
-#define otel_attr_hw_sensor_location(value) otel_attr_string(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION, (value))
-#define otel_attr_hw_serial_number(value) otel_attr_string(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER, (value))
-#define otel_attr_hw_vendor(value) otel_attr_string(OTEL_ATTRIBUTE_HW_VENDOR, (value))
-#define otel_attr_jsonrpc_protocol_version(value) otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION, (value))
-#define otel_attr_jsonrpc_request_id(value) otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID, (value))
-#define otel_attr_jvm_buffer_pool_name(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME, (value))
-#define otel_attr_jvm_gc_action(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_ACTION, (value))
-#define otel_attr_jvm_gc_cause(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_CAUSE, (value))
-#define otel_attr_jvm_gc_name(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_NAME, (value))
-#define otel_attr_jvm_memory_pool_name(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME, (value))
-#define otel_attr_jvm_memory_type(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE, (value))
-#define otel_attr_jvm_thread_state(value) otel_attr_string(OTEL_ATTRIBUTE_JVM_THREAD_STATE, (value))
-#define otel_attr_k8s_cluster_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME, (value))
-#define otel_attr_k8s_cluster_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_UID, (value))
-#define otel_attr_k8s_container_ephemeral_storage_fs_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE, (value))
-#define otel_attr_k8s_container_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME, (value))
-#define otel_attr_k8s_container_status_reason(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON, (value))
-#define otel_attr_k8s_container_status_state(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE, (value))
-#define otel_attr_k8s_cronjob_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION, (value))
-#define otel_attr_k8s_cronjob_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL, (value))
-#define otel_attr_k8s_cronjob_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME, (value))
-#define otel_attr_k8s_cronjob_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_UID, (value))
-#define otel_attr_k8s_daemonset_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION, (value))
-#define otel_attr_k8s_daemonset_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL, (value))
-#define otel_attr_k8s_daemonset_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME, (value))
-#define otel_attr_k8s_daemonset_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID, (value))
-#define otel_attr_k8s_deployment_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION, (value))
-#define otel_attr_k8s_deployment_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL, (value))
-#define otel_attr_k8s_deployment_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME, (value))
-#define otel_attr_k8s_deployment_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID, (value))
-#define otel_attr_k8s_hpa_metric_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE, (value))
-#define otel_attr_k8s_hpa_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_NAME, (value))
-#define otel_attr_k8s_hpa_scaletargetref_api_version(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION, (value))
-#define otel_attr_k8s_hpa_scaletargetref_kind(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND, (value))
-#define otel_attr_k8s_hpa_scaletargetref_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME, (value))
-#define otel_attr_k8s_hpa_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_UID, (value))
-#define otel_attr_k8s_hugepage_size(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE, (value))
-#define otel_attr_k8s_job_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION, (value))
-#define otel_attr_k8s_job_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_LABEL, (value))
-#define otel_attr_k8s_job_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_NAME, (value))
-#define otel_attr_k8s_job_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_UID, (value))
-#define otel_attr_k8s_namespace_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION, (value))
-#define otel_attr_k8s_namespace_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL, (value))
-#define otel_attr_k8s_namespace_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME, (value))
-#define otel_attr_k8s_namespace_phase(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE, (value))
-#define otel_attr_k8s_node_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION, (value))
-#define otel_attr_k8s_node_condition_status(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS, (value))
-#define otel_attr_k8s_node_condition_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE, (value))
-#define otel_attr_k8s_node_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_LABEL, (value))
-#define otel_attr_k8s_node_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_NAME, (value))
-#define otel_attr_k8s_node_system_container_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME, (value))
-#define otel_attr_k8s_node_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_UID, (value))
-#define otel_attr_k8s_persistentvolume_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION, (value))
-#define otel_attr_k8s_persistentvolume_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL, (value))
-#define otel_attr_k8s_persistentvolume_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME, (value))
-#define otel_attr_k8s_persistentvolume_reclaim_policy(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY, (value))
-#define otel_attr_k8s_persistentvolume_status_phase(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE, (value))
-#define otel_attr_k8s_persistentvolume_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID, (value))
-#define otel_attr_k8s_persistentvolumeclaim_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION, (value))
-#define otel_attr_k8s_persistentvolumeclaim_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL, (value))
-#define otel_attr_k8s_persistentvolumeclaim_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME, (value))
-#define otel_attr_k8s_persistentvolumeclaim_status_phase(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, (value))
-#define otel_attr_k8s_persistentvolumeclaim_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID, (value))
-#define otel_attr_k8s_pod_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION, (value))
-#define otel_attr_k8s_pod_hostname(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME, (value))
-#define otel_attr_k8s_pod_ip(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_IP, (value))
-#define otel_attr_k8s_pod_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_LABEL, (value))
-#define otel_attr_k8s_pod_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_NAME, (value))
-#define otel_attr_k8s_pod_start_time(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_START_TIME, (value))
-#define otel_attr_k8s_pod_status_phase(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE, (value))
-#define otel_attr_k8s_pod_status_reason(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON, (value))
-#define otel_attr_k8s_pod_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_UID, (value))
-#define otel_attr_k8s_replicaset_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION, (value))
-#define otel_attr_k8s_replicaset_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL, (value))
-#define otel_attr_k8s_replicaset_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME, (value))
-#define otel_attr_k8s_replicaset_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_UID, (value))
-#define otel_attr_k8s_replicationcontroller_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME, (value))
-#define otel_attr_k8s_replicationcontroller_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID, (value))
-#define otel_attr_k8s_resourcequota_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME, (value))
-#define otel_attr_k8s_resourcequota_resource_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME, (value))
-#define otel_attr_k8s_resourcequota_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID, (value))
-#define otel_attr_k8s_service_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION, (value))
-#define otel_attr_k8s_service_endpoint_address_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE, (value))
-#define otel_attr_k8s_service_endpoint_condition(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION, (value))
-#define otel_attr_k8s_service_endpoint_zone(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE, (value))
-#define otel_attr_k8s_service_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL, (value))
-#define otel_attr_k8s_service_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_NAME, (value))
-#define otel_attr_k8s_service_publish_not_ready_addresses(value) otel_attr_bool(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES, (value))
-#define otel_attr_k8s_service_selector(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR, (value))
-#define otel_attr_k8s_service_traffic_distribution(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION, (value))
-#define otel_attr_k8s_service_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE, (value))
-#define otel_attr_k8s_service_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_UID, (value))
-#define otel_attr_k8s_statefulset_annotation(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION, (value))
-#define otel_attr_k8s_statefulset_label(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL, (value))
-#define otel_attr_k8s_statefulset_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME, (value))
-#define otel_attr_k8s_statefulset_uid(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID, (value))
-#define otel_attr_k8s_storageclass_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME, (value))
-#define otel_attr_k8s_volume_name(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_NAME, (value))
-#define otel_attr_k8s_volume_type(value) otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE, (value))
-#define otel_attr_log_file_name(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME, (value))
-#define otel_attr_log_file_name_resolved(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED, (value))
-#define otel_attr_log_file_path(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH, (value))
-#define otel_attr_log_file_path_resolved(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED, (value))
-#define otel_attr_log_record_original(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL, (value))
-#define otel_attr_log_record_uid(value) otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_UID, (value))
-#define otel_attr_mainframe_lpar_name(value) otel_attr_string(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME, (value))
-#define otel_attr_messaging_batch_message_count(value) otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT, (value))
-#define otel_attr_messaging_client_id(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID, (value))
-#define otel_attr_messaging_consumer_group_name(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME, (value))
-#define otel_attr_messaging_destination_name(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME, (value))
-#define otel_attr_messaging_destination_partition_id(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID, (value))
-#define otel_attr_messaging_destination_publish_name(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME, (value))
-#define otel_attr_messaging_destination_subscription_name(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME, (value))
-#define otel_attr_messaging_destination_template(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE, (value))
-#define otel_attr_messaging_gcp_pubsub_message_ack_id(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, (value))
-#define otel_attr_messaging_kafka_message_key(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY, (value))
-#define otel_attr_messaging_kafka_offset(value) otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET, (value))
-#define otel_attr_messaging_message_body_size(value) otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE, (value))
-#define otel_attr_messaging_message_conversation_id(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID, (value))
-#define otel_attr_messaging_message_envelope_size(value) otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE, (value))
-#define otel_attr_messaging_message_id(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID, (value))
-#define otel_attr_messaging_operation_name(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME, (value))
-#define otel_attr_messaging_rabbitmq_message_delivery_tag(value) otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG, (value))
-#define otel_attr_messaging_rocketmq_message_group(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP, (value))
-#define otel_attr_messaging_rocketmq_message_tag(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG, (value))
-#define otel_attr_messaging_rocketmq_namespace(value) otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE, (value))
-#define otel_attr_net_host_port(value) otel_attr_i64(OTEL_ATTRIBUTE_NET_HOST_PORT, (value))
-#define otel_attr_net_sock_peer_name(value) otel_attr_string(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME, (value))
-#define otel_attr_network_carrier_icc(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC, (value))
-#define otel_attr_network_carrier_mcc(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC, (value))
-#define otel_attr_network_carrier_mnc(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC, (value))
-#define otel_attr_network_carrier_name(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME, (value))
-#define otel_attr_network_connection_state(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE, (value))
-#define otel_attr_network_connection_subtype(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE, (value))
-#define otel_attr_network_connection_type(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE, (value))
-#define otel_attr_network_interface_name(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME, (value))
-#define otel_attr_network_io_direction(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION, (value))
-#define otel_attr_network_local_address(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS, (value))
-#define otel_attr_network_local_port(value) otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT, (value))
-#define otel_attr_network_peer_address(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS, (value))
-#define otel_attr_network_peer_port(value) otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_PEER_PORT, (value))
-#define otel_attr_network_protocol_name(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME, (value))
-#define otel_attr_network_protocol_version(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION, (value))
-#define otel_attr_network_transport(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TRANSPORT, (value))
-#define otel_attr_network_type(value) otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TYPE, (value))
-#define otel_attr_nfs_operation_name(value) otel_attr_string(OTEL_ATTRIBUTE_NFS_OPERATION_NAME, (value))
-#define otel_attr_nfs_server_repcache_status(value) otel_attr_string(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS, (value))
-#define otel_attr_oci_manifest_digest(value) otel_attr_string(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST, (value))
-#define otel_attr_onc_rpc_procedure_name(value) otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME, (value))
-#define otel_attr_onc_rpc_program_name(value) otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME, (value))
-#define otel_attr_openshift_clusterquota_name(value) otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME, (value))
-#define otel_attr_openshift_clusterquota_uid(value) otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID, (value))
-#define otel_attr_oracle_cloud_realm(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM, (value))
-#define otel_attr_oracle_db_domain(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN, (value))
-#define otel_attr_oracle_db_instance_name(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME, (value))
-#define otel_attr_oracle_db_name(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_NAME, (value))
-#define otel_attr_oracle_db_pdb(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_PDB, (value))
-#define otel_attr_oracle_db_service(value) otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE, (value))
-#define otel_attr_os_build_id(value) otel_attr_string(OTEL_ATTRIBUTE_OS_BUILD_ID, (value))
-#define otel_attr_os_description(value) otel_attr_string(OTEL_ATTRIBUTE_OS_DESCRIPTION, (value))
-#define otel_attr_os_name(value) otel_attr_string(OTEL_ATTRIBUTE_OS_NAME, (value))
-#define otel_attr_os_version(value) otel_attr_string(OTEL_ATTRIBUTE_OS_VERSION, (value))
-#define otel_attr_otel_component_name(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME, (value))
-#define otel_attr_otel_component_type(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE, (value))
-#define otel_attr_otel_event_name(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_EVENT_NAME, (value))
-#define otel_attr_otel_scope_name(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME, (value))
-#define otel_attr_otel_scope_schema_url(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL, (value))
-#define otel_attr_otel_scope_version(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION, (value))
-#define otel_attr_otel_status_description(value) otel_attr_string(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION, (value))
-#define otel_attr_pprof_profile_doc_url(value) otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL, (value))
-#define otel_attr_pprof_profile_drop_frames(value) otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES, (value))
-#define otel_attr_pprof_profile_keep_frames(value) otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES, (value))
-#define otel_attr_pprof_scope_default_sample_type(value) otel_attr_string(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE, (value))
-#define otel_attr_process_args_count(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT, (value))
-#define otel_attr_process_command(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND, (value))
-#define otel_attr_process_command_line(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE, (value))
-#define otel_attr_process_creation_time(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME, (value))
-#define otel_attr_process_environment_variable(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE, (value))
-#define otel_attr_process_executable_build_id_gnu(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU, (value))
-#define otel_attr_process_executable_build_id_go(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO, (value))
-#define otel_attr_process_executable_build_id_htlhash(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH, (value))
-#define otel_attr_process_executable_name(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME, (value))
-#define otel_attr_process_executable_path(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH, (value))
-#define otel_attr_process_exit_code(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE, (value))
-#define otel_attr_process_exit_time(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME, (value))
-#define otel_attr_process_group_leader_pid(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID, (value))
-#define otel_attr_process_linux_cgroup(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP, (value))
-#define otel_attr_process_owner(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_OWNER, (value))
-#define otel_attr_process_parent_pid(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PARENT_PID, (value))
-#define otel_attr_process_pid(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PID, (value))
-#define otel_attr_process_real_user_id(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID, (value))
-#define otel_attr_process_real_user_name(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME, (value))
-#define otel_attr_process_runtime_description(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION, (value))
-#define otel_attr_process_runtime_name(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME, (value))
-#define otel_attr_process_runtime_version(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION, (value))
-#define otel_attr_process_saved_user_id(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID, (value))
-#define otel_attr_process_saved_user_name(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME, (value))
-#define otel_attr_process_session_leader_pid(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID, (value))
-#define otel_attr_process_state(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_STATE, (value))
-#define otel_attr_process_title(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_TITLE, (value))
-#define otel_attr_process_user_id(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_USER_ID, (value))
-#define otel_attr_process_user_name(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_USER_NAME, (value))
-#define otel_attr_process_vpid(value) otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_VPID, (value))
-#define otel_attr_process_working_directory(value) otel_attr_string(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY, (value))
-#define otel_attr_profile_frame_type(value) otel_attr_string(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE, (value))
-#define otel_attr_rpc_method(value) otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD, (value))
-#define otel_attr_rpc_method_original(value) otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL, (value))
-#define otel_attr_rpc_response_status_code(value) otel_attr_string(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE, (value))
-#define otel_attr_security_rule_category(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY, (value))
-#define otel_attr_security_rule_description(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION, (value))
-#define otel_attr_security_rule_license(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE, (value))
-#define otel_attr_security_rule_name(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_NAME, (value))
-#define otel_attr_security_rule_reference(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE, (value))
-#define otel_attr_security_rule_ruleset_name(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME, (value))
-#define otel_attr_security_rule_uuid(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_UUID, (value))
-#define otel_attr_security_rule_version(value) otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION, (value))
-#define otel_attr_server_address(value) otel_attr_string(OTEL_ATTRIBUTE_SERVER_ADDRESS, (value))
-#define otel_attr_server_port(value) otel_attr_i64(OTEL_ATTRIBUTE_SERVER_PORT, (value))
-#define otel_attr_service_criticality(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_CRITICALITY, (value))
-#define otel_attr_service_instance_id(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID, (value))
-#define otel_attr_service_name(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAME, (value))
-#define otel_attr_service_namespace(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAMESPACE, (value))
-#define otel_attr_service_peer_name(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAME, (value))
-#define otel_attr_service_peer_namespace(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE, (value))
-#define otel_attr_service_version(value) otel_attr_string(OTEL_ATTRIBUTE_SERVICE_VERSION, (value))
-#define otel_attr_session_id(value) otel_attr_string(OTEL_ATTRIBUTE_SESSION_ID, (value))
-#define otel_attr_session_previous_id(value) otel_attr_string(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID, (value))
-#define otel_attr_signalr_connection_status(value) otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS, (value))
-#define otel_attr_signalr_transport(value) otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT, (value))
-#define otel_attr_source_address(value) otel_attr_string(OTEL_ATTRIBUTE_SOURCE_ADDRESS, (value))
-#define otel_attr_source_port(value) otel_attr_i64(OTEL_ATTRIBUTE_SOURCE_PORT, (value))
-#define otel_attr_system_cpu_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE, (value))
-#define otel_attr_system_device(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_DEVICE, (value))
-#define otel_attr_system_filesystem_mode(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE, (value))
-#define otel_attr_system_filesystem_mountpoint(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT, (value))
-#define otel_attr_system_filesystem_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE, (value))
-#define otel_attr_system_filesystem_type(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE, (value))
-#define otel_attr_system_memory_linux_hugepages_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE, (value))
-#define otel_attr_system_memory_linux_slab_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE, (value))
-#define otel_attr_system_memory_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE, (value))
-#define otel_attr_system_paging_direction(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION, (value))
-#define otel_attr_system_paging_fault_type(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE, (value))
-#define otel_attr_system_paging_state(value) otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE, (value))
-#define otel_attr_telemetry_distro_name(value) otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME, (value))
-#define otel_attr_telemetry_distro_version(value) otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION, (value))
-#define otel_attr_telemetry_sdk_name(value) otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME, (value))
-#define otel_attr_telemetry_sdk_version(value) otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION, (value))
-#define otel_attr_test_case_name(value) otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_NAME, (value))
-#define otel_attr_test_case_result_status(value) otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS, (value))
-#define otel_attr_test_suite_name(value) otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_NAME, (value))
-#define otel_attr_test_suite_run_status(value) otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS, (value))
-#define otel_attr_thread_id(value) otel_attr_i64(OTEL_ATTRIBUTE_THREAD_ID, (value))
-#define otel_attr_thread_name(value) otel_attr_string(OTEL_ATTRIBUTE_THREAD_NAME, (value))
-#define otel_attr_tls_cipher(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CIPHER, (value))
-#define otel_attr_tls_client_certificate(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE, (value))
-#define otel_attr_tls_client_hash_md5(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5, (value))
-#define otel_attr_tls_client_hash_sha1(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1, (value))
-#define otel_attr_tls_client_hash_sha256(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256, (value))
-#define otel_attr_tls_client_issuer(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER, (value))
-#define otel_attr_tls_client_ja3(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_JA3, (value))
-#define otel_attr_tls_client_not_after(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER, (value))
-#define otel_attr_tls_client_not_before(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE, (value))
-#define otel_attr_tls_client_subject(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT, (value))
-#define otel_attr_tls_curve(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_CURVE, (value))
-#define otel_attr_tls_established(value) otel_attr_bool(OTEL_ATTRIBUTE_TLS_ESTABLISHED, (value))
-#define otel_attr_tls_next_protocol(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL, (value))
-#define otel_attr_tls_protocol_version(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION, (value))
-#define otel_attr_tls_resumed(value) otel_attr_bool(OTEL_ATTRIBUTE_TLS_RESUMED, (value))
-#define otel_attr_tls_server_certificate(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE, (value))
-#define otel_attr_tls_server_hash_md5(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5, (value))
-#define otel_attr_tls_server_hash_sha1(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1, (value))
-#define otel_attr_tls_server_hash_sha256(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256, (value))
-#define otel_attr_tls_server_issuer(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER, (value))
-#define otel_attr_tls_server_ja3s(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_JA3S, (value))
-#define otel_attr_tls_server_not_after(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER, (value))
-#define otel_attr_tls_server_not_before(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE, (value))
-#define otel_attr_tls_server_subject(value) otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT, (value))
-#define otel_attr_url_domain(value) otel_attr_string(OTEL_ATTRIBUTE_URL_DOMAIN, (value))
-#define otel_attr_url_extension(value) otel_attr_string(OTEL_ATTRIBUTE_URL_EXTENSION, (value))
-#define otel_attr_url_fragment(value) otel_attr_string(OTEL_ATTRIBUTE_URL_FRAGMENT, (value))
-#define otel_attr_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_URL_FULL, (value))
-#define otel_attr_url_original(value) otel_attr_string(OTEL_ATTRIBUTE_URL_ORIGINAL, (value))
-#define otel_attr_url_path(value) otel_attr_string(OTEL_ATTRIBUTE_URL_PATH, (value))
-#define otel_attr_url_port(value) otel_attr_i64(OTEL_ATTRIBUTE_URL_PORT, (value))
-#define otel_attr_url_query(value) otel_attr_string(OTEL_ATTRIBUTE_URL_QUERY, (value))
-#define otel_attr_url_registered_domain(value) otel_attr_string(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN, (value))
-#define otel_attr_url_scheme(value) otel_attr_string(OTEL_ATTRIBUTE_URL_SCHEME, (value))
-#define otel_attr_url_subdomain(value) otel_attr_string(OTEL_ATTRIBUTE_URL_SUBDOMAIN, (value))
-#define otel_attr_url_template(value) otel_attr_string(OTEL_ATTRIBUTE_URL_TEMPLATE, (value))
-#define otel_attr_url_top_level_domain(value) otel_attr_string(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN, (value))
-#define otel_attr_user_agent_name(value) otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_NAME, (value))
-#define otel_attr_user_agent_original(value) otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL, (value))
-#define otel_attr_user_agent_os_name(value) otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME, (value))
-#define otel_attr_user_agent_os_version(value) otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION, (value))
-#define otel_attr_user_agent_version(value) otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_VERSION, (value))
-#define otel_attr_user_email(value) otel_attr_string(OTEL_ATTRIBUTE_USER_EMAIL, (value))
-#define otel_attr_user_full_name(value) otel_attr_string(OTEL_ATTRIBUTE_USER_FULL_NAME, (value))
-#define otel_attr_user_hash(value) otel_attr_string(OTEL_ATTRIBUTE_USER_HASH, (value))
-#define otel_attr_user_id(value) otel_attr_string(OTEL_ATTRIBUTE_USER_ID, (value))
-#define otel_attr_user_name(value) otel_attr_string(OTEL_ATTRIBUTE_USER_NAME, (value))
-#define otel_attr_vcs_change_id(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_ID, (value))
-#define otel_attr_vcs_change_state(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_STATE, (value))
-#define otel_attr_vcs_change_title(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE, (value))
-#define otel_attr_vcs_line_change_type(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE, (value))
-#define otel_attr_vcs_owner_name(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_OWNER_NAME, (value))
-#define otel_attr_vcs_provider_name(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME, (value))
-#define otel_attr_vcs_ref_base_name(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME, (value))
-#define otel_attr_vcs_ref_base_revision(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION, (value))
-#define otel_attr_vcs_ref_base_type(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE, (value))
-#define otel_attr_vcs_ref_head_name(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME, (value))
-#define otel_attr_vcs_ref_head_revision(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION, (value))
-#define otel_attr_vcs_ref_head_type(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE, (value))
-#define otel_attr_vcs_ref_type(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_TYPE, (value))
-#define otel_attr_vcs_repository_name(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME, (value))
-#define otel_attr_vcs_repository_url_full(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL, (value))
-#define otel_attr_vcs_revision_delta_direction(value) otel_attr_string(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION, (value))
-#define otel_attr_webengine_description(value) otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION, (value))
-#define otel_attr_webengine_name(value) otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_NAME, (value))
-#define otel_attr_webengine_version(value) otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_VERSION, (value))
-#define otel_attr_zos_smf_id(value) otel_attr_string(OTEL_ATTRIBUTE_ZOS_SMF_ID, (value))
-#define otel_attr_zos_sysplex_name(value) otel_attr_string(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME, (value))
+static inline otel_attribute_t otel_attr_android_app_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ANDROID_APP_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_android_os_api_level(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_build_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_BUILD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_crash_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_CRASH_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_installation_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_INSTALLATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_jank_frame_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_jank_period(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_PERIOD, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_jank_threshold(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_screen_coordinate_x(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_screen_coordinate_y(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_screen_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_screen_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_widget_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_app_widget_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_attestation_filename(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_attestation_hash(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_attestation_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_filename(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_FILENAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_hash(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_HASH, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_purl(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_PURL, (value));
+}
+
+static inline otel_attribute_t otel_attr_artifact_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_authentication_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_authentication_scheme(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_authorization_policy(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_authorization_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_diagnostics_exception_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_diagnostics_handler_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_error_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_sign_in_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_sign_in_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_token_purpose(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_token_verified(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_user_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_identity_user_update_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_memory_pool_owner(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_rate_limiting_policy(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_rate_limiting_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_request_is_unhandled(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_routing_is_fallback(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_routing_match_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_aspnetcore_user_is_authenticated(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_bedrock_guardrail_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_bedrock_knowledge_base_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_exclusive_start_table(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_index_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_item_collection_metrics(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_limit(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_projection(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_provisioned_read_capacity(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_provisioned_write_capacity(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_scanned_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_segment(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_select(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_table_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_dynamodb_total_segments(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_cluster_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_container_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_task_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_task_family(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_task_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_ecs_task_revision(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_eks_cluster_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_extended_request_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_kinesis_stream_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_lambda_invoked_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_lambda_resource_mapping_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_request_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_REQUEST_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_bucket(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_BUCKET, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_copy_source(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_delete(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_DELETE, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_key(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_KEY, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_part_number(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_s3_upload_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_secretsmanager_secret_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_sns_topic_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_sqs_queue_url(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_step_functions_activity_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_aws_step_functions_state_machine_arn(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_client_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_CLIENT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_cosmosdb_consistency_level(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_cosmosdb_operation_request_charge(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_cosmosdb_response_sub_status_code(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_resource_provider_namespace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_azure_service_request_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_browser_document_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_browser_language(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_LANGUAGE, (value));
+}
+
+static inline otel_attribute_t otel_attr_browser_platform(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_BROWSER_PLATFORM, (value));
+}
+
+static inline otel_attribute_t otel_attr_cassandra_coordinator_dc(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC, (value));
+}
+
+static inline otel_attribute_t otel_attr_cassandra_coordinator_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cassandra_page_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cassandra_speculative_execution_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_action_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_run_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_run_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_run_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_task_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_result(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_task_run_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_pipeline_task_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_system_component(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_worker_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_worker_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_worker_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cicd_worker_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_client_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_client_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CLIENT_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloud_account_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloud_availability_zone(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloud_region(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_REGION, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloud_resource_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudevents_event_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudevents_event_source(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudevents_event_spec_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudevents_event_subject(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudevents_event_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_app_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_app_instance_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_app_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_org_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_org_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_process_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_process_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_space_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_space_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_system_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_cloudfoundry_system_instance_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_code_column_number(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER, (value));
+}
+
+static inline otel_attribute_t otel_attr_code_file_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CODE_FILE_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_code_function_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_code_line_number(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CODE_LINE_NUMBER, (value));
+}
+
+static inline otel_attribute_t otel_attr_code_stacktrace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CODE_STACKTRACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_command(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_command_line(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_cpu_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_csi_plugin_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_csi_volume_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_image_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_image_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_runtime_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_runtime_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_container_runtime_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_cpu_logical_number(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER, (value));
+}
+
+static inline otel_attribute_t otel_attr_cpu_mode(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_CPU_MODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_cpython_gc_generation(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_client_connection_pool_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_client_connection_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_collection_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_COLLECTION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_cosmosdb_status_code(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_jdbc_driver_classname(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_mssql_instance_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_namespace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_NAMESPACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_operation_batch_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_operation_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_operation_parameter(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_query_parameter(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_query_summary(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_query_text(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_TEXT, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_redis_database_index(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_response_returned_rows(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_response_status_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_stored_procedure_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_db_user(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DB_USER, (value));
+}
+
+static inline otel_attribute_t otel_attr_deployment_environment_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_deployment_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_deployment_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_destination_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DESTINATION_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_destination_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_DESTINATION_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_device_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_device_manufacturer(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER, (value));
+}
+
+static inline otel_attribute_t otel_attr_device_model_identifier(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER, (value));
+}
+
+static inline otel_attribute_t otel_attr_device_model_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_disk_io_direction(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DISK_IO_DIRECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_dns_question_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DNS_QUESTION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_dotnet_gc_heap_generation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_elasticsearch_node_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_enduser_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_enduser_pseudo_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_enduser_role(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ROLE, (value));
+}
+
+static inline otel_attribute_t otel_attr_enduser_scope(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_SCOPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_error_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ERROR_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_exception_message(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE, (value));
+}
+
+static inline otel_attribute_t otel_attr_exception_stacktrace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_exception_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_cron(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_CRON, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_document_collection(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_document_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_document_time(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_instance(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INSTANCE, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_invocation_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_invoked_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_invoked_region(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_max_memory(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_time(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_TIME, (value));
+}
+
+static inline otel_attribute_t otel_attr_faas_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FAAS_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_context_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_error_message(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_key(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_provider_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_result_reason(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_result_variant(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_set_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_feature_flag_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_accessed(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_ACCESSED, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_changed(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_CHANGED, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_created(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_CREATED, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_directory(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_DIRECTORY, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_extension(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_EXTENSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_fork_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_FORK_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_group_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_group_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_inode(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_INODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_lock_mechanism(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_lock_mode(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_lock_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_mode(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_MODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_modified(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_MODIFIED, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_owner_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_owner_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_file_symbolic_link_target_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_application_container(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_application_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_application_location(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_destination_application_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_destination_service_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_destination_workload_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_service_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_apphub_workload_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_client_service(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_cloud_run_job_execution(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_cloud_run_job_task_index(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_region(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_group_manager_zone(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_hostname(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_labels(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS, (value));
+}
+
+static inline otel_attribute_t otel_attr_gcp_gce_instance_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_gen_ai_completion(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_COMPLETION, (value));
+}
+
+static inline otel_attribute_t otel_attr_gen_ai_prompt(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_PROMPT, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_country_iso_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_locality_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_location_lat(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LAT, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_location_lon(double value) {
+    return otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LON, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_postal_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEO_POSTAL_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_geo_region_iso_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_go_cpu_detailed_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_go_cpu_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_go_memory_detailed_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_go_memory_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_graphql_document(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT, (value));
+}
+
+static inline otel_attribute_t otel_attr_graphql_operation_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_graphql_operation_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_heroku_app_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_APP_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_heroku_release_commit(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT, (value));
+}
+
+static inline otel_attribute_t otel_attr_heroku_release_creation_timestamp(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_cache_l2_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_family(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_FAMILY, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_model_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_model_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_stepping(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_STEPPING, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_cpu_vendor_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_image_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_image_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_image_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_host_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HOST_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_connection_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_request_body_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_request_method(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_request_method_original(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_request_resend_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_request_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_response_body_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_response_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_response_status_code(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_route(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_ROUTE, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_scheme(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_SCHEME, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_target(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_TARGET, (value));
+}
+
+static inline otel_attribute_t otel_attr_http_url(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HTTP_URL, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_battery_capacity(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_battery_chemistry(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_bios_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_BIOS_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_driver_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_DRIVER_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_enclosure_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_firmware_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_logical_disk_raid_level(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_memory_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_MEMORY_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_model(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_MODEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_network_physical_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_parent(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_PARENT, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_physical_disk_smart_attribute(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_physical_disk_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_sensor_location(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_serial_number(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER, (value));
+}
+
+static inline otel_attribute_t otel_attr_hw_vendor(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_HW_VENDOR, (value));
+}
+
+static inline otel_attribute_t otel_attr_jsonrpc_protocol_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_jsonrpc_request_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_buffer_pool_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_gc_action(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_ACTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_gc_cause(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_CAUSE, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_gc_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_memory_pool_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_memory_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_jvm_thread_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_JVM_THREAD_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cluster_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cluster_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_container_ephemeral_storage_fs_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_container_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_container_status_reason(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_container_status_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cronjob_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cronjob_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cronjob_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_cronjob_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_daemonset_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_daemonset_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_daemonset_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_daemonset_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_deployment_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_deployment_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_deployment_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_deployment_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_metric_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_api_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_kind(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_scaletargetref_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hpa_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_hugepage_size(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_job_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_job_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_job_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_job_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_namespace_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_namespace_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_namespace_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_namespace_phase(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_condition_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_condition_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_system_container_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_node_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_reclaim_policy(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_status_phase(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolume_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_status_phase(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_persistentvolumeclaim_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_hostname(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_ip(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_IP, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_start_time(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_START_TIME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_status_phase(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_status_reason(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_pod_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicaset_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicaset_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicaset_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicaset_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicationcontroller_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_replicationcontroller_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_resourcequota_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_resourcequota_resource_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_resourcequota_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_endpoint_address_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_endpoint_condition(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_endpoint_zone(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_publish_not_ready_addresses(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_selector(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_traffic_distribution(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_service_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_statefulset_annotation(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_statefulset_label(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_statefulset_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_statefulset_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_storageclass_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_volume_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_k8s_volume_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_file_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_file_name_resolved(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_file_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_file_path_resolved(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_record_original(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL, (value));
+}
+
+static inline otel_attribute_t otel_attr_log_record_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_mainframe_lpar_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_batch_message_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_client_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_consumer_group_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_destination_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_destination_partition_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_destination_publish_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_destination_subscription_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_destination_template(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_gcp_pubsub_message_ack_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_kafka_message_key(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_kafka_offset(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_message_body_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_message_conversation_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_message_envelope_size(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_message_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_operation_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_rabbitmq_message_delivery_tag(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_rocketmq_message_group(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_rocketmq_message_tag(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG, (value));
+}
+
+static inline otel_attribute_t otel_attr_messaging_rocketmq_namespace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_net_host_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_NET_HOST_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_net_sock_peer_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_carrier_icc(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_carrier_mcc(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_carrier_mnc(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_carrier_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_connection_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_connection_subtype(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_connection_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_interface_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_io_direction(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_local_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_local_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_peer_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_peer_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_PEER_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_protocol_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_protocol_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_transport(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TRANSPORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_network_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_nfs_operation_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NFS_OPERATION_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_nfs_server_repcache_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_oci_manifest_digest(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST, (value));
+}
+
+static inline otel_attribute_t otel_attr_onc_rpc_procedure_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_onc_rpc_program_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_openshift_clusterquota_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_openshift_clusterquota_uid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_cloud_realm(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_db_domain(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_db_instance_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_db_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_db_pdb(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_PDB, (value));
+}
+
+static inline otel_attribute_t otel_attr_oracle_db_service(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE, (value));
+}
+
+static inline otel_attribute_t otel_attr_os_build_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OS_BUILD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_os_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OS_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_os_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OS_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_os_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OS_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_component_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_component_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_event_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_EVENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_scope_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_scope_schema_url(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_scope_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_otel_status_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_pprof_profile_doc_url(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL, (value));
+}
+
+static inline otel_attribute_t otel_attr_pprof_profile_drop_frames(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES, (value));
+}
+
+static inline otel_attribute_t otel_attr_pprof_profile_keep_frames(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES, (value));
+}
+
+static inline otel_attribute_t otel_attr_pprof_scope_default_sample_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_args_count(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_command(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_command_line(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_creation_time(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_environment_variable(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_executable_build_id_gnu(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_executable_build_id_go(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_executable_build_id_htlhash(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_executable_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_executable_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_exit_code(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_exit_time(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_group_leader_pid(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_linux_cgroup(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_owner(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_OWNER, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_parent_pid(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PARENT_PID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_pid(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_real_user_id(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_real_user_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_runtime_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_runtime_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_runtime_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_saved_user_id(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_saved_user_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_session_leader_pid(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_title(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_TITLE, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_user_id(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_USER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_user_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_USER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_vpid(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_VPID, (value));
+}
+
+static inline otel_attribute_t otel_attr_process_working_directory(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY, (value));
+}
+
+static inline otel_attribute_t otel_attr_profile_frame_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_rpc_method(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD, (value));
+}
+
+static inline otel_attribute_t otel_attr_rpc_method_original(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL, (value));
+}
+
+static inline otel_attribute_t otel_attr_rpc_response_status_code(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_category(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_license(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_reference(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_ruleset_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_uuid(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_UUID, (value));
+}
+
+static inline otel_attribute_t otel_attr_security_rule_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_server_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVER_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_server_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_SERVER_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_criticality(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_CRITICALITY, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_instance_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_namespace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAMESPACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_peer_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_peer_namespace(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE, (value));
+}
+
+static inline otel_attribute_t otel_attr_service_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SERVICE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_session_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SESSION_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_session_previous_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_signalr_connection_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_signalr_transport(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_source_address(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SOURCE_ADDRESS, (value));
+}
+
+static inline otel_attribute_t otel_attr_source_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_SOURCE_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_cpu_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_device(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_DEVICE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_filesystem_mode(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_filesystem_mountpoint(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_filesystem_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_filesystem_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_memory_linux_hugepages_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_memory_linux_slab_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_memory_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_paging_direction(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_paging_fault_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_system_paging_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_telemetry_distro_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_telemetry_distro_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_telemetry_sdk_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_telemetry_sdk_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_test_case_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_test_case_result_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_test_suite_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_test_suite_run_status(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS, (value));
+}
+
+static inline otel_attribute_t otel_attr_thread_id(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_THREAD_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_thread_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_THREAD_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_cipher(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CIPHER, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_certificate(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_hash_md5(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_hash_sha1(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_hash_sha256(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_issuer(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_ja3(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_JA3, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_not_after(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_not_before(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_client_subject(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_curve(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_CURVE, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_established(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_TLS_ESTABLISHED, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_next_protocol(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_protocol_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_resumed(int value) {
+    return otel_attr_bool(OTEL_ATTRIBUTE_TLS_RESUMED, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_certificate(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_hash_md5(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_hash_sha1(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_hash_sha256(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_issuer(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_ja3s(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_JA3S, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_not_after(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_not_before(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE, (value));
+}
+
+static inline otel_attribute_t otel_attr_tls_server_subject(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_domain(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_DOMAIN, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_extension(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_EXTENSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_fragment(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_FRAGMENT, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_original(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_ORIGINAL, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_path(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_PATH, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_port(int64_t value) {
+    return otel_attr_i64(OTEL_ATTRIBUTE_URL_PORT, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_query(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_QUERY, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_registered_domain(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_scheme(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_SCHEME, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_subdomain(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_SUBDOMAIN, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_template(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_TEMPLATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_url_top_level_domain(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_agent_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_agent_original(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_agent_os_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_agent_os_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_agent_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_email(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_EMAIL, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_full_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_FULL_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_hash(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_HASH, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_user_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_USER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_change_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_change_state(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_STATE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_change_title(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_line_change_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_owner_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_OWNER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_provider_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_base_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_base_revision(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_base_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_head_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_head_revision(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_head_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_ref_type(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_TYPE, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_repository_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_repository_url_full(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL, (value));
+}
+
+static inline otel_attribute_t otel_attr_vcs_revision_delta_direction(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_webengine_description(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION, (value));
+}
+
+static inline otel_attribute_t otel_attr_webengine_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_NAME, (value));
+}
+
+static inline otel_attribute_t otel_attr_webengine_version(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_VERSION, (value));
+}
+
+static inline otel_attribute_t otel_attr_zos_smf_id(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ZOS_SMF_ID, (value));
+}
+
+static inline otel_attribute_t otel_attr_zos_sysplex_name(const char *value) {
+    return otel_attr_string(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME, (value));
+}
+
+
+/* Metric helpers using the semconv instrument, unit, and description. */
+static inline otel_result_t otel_metric_aspnetcore_authentication_challenges(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_CHALLENGES, "{challenge}", "The total number of times a scheme is challenged. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authentication_forbids(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_FORBIDS, "{forbid}", "The total number of times an authenticated user attempts to access a resource they are not permitted to access. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authentication_sign_ins(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_INS, "{sign_in}", "The total number of times a principal is signed in with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authentication_sign_outs(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_OUTS, "{sign_out}", "The total number of times a principal is signed out with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authorization_attempts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHORIZATION_ATTEMPTS, "{attempt}", "The total number of authorization attempts. ## Notes Meter name: `Microsoft.AspNetCore.Authorization`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_diagnostics_exceptions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_DIAGNOSTICS_EXCEPTIONS, "{exception}", "Number of exceptions caught by exception handling middleware. ## Notes Meter name: `Microsoft.AspNetCore.Diagnostics`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_ins(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_INS, "{sign_in}", "The total number of calls to sign in user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_outs(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_OUTS, "{sign_out}", "The total number of calls to sign out user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_ALLOCATED, "By", "Total number of bytes allocated by the memory pool. Allocation occurs when a memory rental request exceeds the available pooled memory. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_evicted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_EVICTED, "By", "Total number of bytes evicted from the memory pool. Eviction occurs when idle pooled memory is reclaimed. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_pooled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_POOLED, "By", "Number of bytes currently pooled and available for reuse. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_rented(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_RENTED, "By", "Total number of bytes rented from the memory pool. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_rate_limiting_requests(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_RATE_LIMITING_REQUESTS, "{request}", "Number of requests that tried to acquire a rate limiting lease. ## Notes Requests could be: - Rejected by global or endpoint rate limiting policies - Canceled while waiting for the lease. Meter name: `Microsoft.AspNetCore.RateLimiting`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_routing_match_attempts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_ROUTING_MATCH_ATTEMPTS, "{match_attempt}", "Number of requests that were attempted to be matched to an endpoint. ## Notes Meter name: `Microsoft.AspNetCore.Routing`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_cicd_pipeline_run_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_ACTIVE, "{run}", "The number of pipeline runs currently active in the system by state");
+}
+
+static inline otel_result_t otel_metric_cicd_pipeline_run_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_DURATION, "s", "Duration of a pipeline run grouped by pipeline, state and result");
+}
+
+static inline otel_result_t otel_metric_cicd_pipeline_run_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_ERRORS, "{error}", "The number of errors encountered in pipeline runs (eg. compile, test failures). ## Notes There might be errors in a pipeline run that are non fatal (eg. they are suppressed) or in a parallel stage multiple stages could have a fatal error. This means that this error count might not be the same as the count of metric `cicd.pipeline.run.duration` with run result `failure`");
+}
+
+static inline otel_result_t otel_metric_cicd_system_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CICD_SYSTEM_ERRORS, "{error}", "The number of errors in a component of the CI/CD system (eg. controller, scheduler, agent). ## Notes Errors in pipeline run execution are explicitly excluded. Ie a test failure is not counted in this metric");
+}
+
+static inline otel_result_t otel_metric_cicd_worker_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CICD_WORKER_COUNT, "{count}", "The number of workers on the CI/CD system by state");
+}
+
+static inline otel_result_t otel_metric_container_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_CPU_TIME, "s", "CPU time consumed. ## Notes CPU time consumed by the specific container on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_container_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_CONTAINER_CPU_USAGE, "{cpu}", "Container's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific container on all available CPU cores, averaged over the sample window");
+}
+
+static inline otel_result_t otel_metric_container_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_DISK_IO, "By", "Disk bytes for the container. ## Notes The total number of bytes read/written successfully (aggregated from all disks)");
+}
+
+static inline otel_result_t otel_metric_container_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_AVAILABLE, "By", "Container filesystem available bytes. ## Notes In K8s, this metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_CAPACITY, "By", "Container filesystem capacity. ## Notes In K8s, this metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_USAGE, "By", "Container filesystem usage. ## Notes This may not equal capacity - available. In K8s, this metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_AVAILABLE, "By", "Container memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and by subtracting the `container_memory_working_set_bytes` metric from the `container_spec_memory_limit_bytes` metric. In K8s, this metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_PAGING_FAULTS, "{fault}", "Container memory paging faults. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_failures_total{failure_type=pgfault, scope=container}` and `container_memory_failures_total{failure_type=pgmajfault, scope=container}`metric. In K8s, this metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_RSS, "By", "Container memory RSS. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_rss` metric. In K8s, this metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_usage(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_USAGE, "By", "Memory usage of the container. ## Notes Memory usage of the container");
+}
+
+static inline otel_result_t otel_metric_container_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_WORKING_SET, "By", "Container memory working set. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_working_set_bytes` metric. In K8s, this metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_NETWORK_IO, "By", "Network bytes for the container. ## Notes The number of bytes sent/received on all network interfaces by the container");
+}
+
+static inline otel_result_t otel_metric_container_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_CONTAINER_UPTIME, "s", "The time the container has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_cpython_gc_collected_objects(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_COLLECTED_OBJECTS, "{object}", "The total number of objects collected inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
+}
+
+static inline otel_result_t otel_metric_cpython_gc_collections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_COLLECTIONS, "{collection}", "The number of times a generation was collected since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
+}
+
+static inline otel_result_t otel_metric_cpython_gc_uncollectable_objects(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_UNCOLLECTABLE_OBJECTS, "{object}", "The total number of objects which were found to be uncollectable inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_COUNT, "{connection}", "The number of connections that are currently in state described by the `state` attribute");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_create_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_CREATE_TIME, "s", "The time it took to create a new connection");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_idle_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MAX, "{connection}", "The maximum number of idle open connections allowed");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_idle_min(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MIN, "{connection}", "The minimum number of idle open connections allowed");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_MAX, "{connection}", "The maximum number of open connections allowed");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_pending_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_PENDING_REQUESTS, "{request}", "The number of current pending requests for an open connection");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_timeouts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_TIMEOUTS, "{timeout}", "The number of connection timeouts that have occurred trying to obtain a connection from the pool");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_use_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_USE_TIME, "s", "The time between borrowing a connection and returning it to the pool");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_wait_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_WAIT_TIME, "s", "The time it took to obtain an open connection from the pool");
+}
+
+static inline otel_result_t otel_metric_db_client_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_OPERATION_DURATION, "s", "Duration of database client operations. ## Notes Batch operations SHOULD be recorded as a single operation");
+}
+
+static inline otel_result_t otel_metric_db_client_response_returned_rows(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_RESPONSE_RETURNED_ROWS, "{row}", "The actual number of records returned by the database operation");
+}
+
+static inline otel_result_t otel_metric_dns_lookup_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DNS_LOOKUP_DURATION, "s", "Measures the time taken to perform a DNS lookup");
+}
+
+static inline otel_result_t otel_metric_dotnet_assembly_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_ASSEMBLY_COUNT, "{assembly}", "The number of .NET assemblies that are currently loaded. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`AppDomain.CurrentDomain.GetAssemblies().Length`](https://learn.microsoft.com/dotnet/api/system.appdomain.getassemblies)");
+}
+
+static inline otel_result_t otel_metric_dotnet_exceptions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_EXCEPTIONS, "{exception}", "The number of exceptions that have been thrown in managed code. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as counting calls to [`AppDomain.CurrentDomain.FirstChanceException`](https://learn.microsoft.com/dotnet/api/system.appdomain.firstchanceexception)");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_collections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_COLLECTIONS, "{collection}", "The number of garbage collections that have occurred since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric uses the [`GC.CollectionCount(int generation)`](https://learn.microsoft.com/dotnet/api/system.gc.collectioncount) API to calculate exclusive collections per generation");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_heap_total_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_HEAP_TOTAL_ALLOCATED, "By", "The *approximate* number of bytes allocated on the managed GC heap since the process has started. The returned value does not include any native allocations. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalAllocatedBytes()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes)");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_last_collection_heap_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_GC_LAST_COLLECTION_HEAP_SIZE, "By", "The managed GC heap size (including fragmentation), as observed during the latest garbage collection. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetGCMemoryInfo().GenerationInfo.SizeAfterBytes`](https://learn.microsoft.com/dotnet/api/system.gcgenerationinfo.sizeafterbytes)");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_pause_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_PAUSE_TIME, "s", "The total amount of time paused in GC since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalPauseDuration()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalpauseduration)");
+}
+
+static inline otel_result_t otel_metric_dotnet_jit_compilation_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILATION_TIME, "s", "The amount of time the JIT compiler has spent compiling methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompilationTime()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompilationtime)");
+}
+
+static inline otel_result_t otel_metric_dotnet_jit_compiled_il_size(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILED_IL_SIZE, "By", "Count of bytes of intermediate language that have been compiled since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledILBytes()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledilbytes)");
+}
+
+static inline otel_result_t otel_metric_dotnet_jit_compiled_methods(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILED_METHODS, "{method}", "The number of times the JIT compiler (re)compiled methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledMethodCount()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledmethodcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_monitor_lock_contentions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_MONITOR_LOCK_CONTENTIONS, "{contention}", "The number of times there was contention when trying to acquire a monitor lock since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Monitor.LockContentionCount`](https://learn.microsoft.com/dotnet/api/system.threading.monitor.lockcontentioncount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_process_cpu_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_CPU_COUNT, "{cpu}", "The number of processors available to the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing [`Environment.ProcessorCount`](https://learn.microsoft.com/dotnet/api/system.environment.processorcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_process_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_CPU_TIME, "s", "CPU time used by the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing the corresponding processor time properties on [`System.Diagnostics.Process`](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)");
+}
+
+static inline otel_result_t otel_metric_dotnet_process_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_MEMORY_WORKING_SET, "By", "The number of bytes of physical memory mapped to the process context. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Environment.WorkingSet`](https://learn.microsoft.com/dotnet/api/system.environment.workingset)");
+}
+
+static inline otel_result_t otel_metric_dotnet_thread_pool_queue_length(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_QUEUE_LENGTH, "{work_item}", "The number of work items that are currently queued to be processed by the thread pool. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.PendingWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.pendingworkitemcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_thread_pool_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_THREAD_COUNT, "{thread}", "The number of thread pool threads that currently exist. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.ThreadCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.threadcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_thread_pool_work_item_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_WORK_ITEM_COUNT, "{work_item}", "The number of work items that the thread pool has completed since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.CompletedWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.completedworkitemcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_timer_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_TIMER_COUNT, "{timer}", "The number of timer instances that are currently active. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Timer.ActiveCount`](https://learn.microsoft.com/dotnet/api/system.threading.timer.activecount)");
+}
+
+static inline otel_result_t otel_metric_faas_coldstarts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_COLDSTARTS, "{coldstart}", "Number of invocation cold starts");
+}
+
+static inline otel_result_t otel_metric_faas_cpu_usage(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_CPU_USAGE, "s", "Distribution of CPU usage per invocation");
+}
+
+static inline otel_result_t otel_metric_faas_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_ERRORS, "{error}", "Number of invocation errors");
+}
+
+static inline otel_result_t otel_metric_faas_init_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_INIT_DURATION, "s", "Measures the duration of the function's initialization, such as a cold start");
+}
+
+static inline otel_result_t otel_metric_faas_invocations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_INVOCATIONS, "{invocation}", "Number of successful invocations");
+}
+
+static inline otel_result_t otel_metric_faas_invoke_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_INVOKE_DURATION, "s", "Measures the duration of the function's logic execution");
+}
+
+static inline otel_result_t otel_metric_faas_mem_usage(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_MEM_USAGE, "By", "Distribution of max memory usage per invocation");
+}
+
+static inline otel_result_t otel_metric_faas_net_io(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_NET_IO, "By", "Distribution of net I/O usage per invocation");
+}
+
+static inline otel_result_t otel_metric_faas_timeouts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_TIMEOUTS, "{timeout}", "Number of invocation timeouts");
+}
+
+static inline otel_result_t otel_metric_go_config_gogc(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_CONFIG_GOGC, "%", "Heap size target percentage configured by the user, otherwise 100. ## Notes The value range is \\\\[0.0,100.0\\\\]. Computed from `/gc/gogc:percent`");
+}
+
+static inline otel_result_t otel_metric_go_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_CPU_TIME, "s", "Estimated CPU time spent by the Go runtime. ## Notes Computed from `/cpu/classes/...` metrics. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other `go.cpu.time` metrics");
+}
+
+static inline otel_result_t otel_metric_go_goroutine_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_GOROUTINE_COUNT, "{goroutine}", "Count of live goroutines. ## Notes Computed from `/sched/goroutines:goroutines`");
+}
+
+static inline otel_result_t otel_metric_go_memory_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_ALLOCATED, "By", "Memory allocated to the heap by the application. ## Notes Computed from `/gc/heap/allocs:bytes`");
+}
+
+static inline otel_result_t otel_metric_go_memory_allocations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_ALLOCATIONS, "{allocation}", "Count of allocations to the heap by the application. ## Notes Computed from `/gc/heap/allocs:objects`");
+}
+
+static inline otel_result_t otel_metric_go_memory_gc_cycles(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_CYCLES, "{gc_cycle}", "Number of completed GC cycles. ## Notes Computed from `/gc/cycles/total:gc-cycles`");
+}
+
+static inline otel_result_t otel_metric_go_memory_gc_goal(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_GOAL, "By", "Heap size target for the end of the GC cycle. ## Notes Computed from `/gc/heap/goal:bytes`");
+}
+
+static inline otel_result_t otel_metric_go_memory_gc_pause_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_PAUSE_DURATION, "s", "Distribution of individual GC-related stop-the-world pause latencies. This is the time from deciding to stop the world until the world is started again. ## Notes Computed from `/sched/pauses/total/gc:seconds`. Bucket boundaries are provided by the runtime, and are subject to change");
+}
+
+static inline otel_result_t otel_metric_go_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_LIMIT, "By", "Go runtime memory limit configured by the user, if a limit exists. ## Notes Computed from `/gc/gomemlimit:bytes`. This metric is excluded if the limit obtained from the Go runtime is math.MaxInt64");
+}
+
+static inline otel_result_t otel_metric_go_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_USED, "By", "Memory used by the Go runtime. ## Notes Computed from `(/memory/classes/total:bytes - /memory/classes/heap/released:bytes)`");
+}
+
+static inline otel_result_t otel_metric_go_processor_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_PROCESSOR_LIMIT, "{thread}", "The number of OS threads that can execute user-level Go code simultaneously. ## Notes Computed from `/sched/gomaxprocs:threads`");
+}
+
+static inline otel_result_t otel_metric_go_schedule_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_GO_SCHEDULE_DURATION, "s", "The time goroutines have spent in the scheduler in a runnable state before actually running. ## Notes Computed from `/sched/latencies:seconds`. Bucket boundaries are provided by the runtime, and are subject to change");
+}
+
+static inline otel_result_t otel_metric_http_client_active_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_CLIENT_ACTIVE_REQUESTS, "{request}", "Number of active HTTP requests");
+}
+
+static inline otel_result_t otel_metric_http_client_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_CONNECTION_DURATION, "s", "The duration of the successfully established outbound HTTP connections");
+}
+
+static inline otel_result_t otel_metric_http_client_open_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_CLIENT_OPEN_CONNECTIONS, "{connection}", "Number of outbound HTTP connections that are currently active or idle on the client");
+}
+
+static inline otel_result_t otel_metric_http_client_request_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_REQUEST_BODY_SIZE, "By", "Size of HTTP client request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
+}
+
+static inline otel_result_t otel_metric_http_client_request_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_REQUEST_DURATION, "s", "Duration of HTTP client requests");
+}
+
+static inline otel_result_t otel_metric_http_client_response_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_RESPONSE_BODY_SIZE, "By", "Size of HTTP client response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
+}
+
+static inline otel_result_t otel_metric_http_server_active_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_SERVER_ACTIVE_REQUESTS, "{request}", "Number of active HTTP server requests");
+}
+
+static inline otel_result_t otel_metric_http_server_request_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_REQUEST_BODY_SIZE, "By", "Size of HTTP server request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
+}
+
+static inline otel_result_t otel_metric_http_server_request_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION, "s", "Duration of HTTP server requests");
+}
+
+static inline otel_result_t otel_metric_http_server_response_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_RESPONSE_BODY_SIZE, "By", "Size of HTTP server response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
+}
+
+static inline otel_result_t otel_metric_hw_battery_charge(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_CHARGE, "1", "Remaining fraction of battery charge");
+}
+
+static inline otel_result_t otel_metric_hw_battery_charge_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_CHARGE_LIMIT, "1", "Lower limit of battery charge fraction to ensure proper operation");
+}
+
+static inline otel_result_t otel_metric_hw_battery_time_left(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_TIME_LEFT, "s", "Time left before battery is completely charged or discharged");
+}
+
+static inline otel_result_t otel_metric_hw_cpu_speed(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_CPU_SPEED, "Hz", "CPU current frequency");
+}
+
+static inline otel_result_t otel_metric_hw_cpu_speed_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_CPU_SPEED_LIMIT, "Hz", "CPU maximum frequency");
+}
+
+static inline otel_result_t otel_metric_hw_energy(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_ENERGY, "J", "Energy consumed by the component");
+}
+
+static inline otel_result_t otel_metric_hw_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_ERRORS, "{error}", "Number of errors encountered by the component");
+}
+
+static inline otel_result_t otel_metric_hw_fan_speed(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED, "rpm", "Fan speed in revolutions per minute");
+}
+
+static inline otel_result_t otel_metric_hw_fan_speed_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED_LIMIT, "rpm", "Speed limit in rpm");
+}
+
+static inline otel_result_t otel_metric_hw_fan_speed_ratio(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED_RATIO, "1", "Fan speed expressed as a fraction of its maximum speed");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_GPU_IO, "By", "Received and transmitted bytes by the GPU");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_LIMIT, "By", "Size of the GPU memory");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_USAGE, "By", "GPU memory used");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_memory_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_UTILIZATION, "1", "Fraction of GPU memory used");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_GPU_UTILIZATION, "1", "Fraction of time spent in a specific task");
+}
+
+static inline otel_result_t otel_metric_hw_host_ambient_temperature(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_AMBIENT_TEMPERATURE, "Cel", "Ambient (external) temperature of the physical host");
+}
+
+static inline otel_result_t otel_metric_hw_host_energy(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_HOST_ENERGY, "J", "Total energy consumed by the entire physical host, in joules. ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values");
+}
+
+static inline otel_result_t otel_metric_hw_host_heating_margin(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_HEATING_MARGIN, "Cel", "By how many degrees Celsius the temperature of the physical host can be increased, before reaching a warning threshold on one of the internal sensors");
+}
+
+static inline otel_result_t otel_metric_hw_host_power(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_POWER, "W", "Instantaneous power consumed by the entire physical host in Watts (`hw.host.energy` is preferred). ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values");
+}
+
+static inline otel_result_t otel_metric_hw_logical_disk_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_LIMIT, "By", "Size of the logical disk");
+}
+
+static inline otel_result_t otel_metric_hw_logical_disk_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_USAGE, "By", "Logical disk space usage");
+}
+
+static inline otel_result_t otel_metric_hw_logical_disk_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_UTILIZATION, "1", "Logical disk space utilization as a fraction");
+}
+
+static inline otel_result_t otel_metric_hw_memory_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_MEMORY_SIZE, "By", "Size of the memory module");
+}
+
+static inline otel_result_t otel_metric_hw_network_bandwidth_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_NETWORK_BANDWIDTH_LIMIT, "By/s", "Link speed");
+}
+
+static inline otel_result_t otel_metric_hw_network_bandwidth_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_NETWORK_BANDWIDTH_UTILIZATION, "1", "Utilization of the network bandwidth as a fraction");
+}
+
+static inline otel_result_t otel_metric_hw_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_NETWORK_IO, "By", "Received and transmitted network traffic in bytes");
+}
+
+static inline otel_result_t otel_metric_hw_network_packets(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_NETWORK_PACKETS, "{packet}", "Received and transmitted network traffic in packets (or frames)");
+}
+
+static inline otel_result_t otel_metric_hw_network_up(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_NETWORK_UP, "1", "Link status: `1` (up) or `0` (down)");
+}
+
+static inline otel_result_t otel_metric_hw_physical_disk_endurance_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_ENDURANCE_UTILIZATION, "1", "Endurance remaining for this SSD disk");
+}
+
+static inline otel_result_t otel_metric_hw_physical_disk_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_SIZE, "By", "Size of the disk");
+}
+
+static inline otel_result_t otel_metric_hw_physical_disk_smart(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_SMART, "1", "Value of the corresponding [S.M.A.R.T.](https://wikipedia.org/wiki/S.M.A.R.T.) (Self-Monitoring, Analysis, and Reporting Technology) attribute");
+}
+
+static inline otel_result_t otel_metric_hw_power(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_POWER, "W", "Instantaneous power consumed by the component. ## Notes It is recommended to report `hw.energy` instead of `hw.power` when possible");
+}
+
+static inline otel_result_t otel_metric_hw_power_supply_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_LIMIT, "W", "Maximum power output of the power supply");
+}
+
+static inline otel_result_t otel_metric_hw_power_supply_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_USAGE, "W", "Current power output of the power supply");
+}
+
+static inline otel_result_t otel_metric_hw_power_supply_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_UTILIZATION, "1", "Utilization of the power supply as a fraction of its maximum output");
+}
+
+static inline otel_result_t otel_metric_hw_status(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_STATUS, "1", "Operational status: `1` (true) or `0` (false) for each of the possible states. ## Notes `hw.status` is currently specified as an *UpDownCounter* but would ideally be represented using a [*StateSet* as defined in OpenMetrics](https://github.com/prometheus/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#stateset). This semantic convention will be updated once *StateSet* is specified in OpenTelemetry. This planned change is not expected to have any consequence on the way users query their timeseries backend to retrieve the values of `hw.status` over time");
+}
+
+static inline otel_result_t otel_metric_hw_tape_drive_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_TAPE_DRIVE_OPERATIONS, "{operation}", "Operations performed by the tape drive");
+}
+
+static inline otel_result_t otel_metric_hw_temperature(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_TEMPERATURE, "Cel", "Temperature in degrees Celsius");
+}
+
+static inline otel_result_t otel_metric_hw_temperature_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_TEMPERATURE_LIMIT, "Cel", "Temperature limit in degrees Celsius");
+}
+
+static inline otel_result_t otel_metric_hw_voltage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE, "V", "Voltage measured by the sensor");
+}
+
+static inline otel_result_t otel_metric_hw_voltage_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE_LIMIT, "V", "Voltage limit in Volts");
+}
+
+static inline otel_result_t otel_metric_hw_voltage_nominal(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE_NOMINAL, "V", "Nominal (expected) voltage");
+}
+
+static inline otel_result_t otel_metric_jvm_buffer_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_COUNT, "{buffer}", "Number of buffers in the pool");
+}
+
+static inline otel_result_t otel_metric_jvm_buffer_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_MEMORY_LIMIT, "By", "Measure of total memory capacity of buffers");
+}
+
+static inline otel_result_t otel_metric_jvm_buffer_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_MEMORY_USED, "By", "Measure of memory used by buffers");
+}
+
+static inline otel_result_t otel_metric_jvm_class_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_CLASS_COUNT, "{class}", "Number of classes currently loaded");
+}
+
+static inline otel_result_t otel_metric_jvm_class_loaded(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CLASS_LOADED, "{class}", "Number of classes loaded since JVM start");
+}
+
+static inline otel_result_t otel_metric_jvm_class_unloaded(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CLASS_UNLOADED, "{class}", "Number of classes unloaded since JVM start");
+}
+
+static inline otel_result_t otel_metric_jvm_cpu_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_CPU_COUNT, "{cpu}", "Number of processors available to the Java virtual machine");
+}
+
+static inline otel_result_t otel_metric_jvm_cpu_recent_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_CPU_RECENT_UTILIZATION, "1", "Recent CPU utilization for the process as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getProcessCpuLoad())");
+}
+
+static inline otel_result_t otel_metric_jvm_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CPU_TIME, "s", "CPU time used by the process as reported by the JVM");
+}
+
+static inline otel_result_t otel_metric_jvm_file_descriptor_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_FILE_DESCRIPTOR_COUNT, "{file_descriptor}", "Number of open file descriptors as reported by the JVM");
+}
+
+static inline otel_result_t otel_metric_jvm_file_descriptor_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_FILE_DESCRIPTOR_LIMIT, "{file_descriptor}", "Measure of max open file descriptors as reported by the JVM");
+}
+
+static inline otel_result_t otel_metric_jvm_gc_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_JVM_GC_DURATION, "s", "Duration of JVM garbage collection actions");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_committed(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_COMMITTED, "By", "Measure of memory committed");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_init(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_INIT, "By", "Measure of initial memory requested");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_LIMIT, "By", "Measure of max obtainable memory");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_USED, "By", "Measure of memory used");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_used_after_last_gc(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_USED_AFTER_LAST_GC, "By", "Measure of memory used, as measured after the most recent garbage collection event on this pool");
+}
+
+static inline otel_result_t otel_metric_jvm_system_cpu_load_1m(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_SYSTEM_CPU_LOAD_1M, "{run_queue_item}", "Average CPU load of the whole system for the last minute as reported by the JVM. ## Notes The value range is \\\\[0,n\\\\], where n is the number of CPU cores - or a negative number if the value is not available. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/java.management/java/lang/management/OperatingSystemMXBean.html#getSystemLoadAverage())");
+}
+
+static inline otel_result_t otel_metric_jvm_system_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_SYSTEM_CPU_UTILIZATION, "1", "Recent CPU utilization for the whole system as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getCpuLoad())");
+}
+
+static inline otel_result_t otel_metric_jvm_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_THREAD_COUNT, "{thread}", "Number of executing platform threads");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_CURRENT, "{cpu}", "Maximum CPU resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_DESIRED, "{cpu}", "Maximum CPU resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_UTILIZATION, "1", "The ratio of container CPU usage to its current CPU limit. ## Notes The current CPU limit reflects the actual resources applied to the container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU limit. If the CPU limit is not set, this metric SHOULD NOT be emitted for that container");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_request_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_CURRENT, "{cpu}", "CPU resource requested currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_request_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_DESIRED, "{cpu}", "CPU resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_request_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_UTILIZATION, "1", "The ratio of container CPU usage to its current CPU request. ## Notes The current CPU request reflects the request applied to the running container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU request. If the CPU request is not set, this metric SHOULD NOT be emitted for that container");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_LIMIT, "By", "Maximum ephemeral storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_request(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_REQUEST, "By", "Ephemeral storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_USAGE, "By", "The ephemeral storage used by a container. ## Notes The value for this metric can be compared against `metric.k8s.container.ephemeral_storage.request` and `metric.k8s.container.ephemeral_storage.limit`");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_limit_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_CURRENT, "By", "Maximum memory resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_limit_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_DESIRED, "By", "Maximum memory resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_request_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_CURRENT, "By", "Memory resource request currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_request_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_DESIRED, "By", "Memory resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_READY, "{container}", "Indicates whether the container is currently marked as ready to accept traffic, based on its readiness probe (1 = ready, 0 = not ready). ## Notes This metric SHOULD reflect the value of the `ready` field in the [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_container_restart_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_RESTART_COUNT, "{restart}", "Describes how many times the container has restarted (since the last counter reset). ## Notes This value is pulled directly from the K8s API and the value can go indefinitely high and be reset to 0 at any time depending on how your kubelet is configured to prune dead containers. It is best to not depend too much on the exact value but rather look at it as either == 0, in which case you can conclude there were no restarts in the recent past, or > 0, in which case you can conclude there were restarts in the recent past, and not try and analyze the value beyond that");
+}
+
+static inline otel_result_t otel_metric_k8s_container_status_reason(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STATUS_REASON, "{container}", "Describes the number of K8s containers that are currently in a state for a given reason. ## Notes All possible container state reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state reason will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_container_status_state(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STATUS_STATE, "{container}", "Describes the number of K8s containers that are currently in a given state. ## Notes All possible container states will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_container_storage_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STORAGE_LIMIT, "By", "Maximum storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_storage_request(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STORAGE_REQUEST, "By", "Storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_cronjob_job_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CRONJOB_JOB_ACTIVE, "{job}", "The number of actively running jobs for a cronjob. ## Notes This metric aligns with the `active` field of the [K8s CronJobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#cronjobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_current_scheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_CURRENT_SCHEDULED, "{node}", "Number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod. ## Notes This metric aligns with the `currentNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_desired_scheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_DESIRED_SCHEDULED, "{node}", "Number of nodes that should be running the daemon pod (including nodes currently running the daemon pod). ## Notes This metric aligns with the `desiredNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_misscheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_MISSCHEDULED, "{node}", "Number of nodes that are running the daemon pod, but are not supposed to run the daemon pod. ## Notes This metric aligns with the `numberMisscheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_READY, "{node}", "Number of nodes that should be running the daemon pod and have one or more of the daemon pod running and ready. ## Notes This metric aligns with the `numberReady` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_deployment_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DEPLOYMENT_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this deployment. ## Notes This metric aligns with the `availableReplicas` field of the [K8s DeploymentStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_deployment_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DEPLOYMENT_POD_DESIRED, "{pod}", "Number of desired replica pods in this deployment. ## Notes This metric aligns with the `replicas` field of the [K8s DeploymentSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentspec-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_average_value(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_AVERAGE_VALUE, "{cpu}", "Target average value for CPU resource in HPA config. ## Notes This metric aligns with the `averageValue` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_value(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_VALUE, "{cpu}", "Target value for CPU resource in HPA config. ## Notes This metric aligns with the `value` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_CURRENT, "{pod}", "Current number of replica pods managed by this horizontal pod autoscaler, as last seen by the autoscaler. ## Notes This metric aligns with the `currentReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_DESIRED, "{pod}", "Desired number of replica pods managed by this horizontal pod autoscaler, as last calculated by the autoscaler. ## Notes This metric aligns with the `desiredReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_MAX, "{pod}", "The upper limit for the number of replica pods to which the autoscaler can scale up. ## Notes This metric aligns with the `maxReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_min(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_MIN, "{pod}", "The lower limit for the number of replica pods to which the autoscaler can scale down. ## Notes This metric aligns with the `minReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_ACTIVE, "{pod}", "The number of pending and actively running pods for a job. ## Notes This metric aligns with the `active` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_desired_successful(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_DESIRED_SUCCESSFUL, "{pod}", "The desired number of successfully finished pods the job should be run with. ## Notes This metric aligns with the `completions` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_failed(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_FAILED, "{pod}", "The number of pods which reached phase Failed for a job. ## Notes This metric aligns with the `failed` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_max_parallel(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_MAX_PARALLEL, "{pod}", "The max desired number of pods the job should run at any given time. ## Notes This metric aligns with the `parallelism` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_successful(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_SUCCESSFUL, "{pod}", "The number of pods which reached phase Succeeded for a job. ## Notes This metric aligns with the `succeeded` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_namespace_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NAMESPACE_PHASE, "{namespace}", "Describes number of K8s namespaces that are currently in a given phase");
+}
+
+static inline otel_result_t otel_metric_k8s_node_condition_status(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_CONDITION_STATUS, "{node}", "Describes the condition of a particular Node. ## Notes All possible node condition pairs (type and status) will be reported at each time interval to avoid missing metrics. Condition pairs corresponding to the current conditions' statuses will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_node_cpu_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_ALLOCATABLE, "{cpu}", "Amount of cpu allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_TIME, "s", "Total CPU time consumed. ## Notes Total CPU time consumed by the specific Node on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_k8s_node_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_USAGE, "{cpu}", "Node's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Node on all available CPU cores, averaged over the sample window");
+}
+
+static inline otel_result_t otel_metric_k8s_node_ephemeral_storage_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_EPHEMERAL_STORAGE_ALLOCATABLE, "By", "Amount of ephemeral-storage allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_AVAILABLE, "By", "Node filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_CAPACITY, "By", "Node filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_USAGE, "By", "Node filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_ALLOCATABLE, "By", "Amount of memory allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_AVAILABLE, "By", "Node memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_PAGING_FAULTS, "{fault}", "Node memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) fields of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_RSS, "By", "Node memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_USAGE, "By", "Memory usage of the Node. ## Notes Total memory usage of the Node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_WORKING_SET, "By", "Node memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_NETWORK_ERRORS, "{error}", "Node network errors");
+}
+
+static inline otel_result_t otel_metric_k8s_node_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_NETWORK_IO, "By", "Network bytes for the Node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_pod_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_POD_ALLOCATABLE, "{pod}", "Amount of pods allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_system_container_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_TIME, "s", "Node's system container CPU time. ## Notes This metric is derived from the [CPUStats.UsageCoreNanoSeconds](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L236) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_system_container_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_USAGE, "{cpu}", "Node's system container CPU usage, measured in cpus. ## Notes This metric is derived from the [CPUStats.UsageNanoCores](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L233) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_system_container_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_MEMORY_USAGE, "By", "Node's system container memory usage. ## Notes This metric is derived from the [MemoryStats.UsageBytes](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L252) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_UPTIME, "s", "The time the Node has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_k8s_persistentvolume_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUME_STATUS_PHASE, "{persistentvolume}", "Number of PersistentVolumes in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeStatus)");
+}
+
+static inline otel_result_t otel_metric_k8s_persistentvolume_storage_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUME_STORAGE_CAPACITY, "By", "The storage capacity of the PersistentVolume. ## Notes This metric is derived from the `.spec.capacity.storage` field of the [K8s PersistentVolumeSpec](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeSpec)");
+}
+
+static inline otel_result_t otel_metric_k8s_persistentvolumeclaim_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, "{persistentvolumeclaim}", "Number of PersistentVolumeClaims in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeClaimStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#PersistentVolumeClaimStatus)");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_CPU_TIME, "s", "Total CPU time consumed. ## Notes Total CPU time consumed by the specific Pod on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_CPU_USAGE, "{cpu}", "Pod's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Pod on all available CPU cores, averaged over the sample window");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_AVAILABLE, "By", "Pod filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_CAPACITY, "By", "Pod filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_USAGE, "By", "Pod filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_AVAILABLE, "By", "Pod memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_PAGING_FAULTS, "{fault}", "Pod memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_RSS, "By", "Pod memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_USAGE, "By", "Memory usage of the Pod. ## Notes Total memory usage of the Pod");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_WORKING_SET, "By", "Pod memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_NETWORK_ERRORS, "{error}", "Pod network errors");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_NETWORK_IO, "By", "Network bytes for the Pod");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_STATUS_PHASE, "{pod}", "Describes number of K8s Pods that are currently in a given phase. ## Notes All possible pod phases will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current phase will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_status_reason(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_STATUS_REASON, "{pod}", "Describes the number of K8s Pods that are currently in a state for a given reason. ## Notes All possible pod status reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current reason will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_UPTIME, "s", "The time the Pod has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_AVAILABLE, "By", "Pod volume storage space available. ## Notes This metric is derived from the [VolumeStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_CAPACITY, "By", "Pod volume total capacity. ## Notes This metric is derived from the [VolumeStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_COUNT, "{inode}", "The total inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.Inodes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_free(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_FREE, "{inode}", "The free inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesFree](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_USED, "{inode}", "The inodes used by the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesUsed](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API. This may not be equal to `inodes - free` because filesystem may share inodes with other filesystems");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_USAGE, "By", "Pod volume usage. ## Notes This may not equal capacity - available. This metric is derived from the [VolumeStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_replicaset_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICASET_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this replicaset. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicaSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_replicaset_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICASET_POD_DESIRED, "{pod}", "Number of desired replica pods in this replicaset. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicaSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetspec-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this replication controller. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicationControllerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerstatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_DESIRED, "{pod}", "Number of desired replica pods in this replication controller. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicationControllerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerspec-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_HARD, "{cpu}", "The CPU limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_USED, "{cpu}", "The CPU limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_HARD, "{cpu}", "The CPU requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_USED, "{cpu}", "The CPU requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_HARD, "By", "The memory limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_USED, "By", "The memory limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_HARD, "By", "The memory requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_USED, "By", "The memory requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_object_count_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_HARD, "{object}", "The object count limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_object_count_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_USED, "{object}", "The object count limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_HARD, "By", "The storage requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_USED, "By", "The storage requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class");
+}
+
+static inline otel_result_t otel_metric_k8s_service_endpoint_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_SERVICE_ENDPOINT_COUNT, "{endpoint}", "Number of endpoints for a service by condition and address type. ## Notes This metric is derived from the Kubernetes [EndpointSlice API](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/). It reports the number of network endpoints backing a Service, broken down by their condition and address type. In dual-stack or multi-protocol clusters, separate counts are reported for each address family (`IPv4`, `IPv6`, `FQDN`). When the optional `zone` attribute is enabled, counts are further broken down by availability zone for zone-aware monitoring. An endpoint may be reported under multiple conditions simultaneously (e.g., both `serving` and `terminating` during a graceful shutdown). See [K8s EndpointConditions](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/) for more details. The conditions represent: - `ready`: Endpoints capable of receiving new connections. - `serving`: Endpoints currently handling traffic. - `terminating`: Endpoints that are being phased out but may still be handling existing connections. For Services with `publishNotReadyAddresses` enabled (common for headless StatefulSets), this metric will include endpoints that are published despite not being ready. The `k8s.service.publish_not_ready_addresses` resource attribute indicates this setting");
+}
+
+static inline otel_result_t otel_metric_k8s_service_load_balancer_ingress_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_SERVICE_LOAD_BALANCER_INGRESS_COUNT, "{ingress}", "Number of load balancer ingress points (external IPs/hostnames) assigned to the service. ## Notes This metric reports the number of external ingress points (IP addresses or hostnames) assigned to a LoadBalancer Service. It is only emitted for Services of type `LoadBalancer` and reflects the assignments made by the underlying infrastructure's load balancer controller in the [.status.loadBalancer.ingress](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceStatus) field. A value of `0` indicates that no ingress points have been assigned yet (e.g., during provisioning). A value greater than `1` may occur when multiple IPs or hostnames are assigned (e.g., dual-stack configurations). This metric signals that external endpoints have been assigned by the load balancer controller, but it does not guarantee that the load balancer is healthy");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_CURRENT, "{pod}", "The number of replica pods created by the statefulset controller from the statefulset version indicated by currentRevision. ## Notes This metric aligns with the `currentReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_DESIRED, "{pod}", "Number of desired replica pods in this statefulset. ## Notes This metric aligns with the `replicas` field of the [K8s StatefulSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetspec-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_READY, "{pod}", "The number of replica pods created for this statefulset with a Ready Condition. ## Notes This metric aligns with the `readyReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_updated(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_UPDATED, "{pod}", "Number of replica pods created by the statefulset controller from the statefulset version indicated by updateRevision. ## Notes This metric aligns with the `updatedReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_kestrel_active_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_ACTIVE_CONNECTIONS, "{connection}", "Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_active_tls_handshakes(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_ACTIVE_TLS_HANDSHAKES, "{handshake}", "Number of TLS handshakes that are currently in progress on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_KESTREL_CONNECTION_DURATION, "s", "The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_queued_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_QUEUED_CONNECTIONS, "{connection}", "Number of connections that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_queued_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_QUEUED_REQUESTS, "{request}", "Number of HTTP requests on multiplexed connections (HTTP/2 and HTTP/3) that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_rejected_connections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_KESTREL_REJECTED_CONNECTIONS, "{connection}", "Number of connections rejected by the server. ## Notes Connections are rejected when the currently active count exceeds the value configured with `MaxConcurrentConnections`. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_tls_handshake_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_KESTREL_TLS_HANDSHAKE_DURATION, "s", "The duration of TLS handshakes on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_upgraded_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_UPGRADED_CONNECTIONS, "{connection}", "Number of connections that are currently upgraded (WebSockets). . ## Notes The counter only tracks HTTP/1.1 connections. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_messaging_client_consumed_messages(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_CONSUMED_MESSAGES, "{message}", "Number of messages that were delivered to the application. ## Notes Records the number of messages pulled from the broker or number of messages dispatched to the application in push-based scenarios. The metric SHOULD be reported once per message delivery. For example, if receiving and processing operations are both instrumented for a single message delivery, this counter is incremented when the message is received and not reported when it is processed");
+}
+
+static inline otel_result_t otel_metric_messaging_client_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_OPERATION_DURATION, "s", "Duration of messaging operation initiated by a producer or consumer client. ## Notes This metric SHOULD NOT be used to report processing duration - processing duration is reported in `messaging.process.duration` metric");
+}
+
+static inline otel_result_t otel_metric_messaging_client_sent_messages(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_SENT_MESSAGES, "{message}", "Number of messages producer attempted to send to the broker. ## Notes This metric MUST NOT count messages that were created but haven't yet been sent");
+}
+
+static inline otel_result_t otel_metric_messaging_process_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_MESSAGING_PROCESS_DURATION, "s", "Duration of processing operation. ## Notes This metric MUST be reported for operations with `messaging.operation.type` that matches `process`");
+}
+
+static inline otel_result_t otel_metric_nfs_client_net_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_NET_COUNT, "{record}", "Reports the count of kernel NFS client TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.netudpcnt and svc_stat.nettcpcnt");
+}
+
+static inline otel_result_t otel_metric_nfs_client_net_tcp_connection_accepted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_NET_TCP_CONNECTION_ACCEPTED, "{connection}", "Reports the count of kernel NFS client TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn");
+}
+
+static inline otel_result_t otel_metric_nfs_client_operation_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_OPERATION_COUNT, "{operation}", "Reports the count of kernel NFSv4+ client operations");
+}
+
+static inline otel_result_t otel_metric_nfs_client_procedure_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_PROCEDURE_COUNT, "{procedure}", "Reports the count of kernel NFS client procedures");
+}
+
+static inline otel_result_t otel_metric_nfs_client_rpc_authrefresh_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_AUTHREFRESH_COUNT, "{authrefresh}", "Reports the count of kernel NFS client RPC authentication refreshes. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcauthrefresh");
+}
+
+static inline otel_result_t otel_metric_nfs_client_rpc_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_COUNT, "{request}", "Reports the count of kernel NFS client RPCs sent, regardless of whether they're accepted/rejected by the server. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt");
+}
+
+static inline otel_result_t otel_metric_nfs_client_rpc_retransmit_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_RETRANSMIT_COUNT, "{retransmit}", "Reports the count of kernel NFS client RPC retransmits. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcretrans");
+}
+
+static inline otel_result_t otel_metric_nfs_server_fh_stale_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_FH_STALE_COUNT, "{fh}", "Reports the count of kernel NFS server stale file handles. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_FH_STALE counter in the nfsd_net struct");
+}
+
+static inline otel_result_t otel_metric_nfs_server_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_IO, "By", "Reports the count of kernel NFS server bytes returned to receive and transmit (read and write) requests. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_IO_READ and NFSD_STATS_IO_WRITE counters in the nfsd_net struct");
+}
+
+static inline otel_result_t otel_metric_nfs_server_net_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_NET_COUNT, "{record}", "Reports the count of kernel NFS server TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpcnt and svc_stat.netudpcnt");
+}
+
+static inline otel_result_t otel_metric_nfs_server_net_tcp_connection_accepted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_NET_TCP_CONNECTION_ACCEPTED, "{connection}", "Reports the count of kernel NFS server TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn");
+}
+
+static inline otel_result_t otel_metric_nfs_server_operation_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_OPERATION_COUNT, "{operation}", "Reports the count of kernel NFSv4+ server operations");
+}
+
+static inline otel_result_t otel_metric_nfs_server_procedure_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_PROCEDURE_COUNT, "{procedure}", "Reports the count of kernel NFS server procedures");
+}
+
+static inline otel_result_t otel_metric_nfs_server_repcache_requests(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_REPCACHE_REQUESTS, "{request}", "Reports the kernel NFS server reply cache request count by cache hit status");
+}
+
+static inline otel_result_t otel_metric_nfs_server_rpc_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_RPC_COUNT, "{request}", "Reports the count of kernel NFS server RPCs handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt, the count of good RPCs. This metric can have an error.type of \"format\", \"auth\", or \"client\" for svc_stat.badfmt, svc_stat.badauth, and svc_stat.badclnt");
+}
+
+static inline otel_result_t otel_metric_nfs_server_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_NFS_SERVER_THREAD_COUNT, "{thread}", "Reports the count of kernel NFS server available threads. ## Notes Linux: this metric is taken from the Linux kernel nfsd_th_cnt variable");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_max(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MAX, "s", "Event loop maximum delay. ## Notes Value can be retrieved from value `histogram.max` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_mean(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MEAN, "s", "Event loop mean delay. ## Notes Value can be retrieved from value `histogram.mean` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_min(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MIN, "s", "Event loop minimum delay. ## Notes Value can be retrieved from value `histogram.min` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p50(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P50, "s", "Event loop 50 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(50)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p90(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P90, "s", "Event loop 90 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(90)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p99(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P99, "s", "Event loop 99 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(99)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_stddev(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_STDDEV, "s", "Event loop standard deviation delay. ## Notes Value can be retrieved from value `histogram.stddev` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_TIME, "s", "Cumulative duration of time the event loop has been in each state. ## Notes Value can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_UTILIZATION, "1", "Event loop utilization. ## Notes The value range is \\[0.0, 1.0\\] and can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_HARD, "{cpu}", "The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_USED, "{cpu}", "The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_HARD, "{cpu}", "The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_USED, "{cpu}", "The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_log_exported(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_EXPORTED, "{log_record}", "The number of log records for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_log_records`), rejected log records MUST count as failed and only non-rejected log records count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each log record MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_log_inflight(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_INFLIGHT, "{log_record}", "The number of log records which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Log records are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, log records remain inflight across all retry attempts and any backoff between them");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_OPERATION_DURATION, "s", "The duration of exporting a batch of telemetry records. ## Notes This metric defines successful operations using the full success definitions for [http](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success-1) and [grpc](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success). Anything else is defined as an unsuccessful operation. For successful operations, `error.type` MUST NOT be set. For unsuccessful export operations, `error.type` MUST contain a relevant failure cause. If the exporter retries failed export attempts, exactly one observation MUST be recorded per export operation, covering the wall-clock duration from the start of the first attempt through the conclusion of the final attempt (including any backoff between attempts). `error.type` reflects the cause of the final attempt");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_span_exported(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_EXPORTED, "{span}", "The number of spans for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_spans`), rejected spans MUST count as failed and only non-rejected spans count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each span MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_span_inflight(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_INFLIGHT, "{span}", "The number of spans which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Spans are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, spans remain inflight across all retry attempts and any backoff between them");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_log_created(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_LOG_CREATED, "{log_record}", "The number of logs submitted to enabled SDK Loggers");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_log_processed(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_PROCESSED, "{log_record}", "The number of log records for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Log Record Processors MUST use `queue_full` as the value of `error.type` for log records dropped due to a full queue. SDK Log Record Processors MUST use `already_shutdown` as the value of `error.type` for log records dropped because the processor has already been shut down. For the SDK Simple and Batching Log Record Processor a log record is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_CAPACITY, "{log_record}", "The maximum number of log records the queue of a given instance of an SDK Log Record processor can hold. ## Notes Only applies to Log Record processors which use a queue, e.g. the SDK Batching Log Record Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_SIZE, "{log_record}", "The number of log records in the queue of a given instance of an SDK log processor. ## Notes Only applies to log record processors which use a queue, e.g. the SDK Batching Log Record Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_span_processed(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_PROCESSED, "{span}", "The number of spans for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Span Processors MUST use `queue_full` as the value of `error.type` for spans dropped due to a full queue. SDK Span Processors MUST use `already_shutdown` as the value of `error.type` for spans dropped because the processor has already been shut down. For the SDK Simple and Batching Span Processor a span is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_CAPACITY, "{span}", "The maximum number of spans the queue of a given instance of an SDK span processor can hold. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_SIZE, "{span}", "The number of spans in the queue of a given instance of an SDK span processor. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_ended(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_ENDED, "{span}", "Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_ended_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_ENDED_COUNT, "{span}", "Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_live(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_LIVE, "{span}", "The number of created spans with `recording=true` for which the end operation has not been called yet");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_started(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_STARTED, "{span}", "The number of created spans. ## Notes Implementations MUST record this metric for all spans, even for non-recording ones");
+}
+
+static inline otel_result_t otel_metric_process_context_switches(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_CONTEXT_SWITCHES, "{context_switch}", "Number of times the process has been context switched");
+}
+
+static inline otel_result_t otel_metric_process_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_CPU_TIME, "s", "Total CPU seconds broken down by different CPU modes");
+}
+
+static inline otel_result_t otel_metric_process_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_PROCESS_CPU_UTILIZATION, "1", "Difference in process.cpu.time since the last measurement, divided by the elapsed time and number of CPUs available to the process");
+}
+
+static inline otel_result_t otel_metric_process_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_DISK_IO, "By", "Disk bytes transferred");
+}
+
+static inline otel_result_t otel_metric_process_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_MEMORY_USAGE, "By", "The amount of physical memory in use");
+}
+
+static inline otel_result_t otel_metric_process_memory_virtual(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_MEMORY_VIRTUAL, "By", "The amount of committed virtual memory");
+}
+
+static inline otel_result_t otel_metric_process_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_NETWORK_IO, "By", "Network bytes transferred");
+}
+
+static inline otel_result_t otel_metric_process_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_PAGING_FAULTS, "{fault}", "Number of page faults the process has made");
+}
+
+static inline otel_result_t otel_metric_process_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_THREAD_COUNT, "{thread}", "Process threads count");
+}
+
+static inline otel_result_t otel_metric_process_unix_file_descriptor_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_UNIX_FILE_DESCRIPTOR_COUNT, "{file_descriptor}", "Number of unix file descriptors in use by the process");
+}
+
+static inline otel_result_t otel_metric_process_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_PROCESS_UPTIME, "s", "The time the process has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_process_windows_handle_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_WINDOWS_HANDLE_COUNT, "{handle}", "Number of handles held by the process");
+}
+
+static inline otel_result_t otel_metric_rpc_client_call_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_CALL_DURATION, "s", "Measures the duration of an outgoing Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC client span, the metric value SHOULD be the same as the RPC client span duration");
+}
+
+static inline otel_result_t otel_metric_rpc_client_request_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_REQUEST_SIZE, "By", "Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_client_requests_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_REQUESTS_PER_RPC, "{count}", "Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_rpc_client_response_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_RESPONSE_SIZE, "By", "Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_client_responses_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_RESPONSES_PER_RPC, "{count}", "Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_rpc_server_call_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_CALL_DURATION, "s", "Measures the duration of an incoming Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC server span, the metric value SHOULD be the same as the RPC server span duration");
+}
+
+static inline otel_result_t otel_metric_rpc_server_request_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_REQUEST_SIZE, "By", "Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_server_requests_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_REQUESTS_PER_RPC, "{count}", "Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming** : This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_rpc_server_response_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_RESPONSE_SIZE, "By", "Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_server_responses_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_RESPONSES_PER_RPC, "{count}", "Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_signalr_server_active_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SIGNALR_SERVER_ACTIVE_CONNECTIONS, "{connection}", "Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_signalr_server_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_SIGNALR_SERVER_CONNECTION_DURATION, "s", "The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_system_cpu_frequency(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_CPU_FREQUENCY, "Hz", "Operating frequency of the logical CPU in Hertz");
+}
+
+static inline otel_result_t otel_metric_system_cpu_logical_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_CPU_LOGICAL_COUNT, "{cpu}", "Reports the number of logical (virtual) processor cores created by the operating system to manage multitasking. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket, and then by the number of threads per core");
+}
+
+static inline otel_result_t otel_metric_system_cpu_physical_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_CPU_PHYSICAL_COUNT, "{cpu}", "Reports the number of actual physical processor cores on the hardware. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket");
+}
+
+static inline otel_result_t otel_metric_system_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_CPU_TIME, "s", "Seconds each logical CPU spent on each mode");
+}
+
+static inline otel_result_t otel_metric_system_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_CPU_UTILIZATION, "1", "For each logical CPU, the utilization is calculated as the change in cumulative CPU time (cpu.time) over a measurement interval, divided by the elapsed time");
+}
+
+static inline otel_result_t otel_metric_system_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_IO, "By", "Disk bytes transferred");
+}
+
+static inline otel_result_t otel_metric_system_disk_io_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_IO_TIME, "s", "Time disk spent activated. ## Notes The real elapsed time (\"wall clock\") used in the I/O path (time from operations running in parallel are not counted). Measured as: - Linux: Field 13 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: The complement of [\"Disk% Idle Time\"](https://learn.microsoft.com/archive/blogs/askcore/windows-performance-monitor-disk-counters-explained#windows-performance-monitor-disk-counters-explained) performance counter: `uptime * (100 - \"Disk\\% Idle Time\") / 100`");
+}
+
+static inline otel_result_t otel_metric_system_disk_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_DISK_LIMIT, "By", "The total storage capacity of the disk");
+}
+
+static inline otel_result_t otel_metric_system_disk_merged(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_MERGED, "{operation}", "The number of disk reads/writes merged into single physical disk access operations");
+}
+
+static inline otel_result_t otel_metric_system_disk_operation_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_OPERATION_TIME, "s", "Sum of the time each operation took to complete. ## Notes Because it is the sum of time each request took, parallel-issued requests each contribute to make the count grow. Measured as: - Linux: Fields 7 & 11 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: \"Avg. Disk sec/Read\" perf counter multiplied by \"Disk Reads/sec\" perf counter (similar for Writes)");
+}
+
+static inline otel_result_t otel_metric_system_disk_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_OPERATIONS, "{operation}", "Disk operations count");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_LIMIT, "By", "The total storage capacity of the filesystem");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_lock_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_LOCK_COUNT, "{lock}", "Filesystem lock counts");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_USAGE, "By", "Reports a filesystem's space usage across different states. ## Notes The sum of all `system.filesystem.usage` values over the different `system.filesystem.state` attributes SHOULD equal the total storage capacity of the filesystem, that is `system.filesystem.limit`");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_UTILIZATION, "1", "Fraction of filesystem bytes used");
+}
+
+static inline otel_result_t otel_metric_system_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LIMIT, "By", "Total virtual memory available in the system");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_AVAILABLE, "By", "An estimate of how much memory is available for starting new applications, without causing swapping. ## Notes This is an alternative to `system.memory.usage` metric with `state=free`. Linux starting from 3.14 exports \"available\" memory. It takes \"free\" memory as a baseline, and then factors in kernel-specific values. This is supposed to be more accurate than just \"free\" memory. For reference, see the calculations [here](https://superuser.com/a/980821). See also `MemAvailable` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_LIMIT, "{page}", "Total number of hugepages available");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_page_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_PAGE_SIZE, "By", "System hugepage size in bytes");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_reserved(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_RESERVED, "{page}", "Number of reserved hugepages. ## Notes Hugepages for which a commitment to allocate has been made, but no allocation has yet been made. This is reported as a separate metric rather than a `usage` state because reserved pages are already counted in `free` pages. They represent a subset of free pages that cannot be used for non-reserved allocations");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_surplus(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_SURPLUS, "{page}", "Number of surplus hugepages. ## Notes Overcommitted hugepages beyond the persistent pool. This is reported as a separate metric rather than a `usage` state because surplus pages can be in either `used` or `free` state. Including them in `usage` would break the convention that `usage` states sum to the `limit`");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_USAGE, "{page}", "Number of hugepages in use by state");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_shared(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_SHARED, "By", "Shared memory used (mostly by tmpfs). ## Notes Equivalent of `shared` from [`free` command](https://man7.org/linux/man-pages/man1/free.1.html) or `Shmem` from [`/proc/meminfo`](https://man7.org/linux/man-pages/man5/proc.5.html)\"");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_slab_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_SLAB_USAGE, "By", "Reports the memory used by the Linux kernel for managing caches of frequently used objects. ## Notes The sum over the `reclaimable` and `unreclaimable` state values in `memory.linux.slab.usage` SHOULD be equal to the total slab memory available on the system. Note that the total slab memory is not constant and may vary over time. See also the [Slab allocator](https://blogs.oracle.com/linux/post/understanding-linux-kernel-memory-statistics) and `Slab` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)");
+}
+
+static inline otel_result_t otel_metric_system_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_USAGE, "By", "Reports memory in use by state");
+}
+
+static inline otel_result_t otel_metric_system_memory_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_UTILIZATION, "1", "Percentage of memory bytes in use");
+}
+
+static inline otel_result_t otel_metric_system_network_connection_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_CONNECTION_COUNT, "{connection}", "The number of connections");
+}
+
+static inline otel_result_t otel_metric_system_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_ERRORS, "{error}", "Count of network errors detected. ## Notes Measured as: - Linux: the `errs` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)). - Windows: [`InErrors`/`OutErrors`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)");
+}
+
+static inline otel_result_t otel_metric_system_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_IO, "By", "The number of bytes transmitted and received");
+}
+
+static inline otel_result_t otel_metric_system_network_packet_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_PACKET_COUNT, "{packet}", "The number of packets transferred");
+}
+
+static inline otel_result_t otel_metric_system_network_packet_dropped(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_PACKET_DROPPED, "{packet}", "Count of packets that are dropped or discarded even though there was no error. ## Notes Measured as: - Linux: the `drop` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)) - Windows: [`InDiscards`/`OutDiscards`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)");
+}
+
+static inline otel_result_t otel_metric_system_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_FAULTS, "{fault}", "The number of page faults");
+}
+
+static inline otel_result_t otel_metric_system_paging_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_OPERATIONS, "{operation}", "The number of paging operations");
+}
+
+static inline otel_result_t otel_metric_system_paging_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_USAGE, "By", "Unix swap or windows pagefile usage");
+}
+
+static inline otel_result_t otel_metric_system_paging_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_UTILIZATION, "1", "Swap (unix) or pagefile (windows) utilization");
+}
+
+static inline otel_result_t otel_metric_system_process_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_PROCESS_COUNT, "{process}", "Total number of processes in each state");
+}
+
+static inline otel_result_t otel_metric_system_process_created(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PROCESS_CREATED, "{process}", "Total number of processes created over uptime of the host");
+}
+
+static inline otel_result_t otel_metric_system_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_UPTIME, "s", "The time the system has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_v8js_gc_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_V8JS_GC_DURATION, "s", "Garbage collection duration. ## Notes The values can be retrieved from [`perf_hooks.PerformanceObserver(...).observe({ entryTypes: ['gc'] })`](https://nodejs.org/api/perf_hooks.html#performanceobserverobserveoptions)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_space_available_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_AVAILABLE_SIZE, "By", "Heap space available size. ## Notes Value can be retrieved from value `space_available_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_space_physical_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_PHYSICAL_SIZE, "By", "Committed size of a heap space. ## Notes Value can be retrieved from value `physical_space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_space_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_SIZE, "By", "Total heap memory size pre-allocated for a heap space. ## Notes The value can be retrieved from value `space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_USED, "By", "Heap Memory size allocated. ## Notes The value can be retrieved from value `space_used_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_resource_active(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_V8JS_RESOURCE_ACTIVE, "{resource}", "Gauge of the active resources that are currently keeping the event loop alive. ## Notes The values can be retrieved from [`process.getActiveResourcesInfo()`](https://nodejs.org/api/process.html#processgetactiveresourcesinfo)");
+}
+
+static inline otel_result_t otel_metric_vcs_change_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_CHANGE_COUNT, "{change}", "The number of changes (pull requests/merge requests/changelists) in a repository, categorized by their state (e.g. open or merged)");
+}
+
+static inline otel_result_t otel_metric_vcs_change_duration(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_DURATION, "s", "The time duration a change (pull request/merge request/changelist) has been in a given state");
+}
+
+static inline otel_result_t otel_metric_vcs_change_time_to_approval(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_TIME_TO_APPROVAL, "s", "The amount of time since its creation it took a change (pull request/merge request/changelist) to get the first approval");
+}
+
+static inline otel_result_t otel_metric_vcs_change_time_to_merge(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_TIME_TO_MERGE, "s", "The amount of time since its creation it took a change (pull request/merge request/changelist) to get merged into the target(base) ref");
+}
+
+static inline otel_result_t otel_metric_vcs_contributor_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CONTRIBUTOR_COUNT, "{contributor}", "The number of unique contributors to a repository");
+}
+
+static inline otel_result_t otel_metric_vcs_ref_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_REF_COUNT, "{ref}", "The number of refs of type branch or tag in a repository");
+}
+
+static inline otel_result_t otel_metric_vcs_ref_lines_delta(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_LINES_DELTA, "{line}", "The number of lines added/removed in a ref (branch) relative to the ref from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.line_change.type` value. For example if a ref added 3 lines and removed 2 lines, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers). If number of lines added/removed should be calculated from the start of time, then `vcs.ref.base.name` SHOULD be set to an empty string");
+}
+
+static inline otel_result_t otel_metric_vcs_ref_revisions_delta(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_REVISIONS_DELTA, "{revision}", "The number of revisions (commits) a ref (branch) is ahead/behind the branch from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.revision_delta.direction` value. For example if branch `a` is 3 commits behind and 2 commits ahead of `trunk`, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers) and `vcs.ref.base.name` is set to `trunk`");
+}
+
+static inline otel_result_t otel_metric_vcs_ref_time(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_TIME, "s", "Time a ref (branch) created from the default branch (trunk) has existed. The `ref.type` attribute will always be `branch`");
+}
+
+static inline otel_result_t otel_metric_vcs_repository_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_REPOSITORY_COUNT, "{repository}", "The number of repositories in an organization");
+}
+
 
 #endif /* COTEL_SEMCONV_H */

@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "cotel_semconv.h"
-
 /* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a
@@ -687,4 +685,7 @@ otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capac
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
                        (const char *)(key), \
                        { .double_value = (double)(value) } })
+
+/* Generated semantic-convention helpers. */
+#include "cotel_semconv.h"
 #endif  /* COTEL_H */

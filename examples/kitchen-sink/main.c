@@ -103,8 +103,7 @@ int main(void) {
       &meter, &counter_f64, "kitchen_sink.bytes", "By", "Bytes processed"));
   CHECK(otel_meter_updown_counter_i64(
       &meter, &updown, "kitchen_sink.queue_depth", NULL, NULL));
-  CHECK(otel_meter_histogram_f64(
-      &meter, &histogram, "kitchen_sink.latency", "s", "Request latency"));
+  CHECK(otel_metric_http_server_request_duration(&meter, &histogram));
   CHECK(otel_meter_gauge_f64(
       &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
 
