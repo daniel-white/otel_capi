@@ -24,23 +24,23 @@ typedef enum {
 } otel_result_t;
 
 /**
- * Discriminator for the value stored in an [`otel_attribute_t`].
+ * Discriminator for the active member of [`otel_attribute_value_t`].
  */
 typedef enum {
   /**
-   * A borrowed NUL-terminated UTF-8 string in `string_value`.
+   * The `string` member is active.
    */
   OTEL_ATTRIBUTE_TYPE_STRING,
   /**
-   * A boolean stored as zero or non-zero in `bool_value`.
+   * The `boolean` member is active.
    */
   OTEL_ATTRIBUTE_TYPE_BOOL,
   /**
-   * A signed 64-bit integer in `int_value`.
+   * The `integer` member is active.
    */
   OTEL_ATTRIBUTE_TYPE_I64,
   /**
-   * A double-precision float in `double_value`.
+   * The `double_value` member is active.
    */
   OTEL_ATTRIBUTE_TYPE_F64,
 } otel_attribute_type_t;
@@ -176,11 +176,33 @@ typedef struct {
 } otel_gauge_f64_t;
 
 /**
- * A single attribute. Use the `otel_attr_*` macros to initialize it.
+ * Tagged value payload. Only the member named by `kind` may be read.
+ */
+typedef union {
+  /**
+   * Borrowed NUL-terminated UTF-8 string.
+   */
+  const char *string;
+  /**
+   * Boolean stored as zero or non-zero.
+   */
+  int boolean;
+  /**
+   * Signed 64-bit integer.
+   */
+  int64_t integer;
+  /**
+   * Double-precision float.
+   */
+  double double_value;
+} otel_attribute_value_t;
+
+/**
+ * A tagged attribute. Use the `otel_attr_*` macros to initialize it.
  */
 typedef struct {
   /**
-   * Which value field is valid.
+   * Which member of `value` is active.
    */
   otel_attribute_type_t kind;
   /**
@@ -188,21 +210,9 @@ typedef struct {
    */
   const char *key;
   /**
-   * String value, used only for `OTEL_ATTRIBUTE_TYPE_STRING`.
+   * Tagged value payload.
    */
-  const char *string_value;
-  /**
-   * Boolean value, used only for `OTEL_ATTRIBUTE_TYPE_BOOL`.
-   */
-  int bool_value;
-  /**
-   * Integer value, used only for `OTEL_ATTRIBUTE_TYPE_I64`.
-   */
-  int64_t int_value;
-  /**
-   * Float value, used only for `OTEL_ATTRIBUTE_TYPE_F64`.
-   */
-  double double_value;
+  otel_attribute_value_t value;
 } otel_attribute_t;
 
 /**
@@ -363,18 +373,18 @@ void otel_gauge_f64_release(otel_gauge_f64_t *handle);
  */
 #define otel_attr_string(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
-                       (const char *)(key), (const char *)(value), \
-                       0, 0, 0.0 })
+                       (const char *)(key), \
+                       { .string = (const char *)(value) } })
 #define otel_attr_bool(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
-                       (const char *)(key), NULL, \
-                       !!(value), 0, 0.0 })
+                       (const char *)(key), \
+                       { .boolean = !!(value) } })
 #define otel_attr_i64(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
-                       (const char *)(key), NULL, \
-                       0, (int64_t)(value), 0.0 })
+                       (const char *)(key), \
+                       { .integer = (int64_t)(value) } })
 #define otel_attr_f64(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
-                       (const char *)(key), NULL, \
-                       0, 0, (double)(value) })
+                       (const char *)(key), \
+                       { .double_value = (double)(value) } })
 #endif  /* COTEL_H */

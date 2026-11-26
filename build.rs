@@ -15,20 +15,20 @@ const ATTRIBUTE_MACROS: &str = r#"
  */
 #define otel_attr_string(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
-                       (const char *)(key), (const char *)(value), \
-                       0, 0, 0.0 })
+                       (const char *)(key), \
+                       { .string = (const char *)(value) } })
 #define otel_attr_bool(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
-                       (const char *)(key), NULL, \
-                       !!(value), 0, 0.0 })
+                       (const char *)(key), \
+                       { .boolean = !!(value) } })
 #define otel_attr_i64(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
-                       (const char *)(key), NULL, \
-                       0, (int64_t)(value), 0.0 })
+                       (const char *)(key), \
+                       { .integer = (int64_t)(value) } })
 #define otel_attr_f64(key, value) \
   ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
-                       (const char *)(key), NULL, \
-                       0, 0, (double)(value) })
+                       (const char *)(key), \
+                       { .double_value = (double)(value) } })
 "#;
 
 fn main() {

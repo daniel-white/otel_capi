@@ -11,9 +11,10 @@ usize_is_size_t = true
 include = [
   "otel_result_t",
   "otel_attribute_type_t",
+  "otel_attribute_value_t",
   "otel_attribute_t",
 ]
-item_types = ["enums", "structs", "typedefs", "functions", "constants"]
+item_types = ["enums", "unions", "structs", "typedefs", "functions", "constants"]
 
 [enum]
 prefix_with_name = false
