@@ -7,6 +7,7 @@
 #![allow(non_camel_case_types, non_upper_case_globals)]
 
 pub mod attributes;
+mod config;
 pub mod error;
 pub mod handles;
 
