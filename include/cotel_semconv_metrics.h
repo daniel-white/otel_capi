@@ -10,1588 +10,3176 @@ static inline otel_result_t otel_metric_aspnetcore_authentication_challenges(con
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_CHALLENGES, "{challenge}", "The total number of times a scheme is challenged. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_authentication_challenges_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_AUTHENTICATION_CHALLENGES), OTEL_STR("{challenge}"), OTEL_STR("The total number of times a scheme is challenged. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_authentication_forbids(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_FORBIDS, "{forbid}", "The total number of times an authenticated user attempts to access a resource they are not permitted to access. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authentication_forbids_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_AUTHENTICATION_FORBIDS), OTEL_STR("{forbid}"), OTEL_STR("The total number of times an authenticated user attempts to access a resource they are not permitted to access. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_authentication_sign_ins(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_INS, "{sign_in}", "The total number of times a principal is signed in with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_authentication_sign_ins_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_INS), OTEL_STR("{sign_in}"), OTEL_STR("The total number of times a principal is signed in with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_authentication_sign_outs(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_OUTS, "{sign_out}", "The total number of times a principal is signed out with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_authentication_sign_outs_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_AUTHENTICATION_SIGN_OUTS), OTEL_STR("{sign_out}"), OTEL_STR("The total number of times a principal is signed out with a scheme. ## Notes Meter name: `Microsoft.AspNetCore.Authentication`; Added in: ASP.NET Core 10.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_authorization_attempts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_AUTHORIZATION_ATTEMPTS, "{attempt}", "The total number of authorization attempts. ## Notes Meter name: `Microsoft.AspNetCore.Authorization`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_authorization_attempts_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_AUTHORIZATION_ATTEMPTS), OTEL_STR("{attempt}"), OTEL_STR("The total number of authorization attempts. ## Notes Meter name: `Microsoft.AspNetCore.Authorization`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_diagnostics_exceptions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_DIAGNOSTICS_EXCEPTIONS, "{exception}", "Number of exceptions caught by exception handling middleware. ## Notes Meter name: `Microsoft.AspNetCore.Diagnostics`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_diagnostics_exceptions_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_DIAGNOSTICS_EXCEPTIONS), OTEL_STR("{exception}"), OTEL_STR("Number of exceptions caught by exception handling middleware. ## Notes Meter name: `Microsoft.AspNetCore.Diagnostics`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_ins(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_INS, "{sign_in}", "The total number of calls to sign in user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_ins_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_INS), OTEL_STR("{sign_in}"), OTEL_STR("The total number of calls to sign in user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_outs(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_OUTS, "{sign_out}", "The total number of calls to sign out user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_identity_sign_in_sign_outs_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_IDENTITY_SIGN_IN_SIGN_OUTS), OTEL_STR("{sign_out}"), OTEL_STR("The total number of calls to sign out user principals. ## Notes Meter name: `Microsoft.AspNetCore.Identity`; Added in: ASP.NET Core 10.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_memory_pool_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_ALLOCATED, "By", "Total number of bytes allocated by the memory pool. Allocation occurs when a memory rental request exceeds the available pooled memory. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_allocated_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_MEMORY_POOL_ALLOCATED), OTEL_STR("By"), OTEL_STR("Total number of bytes allocated by the memory pool. Allocation occurs when a memory rental request exceeds the available pooled memory. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_memory_pool_evicted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_EVICTED, "By", "Total number of bytes evicted from the memory pool. Eviction occurs when idle pooled memory is reclaimed. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_evicted_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_MEMORY_POOL_EVICTED), OTEL_STR("By"), OTEL_STR("Total number of bytes evicted from the memory pool. Eviction occurs when idle pooled memory is reclaimed. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_memory_pool_pooled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_POOLED, "By", "Number of bytes currently pooled and available for reuse. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_pooled_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_MEMORY_POOL_POOLED), OTEL_STR("By"), OTEL_STR("Number of bytes currently pooled and available for reuse. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_memory_pool_rented(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_MEMORY_POOL_RENTED, "By", "Total number of bytes rented from the memory pool. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_memory_pool_rented_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_MEMORY_POOL_RENTED), OTEL_STR("By"), OTEL_STR("Total number of bytes rented from the memory pool. ## Notes Meter name: `Microsoft.AspNetCore.MemoryPool`; Added in: ASP.NET Core 10.0"));
 }
 
 static inline otel_result_t otel_metric_aspnetcore_rate_limiting_requests(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_RATE_LIMITING_REQUESTS, "{request}", "Number of requests that tried to acquire a rate limiting lease. ## Notes Requests could be: - Rejected by global or endpoint rate limiting policies - Canceled while waiting for the lease. Meter name: `Microsoft.AspNetCore.RateLimiting`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_aspnetcore_rate_limiting_requests_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_RATE_LIMITING_REQUESTS), OTEL_STR("{request}"), OTEL_STR("Number of requests that tried to acquire a rate limiting lease. ## Notes Requests could be: - Rejected by global or endpoint rate limiting policies - Canceled while waiting for the lease. Meter name: `Microsoft.AspNetCore.RateLimiting`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_aspnetcore_routing_match_attempts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_ASPNETCORE_ROUTING_MATCH_ATTEMPTS, "{match_attempt}", "Number of requests that were attempted to be matched to an endpoint. ## Notes Meter name: `Microsoft.AspNetCore.Routing`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_aspnetcore_routing_match_attempts_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_ASPNETCORE_ROUTING_MATCH_ATTEMPTS), OTEL_STR("{match_attempt}"), OTEL_STR("Number of requests that were attempted to be matched to an endpoint. ## Notes Meter name: `Microsoft.AspNetCore.Routing`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_cicd_pipeline_run_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_ACTIVE, "{run}", "The number of pipeline runs currently active in the system by state");
 }
 
+static inline otel_result_t otel_metric_cicd_pipeline_run_active_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CICD_PIPELINE_RUN_ACTIVE), OTEL_STR("{run}"), OTEL_STR("The number of pipeline runs currently active in the system by state"));
+}
+
 static inline otel_result_t otel_metric_cicd_pipeline_run_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_DURATION, "s", "Duration of a pipeline run grouped by pipeline, state and result");
+}
+
+static inline otel_result_t otel_metric_cicd_pipeline_run_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_CICD_PIPELINE_RUN_DURATION), OTEL_STR("s"), OTEL_STR("Duration of a pipeline run grouped by pipeline, state and result"));
 }
 
 static inline otel_result_t otel_metric_cicd_pipeline_run_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CICD_PIPELINE_RUN_ERRORS, "{error}", "The number of errors encountered in pipeline runs (eg. compile, test failures). ## Notes There might be errors in a pipeline run that are non fatal (eg. they are suppressed) or in a parallel stage multiple stages could have a fatal error. This means that this error count might not be the same as the count of metric `cicd.pipeline.run.duration` with run result `failure`");
 }
 
+static inline otel_result_t otel_metric_cicd_pipeline_run_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CICD_PIPELINE_RUN_ERRORS), OTEL_STR("{error}"), OTEL_STR("The number of errors encountered in pipeline runs (eg. compile, test failures). ## Notes There might be errors in a pipeline run that are non fatal (eg. they are suppressed) or in a parallel stage multiple stages could have a fatal error. This means that this error count might not be the same as the count of metric `cicd.pipeline.run.duration` with run result `failure`"));
+}
+
 static inline otel_result_t otel_metric_cicd_system_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CICD_SYSTEM_ERRORS, "{error}", "The number of errors in a component of the CI/CD system (eg. controller, scheduler, agent). ## Notes Errors in pipeline run execution are explicitly excluded. Ie a test failure is not counted in this metric");
+}
+
+static inline otel_result_t otel_metric_cicd_system_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CICD_SYSTEM_ERRORS), OTEL_STR("{error}"), OTEL_STR("The number of errors in a component of the CI/CD system (eg. controller, scheduler, agent). ## Notes Errors in pipeline run execution are explicitly excluded. Ie a test failure is not counted in this metric"));
 }
 
 static inline otel_result_t otel_metric_cicd_worker_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CICD_WORKER_COUNT, "{count}", "The number of workers on the CI/CD system by state");
 }
 
+static inline otel_result_t otel_metric_cicd_worker_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CICD_WORKER_COUNT), OTEL_STR("{count}"), OTEL_STR("The number of workers on the CI/CD system by state"));
+}
+
 static inline otel_result_t otel_metric_container_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_CPU_TIME, "s", "CPU time consumed. ## Notes CPU time consumed by the specific container on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_container_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_CPU_TIME), OTEL_STR("s"), OTEL_STR("CPU time consumed. ## Notes CPU time consumed by the specific container on all available CPU cores"));
 }
 
 static inline otel_result_t otel_metric_container_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_CONTAINER_CPU_USAGE, "{cpu}", "Container's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific container on all available CPU cores, averaged over the sample window");
 }
 
+static inline otel_result_t otel_metric_container_cpu_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_CPU_USAGE), OTEL_STR("{cpu}"), OTEL_STR("Container's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific container on all available CPU cores, averaged over the sample window"));
+}
+
 static inline otel_result_t otel_metric_container_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_DISK_IO, "By", "Disk bytes for the container. ## Notes The total number of bytes read/written successfully (aggregated from all disks)");
+}
+
+static inline otel_result_t otel_metric_container_disk_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_DISK_IO), OTEL_STR("By"), OTEL_STR("Disk bytes for the container. ## Notes The total number of bytes read/written successfully (aggregated from all disks)"));
 }
 
 static inline otel_result_t otel_metric_container_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_AVAILABLE, "By", "Container filesystem available bytes. ## Notes In K8s, this metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_container_filesystem_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_FILESYSTEM_AVAILABLE), OTEL_STR("By"), OTEL_STR("Container filesystem available bytes. ## Notes In K8s, this metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_container_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_CAPACITY, "By", "Container filesystem capacity. ## Notes In K8s, this metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_filesystem_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_FILESYSTEM_CAPACITY), OTEL_STR("By"), OTEL_STR("Container filesystem capacity. ## Notes In K8s, this metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_container_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_FILESYSTEM_USAGE, "By", "Container filesystem usage. ## Notes This may not equal capacity - available. In K8s, this metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_container_filesystem_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_FILESYSTEM_USAGE), OTEL_STR("By"), OTEL_STR("Container filesystem usage. ## Notes This may not equal capacity - available. In K8s, this metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [ContainerStats.Rootfs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#ContainerStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_container_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_AVAILABLE, "By", "Container memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and by subtracting the `container_memory_working_set_bytes` metric from the `container_spec_memory_limit_bytes` metric. In K8s, this metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_MEMORY_AVAILABLE), OTEL_STR("By"), OTEL_STR("Container memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and by subtracting the `container_memory_working_set_bytes` metric from the `container_spec_memory_limit_bytes` metric. In K8s, this metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_container_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_PAGING_FAULTS, "{fault}", "Container memory paging faults. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_failures_total{failure_type=pgfault, scope=container}` and `container_memory_failures_total{failure_type=pgmajfault, scope=container}`metric. In K8s, this metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_container_memory_paging_faults_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_MEMORY_PAGING_FAULTS), OTEL_STR("{fault}"), OTEL_STR("Container memory paging faults. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_failures_total{failure_type=pgfault, scope=container}` and `container_memory_failures_total{failure_type=pgmajfault, scope=container}`metric. In K8s, this metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_container_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_RSS, "By", "Container memory RSS. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_rss` metric. In K8s, this metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_rss_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_MEMORY_RSS), OTEL_STR("By"), OTEL_STR("Container memory RSS. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_rss` metric. In K8s, this metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_container_memory_usage(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_USAGE, "By", "Memory usage of the container. ## Notes Memory usage of the container");
 }
 
+static inline otel_result_t otel_metric_container_memory_usage_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("Memory usage of the container. ## Notes Memory usage of the container"));
+}
+
 static inline otel_result_t otel_metric_container_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_CONTAINER_MEMORY_WORKING_SET, "By", "Container memory working set. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_working_set_bytes` metric. In K8s, this metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_container_memory_working_set_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_MEMORY_WORKING_SET), OTEL_STR("By"), OTEL_STR("Container memory working set. ## Notes In general, this metric can be derived from [cadvisor](https://github.com/google/cadvisor/blob/v0.53.0/docs/storage/prometheus.md#prometheus-container-metrics) and specifically the `container_memory_working_set_bytes` metric. In K8s, this metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_container_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CONTAINER_NETWORK_IO, "By", "Network bytes for the container. ## Notes The number of bytes sent/received on all network interfaces by the container");
 }
 
+static inline otel_result_t otel_metric_container_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_NETWORK_IO), OTEL_STR("By"), OTEL_STR("Network bytes for the container. ## Notes The number of bytes sent/received on all network interfaces by the container"));
+}
+
 static inline otel_result_t otel_metric_container_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_CONTAINER_UPTIME, "s", "The time the container has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_container_uptime_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_CONTAINER_UPTIME), OTEL_STR("s"), OTEL_STR("The time the container has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system"));
 }
 
 static inline otel_result_t otel_metric_cpython_gc_collected_objects(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_COLLECTED_OBJECTS, "{object}", "The total number of objects collected inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
 }
 
+static inline otel_result_t otel_metric_cpython_gc_collected_objects_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CPYTHON_GC_COLLECTED_OBJECTS), OTEL_STR("{object}"), OTEL_STR("The total number of objects collected inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)"));
+}
+
 static inline otel_result_t otel_metric_cpython_gc_collections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_COLLECTIONS, "{collection}", "The number of times a generation was collected since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
+}
+
+static inline otel_result_t otel_metric_cpython_gc_collections_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CPYTHON_GC_COLLECTIONS), OTEL_STR("{collection}"), OTEL_STR("The number of times a generation was collected since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)"));
 }
 
 static inline otel_result_t otel_metric_cpython_gc_uncollectable_objects(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_CPYTHON_GC_UNCOLLECTABLE_OBJECTS, "{object}", "The total number of objects which were found to be uncollectable inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)");
 }
 
+static inline otel_result_t otel_metric_cpython_gc_uncollectable_objects_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_CPYTHON_GC_UNCOLLECTABLE_OBJECTS), OTEL_STR("{object}"), OTEL_STR("The total number of objects which were found to be uncollectable inside a generation since interpreter start. ## Notes This metric reports data from [`gc.stats()`](https://docs.python.org/3/library/gc.html#gc.get_stats)"));
+}
+
 static inline otel_result_t otel_metric_db_client_connection_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_COUNT, "{connection}", "The number of connections that are currently in state described by the `state` attribute");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_COUNT), OTEL_STR("{connection}"), OTEL_STR("The number of connections that are currently in state described by the `state` attribute"));
 }
 
 static inline otel_result_t otel_metric_db_client_connection_create_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_CREATE_TIME, "s", "The time it took to create a new connection");
 }
 
+static inline otel_result_t otel_metric_db_client_connection_create_time_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_CREATE_TIME), OTEL_STR("s"), OTEL_STR("The time it took to create a new connection"));
+}
+
 static inline otel_result_t otel_metric_db_client_connection_idle_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MAX, "{connection}", "The maximum number of idle open connections allowed");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_idle_max_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MAX), OTEL_STR("{connection}"), OTEL_STR("The maximum number of idle open connections allowed"));
 }
 
 static inline otel_result_t otel_metric_db_client_connection_idle_min(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MIN, "{connection}", "The minimum number of idle open connections allowed");
 }
 
+static inline otel_result_t otel_metric_db_client_connection_idle_min_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_IDLE_MIN), OTEL_STR("{connection}"), OTEL_STR("The minimum number of idle open connections allowed"));
+}
+
 static inline otel_result_t otel_metric_db_client_connection_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_MAX, "{connection}", "The maximum number of open connections allowed");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_max_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_MAX), OTEL_STR("{connection}"), OTEL_STR("The maximum number of open connections allowed"));
 }
 
 static inline otel_result_t otel_metric_db_client_connection_pending_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_PENDING_REQUESTS, "{request}", "The number of current pending requests for an open connection");
 }
 
+static inline otel_result_t otel_metric_db_client_connection_pending_requests_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_PENDING_REQUESTS), OTEL_STR("{request}"), OTEL_STR("The number of current pending requests for an open connection"));
+}
+
 static inline otel_result_t otel_metric_db_client_connection_timeouts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_TIMEOUTS, "{timeout}", "The number of connection timeouts that have occurred trying to obtain a connection from the pool");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_timeouts_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_TIMEOUTS), OTEL_STR("{timeout}"), OTEL_STR("The number of connection timeouts that have occurred trying to obtain a connection from the pool"));
 }
 
 static inline otel_result_t otel_metric_db_client_connection_use_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_USE_TIME, "s", "The time between borrowing a connection and returning it to the pool");
 }
 
+static inline otel_result_t otel_metric_db_client_connection_use_time_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_USE_TIME), OTEL_STR("s"), OTEL_STR("The time between borrowing a connection and returning it to the pool"));
+}
+
 static inline otel_result_t otel_metric_db_client_connection_wait_time(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_CONNECTION_WAIT_TIME, "s", "The time it took to obtain an open connection from the pool");
+}
+
+static inline otel_result_t otel_metric_db_client_connection_wait_time_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_CONNECTION_WAIT_TIME), OTEL_STR("s"), OTEL_STR("The time it took to obtain an open connection from the pool"));
 }
 
 static inline otel_result_t otel_metric_db_client_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_OPERATION_DURATION, "s", "Duration of database client operations. ## Notes Batch operations SHOULD be recorded as a single operation");
 }
 
+static inline otel_result_t otel_metric_db_client_operation_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_OPERATION_DURATION), OTEL_STR("s"), OTEL_STR("Duration of database client operations. ## Notes Batch operations SHOULD be recorded as a single operation"));
+}
+
 static inline otel_result_t otel_metric_db_client_response_returned_rows(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DB_CLIENT_RESPONSE_RETURNED_ROWS, "{row}", "The actual number of records returned by the database operation");
+}
+
+static inline otel_result_t otel_metric_db_client_response_returned_rows_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DB_CLIENT_RESPONSE_RETURNED_ROWS), OTEL_STR("{row}"), OTEL_STR("The actual number of records returned by the database operation"));
 }
 
 static inline otel_result_t otel_metric_dns_lookup_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_DNS_LOOKUP_DURATION, "s", "Measures the time taken to perform a DNS lookup");
 }
 
+static inline otel_result_t otel_metric_dns_lookup_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_DNS_LOOKUP_DURATION), OTEL_STR("s"), OTEL_STR("Measures the time taken to perform a DNS lookup"));
+}
+
 static inline otel_result_t otel_metric_dotnet_assembly_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_ASSEMBLY_COUNT, "{assembly}", "The number of .NET assemblies that are currently loaded. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`AppDomain.CurrentDomain.GetAssemblies().Length`](https://learn.microsoft.com/dotnet/api/system.appdomain.getassemblies)");
+}
+
+static inline otel_result_t otel_metric_dotnet_assembly_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_ASSEMBLY_COUNT), OTEL_STR("{assembly}"), OTEL_STR("The number of .NET assemblies that are currently loaded. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`AppDomain.CurrentDomain.GetAssemblies().Length`](https://learn.microsoft.com/dotnet/api/system.appdomain.getassemblies)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_exceptions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_EXCEPTIONS, "{exception}", "The number of exceptions that have been thrown in managed code. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as counting calls to [`AppDomain.CurrentDomain.FirstChanceException`](https://learn.microsoft.com/dotnet/api/system.appdomain.firstchanceexception)");
 }
 
+static inline otel_result_t otel_metric_dotnet_exceptions_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_EXCEPTIONS), OTEL_STR("{exception}"), OTEL_STR("The number of exceptions that have been thrown in managed code. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as counting calls to [`AppDomain.CurrentDomain.FirstChanceException`](https://learn.microsoft.com/dotnet/api/system.appdomain.firstchanceexception)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_gc_collections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_COLLECTIONS, "{collection}", "The number of garbage collections that have occurred since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric uses the [`GC.CollectionCount(int generation)`](https://learn.microsoft.com/dotnet/api/system.gc.collectioncount) API to calculate exclusive collections per generation");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_collections_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_GC_COLLECTIONS), OTEL_STR("{collection}"), OTEL_STR("The number of garbage collections that have occurred since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric uses the [`GC.CollectionCount(int generation)`](https://learn.microsoft.com/dotnet/api/system.gc.collectioncount) API to calculate exclusive collections per generation"));
 }
 
 static inline otel_result_t otel_metric_dotnet_gc_heap_total_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_HEAP_TOTAL_ALLOCATED, "By", "The *approximate* number of bytes allocated on the managed GC heap since the process has started. The returned value does not include any native allocations. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalAllocatedBytes()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes)");
 }
 
+static inline otel_result_t otel_metric_dotnet_gc_heap_total_allocated_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_GC_HEAP_TOTAL_ALLOCATED), OTEL_STR("By"), OTEL_STR("The *approximate* number of bytes allocated on the managed GC heap since the process has started. The returned value does not include any native allocations. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalAllocatedBytes()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalallocatedbytes)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_gc_last_collection_heap_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_GC_LAST_COLLECTION_HEAP_SIZE, "By", "The managed GC heap size (including fragmentation), as observed during the latest garbage collection. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetGCMemoryInfo().GenerationInfo.SizeAfterBytes`](https://learn.microsoft.com/dotnet/api/system.gcgenerationinfo.sizeafterbytes)");
+}
+
+static inline otel_result_t otel_metric_dotnet_gc_last_collection_heap_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_GC_LAST_COLLECTION_HEAP_SIZE), OTEL_STR("By"), OTEL_STR("The managed GC heap size (including fragmentation), as observed during the latest garbage collection. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetGCMemoryInfo().GenerationInfo.SizeAfterBytes`](https://learn.microsoft.com/dotnet/api/system.gcgenerationinfo.sizeafterbytes)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_gc_pause_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_GC_PAUSE_TIME, "s", "The total amount of time paused in GC since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalPauseDuration()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalpauseduration)");
 }
 
+static inline otel_result_t otel_metric_dotnet_gc_pause_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_GC_PAUSE_TIME), OTEL_STR("s"), OTEL_STR("The total amount of time paused in GC since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`GC.GetTotalPauseDuration()`](https://learn.microsoft.com/dotnet/api/system.gc.gettotalpauseduration)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_jit_compilation_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILATION_TIME, "s", "The amount of time the JIT compiler has spent compiling methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompilationTime()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompilationtime)");
+}
+
+static inline otel_result_t otel_metric_dotnet_jit_compilation_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_JIT_COMPILATION_TIME), OTEL_STR("s"), OTEL_STR("The amount of time the JIT compiler has spent compiling methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompilationTime()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompilationtime)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_jit_compiled_il_size(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILED_IL_SIZE, "By", "Count of bytes of intermediate language that have been compiled since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledILBytes()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledilbytes)");
 }
 
+static inline otel_result_t otel_metric_dotnet_jit_compiled_il_size_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_JIT_COMPILED_IL_SIZE), OTEL_STR("By"), OTEL_STR("Count of bytes of intermediate language that have been compiled since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledILBytes()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledilbytes)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_jit_compiled_methods(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_JIT_COMPILED_METHODS, "{method}", "The number of times the JIT compiler (re)compiled methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledMethodCount()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledmethodcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_jit_compiled_methods_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_JIT_COMPILED_METHODS), OTEL_STR("{method}"), OTEL_STR("The number of times the JIT compiler (re)compiled methods since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`JitInfo.GetCompiledMethodCount()`](https://learn.microsoft.com/dotnet/api/system.runtime.jitinfo.getcompiledmethodcount)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_monitor_lock_contentions(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_MONITOR_LOCK_CONTENTIONS, "{contention}", "The number of times there was contention when trying to acquire a monitor lock since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Monitor.LockContentionCount`](https://learn.microsoft.com/dotnet/api/system.threading.monitor.lockcontentioncount)");
 }
 
+static inline otel_result_t otel_metric_dotnet_monitor_lock_contentions_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_MONITOR_LOCK_CONTENTIONS), OTEL_STR("{contention}"), OTEL_STR("The number of times there was contention when trying to acquire a monitor lock since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Monitor.LockContentionCount`](https://learn.microsoft.com/dotnet/api/system.threading.monitor.lockcontentioncount)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_process_cpu_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_CPU_COUNT, "{cpu}", "The number of processors available to the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing [`Environment.ProcessorCount`](https://learn.microsoft.com/dotnet/api/system.environment.processorcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_process_cpu_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_PROCESS_CPU_COUNT), OTEL_STR("{cpu}"), OTEL_STR("The number of processors available to the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing [`Environment.ProcessorCount`](https://learn.microsoft.com/dotnet/api/system.environment.processorcount)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_process_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_CPU_TIME, "s", "CPU time used by the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing the corresponding processor time properties on [`System.Diagnostics.Process`](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)");
 }
 
+static inline otel_result_t otel_metric_dotnet_process_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_PROCESS_CPU_TIME), OTEL_STR("s"), OTEL_STR("CPU time used by the process. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as accessing the corresponding processor time properties on [`System.Diagnostics.Process`](https://learn.microsoft.com/dotnet/api/system.diagnostics.process)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_process_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_PROCESS_MEMORY_WORKING_SET, "By", "The number of bytes of physical memory mapped to the process context. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Environment.WorkingSet`](https://learn.microsoft.com/dotnet/api/system.environment.workingset)");
+}
+
+static inline otel_result_t otel_metric_dotnet_process_memory_working_set_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_PROCESS_MEMORY_WORKING_SET), OTEL_STR("By"), OTEL_STR("The number of bytes of physical memory mapped to the process context. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Environment.WorkingSet`](https://learn.microsoft.com/dotnet/api/system.environment.workingset)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_thread_pool_queue_length(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_QUEUE_LENGTH, "{work_item}", "The number of work items that are currently queued to be processed by the thread pool. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.PendingWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.pendingworkitemcount)");
 }
 
+static inline otel_result_t otel_metric_dotnet_thread_pool_queue_length_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_THREAD_POOL_QUEUE_LENGTH), OTEL_STR("{work_item}"), OTEL_STR("The number of work items that are currently queued to be processed by the thread pool. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.PendingWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.pendingworkitemcount)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_thread_pool_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_THREAD_COUNT, "{thread}", "The number of thread pool threads that currently exist. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.ThreadCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.threadcount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_thread_pool_thread_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_THREAD_POOL_THREAD_COUNT), OTEL_STR("{thread}"), OTEL_STR("The number of thread pool threads that currently exist. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.ThreadCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.threadcount)"));
 }
 
 static inline otel_result_t otel_metric_dotnet_thread_pool_work_item_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_DOTNET_THREAD_POOL_WORK_ITEM_COUNT, "{work_item}", "The number of work items that the thread pool has completed since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.CompletedWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.completedworkitemcount)");
 }
 
+static inline otel_result_t otel_metric_dotnet_thread_pool_work_item_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_THREAD_POOL_WORK_ITEM_COUNT), OTEL_STR("{work_item}"), OTEL_STR("The number of work items that the thread pool has completed since the process has started. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`ThreadPool.CompletedWorkItemCount`](https://learn.microsoft.com/dotnet/api/system.threading.threadpool.completedworkitemcount)"));
+}
+
 static inline otel_result_t otel_metric_dotnet_timer_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_DOTNET_TIMER_COUNT, "{timer}", "The number of timer instances that are currently active. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Timer.ActiveCount`](https://learn.microsoft.com/dotnet/api/system.threading.timer.activecount)");
+}
+
+static inline otel_result_t otel_metric_dotnet_timer_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_DOTNET_TIMER_COUNT), OTEL_STR("{timer}"), OTEL_STR("The number of timer instances that are currently active. ## Notes Meter name: `System.Runtime`; Added in: .NET 9.0. This metric reports the same values as calling [`Timer.ActiveCount`](https://learn.microsoft.com/dotnet/api/system.threading.timer.activecount)"));
 }
 
 static inline otel_result_t otel_metric_faas_coldstarts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_COLDSTARTS, "{coldstart}", "Number of invocation cold starts");
 }
 
+static inline otel_result_t otel_metric_faas_coldstarts_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_COLDSTARTS), OTEL_STR("{coldstart}"), OTEL_STR("Number of invocation cold starts"));
+}
+
 static inline otel_result_t otel_metric_faas_cpu_usage(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_CPU_USAGE, "s", "Distribution of CPU usage per invocation");
+}
+
+static inline otel_result_t otel_metric_faas_cpu_usage_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_CPU_USAGE), OTEL_STR("s"), OTEL_STR("Distribution of CPU usage per invocation"));
 }
 
 static inline otel_result_t otel_metric_faas_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_ERRORS, "{error}", "Number of invocation errors");
 }
 
+static inline otel_result_t otel_metric_faas_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_ERRORS), OTEL_STR("{error}"), OTEL_STR("Number of invocation errors"));
+}
+
 static inline otel_result_t otel_metric_faas_init_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_INIT_DURATION, "s", "Measures the duration of the function's initialization, such as a cold start");
+}
+
+static inline otel_result_t otel_metric_faas_init_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_INIT_DURATION), OTEL_STR("s"), OTEL_STR("Measures the duration of the function's initialization, such as a cold start"));
 }
 
 static inline otel_result_t otel_metric_faas_invocations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_INVOCATIONS, "{invocation}", "Number of successful invocations");
 }
 
+static inline otel_result_t otel_metric_faas_invocations_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_INVOCATIONS), OTEL_STR("{invocation}"), OTEL_STR("Number of successful invocations"));
+}
+
 static inline otel_result_t otel_metric_faas_invoke_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_INVOKE_DURATION, "s", "Measures the duration of the function's logic execution");
+}
+
+static inline otel_result_t otel_metric_faas_invoke_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_INVOKE_DURATION), OTEL_STR("s"), OTEL_STR("Measures the duration of the function's logic execution"));
 }
 
 static inline otel_result_t otel_metric_faas_mem_usage(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_MEM_USAGE, "By", "Distribution of max memory usage per invocation");
 }
 
+static inline otel_result_t otel_metric_faas_mem_usage_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_MEM_USAGE), OTEL_STR("By"), OTEL_STR("Distribution of max memory usage per invocation"));
+}
+
 static inline otel_result_t otel_metric_faas_net_io(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_FAAS_NET_IO, "By", "Distribution of net I/O usage per invocation");
+}
+
+static inline otel_result_t otel_metric_faas_net_io_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_NET_IO), OTEL_STR("By"), OTEL_STR("Distribution of net I/O usage per invocation"));
 }
 
 static inline otel_result_t otel_metric_faas_timeouts(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_FAAS_TIMEOUTS, "{timeout}", "Number of invocation timeouts");
 }
 
+static inline otel_result_t otel_metric_faas_timeouts_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_FAAS_TIMEOUTS), OTEL_STR("{timeout}"), OTEL_STR("Number of invocation timeouts"));
+}
+
 static inline otel_result_t otel_metric_go_config_gogc(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_CONFIG_GOGC, "%", "Heap size target percentage configured by the user, otherwise 100. ## Notes The value range is \\\\[0.0,100.0\\\\]. Computed from `/gc/gogc:percent`");
+}
+
+static inline otel_result_t otel_metric_go_config_gogc_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_CONFIG_GOGC), OTEL_STR("%"), OTEL_STR("Heap size target percentage configured by the user, otherwise 100. ## Notes The value range is \\\\[0.0,100.0\\\\]. Computed from `/gc/gogc:percent`"));
 }
 
 static inline otel_result_t otel_metric_go_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_CPU_TIME, "s", "Estimated CPU time spent by the Go runtime. ## Notes Computed from `/cpu/classes/...` metrics. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other `go.cpu.time` metrics");
 }
 
+static inline otel_result_t otel_metric_go_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_CPU_TIME), OTEL_STR("s"), OTEL_STR("Estimated CPU time spent by the Go runtime. ## Notes Computed from `/cpu/classes/...` metrics. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other `go.cpu.time` metrics"));
+}
+
 static inline otel_result_t otel_metric_go_goroutine_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_GOROUTINE_COUNT, "{goroutine}", "Count of live goroutines. ## Notes Computed from `/sched/goroutines:goroutines`");
+}
+
+static inline otel_result_t otel_metric_go_goroutine_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_GOROUTINE_COUNT), OTEL_STR("{goroutine}"), OTEL_STR("Count of live goroutines. ## Notes Computed from `/sched/goroutines:goroutines`"));
 }
 
 static inline otel_result_t otel_metric_go_memory_allocated(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_ALLOCATED, "By", "Memory allocated to the heap by the application. ## Notes Computed from `/gc/heap/allocs:bytes`");
 }
 
+static inline otel_result_t otel_metric_go_memory_allocated_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_ALLOCATED), OTEL_STR("By"), OTEL_STR("Memory allocated to the heap by the application. ## Notes Computed from `/gc/heap/allocs:bytes`"));
+}
+
 static inline otel_result_t otel_metric_go_memory_allocations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_ALLOCATIONS, "{allocation}", "Count of allocations to the heap by the application. ## Notes Computed from `/gc/heap/allocs:objects`");
+}
+
+static inline otel_result_t otel_metric_go_memory_allocations_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_ALLOCATIONS), OTEL_STR("{allocation}"), OTEL_STR("Count of allocations to the heap by the application. ## Notes Computed from `/gc/heap/allocs:objects`"));
 }
 
 static inline otel_result_t otel_metric_go_memory_gc_cycles(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_CYCLES, "{gc_cycle}", "Number of completed GC cycles. ## Notes Computed from `/gc/cycles/total:gc-cycles`");
 }
 
+static inline otel_result_t otel_metric_go_memory_gc_cycles_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_GC_CYCLES), OTEL_STR("{gc_cycle}"), OTEL_STR("Number of completed GC cycles. ## Notes Computed from `/gc/cycles/total:gc-cycles`"));
+}
+
 static inline otel_result_t otel_metric_go_memory_gc_goal(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_GOAL, "By", "Heap size target for the end of the GC cycle. ## Notes Computed from `/gc/heap/goal:bytes`");
+}
+
+static inline otel_result_t otel_metric_go_memory_gc_goal_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_GC_GOAL), OTEL_STR("By"), OTEL_STR("Heap size target for the end of the GC cycle. ## Notes Computed from `/gc/heap/goal:bytes`"));
 }
 
 static inline otel_result_t otel_metric_go_memory_gc_pause_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_GO_MEMORY_GC_PAUSE_DURATION, "s", "Distribution of individual GC-related stop-the-world pause latencies. This is the time from deciding to stop the world until the world is started again. ## Notes Computed from `/sched/pauses/total/gc:seconds`. Bucket boundaries are provided by the runtime, and are subject to change");
 }
 
+static inline otel_result_t otel_metric_go_memory_gc_pause_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_GC_PAUSE_DURATION), OTEL_STR("s"), OTEL_STR("Distribution of individual GC-related stop-the-world pause latencies. This is the time from deciding to stop the world until the world is started again. ## Notes Computed from `/sched/pauses/total/gc:seconds`. Bucket boundaries are provided by the runtime, and are subject to change"));
+}
+
 static inline otel_result_t otel_metric_go_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_LIMIT, "By", "Go runtime memory limit configured by the user, if a limit exists. ## Notes Computed from `/gc/gomemlimit:bytes`. This metric is excluded if the limit obtained from the Go runtime is math.MaxInt64");
+}
+
+static inline otel_result_t otel_metric_go_memory_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_LIMIT), OTEL_STR("By"), OTEL_STR("Go runtime memory limit configured by the user, if a limit exists. ## Notes Computed from `/gc/gomemlimit:bytes`. This metric is excluded if the limit obtained from the Go runtime is math.MaxInt64"));
 }
 
 static inline otel_result_t otel_metric_go_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_MEMORY_USED, "By", "Memory used by the Go runtime. ## Notes Computed from `(/memory/classes/total:bytes - /memory/classes/heap/released:bytes)`");
 }
 
+static inline otel_result_t otel_metric_go_memory_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_MEMORY_USED), OTEL_STR("By"), OTEL_STR("Memory used by the Go runtime. ## Notes Computed from `(/memory/classes/total:bytes - /memory/classes/heap/released:bytes)`"));
+}
+
 static inline otel_result_t otel_metric_go_processor_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_GO_PROCESSOR_LIMIT, "{thread}", "The number of OS threads that can execute user-level Go code simultaneously. ## Notes Computed from `/sched/gomaxprocs:threads`");
+}
+
+static inline otel_result_t otel_metric_go_processor_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_PROCESSOR_LIMIT), OTEL_STR("{thread}"), OTEL_STR("The number of OS threads that can execute user-level Go code simultaneously. ## Notes Computed from `/sched/gomaxprocs:threads`"));
 }
 
 static inline otel_result_t otel_metric_go_schedule_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_GO_SCHEDULE_DURATION, "s", "The time goroutines have spent in the scheduler in a runnable state before actually running. ## Notes Computed from `/sched/latencies:seconds`. Bucket boundaries are provided by the runtime, and are subject to change");
 }
 
+static inline otel_result_t otel_metric_go_schedule_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_GO_SCHEDULE_DURATION), OTEL_STR("s"), OTEL_STR("The time goroutines have spent in the scheduler in a runnable state before actually running. ## Notes Computed from `/sched/latencies:seconds`. Bucket boundaries are provided by the runtime, and are subject to change"));
+}
+
 static inline otel_result_t otel_metric_http_client_active_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_CLIENT_ACTIVE_REQUESTS, "{request}", "Number of active HTTP requests");
+}
+
+static inline otel_result_t otel_metric_http_client_active_requests_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_ACTIVE_REQUESTS), OTEL_STR("{request}"), OTEL_STR("Number of active HTTP requests"));
 }
 
 static inline otel_result_t otel_metric_http_client_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_CONNECTION_DURATION, "s", "The duration of the successfully established outbound HTTP connections");
 }
 
+static inline otel_result_t otel_metric_http_client_connection_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_CONNECTION_DURATION), OTEL_STR("s"), OTEL_STR("The duration of the successfully established outbound HTTP connections"));
+}
+
 static inline otel_result_t otel_metric_http_client_open_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_CLIENT_OPEN_CONNECTIONS, "{connection}", "Number of outbound HTTP connections that are currently active or idle on the client");
+}
+
+static inline otel_result_t otel_metric_http_client_open_connections_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_OPEN_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of outbound HTTP connections that are currently active or idle on the client"));
 }
 
 static inline otel_result_t otel_metric_http_client_request_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_REQUEST_BODY_SIZE, "By", "Size of HTTP client request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
 }
 
+static inline otel_result_t otel_metric_http_client_request_body_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_REQUEST_BODY_SIZE), OTEL_STR("By"), OTEL_STR("Size of HTTP client request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size"));
+}
+
 static inline otel_result_t otel_metric_http_client_request_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_REQUEST_DURATION, "s", "Duration of HTTP client requests");
+}
+
+static inline otel_result_t otel_metric_http_client_request_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_REQUEST_DURATION), OTEL_STR("s"), OTEL_STR("Duration of HTTP client requests"));
 }
 
 static inline otel_result_t otel_metric_http_client_response_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_CLIENT_RESPONSE_BODY_SIZE, "By", "Size of HTTP client response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
 }
 
+static inline otel_result_t otel_metric_http_client_response_body_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_CLIENT_RESPONSE_BODY_SIZE), OTEL_STR("By"), OTEL_STR("Size of HTTP client response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size"));
+}
+
 static inline otel_result_t otel_metric_http_server_active_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HTTP_SERVER_ACTIVE_REQUESTS, "{request}", "Number of active HTTP server requests");
+}
+
+static inline otel_result_t otel_metric_http_server_active_requests_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_SERVER_ACTIVE_REQUESTS), OTEL_STR("{request}"), OTEL_STR("Number of active HTTP server requests"));
 }
 
 static inline otel_result_t otel_metric_http_server_request_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_REQUEST_BODY_SIZE, "By", "Size of HTTP server request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
 }
 
+static inline otel_result_t otel_metric_http_server_request_body_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_SERVER_REQUEST_BODY_SIZE), OTEL_STR("By"), OTEL_STR("Size of HTTP server request bodies. ## Notes The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size"));
+}
+
 static inline otel_result_t otel_metric_http_server_request_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION, "s", "Duration of HTTP server requests");
+}
+
+static inline otel_result_t otel_metric_http_server_request_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION), OTEL_STR("s"), OTEL_STR("Duration of HTTP server requests"));
 }
 
 static inline otel_result_t otel_metric_http_server_response_body_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_HTTP_SERVER_RESPONSE_BODY_SIZE, "By", "Size of HTTP server response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size");
 }
 
+static inline otel_result_t otel_metric_http_server_response_body_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HTTP_SERVER_RESPONSE_BODY_SIZE), OTEL_STR("By"), OTEL_STR("Size of HTTP server response bodies. ## Notes The size of the response payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the [Content-Length](https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length) header. For requests using transport encoding, this should be the compressed size"));
+}
+
 static inline otel_result_t otel_metric_hw_battery_charge(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_CHARGE, "1", "Remaining fraction of battery charge");
+}
+
+static inline otel_result_t otel_metric_hw_battery_charge_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_BATTERY_CHARGE), OTEL_STR("1"), OTEL_STR("Remaining fraction of battery charge"));
 }
 
 static inline otel_result_t otel_metric_hw_battery_charge_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_CHARGE_LIMIT, "1", "Lower limit of battery charge fraction to ensure proper operation");
 }
 
+static inline otel_result_t otel_metric_hw_battery_charge_limit_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_BATTERY_CHARGE_LIMIT), OTEL_STR("1"), OTEL_STR("Lower limit of battery charge fraction to ensure proper operation"));
+}
+
 static inline otel_result_t otel_metric_hw_battery_time_left(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_BATTERY_TIME_LEFT, "s", "Time left before battery is completely charged or discharged");
+}
+
+static inline otel_result_t otel_metric_hw_battery_time_left_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_BATTERY_TIME_LEFT), OTEL_STR("s"), OTEL_STR("Time left before battery is completely charged or discharged"));
 }
 
 static inline otel_result_t otel_metric_hw_cpu_speed(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_CPU_SPEED, "Hz", "CPU current frequency");
 }
 
+static inline otel_result_t otel_metric_hw_cpu_speed_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_CPU_SPEED), OTEL_STR("Hz"), OTEL_STR("CPU current frequency"));
+}
+
 static inline otel_result_t otel_metric_hw_cpu_speed_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_CPU_SPEED_LIMIT, "Hz", "CPU maximum frequency");
+}
+
+static inline otel_result_t otel_metric_hw_cpu_speed_limit_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_CPU_SPEED_LIMIT), OTEL_STR("Hz"), OTEL_STR("CPU maximum frequency"));
 }
 
 static inline otel_result_t otel_metric_hw_energy(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_ENERGY, "J", "Energy consumed by the component");
 }
 
+static inline otel_result_t otel_metric_hw_energy_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_ENERGY), OTEL_STR("J"), OTEL_STR("Energy consumed by the component"));
+}
+
 static inline otel_result_t otel_metric_hw_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_ERRORS, "{error}", "Number of errors encountered by the component");
+}
+
+static inline otel_result_t otel_metric_hw_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_ERRORS), OTEL_STR("{error}"), OTEL_STR("Number of errors encountered by the component"));
 }
 
 static inline otel_result_t otel_metric_hw_fan_speed(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED, "rpm", "Fan speed in revolutions per minute");
 }
 
+static inline otel_result_t otel_metric_hw_fan_speed_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_FAN_SPEED), OTEL_STR("rpm"), OTEL_STR("Fan speed in revolutions per minute"));
+}
+
 static inline otel_result_t otel_metric_hw_fan_speed_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED_LIMIT, "rpm", "Speed limit in rpm");
+}
+
+static inline otel_result_t otel_metric_hw_fan_speed_limit_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_FAN_SPEED_LIMIT), OTEL_STR("rpm"), OTEL_STR("Speed limit in rpm"));
 }
 
 static inline otel_result_t otel_metric_hw_fan_speed_ratio(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_FAN_SPEED_RATIO, "1", "Fan speed expressed as a fraction of its maximum speed");
 }
 
+static inline otel_result_t otel_metric_hw_fan_speed_ratio_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_FAN_SPEED_RATIO), OTEL_STR("1"), OTEL_STR("Fan speed expressed as a fraction of its maximum speed"));
+}
+
 static inline otel_result_t otel_metric_hw_gpu_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_GPU_IO, "By", "Received and transmitted bytes by the GPU");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_GPU_IO), OTEL_STR("By"), OTEL_STR("Received and transmitted bytes by the GPU"));
 }
 
 static inline otel_result_t otel_metric_hw_gpu_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_LIMIT, "By", "Size of the GPU memory");
 }
 
+static inline otel_result_t otel_metric_hw_gpu_memory_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_GPU_MEMORY_LIMIT), OTEL_STR("By"), OTEL_STR("Size of the GPU memory"));
+}
+
 static inline otel_result_t otel_metric_hw_gpu_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_USAGE, "By", "GPU memory used");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_memory_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_GPU_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("GPU memory used"));
 }
 
 static inline otel_result_t otel_metric_hw_gpu_memory_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_GPU_MEMORY_UTILIZATION, "1", "Fraction of GPU memory used");
 }
 
+static inline otel_result_t otel_metric_hw_gpu_memory_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_GPU_MEMORY_UTILIZATION), OTEL_STR("1"), OTEL_STR("Fraction of GPU memory used"));
+}
+
 static inline otel_result_t otel_metric_hw_gpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_GPU_UTILIZATION, "1", "Fraction of time spent in a specific task");
+}
+
+static inline otel_result_t otel_metric_hw_gpu_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_GPU_UTILIZATION), OTEL_STR("1"), OTEL_STR("Fraction of time spent in a specific task"));
 }
 
 static inline otel_result_t otel_metric_hw_host_ambient_temperature(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_AMBIENT_TEMPERATURE, "Cel", "Ambient (external) temperature of the physical host");
 }
 
+static inline otel_result_t otel_metric_hw_host_ambient_temperature_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_HOST_AMBIENT_TEMPERATURE), OTEL_STR("Cel"), OTEL_STR("Ambient (external) temperature of the physical host"));
+}
+
 static inline otel_result_t otel_metric_hw_host_energy(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_HOST_ENERGY, "J", "Total energy consumed by the entire physical host, in joules. ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values");
+}
+
+static inline otel_result_t otel_metric_hw_host_energy_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_HOST_ENERGY), OTEL_STR("J"), OTEL_STR("Total energy consumed by the entire physical host, in joules. ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values"));
 }
 
 static inline otel_result_t otel_metric_hw_host_heating_margin(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_HEATING_MARGIN, "Cel", "By how many degrees Celsius the temperature of the physical host can be increased, before reaching a warning threshold on one of the internal sensors");
 }
 
+static inline otel_result_t otel_metric_hw_host_heating_margin_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_HOST_HEATING_MARGIN), OTEL_STR("Cel"), OTEL_STR("By how many degrees Celsius the temperature of the physical host can be increased, before reaching a warning threshold on one of the internal sensors"));
+}
+
 static inline otel_result_t otel_metric_hw_host_power(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_HOST_POWER, "W", "Instantaneous power consumed by the entire physical host in Watts (`hw.host.energy` is preferred). ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values");
+}
+
+static inline otel_result_t otel_metric_hw_host_power_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_HOST_POWER), OTEL_STR("W"), OTEL_STR("Instantaneous power consumed by the entire physical host in Watts (`hw.host.energy` is preferred). ## Notes The overall energy usage of a host MUST be reported using the specific `hw.host.energy` and `hw.host.power` metrics **only**, instead of the generic `hw.energy` and `hw.power` described in the previous section, to prevent summing up overlapping values"));
 }
 
 static inline otel_result_t otel_metric_hw_logical_disk_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_LIMIT, "By", "Size of the logical disk");
 }
 
+static inline otel_result_t otel_metric_hw_logical_disk_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_LOGICAL_DISK_LIMIT), OTEL_STR("By"), OTEL_STR("Size of the logical disk"));
+}
+
 static inline otel_result_t otel_metric_hw_logical_disk_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_USAGE, "By", "Logical disk space usage");
+}
+
+static inline otel_result_t otel_metric_hw_logical_disk_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_LOGICAL_DISK_USAGE), OTEL_STR("By"), OTEL_STR("Logical disk space usage"));
 }
 
 static inline otel_result_t otel_metric_hw_logical_disk_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_LOGICAL_DISK_UTILIZATION, "1", "Logical disk space utilization as a fraction");
 }
 
+static inline otel_result_t otel_metric_hw_logical_disk_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_LOGICAL_DISK_UTILIZATION), OTEL_STR("1"), OTEL_STR("Logical disk space utilization as a fraction"));
+}
+
 static inline otel_result_t otel_metric_hw_memory_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_MEMORY_SIZE, "By", "Size of the memory module");
+}
+
+static inline otel_result_t otel_metric_hw_memory_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_MEMORY_SIZE), OTEL_STR("By"), OTEL_STR("Size of the memory module"));
 }
 
 static inline otel_result_t otel_metric_hw_network_bandwidth_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_NETWORK_BANDWIDTH_LIMIT, "By/s", "Link speed");
 }
 
+static inline otel_result_t otel_metric_hw_network_bandwidth_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_NETWORK_BANDWIDTH_LIMIT), OTEL_STR("By/s"), OTEL_STR("Link speed"));
+}
+
 static inline otel_result_t otel_metric_hw_network_bandwidth_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_NETWORK_BANDWIDTH_UTILIZATION, "1", "Utilization of the network bandwidth as a fraction");
+}
+
+static inline otel_result_t otel_metric_hw_network_bandwidth_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_NETWORK_BANDWIDTH_UTILIZATION), OTEL_STR("1"), OTEL_STR("Utilization of the network bandwidth as a fraction"));
 }
 
 static inline otel_result_t otel_metric_hw_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_NETWORK_IO, "By", "Received and transmitted network traffic in bytes");
 }
 
+static inline otel_result_t otel_metric_hw_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_NETWORK_IO), OTEL_STR("By"), OTEL_STR("Received and transmitted network traffic in bytes"));
+}
+
 static inline otel_result_t otel_metric_hw_network_packets(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_NETWORK_PACKETS, "{packet}", "Received and transmitted network traffic in packets (or frames)");
+}
+
+static inline otel_result_t otel_metric_hw_network_packets_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_NETWORK_PACKETS), OTEL_STR("{packet}"), OTEL_STR("Received and transmitted network traffic in packets (or frames)"));
 }
 
 static inline otel_result_t otel_metric_hw_network_up(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_NETWORK_UP, "1", "Link status: `1` (up) or `0` (down)");
 }
 
+static inline otel_result_t otel_metric_hw_network_up_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_NETWORK_UP), OTEL_STR("1"), OTEL_STR("Link status: `1` (up) or `0` (down)"));
+}
+
 static inline otel_result_t otel_metric_hw_physical_disk_endurance_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_ENDURANCE_UTILIZATION, "1", "Endurance remaining for this SSD disk");
+}
+
+static inline otel_result_t otel_metric_hw_physical_disk_endurance_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_PHYSICAL_DISK_ENDURANCE_UTILIZATION), OTEL_STR("1"), OTEL_STR("Endurance remaining for this SSD disk"));
 }
 
 static inline otel_result_t otel_metric_hw_physical_disk_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_SIZE, "By", "Size of the disk");
 }
 
+static inline otel_result_t otel_metric_hw_physical_disk_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_PHYSICAL_DISK_SIZE), OTEL_STR("By"), OTEL_STR("Size of the disk"));
+}
+
 static inline otel_result_t otel_metric_hw_physical_disk_smart(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_PHYSICAL_DISK_SMART, "1", "Value of the corresponding [S.M.A.R.T.](https://wikipedia.org/wiki/S.M.A.R.T.) (Self-Monitoring, Analysis, and Reporting Technology) attribute");
+}
+
+static inline otel_result_t otel_metric_hw_physical_disk_smart_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_PHYSICAL_DISK_SMART), OTEL_STR("1"), OTEL_STR("Value of the corresponding [S.M.A.R.T.](https://wikipedia.org/wiki/S.M.A.R.T.) (Self-Monitoring, Analysis, and Reporting Technology) attribute"));
 }
 
 static inline otel_result_t otel_metric_hw_power(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_POWER, "W", "Instantaneous power consumed by the component. ## Notes It is recommended to report `hw.energy` instead of `hw.power` when possible");
 }
 
+static inline otel_result_t otel_metric_hw_power_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_POWER), OTEL_STR("W"), OTEL_STR("Instantaneous power consumed by the component. ## Notes It is recommended to report `hw.energy` instead of `hw.power` when possible"));
+}
+
 static inline otel_result_t otel_metric_hw_power_supply_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_LIMIT, "W", "Maximum power output of the power supply");
+}
+
+static inline otel_result_t otel_metric_hw_power_supply_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_POWER_SUPPLY_LIMIT), OTEL_STR("W"), OTEL_STR("Maximum power output of the power supply"));
 }
 
 static inline otel_result_t otel_metric_hw_power_supply_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_USAGE, "W", "Current power output of the power supply");
 }
 
+static inline otel_result_t otel_metric_hw_power_supply_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_POWER_SUPPLY_USAGE), OTEL_STR("W"), OTEL_STR("Current power output of the power supply"));
+}
+
 static inline otel_result_t otel_metric_hw_power_supply_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_POWER_SUPPLY_UTILIZATION, "1", "Utilization of the power supply as a fraction of its maximum output");
+}
+
+static inline otel_result_t otel_metric_hw_power_supply_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_POWER_SUPPLY_UTILIZATION), OTEL_STR("1"), OTEL_STR("Utilization of the power supply as a fraction of its maximum output"));
 }
 
 static inline otel_result_t otel_metric_hw_status(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_HW_STATUS, "1", "Operational status: `1` (true) or `0` (false) for each of the possible states. ## Notes `hw.status` is currently specified as an *UpDownCounter* but would ideally be represented using a [*StateSet* as defined in OpenMetrics](https://github.com/prometheus/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#stateset). This semantic convention will be updated once *StateSet* is specified in OpenTelemetry. This planned change is not expected to have any consequence on the way users query their timeseries backend to retrieve the values of `hw.status` over time");
 }
 
+static inline otel_result_t otel_metric_hw_status_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_STATUS), OTEL_STR("1"), OTEL_STR("Operational status: `1` (true) or `0` (false) for each of the possible states. ## Notes `hw.status` is currently specified as an *UpDownCounter* but would ideally be represented using a [*StateSet* as defined in OpenMetrics](https://github.com/prometheus/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#stateset). This semantic convention will be updated once *StateSet* is specified in OpenTelemetry. This planned change is not expected to have any consequence on the way users query their timeseries backend to retrieve the values of `hw.status` over time"));
+}
+
 static inline otel_result_t otel_metric_hw_tape_drive_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_HW_TAPE_DRIVE_OPERATIONS, "{operation}", "Operations performed by the tape drive");
+}
+
+static inline otel_result_t otel_metric_hw_tape_drive_operations_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_TAPE_DRIVE_OPERATIONS), OTEL_STR("{operation}"), OTEL_STR("Operations performed by the tape drive"));
 }
 
 static inline otel_result_t otel_metric_hw_temperature(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_TEMPERATURE, "Cel", "Temperature in degrees Celsius");
 }
 
+static inline otel_result_t otel_metric_hw_temperature_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_TEMPERATURE), OTEL_STR("Cel"), OTEL_STR("Temperature in degrees Celsius"));
+}
+
 static inline otel_result_t otel_metric_hw_temperature_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_TEMPERATURE_LIMIT, "Cel", "Temperature limit in degrees Celsius");
+}
+
+static inline otel_result_t otel_metric_hw_temperature_limit_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_TEMPERATURE_LIMIT), OTEL_STR("Cel"), OTEL_STR("Temperature limit in degrees Celsius"));
 }
 
 static inline otel_result_t otel_metric_hw_voltage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE, "V", "Voltage measured by the sensor");
 }
 
+static inline otel_result_t otel_metric_hw_voltage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_VOLTAGE), OTEL_STR("V"), OTEL_STR("Voltage measured by the sensor"));
+}
+
 static inline otel_result_t otel_metric_hw_voltage_limit(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE_LIMIT, "V", "Voltage limit in Volts");
+}
+
+static inline otel_result_t otel_metric_hw_voltage_limit_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_VOLTAGE_LIMIT), OTEL_STR("V"), OTEL_STR("Voltage limit in Volts"));
 }
 
 static inline otel_result_t otel_metric_hw_voltage_nominal(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_HW_VOLTAGE_NOMINAL, "V", "Nominal (expected) voltage");
 }
 
+static inline otel_result_t otel_metric_hw_voltage_nominal_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_HW_VOLTAGE_NOMINAL), OTEL_STR("V"), OTEL_STR("Nominal (expected) voltage"));
+}
+
 static inline otel_result_t otel_metric_jvm_buffer_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_COUNT, "{buffer}", "Number of buffers in the pool");
+}
+
+static inline otel_result_t otel_metric_jvm_buffer_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_BUFFER_COUNT), OTEL_STR("{buffer}"), OTEL_STR("Number of buffers in the pool"));
 }
 
 static inline otel_result_t otel_metric_jvm_buffer_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_MEMORY_LIMIT, "By", "Measure of total memory capacity of buffers");
 }
 
+static inline otel_result_t otel_metric_jvm_buffer_memory_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_BUFFER_MEMORY_LIMIT), OTEL_STR("By"), OTEL_STR("Measure of total memory capacity of buffers"));
+}
+
 static inline otel_result_t otel_metric_jvm_buffer_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_BUFFER_MEMORY_USED, "By", "Measure of memory used by buffers");
+}
+
+static inline otel_result_t otel_metric_jvm_buffer_memory_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_BUFFER_MEMORY_USED), OTEL_STR("By"), OTEL_STR("Measure of memory used by buffers"));
 }
 
 static inline otel_result_t otel_metric_jvm_class_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_CLASS_COUNT, "{class}", "Number of classes currently loaded");
 }
 
+static inline otel_result_t otel_metric_jvm_class_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CLASS_COUNT), OTEL_STR("{class}"), OTEL_STR("Number of classes currently loaded"));
+}
+
 static inline otel_result_t otel_metric_jvm_class_loaded(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CLASS_LOADED, "{class}", "Number of classes loaded since JVM start");
+}
+
+static inline otel_result_t otel_metric_jvm_class_loaded_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CLASS_LOADED), OTEL_STR("{class}"), OTEL_STR("Number of classes loaded since JVM start"));
 }
 
 static inline otel_result_t otel_metric_jvm_class_unloaded(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CLASS_UNLOADED, "{class}", "Number of classes unloaded since JVM start");
 }
 
+static inline otel_result_t otel_metric_jvm_class_unloaded_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CLASS_UNLOADED), OTEL_STR("{class}"), OTEL_STR("Number of classes unloaded since JVM start"));
+}
+
 static inline otel_result_t otel_metric_jvm_cpu_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_CPU_COUNT, "{cpu}", "Number of processors available to the Java virtual machine");
+}
+
+static inline otel_result_t otel_metric_jvm_cpu_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CPU_COUNT), OTEL_STR("{cpu}"), OTEL_STR("Number of processors available to the Java virtual machine"));
 }
 
 static inline otel_result_t otel_metric_jvm_cpu_recent_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_CPU_RECENT_UTILIZATION, "1", "Recent CPU utilization for the process as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getProcessCpuLoad())");
 }
 
+static inline otel_result_t otel_metric_jvm_cpu_recent_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CPU_RECENT_UTILIZATION), OTEL_STR("1"), OTEL_STR("Recent CPU utilization for the process as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getProcessCpuLoad())"));
+}
+
 static inline otel_result_t otel_metric_jvm_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_JVM_CPU_TIME, "s", "CPU time used by the process as reported by the JVM");
+}
+
+static inline otel_result_t otel_metric_jvm_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_CPU_TIME), OTEL_STR("s"), OTEL_STR("CPU time used by the process as reported by the JVM"));
 }
 
 static inline otel_result_t otel_metric_jvm_file_descriptor_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_FILE_DESCRIPTOR_COUNT, "{file_descriptor}", "Number of open file descriptors as reported by the JVM");
 }
 
+static inline otel_result_t otel_metric_jvm_file_descriptor_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_FILE_DESCRIPTOR_COUNT), OTEL_STR("{file_descriptor}"), OTEL_STR("Number of open file descriptors as reported by the JVM"));
+}
+
 static inline otel_result_t otel_metric_jvm_file_descriptor_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_FILE_DESCRIPTOR_LIMIT, "{file_descriptor}", "Measure of max open file descriptors as reported by the JVM");
+}
+
+static inline otel_result_t otel_metric_jvm_file_descriptor_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_FILE_DESCRIPTOR_LIMIT), OTEL_STR("{file_descriptor}"), OTEL_STR("Measure of max open file descriptors as reported by the JVM"));
 }
 
 static inline otel_result_t otel_metric_jvm_gc_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_JVM_GC_DURATION, "s", "Duration of JVM garbage collection actions");
 }
 
+static inline otel_result_t otel_metric_jvm_gc_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_GC_DURATION), OTEL_STR("s"), OTEL_STR("Duration of JVM garbage collection actions"));
+}
+
 static inline otel_result_t otel_metric_jvm_memory_committed(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_COMMITTED, "By", "Measure of memory committed");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_committed_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_MEMORY_COMMITTED), OTEL_STR("By"), OTEL_STR("Measure of memory committed"));
 }
 
 static inline otel_result_t otel_metric_jvm_memory_init(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_INIT, "By", "Measure of initial memory requested");
 }
 
+static inline otel_result_t otel_metric_jvm_memory_init_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_MEMORY_INIT), OTEL_STR("By"), OTEL_STR("Measure of initial memory requested"));
+}
+
 static inline otel_result_t otel_metric_jvm_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_LIMIT, "By", "Measure of max obtainable memory");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_MEMORY_LIMIT), OTEL_STR("By"), OTEL_STR("Measure of max obtainable memory"));
 }
 
 static inline otel_result_t otel_metric_jvm_memory_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_USED, "By", "Measure of memory used");
 }
 
+static inline otel_result_t otel_metric_jvm_memory_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_MEMORY_USED), OTEL_STR("By"), OTEL_STR("Measure of memory used"));
+}
+
 static inline otel_result_t otel_metric_jvm_memory_used_after_last_gc(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_MEMORY_USED_AFTER_LAST_GC, "By", "Measure of memory used, as measured after the most recent garbage collection event on this pool");
+}
+
+static inline otel_result_t otel_metric_jvm_memory_used_after_last_gc_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_MEMORY_USED_AFTER_LAST_GC), OTEL_STR("By"), OTEL_STR("Measure of memory used, as measured after the most recent garbage collection event on this pool"));
 }
 
 static inline otel_result_t otel_metric_jvm_system_cpu_load_1m(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_SYSTEM_CPU_LOAD_1M, "{run_queue_item}", "Average CPU load of the whole system for the last minute as reported by the JVM. ## Notes The value range is \\\\[0,n\\\\], where n is the number of CPU cores - or a negative number if the value is not available. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/java.management/java/lang/management/OperatingSystemMXBean.html#getSystemLoadAverage())");
 }
 
+static inline otel_result_t otel_metric_jvm_system_cpu_load_1m_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_SYSTEM_CPU_LOAD_1M), OTEL_STR("{run_queue_item}"), OTEL_STR("Average CPU load of the whole system for the last minute as reported by the JVM. ## Notes The value range is \\\\[0,n\\\\], where n is the number of CPU cores - or a negative number if the value is not available. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/java.management/java/lang/management/OperatingSystemMXBean.html#getSystemLoadAverage())"));
+}
+
 static inline otel_result_t otel_metric_jvm_system_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_JVM_SYSTEM_CPU_UTILIZATION, "1", "Recent CPU utilization for the whole system as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getCpuLoad())");
+}
+
+static inline otel_result_t otel_metric_jvm_system_cpu_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_SYSTEM_CPU_UTILIZATION), OTEL_STR("1"), OTEL_STR("Recent CPU utilization for the whole system as reported by the JVM. ## Notes The value range is \\\\[0.0,1.0\\\\]. This utilization is not defined as being for the specific interval since last measurement (unlike `system.cpu.utilization`). [Reference](https://docs.oracle.com/en/java/javase/17/docs/api/jdk.management/com/sun/management/OperatingSystemMXBean.html#getCpuLoad())"));
 }
 
 static inline otel_result_t otel_metric_jvm_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_JVM_THREAD_COUNT, "{thread}", "Number of executing platform threads");
 }
 
+static inline otel_result_t otel_metric_jvm_thread_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_JVM_THREAD_COUNT), OTEL_STR("{thread}"), OTEL_STR("Number of executing platform threads"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_cpu_limit_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_CURRENT, "{cpu}", "Maximum CPU resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_CURRENT), OTEL_STR("{cpu}"), OTEL_STR("Maximum CPU resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_cpu_limit_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_DESIRED, "{cpu}", "Maximum CPU resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_DESIRED), OTEL_STR("{cpu}"), OTEL_STR("Maximum CPU resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_cpu_limit_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_UTILIZATION, "1", "The ratio of container CPU usage to its current CPU limit. ## Notes The current CPU limit reflects the actual resources applied to the container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU limit. If the CPU limit is not set, this metric SHOULD NOT be emitted for that container");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_limit_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_LIMIT_UTILIZATION), OTEL_STR("1"), OTEL_STR("The ratio of container CPU usage to its current CPU limit. ## Notes The current CPU limit reflects the actual resources applied to the container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU limit. If the CPU limit is not set, this metric SHOULD NOT be emitted for that container"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_cpu_request_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_CURRENT, "{cpu}", "CPU resource requested currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_cpu_request_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_CURRENT), OTEL_STR("{cpu}"), OTEL_STR("CPU resource requested currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_cpu_request_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_DESIRED, "{cpu}", "CPU resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_cpu_request_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_DESIRED), OTEL_STR("{cpu}"), OTEL_STR("CPU resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_cpu_request_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_UTILIZATION, "1", "The ratio of container CPU usage to its current CPU request. ## Notes The current CPU request reflects the request applied to the running container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU request. If the CPU request is not set, this metric SHOULD NOT be emitted for that container");
 }
 
+static inline otel_result_t otel_metric_k8s_container_cpu_request_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_CPU_REQUEST_UTILIZATION), OTEL_STR("1"), OTEL_STR("The ratio of container CPU usage to its current CPU request. ## Notes The current CPU request reflects the request applied to the running container, as reported by [ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core). The value range is \\\\[0.0,1.0\\\\]. A value of 1.0 means the container is using 100% of its actual CPU request. If the CPU request is not set, this metric SHOULD NOT be emitted for that container"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_LIMIT, "By", "Maximum ephemeral storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_LIMIT), OTEL_STR("By"), OTEL_STR("Maximum ephemeral storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_request(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_REQUEST, "By", "Ephemeral storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_request_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_REQUEST), OTEL_STR("By"), OTEL_STR("Ephemeral storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_USAGE, "By", "The ephemeral storage used by a container. ## Notes The value for this metric can be compared against `metric.k8s.container.ephemeral_storage.request` and `metric.k8s.container.ephemeral_storage.limit`");
+}
+
+static inline otel_result_t otel_metric_k8s_container_ephemeral_storage_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_EPHEMERAL_STORAGE_USAGE), OTEL_STR("By"), OTEL_STR("The ephemeral storage used by a container. ## Notes The value for this metric can be compared against `metric.k8s.container.ephemeral_storage.request` and `metric.k8s.container.ephemeral_storage.limit`"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_memory_limit_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_CURRENT, "By", "Maximum memory resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_memory_limit_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_CURRENT), OTEL_STR("By"), OTEL_STR("Maximum memory resource limit currently configured for a running container. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_memory_limit_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_DESIRED, "By", "Maximum memory resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_limit_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_MEMORY_LIMIT_DESIRED), OTEL_STR("By"), OTEL_STR("Maximum memory resource limit as defined by the container spec. ## Notes This metric aligns with the limit in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_memory_request_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_CURRENT, "By", "Memory resource request currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_memory_request_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_CURRENT), OTEL_STR("By"), OTEL_STR("Memory resource request currently configured for a running container. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core) (status.containerStatuses\\[*\\].resources). Also see `Actual Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_memory_request_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_DESIRED, "By", "Memory resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_memory_request_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_MEMORY_REQUEST_DESIRED), OTEL_STR("By"), OTEL_STR("Memory resource requested as defined by the container spec. ## Notes This metric aligns with the request in the [`resources`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core) field of [K8s Container](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#container-v1-core) (spec.containers\\[*\\].resources). Also see `Desired Resources` in [https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/) for more details"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_READY, "{container}", "Indicates whether the container is currently marked as ready to accept traffic, based on its readiness probe (1 = ready, 0 = not ready). ## Notes This metric SHOULD reflect the value of the `ready` field in the [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_container_ready_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_READY), OTEL_STR("{container}"), OTEL_STR("Indicates whether the container is currently marked as ready to accept traffic, based on its readiness probe (1 = ready, 0 = not ready). ## Notes This metric SHOULD reflect the value of the `ready` field in the [K8s ContainerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_restart_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_RESTART_COUNT, "{restart}", "Describes how many times the container has restarted (since the last counter reset). ## Notes This value is pulled directly from the K8s API and the value can go indefinitely high and be reset to 0 at any time depending on how your kubelet is configured to prune dead containers. It is best to not depend too much on the exact value but rather look at it as either == 0, in which case you can conclude there were no restarts in the recent past, or > 0, in which case you can conclude there were restarts in the recent past, and not try and analyze the value beyond that");
+}
+
+static inline otel_result_t otel_metric_k8s_container_restart_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_RESTART_COUNT), OTEL_STR("{restart}"), OTEL_STR("Describes how many times the container has restarted (since the last counter reset). ## Notes This value is pulled directly from the K8s API and the value can go indefinitely high and be reset to 0 at any time depending on how your kubelet is configured to prune dead containers. It is best to not depend too much on the exact value but rather look at it as either == 0, in which case you can conclude there were no restarts in the recent past, or > 0, in which case you can conclude there were restarts in the recent past, and not try and analyze the value beyond that"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_status_reason(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STATUS_REASON, "{container}", "Describes the number of K8s containers that are currently in a state for a given reason. ## Notes All possible container state reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state reason will be non-zero");
 }
 
+static inline otel_result_t otel_metric_k8s_container_status_reason_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_STATUS_REASON), OTEL_STR("{container}"), OTEL_STR("Describes the number of K8s containers that are currently in a state for a given reason. ## Notes All possible container state reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state reason will be non-zero"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_status_state(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STATUS_STATE, "{container}", "Describes the number of K8s containers that are currently in a given state. ## Notes All possible container states will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_container_status_state_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_STATUS_STATE), OTEL_STR("{container}"), OTEL_STR("Describes the number of K8s containers that are currently in a given state. ## Notes All possible container states will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state will be non-zero"));
 }
 
 static inline otel_result_t otel_metric_k8s_container_storage_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STORAGE_LIMIT, "By", "Maximum storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
 }
 
+static inline otel_result_t otel_metric_k8s_container_storage_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_STORAGE_LIMIT), OTEL_STR("By"), OTEL_STR("Maximum storage resource limit set for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details"));
+}
+
 static inline otel_result_t otel_metric_k8s_container_storage_request(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CONTAINER_STORAGE_REQUEST, "By", "Storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details");
+}
+
+static inline otel_result_t otel_metric_k8s_container_storage_request_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CONTAINER_STORAGE_REQUEST), OTEL_STR("By"), OTEL_STR("Storage resource requested for the container. ## Notes See <https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcerequirements-v1-core> for details"));
 }
 
 static inline otel_result_t otel_metric_k8s_cronjob_job_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_CRONJOB_JOB_ACTIVE, "{job}", "The number of actively running jobs for a cronjob. ## Notes This metric aligns with the `active` field of the [K8s CronJobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#cronjobstatus-v1-batch)");
 }
 
+static inline otel_result_t otel_metric_k8s_cronjob_job_active_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_CRONJOB_JOB_ACTIVE), OTEL_STR("{job}"), OTEL_STR("The number of actively running jobs for a cronjob. ## Notes This metric aligns with the `active` field of the [K8s CronJobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#cronjobstatus-v1-batch)"));
+}
+
 static inline otel_result_t otel_metric_k8s_daemonset_node_current_scheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_CURRENT_SCHEDULED, "{node}", "Number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod. ## Notes This metric aligns with the `currentNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_current_scheduled_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DAEMONSET_NODE_CURRENT_SCHEDULED), OTEL_STR("{node}"), OTEL_STR("Number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod. ## Notes This metric aligns with the `currentNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_k8s_daemonset_node_desired_scheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_DESIRED_SCHEDULED, "{node}", "Number of nodes that should be running the daemon pod (including nodes currently running the daemon pod). ## Notes This metric aligns with the `desiredNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_daemonset_node_desired_scheduled_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DAEMONSET_NODE_DESIRED_SCHEDULED), OTEL_STR("{node}"), OTEL_STR("Number of nodes that should be running the daemon pod (including nodes currently running the daemon pod). ## Notes This metric aligns with the `desiredNumberScheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_daemonset_node_misscheduled(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_MISSCHEDULED, "{node}", "Number of nodes that are running the daemon pod, but are not supposed to run the daemon pod. ## Notes This metric aligns with the `numberMisscheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_daemonset_node_misscheduled_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DAEMONSET_NODE_MISSCHEDULED), OTEL_STR("{node}"), OTEL_STR("Number of nodes that are running the daemon pod, but are not supposed to run the daemon pod. ## Notes This metric aligns with the `numberMisscheduled` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_k8s_daemonset_node_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DAEMONSET_NODE_READY, "{node}", "Number of nodes that should be running the daemon pod and have one or more of the daemon pod running and ready. ## Notes This metric aligns with the `numberReady` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_daemonset_node_ready_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DAEMONSET_NODE_READY), OTEL_STR("{node}"), OTEL_STR("Number of nodes that should be running the daemon pod and have one or more of the daemon pod running and ready. ## Notes This metric aligns with the `numberReady` field of the [K8s DaemonSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#daemonsetstatus-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_deployment_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DEPLOYMENT_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this deployment. ## Notes This metric aligns with the `availableReplicas` field of the [K8s DeploymentStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_deployment_pod_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DEPLOYMENT_POD_AVAILABLE), OTEL_STR("{pod}"), OTEL_STR("Total number of available replica pods (ready for at least minReadySeconds) targeted by this deployment. ## Notes This metric aligns with the `availableReplicas` field of the [K8s DeploymentStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentstatus-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_k8s_deployment_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_DEPLOYMENT_POD_DESIRED, "{pod}", "Number of desired replica pods in this deployment. ## Notes This metric aligns with the `replicas` field of the [K8s DeploymentSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentspec-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_deployment_pod_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_DEPLOYMENT_POD_DESIRED), OTEL_STR("{pod}"), OTEL_STR("Number of desired replica pods in this deployment. ## Notes This metric aligns with the `replicas` field of the [K8s DeploymentSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#deploymentspec-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_average_value(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_AVERAGE_VALUE, "{cpu}", "Target average value for CPU resource in HPA config. ## Notes This metric aligns with the `averageValue` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_average_value_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_AVERAGE_VALUE), OTEL_STR("{cpu}"), OTEL_STR("Target average value for CPU resource in HPA config. ## Notes This metric aligns with the `averageValue` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies"));
 }
 
 static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_value(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_VALUE, "{cpu}", "Target value for CPU resource in HPA config. ## Notes This metric aligns with the `value` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies");
 }
 
+static inline otel_result_t otel_metric_k8s_hpa_metric_target_cpu_value_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_METRIC_TARGET_CPU_VALUE), OTEL_STR("{cpu}"), OTEL_STR("Target value for CPU resource in HPA config. ## Notes This metric aligns with the `value` field of the [K8s HPA MetricTarget](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#metrictarget-v2-autoscaling). If the type of the metric is [`ContainerResource`](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-metrics-apis), the `k8s.container.name` attribute MUST be set to identify the specific container within the pod to which the metric applies"));
+}
+
 static inline otel_result_t otel_metric_k8s_hpa_pod_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_CURRENT, "{pod}", "Current number of replica pods managed by this horizontal pod autoscaler, as last seen by the autoscaler. ## Notes This metric aligns with the `currentReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_POD_CURRENT), OTEL_STR("{pod}"), OTEL_STR("Current number of replica pods managed by this horizontal pod autoscaler, as last seen by the autoscaler. ## Notes This metric aligns with the `currentReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)"));
 }
 
 static inline otel_result_t otel_metric_k8s_hpa_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_DESIRED, "{pod}", "Desired number of replica pods managed by this horizontal pod autoscaler, as last calculated by the autoscaler. ## Notes This metric aligns with the `desiredReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)");
 }
 
+static inline otel_result_t otel_metric_k8s_hpa_pod_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_POD_DESIRED), OTEL_STR("{pod}"), OTEL_STR("Desired number of replica pods managed by this horizontal pod autoscaler, as last calculated by the autoscaler. ## Notes This metric aligns with the `desiredReplicas` field of the [K8s HorizontalPodAutoscalerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerstatus-v2-autoscaling)"));
+}
+
 static inline otel_result_t otel_metric_k8s_hpa_pod_max(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_MAX, "{pod}", "The upper limit for the number of replica pods to which the autoscaler can scale up. ## Notes This metric aligns with the `maxReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)");
+}
+
+static inline otel_result_t otel_metric_k8s_hpa_pod_max_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_POD_MAX), OTEL_STR("{pod}"), OTEL_STR("The upper limit for the number of replica pods to which the autoscaler can scale up. ## Notes This metric aligns with the `maxReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)"));
 }
 
 static inline otel_result_t otel_metric_k8s_hpa_pod_min(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_HPA_POD_MIN, "{pod}", "The lower limit for the number of replica pods to which the autoscaler can scale down. ## Notes This metric aligns with the `minReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)");
 }
 
+static inline otel_result_t otel_metric_k8s_hpa_pod_min_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_HPA_POD_MIN), OTEL_STR("{pod}"), OTEL_STR("The lower limit for the number of replica pods to which the autoscaler can scale down. ## Notes This metric aligns with the `minReplicas` field of the [K8s HorizontalPodAutoscalerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#horizontalpodautoscalerspec-v2-autoscaling)"));
+}
+
 static inline otel_result_t otel_metric_k8s_job_pod_active(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_ACTIVE, "{pod}", "The number of pending and actively running pods for a job. ## Notes This metric aligns with the `active` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_active_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_JOB_POD_ACTIVE), OTEL_STR("{pod}"), OTEL_STR("The number of pending and actively running pods for a job. ## Notes This metric aligns with the `active` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)"));
 }
 
 static inline otel_result_t otel_metric_k8s_job_pod_desired_successful(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_DESIRED_SUCCESSFUL, "{pod}", "The desired number of successfully finished pods the job should be run with. ## Notes This metric aligns with the `completions` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)");
 }
 
+static inline otel_result_t otel_metric_k8s_job_pod_desired_successful_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_JOB_POD_DESIRED_SUCCESSFUL), OTEL_STR("{pod}"), OTEL_STR("The desired number of successfully finished pods the job should be run with. ## Notes This metric aligns with the `completions` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)"));
+}
+
 static inline otel_result_t otel_metric_k8s_job_pod_failed(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_FAILED, "{pod}", "The number of pods which reached phase Failed for a job. ## Notes This metric aligns with the `failed` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_failed_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_JOB_POD_FAILED), OTEL_STR("{pod}"), OTEL_STR("The number of pods which reached phase Failed for a job. ## Notes This metric aligns with the `failed` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)"));
 }
 
 static inline otel_result_t otel_metric_k8s_job_pod_max_parallel(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_MAX_PARALLEL, "{pod}", "The max desired number of pods the job should run at any given time. ## Notes This metric aligns with the `parallelism` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)");
 }
 
+static inline otel_result_t otel_metric_k8s_job_pod_max_parallel_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_JOB_POD_MAX_PARALLEL), OTEL_STR("{pod}"), OTEL_STR("The max desired number of pods the job should run at any given time. ## Notes This metric aligns with the `parallelism` field of the [K8s JobSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobspec-v1-batch)"));
+}
+
 static inline otel_result_t otel_metric_k8s_job_pod_successful(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_JOB_POD_SUCCESSFUL, "{pod}", "The number of pods which reached phase Succeeded for a job. ## Notes This metric aligns with the `succeeded` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)");
+}
+
+static inline otel_result_t otel_metric_k8s_job_pod_successful_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_JOB_POD_SUCCESSFUL), OTEL_STR("{pod}"), OTEL_STR("The number of pods which reached phase Succeeded for a job. ## Notes This metric aligns with the `succeeded` field of the [K8s JobStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#jobstatus-v1-batch)"));
 }
 
 static inline otel_result_t otel_metric_k8s_namespace_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NAMESPACE_PHASE, "{namespace}", "Describes number of K8s namespaces that are currently in a given phase");
 }
 
+static inline otel_result_t otel_metric_k8s_namespace_phase_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NAMESPACE_PHASE), OTEL_STR("{namespace}"), OTEL_STR("Describes number of K8s namespaces that are currently in a given phase"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_condition_status(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_CONDITION_STATUS, "{node}", "Describes the condition of a particular Node. ## Notes All possible node condition pairs (type and status) will be reported at each time interval to avoid missing metrics. Condition pairs corresponding to the current conditions' statuses will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_node_condition_status_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_CONDITION_STATUS), OTEL_STR("{node}"), OTEL_STR("Describes the condition of a particular Node. ## Notes All possible node condition pairs (type and status) will be reported at each time interval to avoid missing metrics. Condition pairs corresponding to the current conditions' statuses will be non-zero"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_cpu_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_ALLOCATABLE, "{cpu}", "Amount of cpu allocatable on the node");
 }
 
+static inline otel_result_t otel_metric_k8s_node_cpu_allocatable_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_CPU_ALLOCATABLE), OTEL_STR("{cpu}"), OTEL_STR("Amount of cpu allocatable on the node"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_TIME, "s", "Total CPU time consumed. ## Notes Total CPU time consumed by the specific Node on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_k8s_node_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_CPU_TIME), OTEL_STR("s"), OTEL_STR("Total CPU time consumed. ## Notes Total CPU time consumed by the specific Node on all available CPU cores"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_CPU_USAGE, "{cpu}", "Node's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Node on all available CPU cores, averaged over the sample window");
 }
 
+static inline otel_result_t otel_metric_k8s_node_cpu_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_CPU_USAGE), OTEL_STR("{cpu}"), OTEL_STR("Node's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Node on all available CPU cores, averaged over the sample window"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_ephemeral_storage_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_EPHEMERAL_STORAGE_ALLOCATABLE, "By", "Amount of ephemeral-storage allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_ephemeral_storage_allocatable_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_EPHEMERAL_STORAGE_ALLOCATABLE), OTEL_STR("By"), OTEL_STR("Amount of ephemeral-storage allocatable on the node"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_AVAILABLE, "By", "Node filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_filesystem_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_FILESYSTEM_AVAILABLE), OTEL_STR("By"), OTEL_STR("Node filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_CAPACITY, "By", "Node filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_filesystem_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_FILESYSTEM_CAPACITY), OTEL_STR("By"), OTEL_STR("Node filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_FILESYSTEM_USAGE, "By", "Node filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_filesystem_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_FILESYSTEM_USAGE), OTEL_STR("By"), OTEL_STR("Node filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [NodeStats.Fs](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_memory_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_ALLOCATABLE, "By", "Amount of memory allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_allocatable_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_ALLOCATABLE), OTEL_STR("By"), OTEL_STR("Amount of memory allocatable on the node"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_AVAILABLE, "By", "Node memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_memory_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_AVAILABLE), OTEL_STR("By"), OTEL_STR("Node memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_PAGING_FAULTS, "{fault}", "Node memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) fields of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_paging_faults_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_PAGING_FAULTS), OTEL_STR("{fault}"), OTEL_STR("Node memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) fields of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_RSS, "By", "Node memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_memory_rss_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_RSS), OTEL_STR("By"), OTEL_STR("Node memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_memory_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_USAGE, "By", "Memory usage of the Node. ## Notes Total memory usage of the Node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_memory_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("Memory usage of the Node. ## Notes Total memory usage of the Node"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_MEMORY_WORKING_SET, "By", "Node memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_memory_working_set_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_MEMORY_WORKING_SET), OTEL_STR("By"), OTEL_STR("Node memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [NodeStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#NodeStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_NETWORK_ERRORS, "{error}", "Node network errors");
+}
+
+static inline otel_result_t otel_metric_k8s_node_network_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_NETWORK_ERRORS), OTEL_STR("{error}"), OTEL_STR("Node network errors"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_NETWORK_IO, "By", "Network bytes for the Node");
 }
 
+static inline otel_result_t otel_metric_k8s_node_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_NETWORK_IO), OTEL_STR("By"), OTEL_STR("Network bytes for the Node"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_pod_allocatable(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_POD_ALLOCATABLE, "{pod}", "Amount of pods allocatable on the node");
+}
+
+static inline otel_result_t otel_metric_k8s_node_pod_allocatable_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_POD_ALLOCATABLE), OTEL_STR("{pod}"), OTEL_STR("Amount of pods allocatable on the node"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_system_container_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_TIME, "s", "Node's system container CPU time. ## Notes This metric is derived from the [CPUStats.UsageCoreNanoSeconds](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L236) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_system_container_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_TIME), OTEL_STR("s"), OTEL_STR("Node's system container CPU time. ## Notes This metric is derived from the [CPUStats.UsageCoreNanoSeconds](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L236) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_system_container_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_USAGE, "{cpu}", "Node's system container CPU usage, measured in cpus. ## Notes This metric is derived from the [CPUStats.UsageNanoCores](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L233) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_node_system_container_cpu_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_CPU_USAGE), OTEL_STR("{cpu}"), OTEL_STR("Node's system container CPU usage, measured in cpus. ## Notes This metric is derived from the [CPUStats.UsageNanoCores](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L233) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_node_system_container_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_MEMORY_USAGE, "By", "Node's system container memory usage. ## Notes This metric is derived from the [MemoryStats.UsageBytes](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L252) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_node_system_container_memory_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_SYSTEM_CONTAINER_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("Node's system container memory usage. ## Notes This metric is derived from the [MemoryStats.UsageBytes](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L252) field of the [ContainerStats](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L157C6-L157C20) of [Node.SystemContainers](https://github.com/kubernetes/kubelet/blob/v0.35.2/pkg/apis/stats/v1alpha1/types.go#L40) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_node_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_NODE_UPTIME, "s", "The time the Node has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_k8s_node_uptime_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_NODE_UPTIME), OTEL_STR("s"), OTEL_STR("The time the Node has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system"));
 }
 
 static inline otel_result_t otel_metric_k8s_persistentvolume_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUME_STATUS_PHASE, "{persistentvolume}", "Number of PersistentVolumes in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeStatus)");
 }
 
+static inline otel_result_t otel_metric_k8s_persistentvolume_status_phase_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_PERSISTENTVOLUME_STATUS_PHASE), OTEL_STR("{persistentvolume}"), OTEL_STR("Number of PersistentVolumes in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeStatus)"));
+}
+
 static inline otel_result_t otel_metric_k8s_persistentvolume_storage_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUME_STORAGE_CAPACITY, "By", "The storage capacity of the PersistentVolume. ## Notes This metric is derived from the `.spec.capacity.storage` field of the [K8s PersistentVolumeSpec](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeSpec)");
+}
+
+static inline otel_result_t otel_metric_k8s_persistentvolume_storage_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_PERSISTENTVOLUME_STORAGE_CAPACITY), OTEL_STR("By"), OTEL_STR("The storage capacity of the PersistentVolume. ## Notes This metric is derived from the `.spec.capacity.storage` field of the [K8s PersistentVolumeSpec](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeSpec)"));
 }
 
 static inline otel_result_t otel_metric_k8s_persistentvolumeclaim_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, "{persistentvolumeclaim}", "Number of PersistentVolumeClaims in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeClaimStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#PersistentVolumeClaimStatus)");
 }
 
+static inline otel_result_t otel_metric_k8s_persistentvolumeclaim_status_phase_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE), OTEL_STR("{persistentvolumeclaim}"), OTEL_STR("Number of PersistentVolumeClaims in a given phase. ## Notes All possible phases should be reported at each interval to avoid gaps in the time series. This metric is derived from the `.status.phase` field of the [K8s PersistentVolumeClaimStatus](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#PersistentVolumeClaimStatus)"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_CPU_TIME, "s", "Total CPU time consumed. ## Notes Total CPU time consumed by the specific Pod on all available CPU cores");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_CPU_TIME), OTEL_STR("s"), OTEL_STR("Total CPU time consumed. ## Notes Total CPU time consumed by the specific Pod on all available CPU cores"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_cpu_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_CPU_USAGE, "{cpu}", "Pod's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Pod on all available CPU cores, averaged over the sample window");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_cpu_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_CPU_USAGE), OTEL_STR("{cpu}"), OTEL_STR("Pod's CPU usage, measured in cpus. Range from 0 to the number of allocatable CPUs. ## Notes CPU usage of the specific Pod on all available CPU cores, averaged over the sample window"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_filesystem_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_AVAILABLE, "By", "Pod filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_filesystem_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_FILESYSTEM_AVAILABLE), OTEL_STR("By"), OTEL_STR("Pod filesystem available bytes. ## Notes This metric is derived from the [FsStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_filesystem_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_CAPACITY, "By", "Pod filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_filesystem_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_FILESYSTEM_CAPACITY), OTEL_STR("By"), OTEL_STR("Pod filesystem capacity. ## Notes This metric is derived from the [FsStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_FILESYSTEM_USAGE, "By", "Pod filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_filesystem_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_FILESYSTEM_USAGE), OTEL_STR("By"), OTEL_STR("Pod filesystem usage. ## Notes This may not equal capacity - available. This metric is derived from the [FsStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#FsStats) field of the [PodStats.EphemeralStorage](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_memory_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_AVAILABLE, "By", "Pod memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_memory_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_MEMORY_AVAILABLE), OTEL_STR("By"), OTEL_STR("Pod memory available. ## Notes Available memory for use.  This is defined as the memory limit - workingSetBytes. If memory limit is undefined, the available bytes is omitted. This metric is derived from the [MemoryStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_memory_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_PAGING_FAULTS, "{fault}", "Pod memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_paging_faults_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_MEMORY_PAGING_FAULTS), OTEL_STR("{fault}"), OTEL_STR("Pod memory paging faults. ## Notes Cumulative number of major/minor page faults. This metric is derived from the [MemoryStats.PageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) and [MemoryStats.MajorPageFaults](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_memory_rss(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_RSS, "By", "Pod memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_memory_rss_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_MEMORY_RSS), OTEL_STR("By"), OTEL_STR("Pod memory RSS. ## Notes The amount of anonymous and swap cache memory (includes transparent hugepages). This metric is derived from the [MemoryStats.RSSBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_memory_usage(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_USAGE, "By", "Memory usage of the Pod. ## Notes Total memory usage of the Pod");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_memory_usage_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("Memory usage of the Pod. ## Notes Total memory usage of the Pod"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_memory_working_set(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_MEMORY_WORKING_SET, "By", "Pod memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_memory_working_set_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_MEMORY_WORKING_SET), OTEL_STR("By"), OTEL_STR("Pod memory working set. ## Notes The amount of working set memory. This includes recently accessed memory, dirty memory, and kernel memory. WorkingSetBytes is <= UsageBytes. This metric is derived from the [MemoryStats.WorkingSetBytes](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#MemoryStats) field of the [PodStats.Memory](https://pkg.go.dev/k8s.io/kubelet@v0.34.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_NETWORK_ERRORS, "{error}", "Pod network errors");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_network_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_NETWORK_ERRORS), OTEL_STR("{error}"), OTEL_STR("Pod network errors"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_K8S_POD_NETWORK_IO, "By", "Network bytes for the Pod");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_NETWORK_IO), OTEL_STR("By"), OTEL_STR("Network bytes for the Pod"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_status_phase(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_STATUS_PHASE, "{pod}", "Describes number of K8s Pods that are currently in a given phase. ## Notes All possible pod phases will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current phase will be non-zero");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_status_phase_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_STATUS_PHASE), OTEL_STR("{pod}"), OTEL_STR("Describes number of K8s Pods that are currently in a given phase. ## Notes All possible pod phases will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current phase will be non-zero"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_status_reason(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_STATUS_REASON, "{pod}", "Describes the number of K8s Pods that are currently in a state for a given reason. ## Notes All possible pod status reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current reason will be non-zero");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_status_reason_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_STATUS_REASON), OTEL_STR("{pod}"), OTEL_STR("Describes the number of K8s Pods that are currently in a state for a given reason. ## Notes All possible pod status reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current reason will be non-zero"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_POD_UPTIME, "s", "The time the Pod has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_uptime_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_UPTIME), OTEL_STR("s"), OTEL_STR("The time the Pod has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_volume_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_AVAILABLE, "By", "Pod volume storage space available. ## Notes This metric is derived from the [VolumeStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_volume_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_AVAILABLE), OTEL_STR("By"), OTEL_STR("Pod volume storage space available. ## Notes This metric is derived from the [VolumeStats.AvailableBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_volume_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_CAPACITY, "By", "Pod volume total capacity. ## Notes This metric is derived from the [VolumeStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_CAPACITY), OTEL_STR("By"), OTEL_STR("Pod volume total capacity. ## Notes This metric is derived from the [VolumeStats.CapacityBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_volume_inode_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_COUNT, "{inode}", "The total inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.Inodes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_INODE_COUNT), OTEL_STR("{inode}"), OTEL_STR("The total inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.Inodes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_volume_inode_free(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_FREE, "{inode}", "The free inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesFree](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_free_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_INODE_FREE), OTEL_STR("{inode}"), OTEL_STR("The free inodes in the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesFree](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_pod_volume_inode_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_INODE_USED, "{inode}", "The inodes used by the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesUsed](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API. This may not be equal to `inodes - free` because filesystem may share inodes with other filesystems");
 }
 
+static inline otel_result_t otel_metric_k8s_pod_volume_inode_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_INODE_USED), OTEL_STR("{inode}"), OTEL_STR("The inodes used by the filesystem of the Pod's volume. ## Notes This metric is derived from the [VolumeStats.InodesUsed](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API. This may not be equal to `inodes - free` because filesystem may share inodes with other filesystems"));
+}
+
 static inline otel_result_t otel_metric_k8s_pod_volume_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_POD_VOLUME_USAGE, "By", "Pod volume usage. ## Notes This may not equal capacity - available. This metric is derived from the [VolumeStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API");
+}
+
+static inline otel_result_t otel_metric_k8s_pod_volume_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_POD_VOLUME_USAGE), OTEL_STR("By"), OTEL_STR("Pod volume usage. ## Notes This may not equal capacity - available. This metric is derived from the [VolumeStats.UsedBytes](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#VolumeStats) field of the [PodStats](https://pkg.go.dev/k8s.io/kubelet@v0.33.0/pkg/apis/stats/v1alpha1#PodStats) of the Kubelet's stats API"));
 }
 
 static inline otel_result_t otel_metric_k8s_replicaset_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICASET_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this replicaset. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicaSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetstatus-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_replicaset_pod_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_REPLICASET_POD_AVAILABLE), OTEL_STR("{pod}"), OTEL_STR("Total number of available replica pods (ready for at least minReadySeconds) targeted by this replicaset. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicaSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetstatus-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_replicaset_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICASET_POD_DESIRED, "{pod}", "Number of desired replica pods in this replicaset. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicaSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetspec-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_replicaset_pod_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_REPLICASET_POD_DESIRED), OTEL_STR("{pod}"), OTEL_STR("Number of desired replica pods in this replicaset. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicaSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicasetspec-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_AVAILABLE, "{pod}", "Total number of available replica pods (ready for at least minReadySeconds) targeted by this replication controller. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicationControllerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerstatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_AVAILABLE), OTEL_STR("{pod}"), OTEL_STR("Total number of available replica pods (ready for at least minReadySeconds) targeted by this replication controller. ## Notes This metric aligns with the `availableReplicas` field of the [K8s ReplicationControllerStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerstatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_DESIRED, "{pod}", "Number of desired replica pods in this replication controller. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicationControllerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerspec-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_replicationcontroller_pod_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_REPLICATIONCONTROLLER_POD_DESIRED), OTEL_STR("{pod}"), OTEL_STR("Number of desired replica pods in this replication controller. ## Notes This metric aligns with the `replicas` field of the [K8s ReplicationControllerSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#replicationcontrollerspec-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_HARD, "{cpu}", "The CPU limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_HARD), OTEL_STR("{cpu}"), OTEL_STR("The CPU limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_USED, "{cpu}", "The CPU limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_limit_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_LIMIT_USED), OTEL_STR("{cpu}"), OTEL_STR("The CPU limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_HARD, "{cpu}", "The CPU requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_HARD), OTEL_STR("{cpu}"), OTEL_STR("The CPU requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_USED, "{cpu}", "The CPU requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_cpu_request_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_CPU_REQUEST_USED), OTEL_STR("{cpu}"), OTEL_STR("The CPU requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_HARD, "By", "The memory limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_HARD), OTEL_STR("By"), OTEL_STR("The memory limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_USED, "By", "The memory limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_limit_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_LIMIT_USED), OTEL_STR("By"), OTEL_STR("The memory limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_HARD, "By", "The memory requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_HARD), OTEL_STR("By"), OTEL_STR("The memory requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_USED, "By", "The memory requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_memory_request_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_MEMORY_REQUEST_USED), OTEL_STR("By"), OTEL_STR("The memory requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_object_count_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_HARD, "{object}", "The object count limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_object_count_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_HARD), OTEL_STR("{object}"), OTEL_STR("The object count limits in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_object_count_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_USED, "{object}", "The object count limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_object_count_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_OBJECT_COUNT_USED), OTEL_STR("{object}"), OTEL_STR("The object count limits in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core)"));
 }
 
 static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_HARD, "By", "The storage requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class");
 }
 
+static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_HARD), OTEL_STR("By"), OTEL_STR("The storage requests in a specific namespace. The value represents the configured quota limit of the resource in the namespace. ## Notes This metric is retrieved from the `hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class"));
+}
+
 static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_USED, "By", "The storage requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class");
+}
+
+static inline otel_result_t otel_metric_k8s_resourcequota_storage_request_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_RESOURCEQUOTA_STORAGE_REQUEST_USED), OTEL_STR("By"), OTEL_STR("The storage requests in a specific namespace. The value represents the current observed total usage of the resource in the namespace. ## Notes This metric is retrieved from the `used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core). The `k8s.storageclass.name` should be required when a resource quota is defined for a specific storage class"));
 }
 
 static inline otel_result_t otel_metric_k8s_service_endpoint_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_SERVICE_ENDPOINT_COUNT, "{endpoint}", "Number of endpoints for a service by condition and address type. ## Notes This metric is derived from the Kubernetes [EndpointSlice API](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/). It reports the number of network endpoints backing a Service, broken down by their condition and address type. In dual-stack or multi-protocol clusters, separate counts are reported for each address family (`IPv4`, `IPv6`, `FQDN`). When the optional `zone` attribute is enabled, counts are further broken down by availability zone for zone-aware monitoring. An endpoint may be reported under multiple conditions simultaneously (e.g., both `serving` and `terminating` during a graceful shutdown). See [K8s EndpointConditions](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/) for more details. The conditions represent: - `ready`: Endpoints capable of receiving new connections. - `serving`: Endpoints currently handling traffic. - `terminating`: Endpoints that are being phased out but may still be handling existing connections. For Services with `publishNotReadyAddresses` enabled (common for headless StatefulSets), this metric will include endpoints that are published despite not being ready. The `k8s.service.publish_not_ready_addresses` resource attribute indicates this setting");
 }
 
+static inline otel_result_t otel_metric_k8s_service_endpoint_count_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_SERVICE_ENDPOINT_COUNT), OTEL_STR("{endpoint}"), OTEL_STR("Number of endpoints for a service by condition and address type. ## Notes This metric is derived from the Kubernetes [EndpointSlice API](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/). It reports the number of network endpoints backing a Service, broken down by their condition and address type. In dual-stack or multi-protocol clusters, separate counts are reported for each address family (`IPv4`, `IPv6`, `FQDN`). When the optional `zone` attribute is enabled, counts are further broken down by availability zone for zone-aware monitoring. An endpoint may be reported under multiple conditions simultaneously (e.g., both `serving` and `terminating` during a graceful shutdown). See [K8s EndpointConditions](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/endpoint-slice-v1/) for more details. The conditions represent: - `ready`: Endpoints capable of receiving new connections. - `serving`: Endpoints currently handling traffic. - `terminating`: Endpoints that are being phased out but may still be handling existing connections. For Services with `publishNotReadyAddresses` enabled (common for headless StatefulSets), this metric will include endpoints that are published despite not being ready. The `k8s.service.publish_not_ready_addresses` resource attribute indicates this setting"));
+}
+
 static inline otel_result_t otel_metric_k8s_service_load_balancer_ingress_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_K8S_SERVICE_LOAD_BALANCER_INGRESS_COUNT, "{ingress}", "Number of load balancer ingress points (external IPs/hostnames) assigned to the service. ## Notes This metric reports the number of external ingress points (IP addresses or hostnames) assigned to a LoadBalancer Service. It is only emitted for Services of type `LoadBalancer` and reflects the assignments made by the underlying infrastructure's load balancer controller in the [.status.loadBalancer.ingress](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceStatus) field. A value of `0` indicates that no ingress points have been assigned yet (e.g., during provisioning). A value greater than `1` may occur when multiple IPs or hostnames are assigned (e.g., dual-stack configurations). This metric signals that external endpoints have been assigned by the load balancer controller, but it does not guarantee that the load balancer is healthy");
+}
+
+static inline otel_result_t otel_metric_k8s_service_load_balancer_ingress_count_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_SERVICE_LOAD_BALANCER_INGRESS_COUNT), OTEL_STR("{ingress}"), OTEL_STR("Number of load balancer ingress points (external IPs/hostnames) assigned to the service. ## Notes This metric reports the number of external ingress points (IP addresses or hostnames) assigned to a LoadBalancer Service. It is only emitted for Services of type `LoadBalancer` and reflects the assignments made by the underlying infrastructure's load balancer controller in the [.status.loadBalancer.ingress](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceStatus) field. A value of `0` indicates that no ingress points have been assigned yet (e.g., during provisioning). A value greater than `1` may occur when multiple IPs or hostnames are assigned (e.g., dual-stack configurations). This metric signals that external endpoints have been assigned by the load balancer controller, but it does not guarantee that the load balancer is healthy"));
 }
 
 static inline otel_result_t otel_metric_k8s_statefulset_pod_current(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_CURRENT, "{pod}", "The number of replica pods created by the statefulset controller from the statefulset version indicated by currentRevision. ## Notes This metric aligns with the `currentReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_statefulset_pod_current_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_STATEFULSET_POD_CURRENT), OTEL_STR("{pod}"), OTEL_STR("The number of replica pods created by the statefulset controller from the statefulset version indicated by currentRevision. ## Notes This metric aligns with the `currentReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_statefulset_pod_desired(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_DESIRED, "{pod}", "Number of desired replica pods in this statefulset. ## Notes This metric aligns with the `replicas` field of the [K8s StatefulSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetspec-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_desired_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_STATEFULSET_POD_DESIRED), OTEL_STR("{pod}"), OTEL_STR("Number of desired replica pods in this statefulset. ## Notes This metric aligns with the `replicas` field of the [K8s StatefulSetSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetspec-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_k8s_statefulset_pod_ready(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_READY, "{pod}", "The number of replica pods created for this statefulset with a Ready Condition. ## Notes This metric aligns with the `readyReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
 }
 
+static inline otel_result_t otel_metric_k8s_statefulset_pod_ready_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_STATEFULSET_POD_READY), OTEL_STR("{pod}"), OTEL_STR("The number of replica pods created for this statefulset with a Ready Condition. ## Notes This metric aligns with the `readyReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)"));
+}
+
 static inline otel_result_t otel_metric_k8s_statefulset_pod_updated(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_K8S_STATEFULSET_POD_UPDATED, "{pod}", "Number of replica pods created by the statefulset controller from the statefulset version indicated by updateRevision. ## Notes This metric aligns with the `updatedReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)");
+}
+
+static inline otel_result_t otel_metric_k8s_statefulset_pod_updated_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_K8S_STATEFULSET_POD_UPDATED), OTEL_STR("{pod}"), OTEL_STR("Number of replica pods created by the statefulset controller from the statefulset version indicated by updateRevision. ## Notes This metric aligns with the `updatedReplicas` field of the [K8s StatefulSetStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#statefulsetstatus-v1-apps)"));
 }
 
 static inline otel_result_t otel_metric_kestrel_active_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_ACTIVE_CONNECTIONS, "{connection}", "Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_kestrel_active_connections_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_ACTIVE_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_kestrel_active_tls_handshakes(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_ACTIVE_TLS_HANDSHAKES, "{handshake}", "Number of TLS handshakes that are currently in progress on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_active_tls_handshakes_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_ACTIVE_TLS_HANDSHAKES), OTEL_STR("{handshake}"), OTEL_STR("Number of TLS handshakes that are currently in progress on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_kestrel_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_KESTREL_CONNECTION_DURATION, "s", "The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_kestrel_connection_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_CONNECTION_DURATION), OTEL_STR("s"), OTEL_STR("The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_kestrel_queued_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_QUEUED_CONNECTIONS, "{connection}", "Number of connections that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_queued_connections_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_QUEUED_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of connections that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_kestrel_queued_requests(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_QUEUED_REQUESTS, "{request}", "Number of HTTP requests on multiplexed connections (HTTP/2 and HTTP/3) that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_kestrel_queued_requests_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_QUEUED_REQUESTS), OTEL_STR("{request}"), OTEL_STR("Number of HTTP requests on multiplexed connections (HTTP/2 and HTTP/3) that are currently queued and are waiting to start. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_kestrel_rejected_connections(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_KESTREL_REJECTED_CONNECTIONS, "{connection}", "Number of connections rejected by the server. ## Notes Connections are rejected when the currently active count exceeds the value configured with `MaxConcurrentConnections`. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_rejected_connections_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_REJECTED_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of connections rejected by the server. ## Notes Connections are rejected when the currently active count exceeds the value configured with `MaxConcurrentConnections`. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_kestrel_tls_handshake_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_KESTREL_TLS_HANDSHAKE_DURATION, "s", "The duration of TLS handshakes on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_kestrel_tls_handshake_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_TLS_HANDSHAKE_DURATION), OTEL_STR("s"), OTEL_STR("The duration of TLS handshakes on the server. ## Notes Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_kestrel_upgraded_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_KESTREL_UPGRADED_CONNECTIONS, "{connection}", "Number of connections that are currently upgraded (WebSockets). . ## Notes The counter only tracks HTTP/1.1 connections. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_kestrel_upgraded_connections_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_KESTREL_UPGRADED_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of connections that are currently upgraded (WebSockets). . ## Notes The counter only tracks HTTP/1.1 connections. Meter name: `Microsoft.AspNetCore.Server.Kestrel`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_messaging_client_consumed_messages(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_CONSUMED_MESSAGES, "{message}", "Number of messages that were delivered to the application. ## Notes Records the number of messages pulled from the broker or number of messages dispatched to the application in push-based scenarios. The metric SHOULD be reported once per message delivery. For example, if receiving and processing operations are both instrumented for a single message delivery, this counter is incremented when the message is received and not reported when it is processed");
 }
 
+static inline otel_result_t otel_metric_messaging_client_consumed_messages_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_MESSAGING_CLIENT_CONSUMED_MESSAGES), OTEL_STR("{message}"), OTEL_STR("Number of messages that were delivered to the application. ## Notes Records the number of messages pulled from the broker or number of messages dispatched to the application in push-based scenarios. The metric SHOULD be reported once per message delivery. For example, if receiving and processing operations are both instrumented for a single message delivery, this counter is incremented when the message is received and not reported when it is processed"));
+}
+
 static inline otel_result_t otel_metric_messaging_client_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_OPERATION_DURATION, "s", "Duration of messaging operation initiated by a producer or consumer client. ## Notes This metric SHOULD NOT be used to report processing duration - processing duration is reported in `messaging.process.duration` metric");
+}
+
+static inline otel_result_t otel_metric_messaging_client_operation_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_MESSAGING_CLIENT_OPERATION_DURATION), OTEL_STR("s"), OTEL_STR("Duration of messaging operation initiated by a producer or consumer client. ## Notes This metric SHOULD NOT be used to report processing duration - processing duration is reported in `messaging.process.duration` metric"));
 }
 
 static inline otel_result_t otel_metric_messaging_client_sent_messages(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_MESSAGING_CLIENT_SENT_MESSAGES, "{message}", "Number of messages producer attempted to send to the broker. ## Notes This metric MUST NOT count messages that were created but haven't yet been sent");
 }
 
+static inline otel_result_t otel_metric_messaging_client_sent_messages_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_MESSAGING_CLIENT_SENT_MESSAGES), OTEL_STR("{message}"), OTEL_STR("Number of messages producer attempted to send to the broker. ## Notes This metric MUST NOT count messages that were created but haven't yet been sent"));
+}
+
 static inline otel_result_t otel_metric_messaging_process_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_MESSAGING_PROCESS_DURATION, "s", "Duration of processing operation. ## Notes This metric MUST be reported for operations with `messaging.operation.type` that matches `process`");
+}
+
+static inline otel_result_t otel_metric_messaging_process_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_MESSAGING_PROCESS_DURATION), OTEL_STR("s"), OTEL_STR("Duration of processing operation. ## Notes This metric MUST be reported for operations with `messaging.operation.type` that matches `process`"));
 }
 
 static inline otel_result_t otel_metric_nfs_client_net_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_NET_COUNT, "{record}", "Reports the count of kernel NFS client TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.netudpcnt and svc_stat.nettcpcnt");
 }
 
+static inline otel_result_t otel_metric_nfs_client_net_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_NET_COUNT), OTEL_STR("{record}"), OTEL_STR("Reports the count of kernel NFS client TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.netudpcnt and svc_stat.nettcpcnt"));
+}
+
 static inline otel_result_t otel_metric_nfs_client_net_tcp_connection_accepted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_NET_TCP_CONNECTION_ACCEPTED, "{connection}", "Reports the count of kernel NFS client TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn");
+}
+
+static inline otel_result_t otel_metric_nfs_client_net_tcp_connection_accepted_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_NET_TCP_CONNECTION_ACCEPTED), OTEL_STR("{connection}"), OTEL_STR("Reports the count of kernel NFS client TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn"));
 }
 
 static inline otel_result_t otel_metric_nfs_client_operation_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_OPERATION_COUNT, "{operation}", "Reports the count of kernel NFSv4+ client operations");
 }
 
+static inline otel_result_t otel_metric_nfs_client_operation_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_OPERATION_COUNT), OTEL_STR("{operation}"), OTEL_STR("Reports the count of kernel NFSv4+ client operations"));
+}
+
 static inline otel_result_t otel_metric_nfs_client_procedure_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_PROCEDURE_COUNT, "{procedure}", "Reports the count of kernel NFS client procedures");
+}
+
+static inline otel_result_t otel_metric_nfs_client_procedure_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_PROCEDURE_COUNT), OTEL_STR("{procedure}"), OTEL_STR("Reports the count of kernel NFS client procedures"));
 }
 
 static inline otel_result_t otel_metric_nfs_client_rpc_authrefresh_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_AUTHREFRESH_COUNT, "{authrefresh}", "Reports the count of kernel NFS client RPC authentication refreshes. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcauthrefresh");
 }
 
+static inline otel_result_t otel_metric_nfs_client_rpc_authrefresh_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_RPC_AUTHREFRESH_COUNT), OTEL_STR("{authrefresh}"), OTEL_STR("Reports the count of kernel NFS client RPC authentication refreshes. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcauthrefresh"));
+}
+
 static inline otel_result_t otel_metric_nfs_client_rpc_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_COUNT, "{request}", "Reports the count of kernel NFS client RPCs sent, regardless of whether they're accepted/rejected by the server. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt");
+}
+
+static inline otel_result_t otel_metric_nfs_client_rpc_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_RPC_COUNT), OTEL_STR("{request}"), OTEL_STR("Reports the count of kernel NFS client RPCs sent, regardless of whether they're accepted/rejected by the server. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt"));
 }
 
 static inline otel_result_t otel_metric_nfs_client_rpc_retransmit_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_CLIENT_RPC_RETRANSMIT_COUNT, "{retransmit}", "Reports the count of kernel NFS client RPC retransmits. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcretrans");
 }
 
+static inline otel_result_t otel_metric_nfs_client_rpc_retransmit_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_CLIENT_RPC_RETRANSMIT_COUNT), OTEL_STR("{retransmit}"), OTEL_STR("Reports the count of kernel NFS client RPC retransmits. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpcretrans"));
+}
+
 static inline otel_result_t otel_metric_nfs_server_fh_stale_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_FH_STALE_COUNT, "{fh}", "Reports the count of kernel NFS server stale file handles. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_FH_STALE counter in the nfsd_net struct");
+}
+
+static inline otel_result_t otel_metric_nfs_server_fh_stale_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_FH_STALE_COUNT), OTEL_STR("{fh}"), OTEL_STR("Reports the count of kernel NFS server stale file handles. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_FH_STALE counter in the nfsd_net struct"));
 }
 
 static inline otel_result_t otel_metric_nfs_server_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_IO, "By", "Reports the count of kernel NFS server bytes returned to receive and transmit (read and write) requests. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_IO_READ and NFSD_STATS_IO_WRITE counters in the nfsd_net struct");
 }
 
+static inline otel_result_t otel_metric_nfs_server_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_IO), OTEL_STR("By"), OTEL_STR("Reports the count of kernel NFS server bytes returned to receive and transmit (read and write) requests. ## Notes Linux: this metric is taken from the Linux kernel NFSD_STATS_IO_READ and NFSD_STATS_IO_WRITE counters in the nfsd_net struct"));
+}
+
 static inline otel_result_t otel_metric_nfs_server_net_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_NET_COUNT, "{record}", "Reports the count of kernel NFS server TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpcnt and svc_stat.netudpcnt");
+}
+
+static inline otel_result_t otel_metric_nfs_server_net_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_NET_COUNT), OTEL_STR("{record}"), OTEL_STR("Reports the count of kernel NFS server TCP segments and UDP datagrams handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpcnt and svc_stat.netudpcnt"));
 }
 
 static inline otel_result_t otel_metric_nfs_server_net_tcp_connection_accepted(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_NET_TCP_CONNECTION_ACCEPTED, "{connection}", "Reports the count of kernel NFS server TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn");
 }
 
+static inline otel_result_t otel_metric_nfs_server_net_tcp_connection_accepted_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_NET_TCP_CONNECTION_ACCEPTED), OTEL_STR("{connection}"), OTEL_STR("Reports the count of kernel NFS server TCP connections accepted. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.nettcpconn"));
+}
+
 static inline otel_result_t otel_metric_nfs_server_operation_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_OPERATION_COUNT, "{operation}", "Reports the count of kernel NFSv4+ server operations");
+}
+
+static inline otel_result_t otel_metric_nfs_server_operation_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_OPERATION_COUNT), OTEL_STR("{operation}"), OTEL_STR("Reports the count of kernel NFSv4+ server operations"));
 }
 
 static inline otel_result_t otel_metric_nfs_server_procedure_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_PROCEDURE_COUNT, "{procedure}", "Reports the count of kernel NFS server procedures");
 }
 
+static inline otel_result_t otel_metric_nfs_server_procedure_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_PROCEDURE_COUNT), OTEL_STR("{procedure}"), OTEL_STR("Reports the count of kernel NFS server procedures"));
+}
+
 static inline otel_result_t otel_metric_nfs_server_repcache_requests(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_REPCACHE_REQUESTS, "{request}", "Reports the kernel NFS server reply cache request count by cache hit status");
+}
+
+static inline otel_result_t otel_metric_nfs_server_repcache_requests_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_REPCACHE_REQUESTS), OTEL_STR("{request}"), OTEL_STR("Reports the kernel NFS server reply cache request count by cache hit status"));
 }
 
 static inline otel_result_t otel_metric_nfs_server_rpc_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NFS_SERVER_RPC_COUNT, "{request}", "Reports the count of kernel NFS server RPCs handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt, the count of good RPCs. This metric can have an error.type of \"format\", \"auth\", or \"client\" for svc_stat.badfmt, svc_stat.badauth, and svc_stat.badclnt");
 }
 
+static inline otel_result_t otel_metric_nfs_server_rpc_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_RPC_COUNT), OTEL_STR("{request}"), OTEL_STR("Reports the count of kernel NFS server RPCs handled. ## Notes Linux: this metric is taken from the Linux kernel's svc_stat.rpccnt, the count of good RPCs. This metric can have an error.type of \"format\", \"auth\", or \"client\" for svc_stat.badfmt, svc_stat.badauth, and svc_stat.badclnt"));
+}
+
 static inline otel_result_t otel_metric_nfs_server_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_NFS_SERVER_THREAD_COUNT, "{thread}", "Reports the count of kernel NFS server available threads. ## Notes Linux: this metric is taken from the Linux kernel nfsd_th_cnt variable");
+}
+
+static inline otel_result_t otel_metric_nfs_server_thread_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_NFS_SERVER_THREAD_COUNT), OTEL_STR("{thread}"), OTEL_STR("Reports the count of kernel NFS server available threads. ## Notes Linux: this metric is taken from the Linux kernel nfsd_th_cnt variable"));
 }
 
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_max(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MAX, "s", "Event loop maximum delay. ## Notes Value can be retrieved from value `histogram.max` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
 }
 
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_max_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MAX), OTEL_STR("s"), OTEL_STR("Event loop maximum delay. ## Notes Value can be retrieved from value `histogram.max` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
+}
+
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_mean(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MEAN, "s", "Event loop mean delay. ## Notes Value can be retrieved from value `histogram.mean` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_mean_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MEAN), OTEL_STR("s"), OTEL_STR("Event loop mean delay. ## Notes Value can be retrieved from value `histogram.mean` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
 }
 
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_min(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MIN, "s", "Event loop minimum delay. ## Notes Value can be retrieved from value `histogram.min` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
 }
 
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_min_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_MIN), OTEL_STR("s"), OTEL_STR("Event loop minimum delay. ## Notes Value can be retrieved from value `histogram.min` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
+}
+
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_p50(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P50, "s", "Event loop 50 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(50)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p50_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P50), OTEL_STR("s"), OTEL_STR("Event loop 50 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(50)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
 }
 
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_p90(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P90, "s", "Event loop 90 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(90)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
 }
 
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p90_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P90), OTEL_STR("s"), OTEL_STR("Event loop 90 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(90)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
+}
+
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_p99(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P99, "s", "Event loop 99 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(99)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_p99_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_P99), OTEL_STR("s"), OTEL_STR("Event loop 99 percentile delay. ## Notes Value can be retrieved from value `histogram.percentile(99)` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
 }
 
 static inline otel_result_t otel_metric_nodejs_eventloop_delay_stddev(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_STDDEV, "s", "Event loop standard deviation delay. ## Notes Value can be retrieved from value `histogram.stddev` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)");
 }
 
+static inline otel_result_t otel_metric_nodejs_eventloop_delay_stddev_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_DELAY_STDDEV), OTEL_STR("s"), OTEL_STR("Event loop standard deviation delay. ## Notes Value can be retrieved from value `histogram.stddev` of [`perf_hooks.monitorEventLoopDelay([options])`](https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions)"));
+}
+
 static inline otel_result_t otel_metric_nodejs_eventloop_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_TIME, "s", "Cumulative duration of time the event loop has been in each state. ## Notes Value can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)");
+}
+
+static inline otel_result_t otel_metric_nodejs_eventloop_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_TIME), OTEL_STR("s"), OTEL_STR("Cumulative duration of time the event loop has been in each state. ## Notes Value can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)"));
 }
 
 static inline otel_result_t otel_metric_nodejs_eventloop_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_NODEJS_EVENTLOOP_UTILIZATION, "1", "Event loop utilization. ## Notes The value range is \\[0.0, 1.0\\] and can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)");
 }
 
+static inline otel_result_t otel_metric_nodejs_eventloop_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_NODEJS_EVENTLOOP_UTILIZATION), OTEL_STR("1"), OTEL_STR("Event loop utilization. ## Notes The value range is \\[0.0, 1.0\\] and can be retrieved from [`performance.eventLoopUtilization([utilization1[, utilization2]])`](https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2)"));
+}
+
 static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_HARD, "{cpu}", "The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_HARD), OTEL_STR("{cpu}"), OTEL_STR("The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)"));
 }
 
 static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_USED, "{cpu}", "The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
 }
 
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_limit_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_LIMIT_USED), OTEL_STR("{cpu}"), OTEL_STR("The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)"));
+}
+
 static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_hard(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_HARD, "{cpu}", "The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
+}
+
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_hard_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_HARD), OTEL_STR("{cpu}"), OTEL_STR("The enforced hard limit of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Hard` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)"));
 }
 
 static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_USED, "{cpu}", "The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)");
 }
 
+static inline otel_result_t otel_metric_openshift_clusterquota_cpu_request_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OPENSHIFT_CLUSTERQUOTA_CPU_REQUEST_USED), OTEL_STR("{cpu}"), OTEL_STR("The current observed total usage of the resource across all projects. ## Notes This metric is retrieved from the `Status.Total.Used` field of the [K8s ResourceQuotaStatus](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#resourcequotastatus-v1-core) of the [ClusterResourceQuota](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/schedule_and_quota_apis/clusterresourcequota-quota-openshift-io-v1#status-total)"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_exporter_log_exported(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_EXPORTED, "{log_record}", "The number of log records for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_log_records`), rejected log records MUST count as failed and only non-rejected log records count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each log record MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_log_exported_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_EXPORTED), OTEL_STR("{log_record}"), OTEL_STR("The number of log records for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_log_records`), rejected log records MUST count as failed and only non-rejected log records count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each log record MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_exporter_log_inflight(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_INFLIGHT, "{log_record}", "The number of log records which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Log records are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, log records remain inflight across all retry attempts and any backoff between them");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_exporter_log_inflight_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_EXPORTER_LOG_INFLIGHT), OTEL_STR("{log_record}"), OTEL_STR("The number of log records which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Log records are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, log records remain inflight across all retry attempts and any backoff between them"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_exporter_operation_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_OPERATION_DURATION, "s", "The duration of exporting a batch of telemetry records. ## Notes This metric defines successful operations using the full success definitions for [http](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success-1) and [grpc](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success). Anything else is defined as an unsuccessful operation. For successful operations, `error.type` MUST NOT be set. For unsuccessful export operations, `error.type` MUST contain a relevant failure cause. If the exporter retries failed export attempts, exactly one observation MUST be recorded per export operation, covering the wall-clock duration from the start of the first attempt through the conclusion of the final attempt (including any backoff between attempts). `error.type` reflects the cause of the final attempt");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_operation_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_EXPORTER_OPERATION_DURATION), OTEL_STR("s"), OTEL_STR("The duration of exporting a batch of telemetry records. ## Notes This metric defines successful operations using the full success definitions for [http](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success-1) and [grpc](https://github.com/open-telemetry/opentelemetry-proto/blob/v1.5.0/docs/specification.md#full-success). Anything else is defined as an unsuccessful operation. For successful operations, `error.type` MUST NOT be set. For unsuccessful export operations, `error.type` MUST contain a relevant failure cause. If the exporter retries failed export attempts, exactly one observation MUST be recorded per export operation, covering the wall-clock duration from the start of the first attempt through the conclusion of the final attempt (including any backoff between attempts). `error.type` reflects the cause of the final attempt"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_exporter_span_exported(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_EXPORTED, "{span}", "The number of spans for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_spans`), rejected spans MUST count as failed and only non-rejected spans count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each span MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_exporter_span_exported_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_EXPORTED), OTEL_STR("{span}"), OTEL_STR("The number of spans for which the export has finished, either successful or failed. ## Notes For successful exports, `error.type` MUST NOT be set. For failed exports, `error.type` MUST contain the failure cause. For exporters with partial success semantics (e.g. OTLP with `rejected_spans`), rejected spans MUST count as failed and only non-rejected spans count as success. If no rejection reason is available, `rejected` SHOULD be used as value for `error.type`. If the exporter retries failed export attempts, the export operation is considered finished only after the final attempt has concluded. Each span MUST be counted exactly once per export operation: intermediate failed attempts that are followed by a retry MUST NOT increment the counter, and `error.type` reflects the cause of the final attempt"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_exporter_span_inflight(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_INFLIGHT, "{span}", "The number of spans which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Spans are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, spans remain inflight across all retry attempts and any backoff between them");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_exporter_span_inflight_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_EXPORTER_SPAN_INFLIGHT), OTEL_STR("{span}"), OTEL_STR("The number of spans which were passed to the exporter, but that have not been exported yet (neither successful, nor failed). ## Notes Spans are counted as inflight from when they are passed to the exporter until the export operation has concluded. If the exporter retries failed export attempts, spans remain inflight across all retry attempts and any backoff between them"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_log_created(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_LOG_CREATED, "{log_record}", "The number of logs submitted to enabled SDK Loggers");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_log_created_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_LOG_CREATED), OTEL_STR("{log_record}"), OTEL_STR("The number of logs submitted to enabled SDK Loggers"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_processor_log_processed(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_PROCESSED, "{log_record}", "The number of log records for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Log Record Processors MUST use `queue_full` as the value of `error.type` for log records dropped due to a full queue. SDK Log Record Processors MUST use `already_shutdown` as the value of `error.type` for log records dropped because the processor has already been shut down. For the SDK Simple and Batching Log Record Processor a log record is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_log_processed_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_PROCESSED), OTEL_STR("{log_record}"), OTEL_STR("The number of log records for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Log Record Processors MUST use `queue_full` as the value of `error.type` for log records dropped due to a full queue. SDK Log Record Processors MUST use `already_shutdown` as the value of `error.type` for log records dropped because the processor has already been shut down. For the SDK Simple and Batching Log Record Processor a log record is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_CAPACITY, "{log_record}", "The maximum number of log records the queue of a given instance of an SDK Log Record processor can hold. ## Notes Only applies to Log Record processors which use a queue, e.g. the SDK Batching Log Record Processor");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_CAPACITY), OTEL_STR("{log_record}"), OTEL_STR("The maximum number of log records the queue of a given instance of an SDK Log Record processor can hold. ## Notes Only applies to Log Record processors which use a queue, e.g. the SDK Batching Log Record Processor"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_SIZE, "{log_record}", "The number of log records in the queue of a given instance of an SDK log processor. ## Notes Only applies to log record processors which use a queue, e.g. the SDK Batching Log Record Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_log_queue_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_LOG_QUEUE_SIZE), OTEL_STR("{log_record}"), OTEL_STR("The number of log records in the queue of a given instance of an SDK log processor. ## Notes Only applies to log record processors which use a queue, e.g. the SDK Batching Log Record Processor"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_processor_span_processed(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_PROCESSED, "{span}", "The number of spans for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Span Processors MUST use `queue_full` as the value of `error.type` for spans dropped due to a full queue. SDK Span Processors MUST use `already_shutdown` as the value of `error.type` for spans dropped because the processor has already been shut down. For the SDK Simple and Batching Span Processor a span is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_processor_span_processed_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_PROCESSED), OTEL_STR("{span}"), OTEL_STR("The number of spans for which the processing has finished, either successful or failed. ## Notes For successful processing, `error.type` MUST NOT be set. For failed processing, `error.type` MUST contain the failure cause. SDK Batching Span Processors MUST use `queue_full` as the value of `error.type` for spans dropped due to a full queue. SDK Span Processors MUST use `already_shutdown` as the value of `error.type` for spans dropped because the processor has already been shut down. For the SDK Simple and Batching Span Processor a span is considered to be processed already when it has been submitted to the exporter, not when the corresponding export call has finished"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_capacity(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_CAPACITY, "{span}", "The maximum number of spans the queue of a given instance of an SDK span processor can hold. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_capacity_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_CAPACITY), OTEL_STR("{span}"), OTEL_STR("The maximum number of spans the queue of a given instance of an SDK span processor can hold. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_SIZE, "{span}", "The number of spans in the queue of a given instance of an SDK span processor. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_processor_span_queue_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_PROCESSOR_SPAN_QUEUE_SIZE), OTEL_STR("{span}"), OTEL_STR("The number of spans in the queue of a given instance of an SDK span processor. ## Notes Only applies to span processors which use a queue, e.g. the SDK Batching Span Processor"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_span_ended(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_ENDED, "{span}", "Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_ended_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_SPAN_ENDED), OTEL_STR("{span}"), OTEL_STR("Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_span_ended_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_ENDED_COUNT, "{span}", "Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_span_ended_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_SPAN_ENDED_COUNT), OTEL_STR("{span}"), OTEL_STR("Use `otel.sdk.span.started` minus `otel.sdk.span.live` to derive this value"));
+}
+
 static inline otel_result_t otel_metric_otel_sdk_span_live(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_LIVE, "{span}", "The number of created spans with `recording=true` for which the end operation has not been called yet");
+}
+
+static inline otel_result_t otel_metric_otel_sdk_span_live_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_SPAN_LIVE), OTEL_STR("{span}"), OTEL_STR("The number of created spans with `recording=true` for which the end operation has not been called yet"));
 }
 
 static inline otel_result_t otel_metric_otel_sdk_span_started(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_OTEL_SDK_SPAN_STARTED, "{span}", "The number of created spans. ## Notes Implementations MUST record this metric for all spans, even for non-recording ones");
 }
 
+static inline otel_result_t otel_metric_otel_sdk_span_started_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_OTEL_SDK_SPAN_STARTED), OTEL_STR("{span}"), OTEL_STR("The number of created spans. ## Notes Implementations MUST record this metric for all spans, even for non-recording ones"));
+}
+
 static inline otel_result_t otel_metric_process_context_switches(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_CONTEXT_SWITCHES, "{context_switch}", "Number of times the process has been context switched");
+}
+
+static inline otel_result_t otel_metric_process_context_switches_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_CONTEXT_SWITCHES), OTEL_STR("{context_switch}"), OTEL_STR("Number of times the process has been context switched"));
 }
 
 static inline otel_result_t otel_metric_process_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_CPU_TIME, "s", "Total CPU seconds broken down by different CPU modes");
 }
 
+static inline otel_result_t otel_metric_process_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_CPU_TIME), OTEL_STR("s"), OTEL_STR("Total CPU seconds broken down by different CPU modes"));
+}
+
 static inline otel_result_t otel_metric_process_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_PROCESS_CPU_UTILIZATION, "1", "Difference in process.cpu.time since the last measurement, divided by the elapsed time and number of CPUs available to the process");
+}
+
+static inline otel_result_t otel_metric_process_cpu_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_CPU_UTILIZATION), OTEL_STR("1"), OTEL_STR("Difference in process.cpu.time since the last measurement, divided by the elapsed time and number of CPUs available to the process"));
 }
 
 static inline otel_result_t otel_metric_process_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_DISK_IO, "By", "Disk bytes transferred");
 }
 
+static inline otel_result_t otel_metric_process_disk_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_DISK_IO), OTEL_STR("By"), OTEL_STR("Disk bytes transferred"));
+}
+
 static inline otel_result_t otel_metric_process_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_MEMORY_USAGE, "By", "The amount of physical memory in use");
+}
+
+static inline otel_result_t otel_metric_process_memory_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("The amount of physical memory in use"));
 }
 
 static inline otel_result_t otel_metric_process_memory_virtual(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_MEMORY_VIRTUAL, "By", "The amount of committed virtual memory");
 }
 
+static inline otel_result_t otel_metric_process_memory_virtual_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_MEMORY_VIRTUAL), OTEL_STR("By"), OTEL_STR("The amount of committed virtual memory"));
+}
+
 static inline otel_result_t otel_metric_process_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_NETWORK_IO, "By", "Network bytes transferred");
+}
+
+static inline otel_result_t otel_metric_process_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_NETWORK_IO), OTEL_STR("By"), OTEL_STR("Network bytes transferred"));
 }
 
 static inline otel_result_t otel_metric_process_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_PROCESS_PAGING_FAULTS, "{fault}", "Number of page faults the process has made");
 }
 
+static inline otel_result_t otel_metric_process_paging_faults_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_PAGING_FAULTS), OTEL_STR("{fault}"), OTEL_STR("Number of page faults the process has made"));
+}
+
 static inline otel_result_t otel_metric_process_thread_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_THREAD_COUNT, "{thread}", "Process threads count");
+}
+
+static inline otel_result_t otel_metric_process_thread_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_THREAD_COUNT), OTEL_STR("{thread}"), OTEL_STR("Process threads count"));
 }
 
 static inline otel_result_t otel_metric_process_unix_file_descriptor_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_UNIX_FILE_DESCRIPTOR_COUNT, "{file_descriptor}", "Number of unix file descriptors in use by the process");
 }
 
+static inline otel_result_t otel_metric_process_unix_file_descriptor_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_UNIX_FILE_DESCRIPTOR_COUNT), OTEL_STR("{file_descriptor}"), OTEL_STR("Number of unix file descriptors in use by the process"));
+}
+
 static inline otel_result_t otel_metric_process_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_PROCESS_UPTIME, "s", "The time the process has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
+}
+
+static inline otel_result_t otel_metric_process_uptime_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_UPTIME), OTEL_STR("s"), OTEL_STR("The time the process has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system"));
 }
 
 static inline otel_result_t otel_metric_process_windows_handle_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_PROCESS_WINDOWS_HANDLE_COUNT, "{handle}", "Number of handles held by the process");
 }
 
+static inline otel_result_t otel_metric_process_windows_handle_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_PROCESS_WINDOWS_HANDLE_COUNT), OTEL_STR("{handle}"), OTEL_STR("Number of handles held by the process"));
+}
+
 static inline otel_result_t otel_metric_rpc_client_call_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_CALL_DURATION, "s", "Measures the duration of an outgoing Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC client span, the metric value SHOULD be the same as the RPC client span duration");
+}
+
+static inline otel_result_t otel_metric_rpc_client_call_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_CLIENT_CALL_DURATION), OTEL_STR("s"), OTEL_STR("Measures the duration of an outgoing Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC client span, the metric value SHOULD be the same as the RPC client span duration"));
 }
 
 static inline otel_result_t otel_metric_rpc_client_request_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_REQUEST_SIZE, "By", "Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch");
 }
 
+static inline otel_result_t otel_metric_rpc_client_request_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_CLIENT_REQUEST_SIZE), OTEL_STR("By"), OTEL_STR("Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch"));
+}
+
 static inline otel_result_t otel_metric_rpc_client_requests_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_REQUESTS_PER_RPC, "{count}", "Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_rpc_client_requests_per_rpc_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_CLIENT_REQUESTS_PER_RPC), OTEL_STR("{count}"), OTEL_STR("Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs"));
 }
 
 static inline otel_result_t otel_metric_rpc_client_response_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_RESPONSE_SIZE, "By", "Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch");
 }
 
+static inline otel_result_t otel_metric_rpc_client_response_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_CLIENT_RESPONSE_SIZE), OTEL_STR("By"), OTEL_STR("Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch"));
+}
+
 static inline otel_result_t otel_metric_rpc_client_responses_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_CLIENT_RESPONSES_PER_RPC, "{count}", "Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
+}
+
+static inline otel_result_t otel_metric_rpc_client_responses_per_rpc_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_CLIENT_RESPONSES_PER_RPC), OTEL_STR("{count}"), OTEL_STR("Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs"));
 }
 
 static inline otel_result_t otel_metric_rpc_server_call_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_CALL_DURATION, "s", "Measures the duration of an incoming Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC server span, the metric value SHOULD be the same as the RPC server span duration");
 }
 
+static inline otel_result_t otel_metric_rpc_server_call_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_SERVER_CALL_DURATION), OTEL_STR("s"), OTEL_STR("Measures the duration of an incoming Remote Procedure Call (RPC). ## Notes When this metric is reported alongside an RPC server span, the metric value SHOULD be the same as the RPC server span duration"));
+}
+
 static inline otel_result_t otel_metric_rpc_server_request_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_REQUEST_SIZE, "By", "Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_server_request_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_SERVER_REQUEST_SIZE), OTEL_STR("By"), OTEL_STR("Measures the size of RPC request messages (uncompressed). ## Notes **Streaming**: Recorded per message in a streaming batch"));
 }
 
 static inline otel_result_t otel_metric_rpc_server_requests_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_REQUESTS_PER_RPC, "{count}", "Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming** : This metric is required for server and client streaming RPCs");
 }
 
+static inline otel_result_t otel_metric_rpc_server_requests_per_rpc_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_SERVER_REQUESTS_PER_RPC), OTEL_STR("{count}"), OTEL_STR("Measures the number of messages received per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming** : This metric is required for server and client streaming RPCs"));
+}
+
 static inline otel_result_t otel_metric_rpc_server_response_size(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_RESPONSE_SIZE, "By", "Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch");
+}
+
+static inline otel_result_t otel_metric_rpc_server_response_size_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_SERVER_RESPONSE_SIZE), OTEL_STR("By"), OTEL_STR("Measures the size of RPC response messages (uncompressed). ## Notes **Streaming**: Recorded per response in a streaming batch"));
 }
 
 static inline otel_result_t otel_metric_rpc_server_responses_per_rpc(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_RPC_SERVER_RESPONSES_PER_RPC, "{count}", "Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs");
 }
 
+static inline otel_result_t otel_metric_rpc_server_responses_per_rpc_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_RPC_SERVER_RESPONSES_PER_RPC), OTEL_STR("{count}"), OTEL_STR("Measures the number of messages sent per RPC. ## Notes Should be 1 for all non-streaming RPCs. **Streaming**: This metric is required for server and client streaming RPCs"));
+}
+
 static inline otel_result_t otel_metric_signalr_server_active_connections(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SIGNALR_SERVER_ACTIVE_CONNECTIONS, "{connection}", "Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0");
+}
+
+static inline otel_result_t otel_metric_signalr_server_active_connections_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SIGNALR_SERVER_ACTIVE_CONNECTIONS), OTEL_STR("{connection}"), OTEL_STR("Number of connections that are currently active on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0"));
 }
 
 static inline otel_result_t otel_metric_signalr_server_connection_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_SIGNALR_SERVER_CONNECTION_DURATION, "s", "The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0");
 }
 
+static inline otel_result_t otel_metric_signalr_server_connection_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SIGNALR_SERVER_CONNECTION_DURATION), OTEL_STR("s"), OTEL_STR("The duration of connections on the server. ## Notes Meter name: `Microsoft.AspNetCore.Http.Connections`; Added in: ASP.NET Core 8.0"));
+}
+
 static inline otel_result_t otel_metric_system_cpu_frequency(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_CPU_FREQUENCY, "Hz", "Operating frequency of the logical CPU in Hertz");
+}
+
+static inline otel_result_t otel_metric_system_cpu_frequency_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_CPU_FREQUENCY), OTEL_STR("Hz"), OTEL_STR("Operating frequency of the logical CPU in Hertz"));
 }
 
 static inline otel_result_t otel_metric_system_cpu_logical_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_CPU_LOGICAL_COUNT, "{cpu}", "Reports the number of logical (virtual) processor cores created by the operating system to manage multitasking. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket, and then by the number of threads per core");
 }
 
+static inline otel_result_t otel_metric_system_cpu_logical_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_CPU_LOGICAL_COUNT), OTEL_STR("{cpu}"), OTEL_STR("Reports the number of logical (virtual) processor cores created by the operating system to manage multitasking. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket, and then by the number of threads per core"));
+}
+
 static inline otel_result_t otel_metric_system_cpu_physical_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_CPU_PHYSICAL_COUNT, "{cpu}", "Reports the number of actual physical processor cores on the hardware. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket");
+}
+
+static inline otel_result_t otel_metric_system_cpu_physical_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_CPU_PHYSICAL_COUNT), OTEL_STR("{cpu}"), OTEL_STR("Reports the number of actual physical processor cores on the hardware. ## Notes Calculated by multiplying the number of sockets by the number of cores per socket"));
 }
 
 static inline otel_result_t otel_metric_system_cpu_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_CPU_TIME, "s", "Seconds each logical CPU spent on each mode");
 }
 
+static inline otel_result_t otel_metric_system_cpu_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_CPU_TIME), OTEL_STR("s"), OTEL_STR("Seconds each logical CPU spent on each mode"));
+}
+
 static inline otel_result_t otel_metric_system_cpu_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_CPU_UTILIZATION, "1", "For each logical CPU, the utilization is calculated as the change in cumulative CPU time (cpu.time) over a measurement interval, divided by the elapsed time");
+}
+
+static inline otel_result_t otel_metric_system_cpu_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_CPU_UTILIZATION), OTEL_STR("1"), OTEL_STR("For each logical CPU, the utilization is calculated as the change in cumulative CPU time (cpu.time) over a measurement interval, divided by the elapsed time"));
 }
 
 static inline otel_result_t otel_metric_system_disk_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_IO, "By", "Disk bytes transferred");
 }
 
+static inline otel_result_t otel_metric_system_disk_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_IO), OTEL_STR("By"), OTEL_STR("Disk bytes transferred"));
+}
+
 static inline otel_result_t otel_metric_system_disk_io_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_IO_TIME, "s", "Time disk spent activated. ## Notes The real elapsed time (\"wall clock\") used in the I/O path (time from operations running in parallel are not counted). Measured as: - Linux: Field 13 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: The complement of [\"Disk% Idle Time\"](https://learn.microsoft.com/archive/blogs/askcore/windows-performance-monitor-disk-counters-explained#windows-performance-monitor-disk-counters-explained) performance counter: `uptime * (100 - \"Disk\\% Idle Time\") / 100`");
+}
+
+static inline otel_result_t otel_metric_system_disk_io_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_IO_TIME), OTEL_STR("s"), OTEL_STR("Time disk spent activated. ## Notes The real elapsed time (\"wall clock\") used in the I/O path (time from operations running in parallel are not counted). Measured as: - Linux: Field 13 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: The complement of [\"Disk% Idle Time\"](https://learn.microsoft.com/archive/blogs/askcore/windows-performance-monitor-disk-counters-explained#windows-performance-monitor-disk-counters-explained) performance counter: `uptime * (100 - \"Disk\\% Idle Time\") / 100`"));
 }
 
 static inline otel_result_t otel_metric_system_disk_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_DISK_LIMIT, "By", "The total storage capacity of the disk");
 }
 
+static inline otel_result_t otel_metric_system_disk_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_LIMIT), OTEL_STR("By"), OTEL_STR("The total storage capacity of the disk"));
+}
+
 static inline otel_result_t otel_metric_system_disk_merged(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_MERGED, "{operation}", "The number of disk reads/writes merged into single physical disk access operations");
+}
+
+static inline otel_result_t otel_metric_system_disk_merged_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_MERGED), OTEL_STR("{operation}"), OTEL_STR("The number of disk reads/writes merged into single physical disk access operations"));
 }
 
 static inline otel_result_t otel_metric_system_disk_operation_time(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_OPERATION_TIME, "s", "Sum of the time each operation took to complete. ## Notes Because it is the sum of time each request took, parallel-issued requests each contribute to make the count grow. Measured as: - Linux: Fields 7 & 11 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: \"Avg. Disk sec/Read\" perf counter multiplied by \"Disk Reads/sec\" perf counter (similar for Writes)");
 }
 
+static inline otel_result_t otel_metric_system_disk_operation_time_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_OPERATION_TIME), OTEL_STR("s"), OTEL_STR("Sum of the time each operation took to complete. ## Notes Because it is the sum of time each request took, parallel-issued requests each contribute to make the count grow. Measured as: - Linux: Fields 7 & 11 from [procfs-diskstats](https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats) - Windows: \"Avg. Disk sec/Read\" perf counter multiplied by \"Disk Reads/sec\" perf counter (similar for Writes)"));
+}
+
 static inline otel_result_t otel_metric_system_disk_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_DISK_OPERATIONS, "{operation}", "Disk operations count");
+}
+
+static inline otel_result_t otel_metric_system_disk_operations_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_DISK_OPERATIONS), OTEL_STR("{operation}"), OTEL_STR("Disk operations count"));
 }
 
 static inline otel_result_t otel_metric_system_filesystem_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_LIMIT, "By", "The total storage capacity of the filesystem");
 }
 
+static inline otel_result_t otel_metric_system_filesystem_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_FILESYSTEM_LIMIT), OTEL_STR("By"), OTEL_STR("The total storage capacity of the filesystem"));
+}
+
 static inline otel_result_t otel_metric_system_filesystem_lock_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_LOCK_COUNT, "{lock}", "Filesystem lock counts");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_lock_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_FILESYSTEM_LOCK_COUNT), OTEL_STR("{lock}"), OTEL_STR("Filesystem lock counts"));
 }
 
 static inline otel_result_t otel_metric_system_filesystem_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_USAGE, "By", "Reports a filesystem's space usage across different states. ## Notes The sum of all `system.filesystem.usage` values over the different `system.filesystem.state` attributes SHOULD equal the total storage capacity of the filesystem, that is `system.filesystem.limit`");
 }
 
+static inline otel_result_t otel_metric_system_filesystem_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_FILESYSTEM_USAGE), OTEL_STR("By"), OTEL_STR("Reports a filesystem's space usage across different states. ## Notes The sum of all `system.filesystem.usage` values over the different `system.filesystem.state` attributes SHOULD equal the total storage capacity of the filesystem, that is `system.filesystem.limit`"));
+}
+
 static inline otel_result_t otel_metric_system_filesystem_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_FILESYSTEM_UTILIZATION, "1", "Fraction of filesystem bytes used");
+}
+
+static inline otel_result_t otel_metric_system_filesystem_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_FILESYSTEM_UTILIZATION), OTEL_STR("1"), OTEL_STR("Fraction of filesystem bytes used"));
 }
 
 static inline otel_result_t otel_metric_system_memory_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LIMIT, "By", "Total virtual memory available in the system");
 }
 
+static inline otel_result_t otel_metric_system_memory_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LIMIT), OTEL_STR("By"), OTEL_STR("Total virtual memory available in the system"));
+}
+
 static inline otel_result_t otel_metric_system_memory_linux_available(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_AVAILABLE, "By", "An estimate of how much memory is available for starting new applications, without causing swapping. ## Notes This is an alternative to `system.memory.usage` metric with `state=free`. Linux starting from 3.14 exports \"available\" memory. It takes \"free\" memory as a baseline, and then factors in kernel-specific values. This is supposed to be more accurate than just \"free\" memory. For reference, see the calculations [here](https://superuser.com/a/980821). See also `MemAvailable` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_available_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_AVAILABLE), OTEL_STR("By"), OTEL_STR("An estimate of how much memory is available for starting new applications, without causing swapping. ## Notes This is an alternative to `system.memory.usage` metric with `state=free`. Linux starting from 3.14 exports \"available\" memory. It takes \"free\" memory as a baseline, and then factors in kernel-specific values. This is supposed to be more accurate than just \"free\" memory. For reference, see the calculations [here](https://superuser.com/a/980821). See also `MemAvailable` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)"));
 }
 
 static inline otel_result_t otel_metric_system_memory_linux_hugepages_limit(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_LIMIT, "{page}", "Total number of hugepages available");
 }
 
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_limit_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_LIMIT), OTEL_STR("{page}"), OTEL_STR("Total number of hugepages available"));
+}
+
 static inline otel_result_t otel_metric_system_memory_linux_hugepages_page_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_PAGE_SIZE, "By", "System hugepage size in bytes");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_page_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_PAGE_SIZE), OTEL_STR("By"), OTEL_STR("System hugepage size in bytes"));
 }
 
 static inline otel_result_t otel_metric_system_memory_linux_hugepages_reserved(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_RESERVED, "{page}", "Number of reserved hugepages. ## Notes Hugepages for which a commitment to allocate has been made, but no allocation has yet been made. This is reported as a separate metric rather than a `usage` state because reserved pages are already counted in `free` pages. They represent a subset of free pages that cannot be used for non-reserved allocations");
 }
 
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_reserved_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_RESERVED), OTEL_STR("{page}"), OTEL_STR("Number of reserved hugepages. ## Notes Hugepages for which a commitment to allocate has been made, but no allocation has yet been made. This is reported as a separate metric rather than a `usage` state because reserved pages are already counted in `free` pages. They represent a subset of free pages that cannot be used for non-reserved allocations"));
+}
+
 static inline otel_result_t otel_metric_system_memory_linux_hugepages_surplus(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_SURPLUS, "{page}", "Number of surplus hugepages. ## Notes Overcommitted hugepages beyond the persistent pool. This is reported as a separate metric rather than a `usage` state because surplus pages can be in either `used` or `free` state. Including them in `usage` would break the convention that `usage` states sum to the `limit`");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_surplus_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_SURPLUS), OTEL_STR("{page}"), OTEL_STR("Number of surplus hugepages. ## Notes Overcommitted hugepages beyond the persistent pool. This is reported as a separate metric rather than a `usage` state because surplus pages can be in either `used` or `free` state. Including them in `usage` would break the convention that `usage` states sum to the `limit`"));
 }
 
 static inline otel_result_t otel_metric_system_memory_linux_hugepages_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_USAGE, "{page}", "Number of hugepages in use by state");
 }
 
+static inline otel_result_t otel_metric_system_memory_linux_hugepages_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_HUGEPAGES_USAGE), OTEL_STR("{page}"), OTEL_STR("Number of hugepages in use by state"));
+}
+
 static inline otel_result_t otel_metric_system_memory_linux_shared(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_SHARED, "By", "Shared memory used (mostly by tmpfs). ## Notes Equivalent of `shared` from [`free` command](https://man7.org/linux/man-pages/man1/free.1.html) or `Shmem` from [`/proc/meminfo`](https://man7.org/linux/man-pages/man5/proc.5.html)\"");
+}
+
+static inline otel_result_t otel_metric_system_memory_linux_shared_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_SHARED), OTEL_STR("By"), OTEL_STR("Shared memory used (mostly by tmpfs). ## Notes Equivalent of `shared` from [`free` command](https://man7.org/linux/man-pages/man1/free.1.html) or `Shmem` from [`/proc/meminfo`](https://man7.org/linux/man-pages/man5/proc.5.html)\""));
 }
 
 static inline otel_result_t otel_metric_system_memory_linux_slab_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_LINUX_SLAB_USAGE, "By", "Reports the memory used by the Linux kernel for managing caches of frequently used objects. ## Notes The sum over the `reclaimable` and `unreclaimable` state values in `memory.linux.slab.usage` SHOULD be equal to the total slab memory available on the system. Note that the total slab memory is not constant and may vary over time. See also the [Slab allocator](https://blogs.oracle.com/linux/post/understanding-linux-kernel-memory-statistics) and `Slab` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)");
 }
 
+static inline otel_result_t otel_metric_system_memory_linux_slab_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_LINUX_SLAB_USAGE), OTEL_STR("By"), OTEL_STR("Reports the memory used by the Linux kernel for managing caches of frequently used objects. ## Notes The sum over the `reclaimable` and `unreclaimable` state values in `memory.linux.slab.usage` SHOULD be equal to the total slab memory available on the system. Note that the total slab memory is not constant and may vary over time. See also the [Slab allocator](https://blogs.oracle.com/linux/post/understanding-linux-kernel-memory-statistics) and `Slab` in [/proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html)"));
+}
+
 static inline otel_result_t otel_metric_system_memory_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_USAGE, "By", "Reports memory in use by state");
+}
+
+static inline otel_result_t otel_metric_system_memory_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_USAGE), OTEL_STR("By"), OTEL_STR("Reports memory in use by state"));
 }
 
 static inline otel_result_t otel_metric_system_memory_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_MEMORY_UTILIZATION, "1", "Percentage of memory bytes in use");
 }
 
+static inline otel_result_t otel_metric_system_memory_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_MEMORY_UTILIZATION), OTEL_STR("1"), OTEL_STR("Percentage of memory bytes in use"));
+}
+
 static inline otel_result_t otel_metric_system_network_connection_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_CONNECTION_COUNT, "{connection}", "The number of connections");
+}
+
+static inline otel_result_t otel_metric_system_network_connection_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_NETWORK_CONNECTION_COUNT), OTEL_STR("{connection}"), OTEL_STR("The number of connections"));
 }
 
 static inline otel_result_t otel_metric_system_network_errors(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_ERRORS, "{error}", "Count of network errors detected. ## Notes Measured as: - Linux: the `errs` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)). - Windows: [`InErrors`/`OutErrors`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)");
 }
 
+static inline otel_result_t otel_metric_system_network_errors_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_NETWORK_ERRORS), OTEL_STR("{error}"), OTEL_STR("Count of network errors detected. ## Notes Measured as: - Linux: the `errs` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)). - Windows: [`InErrors`/`OutErrors`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)"));
+}
+
 static inline otel_result_t otel_metric_system_network_io(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_IO, "By", "The number of bytes transmitted and received");
+}
+
+static inline otel_result_t otel_metric_system_network_io_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_NETWORK_IO), OTEL_STR("By"), OTEL_STR("The number of bytes transmitted and received"));
 }
 
 static inline otel_result_t otel_metric_system_network_packet_count(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_PACKET_COUNT, "{packet}", "The number of packets transferred");
 }
 
+static inline otel_result_t otel_metric_system_network_packet_count_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_NETWORK_PACKET_COUNT), OTEL_STR("{packet}"), OTEL_STR("The number of packets transferred"));
+}
+
 static inline otel_result_t otel_metric_system_network_packet_dropped(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_NETWORK_PACKET_DROPPED, "{packet}", "Count of packets that are dropped or discarded even though there was no error. ## Notes Measured as: - Linux: the `drop` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)) - Windows: [`InDiscards`/`OutDiscards`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)");
+}
+
+static inline otel_result_t otel_metric_system_network_packet_dropped_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_NETWORK_PACKET_DROPPED), OTEL_STR("{packet}"), OTEL_STR("Count of packets that are dropped or discarded even though there was no error. ## Notes Measured as: - Linux: the `drop` column in `/proc/net/dev` ([source](https://web.archive.org/web/20180321091318/http://www.onlamp.com/pub/a/linux/2000/11/16/LinuxAdmin.html)) - Windows: [`InDiscards`/`OutDiscards`](https://docs.microsoft.com/windows/win32/api/netioapi/ns-netioapi-mib_if_row2) from [`GetIfEntry2`](https://docs.microsoft.com/windows/win32/api/netioapi/nf-netioapi-getifentry2)"));
 }
 
 static inline otel_result_t otel_metric_system_paging_faults(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_FAULTS, "{fault}", "The number of page faults");
 }
 
+static inline otel_result_t otel_metric_system_paging_faults_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PAGING_FAULTS), OTEL_STR("{fault}"), OTEL_STR("The number of page faults"));
+}
+
 static inline otel_result_t otel_metric_system_paging_operations(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_OPERATIONS, "{operation}", "The number of paging operations");
+}
+
+static inline otel_result_t otel_metric_system_paging_operations_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PAGING_OPERATIONS), OTEL_STR("{operation}"), OTEL_STR("The number of paging operations"));
 }
 
 static inline otel_result_t otel_metric_system_paging_usage(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_USAGE, "By", "Unix swap or windows pagefile usage");
 }
 
+static inline otel_result_t otel_metric_system_paging_usage_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PAGING_USAGE), OTEL_STR("By"), OTEL_STR("Unix swap or windows pagefile usage"));
+}
+
 static inline otel_result_t otel_metric_system_paging_utilization(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_PAGING_UTILIZATION, "1", "Swap (unix) or pagefile (windows) utilization");
+}
+
+static inline otel_result_t otel_metric_system_paging_utilization_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PAGING_UTILIZATION), OTEL_STR("1"), OTEL_STR("Swap (unix) or pagefile (windows) utilization"));
 }
 
 static inline otel_result_t otel_metric_system_process_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_SYSTEM_PROCESS_COUNT, "{process}", "Total number of processes in each state");
 }
 
+static inline otel_result_t otel_metric_system_process_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PROCESS_COUNT), OTEL_STR("{process}"), OTEL_STR("Total number of processes in each state"));
+}
+
 static inline otel_result_t otel_metric_system_process_created(const otel_meter_t *meter, otel_counter_u64_t *handle) {
     return otel_meter_counter_u64(meter, handle, OTEL_METRIC_SYSTEM_PROCESS_CREATED, "{process}", "Total number of processes created over uptime of the host");
+}
+
+static inline otel_result_t otel_metric_system_process_created_n(const otel_meter_t *meter, otel_counter_u64_t *handle) {
+    return otel_meter_counter_u64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_PROCESS_CREATED), OTEL_STR("{process}"), OTEL_STR("Total number of processes created over uptime of the host"));
 }
 
 static inline otel_result_t otel_metric_system_uptime(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_SYSTEM_UPTIME, "s", "The time the system has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system");
 }
 
+static inline otel_result_t otel_metric_system_uptime_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_SYSTEM_UPTIME), OTEL_STR("s"), OTEL_STR("The time the system has been running. ## Notes Instrumentations SHOULD use a gauge with type `double` and measure uptime in seconds as a floating point number with the highest precision available. The actual accuracy would depend on the instrumentation and operating system"));
+}
+
 static inline otel_result_t otel_metric_v8js_gc_duration(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
     return otel_meter_histogram_f64(meter, handle, OTEL_METRIC_V8JS_GC_DURATION, "s", "Garbage collection duration. ## Notes The values can be retrieved from [`perf_hooks.PerformanceObserver(...).observe({ entryTypes: ['gc'] })`](https://nodejs.org/api/perf_hooks.html#performanceobserverobserveoptions)");
+}
+
+static inline otel_result_t otel_metric_v8js_gc_duration_n(const otel_meter_t *meter, otel_histogram_f64_t *handle) {
+    return otel_meter_histogram_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_GC_DURATION), OTEL_STR("s"), OTEL_STR("Garbage collection duration. ## Notes The values can be retrieved from [`perf_hooks.PerformanceObserver(...).observe({ entryTypes: ['gc'] })`](https://nodejs.org/api/perf_hooks.html#performanceobserverobserveoptions)"));
 }
 
 static inline otel_result_t otel_metric_v8js_memory_heap_space_available_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_AVAILABLE_SIZE, "By", "Heap space available size. ## Notes Value can be retrieved from value `space_available_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
 }
 
+static inline otel_result_t otel_metric_v8js_memory_heap_space_available_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_AVAILABLE_SIZE), OTEL_STR("By"), OTEL_STR("Heap space available size. ## Notes Value can be retrieved from value `space_available_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)"));
+}
+
 static inline otel_result_t otel_metric_v8js_memory_heap_space_physical_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_PHYSICAL_SIZE, "By", "Committed size of a heap space. ## Notes Value can be retrieved from value `physical_space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_space_physical_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_PHYSICAL_SIZE), OTEL_STR("By"), OTEL_STR("Committed size of a heap space. ## Notes Value can be retrieved from value `physical_space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)"));
 }
 
 static inline otel_result_t otel_metric_v8js_memory_heap_space_size(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_SIZE, "By", "Total heap memory size pre-allocated for a heap space. ## Notes The value can be retrieved from value `space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
 }
 
+static inline otel_result_t otel_metric_v8js_memory_heap_space_size_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_MEMORY_HEAP_SPACE_SIZE), OTEL_STR("By"), OTEL_STR("Total heap memory size pre-allocated for a heap space. ## Notes The value can be retrieved from value `space_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)"));
+}
+
 static inline otel_result_t otel_metric_v8js_memory_heap_used(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_V8JS_MEMORY_HEAP_USED, "By", "Heap Memory size allocated. ## Notes The value can be retrieved from value `space_used_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)");
+}
+
+static inline otel_result_t otel_metric_v8js_memory_heap_used_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_MEMORY_HEAP_USED), OTEL_STR("By"), OTEL_STR("Heap Memory size allocated. ## Notes The value can be retrieved from value `space_used_size` of [`v8.getHeapSpaceStatistics()`](https://nodejs.org/api/v8.html#v8getheapspacestatistics)"));
 }
 
 static inline otel_result_t otel_metric_v8js_resource_active(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_V8JS_RESOURCE_ACTIVE, "{resource}", "Gauge of the active resources that are currently keeping the event loop alive. ## Notes The values can be retrieved from [`process.getActiveResourcesInfo()`](https://nodejs.org/api/process.html#processgetactiveresourcesinfo)");
 }
 
+static inline otel_result_t otel_metric_v8js_resource_active_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_V8JS_RESOURCE_ACTIVE), OTEL_STR("{resource}"), OTEL_STR("Gauge of the active resources that are currently keeping the event loop alive. ## Notes The values can be retrieved from [`process.getActiveResourcesInfo()`](https://nodejs.org/api/process.html#processgetactiveresourcesinfo)"));
+}
+
 static inline otel_result_t otel_metric_vcs_change_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_CHANGE_COUNT, "{change}", "The number of changes (pull requests/merge requests/changelists) in a repository, categorized by their state (e.g. open or merged)");
+}
+
+static inline otel_result_t otel_metric_vcs_change_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_CHANGE_COUNT), OTEL_STR("{change}"), OTEL_STR("The number of changes (pull requests/merge requests/changelists) in a repository, categorized by their state (e.g. open or merged)"));
 }
 
 static inline otel_result_t otel_metric_vcs_change_duration(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_DURATION, "s", "The time duration a change (pull request/merge request/changelist) has been in a given state");
 }
 
+static inline otel_result_t otel_metric_vcs_change_duration_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_CHANGE_DURATION), OTEL_STR("s"), OTEL_STR("The time duration a change (pull request/merge request/changelist) has been in a given state"));
+}
+
 static inline otel_result_t otel_metric_vcs_change_time_to_approval(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_TIME_TO_APPROVAL, "s", "The amount of time since its creation it took a change (pull request/merge request/changelist) to get the first approval");
+}
+
+static inline otel_result_t otel_metric_vcs_change_time_to_approval_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_CHANGE_TIME_TO_APPROVAL), OTEL_STR("s"), OTEL_STR("The amount of time since its creation it took a change (pull request/merge request/changelist) to get the first approval"));
 }
 
 static inline otel_result_t otel_metric_vcs_change_time_to_merge(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CHANGE_TIME_TO_MERGE, "s", "The amount of time since its creation it took a change (pull request/merge request/changelist) to get merged into the target(base) ref");
 }
 
+static inline otel_result_t otel_metric_vcs_change_time_to_merge_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_CHANGE_TIME_TO_MERGE), OTEL_STR("s"), OTEL_STR("The amount of time since its creation it took a change (pull request/merge request/changelist) to get merged into the target(base) ref"));
+}
+
 static inline otel_result_t otel_metric_vcs_contributor_count(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_CONTRIBUTOR_COUNT, "{contributor}", "The number of unique contributors to a repository");
+}
+
+static inline otel_result_t otel_metric_vcs_contributor_count_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_CONTRIBUTOR_COUNT), OTEL_STR("{contributor}"), OTEL_STR("The number of unique contributors to a repository"));
 }
 
 static inline otel_result_t otel_metric_vcs_ref_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_REF_COUNT, "{ref}", "The number of refs of type branch or tag in a repository");
 }
 
+static inline otel_result_t otel_metric_vcs_ref_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_REF_COUNT), OTEL_STR("{ref}"), OTEL_STR("The number of refs of type branch or tag in a repository"));
+}
+
 static inline otel_result_t otel_metric_vcs_ref_lines_delta(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_LINES_DELTA, "{line}", "The number of lines added/removed in a ref (branch) relative to the ref from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.line_change.type` value. For example if a ref added 3 lines and removed 2 lines, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers). If number of lines added/removed should be calculated from the start of time, then `vcs.ref.base.name` SHOULD be set to an empty string");
+}
+
+static inline otel_result_t otel_metric_vcs_ref_lines_delta_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_REF_LINES_DELTA), OTEL_STR("{line}"), OTEL_STR("The number of lines added/removed in a ref (branch) relative to the ref from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.line_change.type` value. For example if a ref added 3 lines and removed 2 lines, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers). If number of lines added/removed should be calculated from the start of time, then `vcs.ref.base.name` SHOULD be set to an empty string"));
 }
 
 static inline otel_result_t otel_metric_vcs_ref_revisions_delta(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_REVISIONS_DELTA, "{revision}", "The number of revisions (commits) a ref (branch) is ahead/behind the branch from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.revision_delta.direction` value. For example if branch `a` is 3 commits behind and 2 commits ahead of `trunk`, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers) and `vcs.ref.base.name` is set to `trunk`");
 }
 
+static inline otel_result_t otel_metric_vcs_ref_revisions_delta_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_REF_REVISIONS_DELTA), OTEL_STR("{revision}"), OTEL_STR("The number of revisions (commits) a ref (branch) is ahead/behind the branch from the `vcs.ref.base.name` attribute. ## Notes This metric should be reported for each `vcs.revision_delta.direction` value. For example if branch `a` is 3 commits behind and 2 commits ahead of `trunk`, instrumentation SHOULD report two measurements: 3 and 2 (both positive numbers) and `vcs.ref.base.name` is set to `trunk`"));
+}
+
 static inline otel_result_t otel_metric_vcs_ref_time(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
     return otel_meter_gauge_f64(meter, handle, OTEL_METRIC_VCS_REF_TIME, "s", "Time a ref (branch) created from the default branch (trunk) has existed. The `ref.type` attribute will always be `branch`");
 }
 
+static inline otel_result_t otel_metric_vcs_ref_time_n(const otel_meter_t *meter, otel_gauge_f64_t *handle) {
+    return otel_meter_gauge_f64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_REF_TIME), OTEL_STR("s"), OTEL_STR("Time a ref (branch) created from the default branch (trunk) has existed. The `ref.type` attribute will always be `branch`"));
+}
+
 static inline otel_result_t otel_metric_vcs_repository_count(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
     return otel_meter_updown_counter_i64(meter, handle, OTEL_METRIC_VCS_REPOSITORY_COUNT, "{repository}", "The number of repositories in an organization");
+}
+
+static inline otel_result_t otel_metric_vcs_repository_count_n(const otel_meter_t *meter, otel_updown_counter_i64_t *handle) {
+    return otel_meter_updown_counter_i64_n(meter, handle, OTEL_STR(OTEL_METRIC_VCS_REPOSITORY_COUNT), OTEL_STR("{repository}"), OTEL_STR("The number of repositories in an organization"));
 }
 
 

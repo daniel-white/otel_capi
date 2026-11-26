@@ -822,3 +822,19 @@ pub unsafe extern "C" fn otel_histogram_f64_is_valid(handle: *const otel_histogr
 pub unsafe extern "C" fn otel_gauge_f64_is_valid(handle: *const otel_gauge_f64_t) -> bool {
     unsafe { valid::<GaugeF64Inner>(const_slot(handle)) }
 }
+
+/// Returns whether the observable gauge handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_gauge_f64_is_valid(
+    handle: *const otel_observable_gauge_f64_t,
+) -> bool {
+    unsafe { valid::<ObservableGaugeF64Inner>(const_slot(handle)) }
+}
+
+/// Returns whether the observable counter handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_counter_u64_is_valid(
+    handle: *const otel_observable_counter_u64_t,
+) -> bool {
+    unsafe { valid::<ObservableCounterU64Inner>(const_slot(handle)) }
+}

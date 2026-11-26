@@ -857,6 +857,45 @@ pub unsafe extern "C" fn otel_span_add_link_arr(
     })
 }
 
+unsafe fn traceparent_ids(
+    parent: *const otel_traceparent_t,
+) -> Result<(otel_trace_id_t, otel_span_id_t)> {
+    let text = unsafe { buffer_utf8(parent)? };
+    Ok((
+        otel_trace_id_t::from_hex(&text[3..35])?,
+        otel_span_id_t::from_hex(&text[36..52])?,
+    ))
+}
+
+/// Adds a link to a span using the IDs from a validated W3C `traceparent`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_link_from_traceparent(
+    span: *const otel_span_t,
+    parent: *const otel_traceparent_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let (trace_id, span_id) = unsafe { traceparent_ids(parent)? };
+        let attributes = unsafe { from_varargs(attributes) }?;
+        unsafe { add_span_link(span, trace_id, span_id, attributes) }
+    })
+}
+
+/// Array-based variant of [`otel_span_add_link_from_traceparent`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_link_from_traceparent_arr(
+    span: *const otel_span_t,
+    parent: *const otel_traceparent_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let (trace_id, span_id) = unsafe { traceparent_ids(parent)? };
+        let attributes = unsafe { from_array(attributes, count) }?;
+        unsafe { add_span_link(span, trace_id, span_id, attributes) }
+    })
+}
+
 unsafe fn record_span_exception(
     span: *const otel_span_t,
     exception_type: Option<String>,
@@ -1108,6 +1147,53 @@ pub unsafe extern "C" fn otel_span_id_to_str(
     })
 }
 
+/// Returns whether a trace ID contains a non-zero word.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_trace_id_is_valid(value: *const otel_trace_id_t) -> bool {
+    if value.is_null() {
+        return false;
+    }
+    // SAFETY: the caller guarantees `value` points to a live trace ID.
+    let value = unsafe { &*value };
+    value.hi != 0 || value.lo != 0
+}
+
+/// Returns whether a span ID is non-zero.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_id_is_valid(value: *const otel_span_id_t) -> bool {
+    if value.is_null() {
+        return false;
+    }
+    // SAFETY: the caller guarantees `value` points to a live span ID.
+    unsafe { (*value).value != 0 }
+}
+
+/// Returns whether two trace IDs hold the same 128-bit value.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_trace_id_equal(
+    left: *const otel_trace_id_t,
+    right: *const otel_trace_id_t,
+) -> bool {
+    if left.is_null() || right.is_null() {
+        return false;
+    }
+    // SAFETY: the caller guarantees both pointers point to live trace IDs.
+    unsafe { *left == *right }
+}
+
+/// Returns whether two span IDs hold the same 64-bit value.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_id_equal(
+    left: *const otel_span_id_t,
+    right: *const otel_span_id_t,
+) -> bool {
+    if left.is_null() || right.is_null() {
+        return false;
+    }
+    // SAFETY: the caller guarantees both pointers point to live span IDs.
+    unsafe { *left == *right }
+}
+
 /// Extracts the trace ID from a validated W3C `traceparent` header.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_trace_id(
@@ -1118,8 +1204,8 @@ pub unsafe extern "C" fn otel_traceparent_trace_id(
         if out.is_null() {
             return Err(Error::invalid("trace ID output must not be NULL"));
         }
-        let text = unsafe { buffer_utf8(parent)? };
-        unsafe { *out = otel_trace_id_t::from_hex(&text[3..35])? };
+        let (trace_id, _) = unsafe { traceparent_ids(parent)? };
+        unsafe { *out = trace_id };
         Ok(())
     })
 }
@@ -1134,8 +1220,8 @@ pub unsafe extern "C" fn otel_traceparent_span_id(
         if out.is_null() {
             return Err(Error::invalid("span ID output must not be NULL"));
         }
-        let text = unsafe { buffer_utf8(parent)? };
-        unsafe { *out = otel_span_id_t::from_hex(&text[36..52])? };
+        let (_, span_id) = unsafe { traceparent_ids(parent)? };
+        unsafe { *out = span_id };
         Ok(())
     })
 }
@@ -1237,6 +1323,12 @@ mod tests {
         assert_eq!(trace.to_hex(), "4bf92f3577b34da6a3ce929d0e0e4736");
         let span = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
         assert_eq!(span.to_hex(), "00f067aa0ba902b7");
+        assert!(unsafe { otel_trace_id_is_valid(&trace) });
+        assert!(unsafe { otel_span_id_is_valid(&span) });
+        assert!(unsafe { otel_trace_id_equal(&trace, &trace) });
+        assert!(unsafe { otel_span_id_equal(&span, &span) });
+        assert!(!(unsafe { otel_trace_id_is_valid(&otel_trace_id_t::default()) }));
+        assert!(!(unsafe { otel_span_id_is_valid(&otel_span_id_t::default()) }));
         assert!(otel_trace_id_t::from_hex("42").is_err());
         assert!(otel_span_id_t::from_hex("42").is_err());
     }

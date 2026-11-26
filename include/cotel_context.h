@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Creates an empty context in caller-owned storage.
  */
@@ -123,6 +119,26 @@ OTEL_API const char *otel_baggage_str(const otel_baggage_t *value);
 OTEL_API const char *otel_baggage_value_str(const otel_baggage_value_t *value);
 
 /**
+ * Returns a length-aware view of a `traceparent` header.
+ */
+OTEL_API otel_str_t otel_traceparent_view(const otel_traceparent_t *value);
+
+/**
+ * Returns a length-aware view of a `tracestate` header.
+ */
+OTEL_API otel_str_t otel_tracestate_view(const otel_tracestate_t *value);
+
+/**
+ * Returns a length-aware view of a `baggage` header.
+ */
+OTEL_API otel_str_t otel_baggage_view(const otel_baggage_t *value);
+
+/**
+ * Returns a length-aware view of a baggage value.
+ */
+OTEL_API otel_str_t otel_baggage_value_view(const otel_baggage_value_t *value);
+
+/**
  * Extracts the trace ID from a validated W3C `traceparent` header.
  */
 OTEL_API otel_result_t otel_traceparent_trace_id(const otel_traceparent_t *parent, otel_trace_id_t *out);
@@ -131,10 +147,5 @@ OTEL_API otel_result_t otel_traceparent_trace_id(const otel_traceparent_t *paren
  * Extracts the span ID from a validated W3C `traceparent` header.
  */
 OTEL_API otel_result_t otel_traceparent_span_id(const otel_traceparent_t *parent, otel_span_id_t *out);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* COTEL_CONTEXT_H */

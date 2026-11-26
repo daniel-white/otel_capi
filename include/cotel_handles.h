@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Retains a context into caller-owned storage.
  */
@@ -266,13 +262,23 @@ OTEL_API bool otel_histogram_f64_is_valid(const otel_histogram_f64_t *handle);
 OTEL_API bool otel_gauge_f64_is_valid(const otel_gauge_f64_t *handle);
 
 /**
+ * Returns whether the observable gauge handle is usable.
+ */
+OTEL_API bool otel_observable_gauge_f64_is_valid(const otel_observable_gauge_f64_t *handle);
+
+/**
+ * Returns whether the observable counter handle is usable.
+ */
+OTEL_API bool otel_observable_counter_u64_is_valid(const otel_observable_counter_u64_t *handle);
+
+/**
  * Returns whether the runtime handle is usable.
  */
 OTEL_API bool otel_runtime_is_valid(const otel_runtime_t *runtime);
 
 
 /* Scope cleanup helpers for caller-owned handles. */
-#if (defined(__GNUC__) || defined(__clang__)) && !defined(__cplusplus)
+#if defined(__GNUC__) || defined(__clang__)
 #define OTEL_CLEANUP(fn) __attribute__((cleanup(fn)))
 static inline void otel_cleanup_context(otel_context_t *handle) {
   if (handle != NULL) {
@@ -403,9 +409,4 @@ static inline void otel_cleanup_observable_counter_u64(otel_observable_counter_u
 #define OTEL_AUTO_OBSERVABLE_GAUGE_F64
 #define OTEL_AUTO_OBSERVABLE_COUNTER_U64
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif /* COTEL_HANDLES_H */

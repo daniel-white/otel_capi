@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Creates a tracer provider using the current environment configuration.
  * `resource` may be NULL to build one from the environment. `runtime` may be
@@ -228,6 +224,21 @@ OTEL_API otel_result_t otel_span_add_link_arr(const otel_span_t *span,
                                      size_t count);
 
 /**
+ * Adds a link to a span using the IDs from a validated W3C `traceparent`.
+ */
+OTEL_API otel_result_t otel_span_add_link_from_traceparent(const otel_span_t *span,
+                                                  const otel_traceparent_t *parent,
+                                                  ...);
+
+/**
+ * Array-based variant of [`otel_span_add_link_from_traceparent`].
+ */
+OTEL_API otel_result_t otel_span_add_link_from_traceparent_arr(const otel_span_t *span,
+                                                      const otel_traceparent_t *parent,
+                                                      const otel_attribute_t *const *attributes,
+                                                      size_t count);
+
+/**
  * Records an exception as an event with standard semantic attributes.
  */
 OTEL_API otel_result_t otel_span_record_exception(const otel_span_t *span,
@@ -305,9 +316,24 @@ OTEL_API otel_result_t otel_trace_id_to_str(const otel_trace_id_t *value, char *
  */
 OTEL_API otel_result_t otel_span_id_to_str(const otel_span_id_t *value, char *out, size_t capacity);
 
+/**
+ * Returns whether a trace ID contains a non-zero word.
+ */
+OTEL_API bool otel_trace_id_is_valid(const otel_trace_id_t *value);
 
-#ifdef __cplusplus
-}
-#endif
+/**
+ * Returns whether a span ID is non-zero.
+ */
+OTEL_API bool otel_span_id_is_valid(const otel_span_id_t *value);
+
+/**
+ * Returns whether two trace IDs hold the same 128-bit value.
+ */
+OTEL_API bool otel_trace_id_equal(const otel_trace_id_t *left, const otel_trace_id_t *right);
+
+/**
+ * Returns whether two span IDs hold the same 64-bit value.
+ */
+OTEL_API bool otel_span_id_equal(const otel_span_id_t *left, const otel_span_id_t *right);
 
 #endif /* COTEL_TRACE_H */

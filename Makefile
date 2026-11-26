@@ -55,6 +55,8 @@ example-gcc: build | $(BUILD_DIR)
 	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-gcc.log
 	grep -q ' ->  component: String' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'extracted tenant=acme' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'views: traceparent=55 tracestate=0 baggage=11 tenant=4' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'numeric ID helpers ok' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'kitchen-sink.remote-child.updated' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'Links:' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'EventName: "kitchen.sink.warning"' $(BUILD_DIR)/stdout-gcc.log
@@ -64,6 +66,8 @@ example-gcc: build | $(BUILD_DIR)
 	grep -q 'trace message' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'fatal message' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'length-aware info' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'fatal record arr n' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'semconv helpers ok' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'source: callback' $(BUILD_DIR)/stdout-gcc.log
@@ -81,6 +85,8 @@ example-clang: build | $(BUILD_DIR)
 	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-clang.log
 	grep -q ' ->  component: String' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'extracted tenant=acme' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'views: traceparent=55 tracestate=0 baggage=11 tenant=4' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'numeric ID helpers ok' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'kitchen-sink.remote-child.updated' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'Links:' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'EventName: "kitchen.sink.warning"' $(BUILD_DIR)/stdout-clang.log
@@ -90,6 +96,8 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'trace message' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'fatal message' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'length-aware info' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'fatal record arr n' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'semconv helpers ok' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'source: callback' $(BUILD_DIR)/stdout-clang.log

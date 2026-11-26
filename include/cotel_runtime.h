@@ -4,19 +4,10 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Creates a multi-threaded async runtime used by OTLP exporters.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
 OTEL_API otel_result_t otel_runtime_new(otel_runtime_t *handle);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* COTEL_RUNTIME_H */

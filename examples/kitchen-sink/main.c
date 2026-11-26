@@ -151,6 +151,8 @@ int main(void) {
         OTEL_UPDOWN_COUNTER_I64_T_INIT;
     otel_histogram_f64_t histogram OTEL_AUTO_HISTOGRAM_F64 =
         OTEL_HISTOGRAM_F64_T_INIT;
+    otel_histogram_f64_t histogram_n OTEL_AUTO_HISTOGRAM_F64 =
+        OTEL_HISTOGRAM_F64_T_INIT;
     otel_gauge_f64_t gauge OTEL_AUTO_GAUGE_F64 = OTEL_GAUGE_F64_T_INIT;
     otel_observable_gauge_f64_t observable_gauge OTEL_AUTO_OBSERVABLE_GAUGE_F64 =
         OTEL_OBSERVABLE_GAUGE_F64_T_INIT;
@@ -197,6 +199,7 @@ int main(void) {
     /* Propagation: extract a remote parent, carry baggage, and inject it. */
     otel_traceparent_t remote_traceparent = OTEL_TRACEPARENT_INIT_STR(
         "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01");
+    otel_tracestate_t remote_tracestate = OTEL_TRACESTATE_INIT;
     otel_baggage_t remote_baggage = OTEL_BAGGAGE_INIT_STR("tenant=acme");
     otel_baggage_value_t baggage_value = OTEL_BAGGAGE_VALUE_INIT;
     otel_baggage_value_t request_id = OTEL_BAGGAGE_VALUE_INIT_STR("req-1");
@@ -210,6 +213,35 @@ int main(void) {
     otel_span_id_t remote_span_id = OTEL_SPAN_ID_INIT;
     CHECK(otel_traceparent_trace_id(&remote_traceparent, &remote_trace_id));
     CHECK(otel_traceparent_span_id(&remote_traceparent, &remote_span_id));
+
+    otel_str_t traceparent_view = otel_traceparent_view(&remote_traceparent);
+    otel_str_t tracestate_view = otel_tracestate_view(&remote_tracestate);
+    otel_str_t baggage_view = otel_baggage_view(&remote_baggage);
+    otel_str_t baggage_value_view = otel_baggage_value_view(&baggage_value);
+    if (traceparent_view.len != 55 || tracestate_view.len != 0 ||
+        baggage_view.len != 11 || baggage_value_view.len != 4) {
+      fprintf(stderr, "unexpected typed-buffer view length\n");
+      goto cleanup;
+    }
+    printf("views: traceparent=%zu tracestate=%zu baggage=%zu tenant=%zu\n",
+           traceparent_view.len, tracestate_view.len, baggage_view.len,
+           baggage_value_view.len);
+
+    otel_trace_id_t zero_trace_id = OTEL_TRACE_ID_INIT;
+    otel_span_id_t zero_span_id = OTEL_SPAN_ID_INIT;
+    if (!otel_trace_id_is_valid(&remote_trace_id) ||
+        !otel_span_id_is_valid(&remote_span_id) ||
+        otel_trace_id_is_valid(&zero_trace_id) ||
+        otel_span_id_is_valid(&zero_span_id) ||
+        !otel_trace_id_equal(&remote_trace_id, &remote_trace_id) ||
+        !otel_span_id_equal(&remote_span_id, &remote_span_id) ||
+        otel_trace_id_equal(&remote_trace_id, &zero_trace_id) ||
+        otel_span_id_equal(&remote_span_id, &zero_span_id)) {
+      fprintf(stderr, "numeric ID helpers failed\n");
+      goto cleanup;
+    }
+    printf("numeric ID helpers ok\n");
+
     CHECK(otel_context_set_baggage_n(&extracted, OTEL_STR("request.id"),
                                      &request_id, &with_baggage));
     CHECK(otel_context_inject(&with_baggage, &injected_traceparent, NULL, NULL));
@@ -236,6 +268,14 @@ int main(void) {
         &child, remote_trace_id, remote_span_id,
         otel_attr_string_n(OTEL_STR("link.kind"), OTEL_STR("parent")),
         OTEL_ATTR_END));
+    const otel_attribute_t *traceparent_link_attrs[] = {
+        otel_attr_string("link.source", "traceparent"),
+    };
+    CHECK(otel_span_add_link_from_traceparent(
+        &child, &remote_traceparent, otel_attr_string("link.variant", "varargs"),
+        OTEL_ATTR_END));
+    CHECK(otel_span_add_link_from_traceparent_arr(
+        &child, &remote_traceparent, traceparent_link_attrs, 1));
     CHECK(otel_span_add_event_with_timestamp_n(
         &child, OTEL_STR("queued"), options.start_time_unix_nano,
         otel_attr_string("queue", "default"), OTEL_ATTR_END));
@@ -249,7 +289,7 @@ int main(void) {
     CHECK(otel_tracer_span_start_n(
         &tracer, &span, OTEL_STR("kitchen-sink.work"),
         otel_attr_string_n(OTEL_STR("component"), OTEL_STR("example")),
-        otel_attr_client_address("example.org"),
+        otel_attr_client_address_n(OTEL_STR("example.org")),
         otel_attr_i64("attempt", 1), OTEL_ATTR_END));
     const otel_attribute_t *span_attributes[] = {
         otel_attr_bool("cache.hit", 0),
@@ -305,6 +345,52 @@ int main(void) {
                           otel_attr_string_n(OTEL_STR("phase"),
                                              OTEL_STR("macro"))));
 
+    /* Structured-record macros override options.level per severity. */
+    CHECK(OTEL_LOG_TRACE_REC(&logger, &log_options, "trace record"));
+    CHECK(OTEL_LOG_DEBUG_REC(&logger, &log_options, "debug record",
+                             otel_attr_i64("severity.step", 6)));
+    CHECK(OTEL_LOG_INFO_REC(&logger, &log_options, "info record"));
+    CHECK(OTEL_LOG_WARN_REC(&logger, &log_options, "warn record"));
+    CHECK(OTEL_LOG_ERROR_REC(&logger, &log_options, "error record"));
+    CHECK(OTEL_LOG_FATAL_REC(&logger, &log_options, "fatal record"));
+    CHECK(OTEL_LOG_TRACE_REC_N(&logger, &log_options, OTEL_STR("trace record n")));
+    CHECK(OTEL_LOG_DEBUG_REC_N(&logger, &log_options, OTEL_STR("debug record n"),
+                               otel_attr_i64("severity.step", 7)));
+    CHECK(OTEL_LOG_INFO_REC_N(&logger, &log_options, OTEL_STR("info record n")));
+    CHECK(OTEL_LOG_WARN_REC_N(&logger, &log_options, OTEL_STR("warn record n")));
+    CHECK(OTEL_LOG_ERROR_REC_N(&logger, &log_options, OTEL_STR("error record n")));
+    CHECK(OTEL_LOG_FATAL_REC_N(&logger, &log_options, OTEL_STR("fatal record n")));
+    CHECK(OTEL_LOG_TRACE_REC_ARR(&logger, &log_options, "trace record arr",
+                                 span_attributes, 2));
+    CHECK(OTEL_LOG_DEBUG_REC_ARR(&logger, &log_options, "debug record arr",
+                                 span_attributes, 2));
+    CHECK(OTEL_LOG_INFO_REC_ARR(&logger, &log_options, "info record arr",
+                                span_attributes, 2));
+    CHECK(OTEL_LOG_WARN_REC_ARR(&logger, &log_options, "warn record arr",
+                                span_attributes, 2));
+    CHECK(OTEL_LOG_ERROR_REC_ARR(&logger, &log_options, "error record arr",
+                                 span_attributes, 2));
+    CHECK(OTEL_LOG_FATAL_REC_ARR(&logger, &log_options, "fatal record arr",
+                                 span_attributes, 2));
+    CHECK(OTEL_LOG_TRACE_REC_ARR_N(&logger, &log_options,
+                                   OTEL_STR("trace record arr n"),
+                                   span_attributes, 2));
+    CHECK(OTEL_LOG_DEBUG_REC_ARR_N(&logger, &log_options,
+                                   OTEL_STR("debug record arr n"),
+                                   span_attributes, 2));
+    CHECK(OTEL_LOG_INFO_REC_ARR_N(&logger, &log_options,
+                                  OTEL_STR("info record arr n"),
+                                  span_attributes, 2));
+    CHECK(OTEL_LOG_WARN_REC_ARR_N(&logger, &log_options,
+                                  OTEL_STR("warn record arr n"),
+                                  span_attributes, 2));
+    CHECK(OTEL_LOG_ERROR_REC_ARR_N(&logger, &log_options,
+                                   OTEL_STR("error record arr n"),
+                                   span_attributes, 2));
+    CHECK(OTEL_LOG_FATAL_REC_ARR_N(&logger, &log_options,
+                                   OTEL_STR("fatal record arr n"),
+                                   span_attributes, 2));
+
     /* Metrics: all five supported instruments. */
     CHECK(otel_meter_counter_u64(
         &meter, &counter_u64, "kitchen_sink.requests", "1", "Total requests"));
@@ -315,6 +401,8 @@ int main(void) {
                                           OTEL_STR("kitchen_sink.queue_depth"),
                                           OTEL_STR_NULL, OTEL_STR_NULL));
     CHECK(otel_metric_http_server_request_duration(&meter, &histogram));
+    CHECK(otel_metric_http_server_request_duration_n(&meter, &histogram_n));
+    CHECK(otel_histogram_f64_record(&histogram_n, 0.05, OTEL_ATTR_END));
     CHECK(otel_meter_gauge_f64(
         &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
     CHECK(otel_meter_observable_gauge_f64(
@@ -326,9 +414,10 @@ int main(void) {
         &observed_requests));
 
     const otel_attribute_t *method_attributes[] = {
-        otel_attr_http_request_method("GET"),
+        otel_attr_http_request_method_n(OTEL_STR("GET")),
     };
     CHECK(otel_counter_u64_add_arr(&counter_u64, 3, method_attributes, 1));
+    printf("semconv helpers ok\n");
     CHECK(otel_counter_f64_add(&counter_f64, 2048.0, OTEL_ATTR_END));
     CHECK(otel_updown_counter_i64_add(&updown, 1, OTEL_ATTR_END));
     CHECK(otel_histogram_f64_record(&histogram, 0.042, OTEL_ATTR_END));

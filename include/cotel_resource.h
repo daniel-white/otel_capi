@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Creates a resource from `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES`.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
@@ -26,10 +22,5 @@ OTEL_API otel_result_t otel_resource_new_with_attributes(otel_resource_t *handle
 OTEL_API otel_result_t otel_resource_new_with_attributes_arr(otel_resource_t *handle,
                                                     const otel_attribute_t *const *attributes,
                                                     size_t count);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* COTEL_RESOURCE_H */

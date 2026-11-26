@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Length-aware variant of [`otel_meter_counter_u64`].
  */
@@ -277,9 +273,4 @@ OTEL_API otel_result_t otel_gauge_f64_record_arr(const otel_gauge_f64_t *gauge,
 
 /* Generated semantic-convention metric helpers. */
 #include "cotel_semconv_metrics.h"
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif /* COTEL_METRICS_H */

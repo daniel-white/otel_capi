@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Returns the crate version as a NUL-terminated string.
  */
@@ -43,10 +39,5 @@ OTEL_API size_t otel_live_handle_count(void);
  * in the thread-local error message.
  */
 OTEL_API otel_result_t otel_ensure_all_released(void);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* COTEL_ERROR_H */

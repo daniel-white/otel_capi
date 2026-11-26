@@ -91,8 +91,9 @@ Key rules:
 - Status, severity, and attribute-kind inputs are plain `int32_t` values that
   the library validates; passing an out-of-range integer returns
   `OTEL_ERR_INVALID_ARGUMENT`.
-- Use `OTEL_<TYPE>_INIT` for zero-initialized handle storage, and
-  `otel_<type>_is_valid()` to check whether a handle holds an object.
+- Use `OTEL_<TYPE>_INIT` for zero-initialized handle storage; generated INIT
+  macros use designated initializers. Use `otel_<type>_is_valid()` to check
+  whether a handle holds an object.
 - On GCC and Clang, add `OTEL_AUTO_<TYPE>` to a handle declaration to release
   it automatically at scope exit, for example
   `otel_span_t span OTEL_AUTO_SPAN = OTEL_SPAN_T_INIT;`. The macro is empty on
@@ -115,6 +116,23 @@ Key rules:
   `otel_ensure_all_released()` returns `OTEL_OK` only when that count is zero,
   otherwise `OTEL_ERR_LEAK` with the count in `otel_last_error()`.
 
+The API is C11 only. Generated headers do not add C++ compatibility guards; use
+the standard OpenTelemetry C++ library for C++ projects.
+
+### Naming conventions
+
+Suffixes are consistent across the generated headers:
+
+- `_n` takes `otel_str_t` length-aware views for string arguments. This applies
+  to signal APIs, attribute builders, semconv helpers, and the structured log
+  REC macros.
+- `_arr` takes an explicit `const otel_attribute_t *attributes[], size_t count`
+  instead of a `OTEL_ATTR_END`-terminated variadic list.
+- `_from_str` parses a NUL-terminated C string into numeric ID or typed
+  propagation storage; `_to_str` formats a numeric ID back into a caller buffer.
+- `_str` returns a borrowed NUL-terminated `const char *` from typed
+  propagation storage; `_view` returns a borrowed `otel_str_t` with length.
+
 `cotel.h` includes the generated semantic-convention headers, which `build.rs`
 generates from the `opentelemetry-semantic-conventions` crate at build time.
 Macro names are
@@ -126,11 +144,14 @@ typed `static inline` helper such as `otel_attr_client_address("example.org")`
 or `otel_attr_http_response_status_code(200)`. These are functions rather than
 macros, so C checks that you pass a string, `int64_t`, `double`, or `int` as
 appropriate. The original key macros remain available so you can still choose
-the type explicitly.
+the type explicitly. Each typed helper also has an `_n` variant, such as
+`otel_attr_client_address_n(OTEL_STR("example.org"))`, for length-aware input.
 
 Metric constants with complete semconv metadata get matching helpers such as
 `otel_metric_http_server_request_duration(&meter, &histogram)`, which uses the
-standard instrument, unit, and description from the semantic conventions.
+standard instrument, unit, and description from the semantic conventions. The
+`_n` variant, `otel_metric_http_server_request_duration_n`, uses `otel_str_t`
+views for the name, unit, and description.
 
 `otel_meter_observable_gauge_f64` and `otel_meter_observable_counter_u64`
 register C callbacks that are invoked during collection. The callback receives
@@ -157,6 +178,11 @@ accept `otel_str_t`; for example `otel_tracer_span_start_n`,
 attribute keys/values through the attribute struct's `key_len` and `value_len`
 fields.
 
+Typed propagation buffers also expose `otel_traceparent_view`,
+`otel_tracestate_view`, `otel_baggage_view`, and `otel_baggage_value_view`. They
+return an `otel_str_t` pointing into the same storage, with the length already
+computed. The returned view is borrowed and valid only while the buffer is.
+
 ### Structured logs
 
 `otel_logger_log_record` takes an `otel_log_record_options_t` initialized with
@@ -178,6 +204,20 @@ CHECK(OTEL_LOG_INFO(&logger, &span, "work complete",
 
 The `OTEL_LOG_*_N` variants take an `otel_str_t` body, for example
 `OTEL_LOG_INFO_N(&logger, &span, OTEL_STR("work complete"))`.
+
+For structured records, the `OTEL_LOG_*_REC` macros bind the severity on an
+`otel_log_record_options_t`, copying the caller's options and overriding `level`:
+
+```c
+otel_log_record_options_t options = OTEL_LOG_RECORD_OPTIONS_INIT;
+options.event_name = "work.complete";
+CHECK(OTEL_LOG_INFO_REC(&logger, &options, "work complete",
+                        otel_attr_i64("items", 3)));
+```
+
+`OTEL_LOG_*_REC_N` takes an `otel_str_t` body, while `OTEL_LOG_*_REC_ARR` and
+`OTEL_LOG_*_REC_ARR_N` take an explicit attribute array and count. All four
+families exist for `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, and `FATAL`.
 
 ### Propagation and span options
 
@@ -203,14 +243,19 @@ non-standard `unsigned __int128` while keeping the full ID width portable.
 `otel_trace_id_from_str` / `otel_span_id_from_str` parse 32/16 hex digits;
 `otel_trace_id_to_str` / `otel_span_id_to_str` format them back into a caller
 buffer. `otel_traceparent_trace_id` and `otel_traceparent_span_id` parse the IDs
-directly from a validated `otel_traceparent_t`. Links take the numeric IDs
-directly:
+directly from a validated `otel_traceparent_t`. Use `otel_trace_id_is_valid`,
+`otel_span_id_is_valid`, `otel_trace_id_equal`, and `otel_span_id_equal` to test
+values without formatting them. Links take the numeric IDs directly:
 
 ```c
 CHECK(otel_span_add_link(&span, trace_id, span_id,
                          otel_attr_string("link.kind", "parent"),
                          OTEL_ATTR_END));
 ```
+
+`otel_span_add_link_from_traceparent` and
+`otel_span_add_link_from_traceparent_arr` parse the IDs from a validated
+`otel_traceparent_t` instead of taking separate ID structs.
 
 `otel_span_options_t` (initialize with `OTEL_SPAN_OPTIONS_INIT`) can set a
 parent context, span kind, start timestamp, and `end_on_release`. With

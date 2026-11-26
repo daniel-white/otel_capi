@@ -4,16 +4,39 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+/// Caller-owned handle structs. This is the single source of truth for the
+/// generated `OTEL_*_T_INIT`, `OTEL_AUTO_*`, and cleanup helpers.
+const HANDLES: &[&str] = &[
+    "otel_context_t",
+    "otel_span_t",
+    "otel_context_scope_t",
+    "otel_resource_t",
+    "otel_runtime_t",
+    "otel_tracer_provider_t",
+    "otel_meter_provider_t",
+    "otel_logger_provider_t",
+    "otel_tracer_t",
+    "otel_meter_t",
+    "otel_logger_t",
+    "otel_counter_u64_t",
+    "otel_counter_f64_t",
+    "otel_updown_counter_i64_t",
+    "otel_histogram_f64_t",
+    "otel_gauge_f64_t",
+    "otel_observable_gauge_f64_t",
+    "otel_observable_counter_u64_t",
+];
+
 /// Convenience constructors for the C `otel_attribute_t` struct. cbindgen
 /// cannot parse macro-generated Rust functions, so these are appended here.
 const ATTRIBUTE_MACROS: &str = r#"
 /* Length-aware views. OTEL_STR uses literal sizes at compile time;
  * OTEL_STR_VIEW measures a NUL-terminated string at runtime. */
 #define OTEL_STR(literal) \
-  ((otel_str_t){ (const char *)(literal), sizeof(literal) - 1 })
+  ((otel_str_t){ .ptr = (const char *)(literal), .len = sizeof(literal) - 1 })
 #define OTEL_STR_VIEW(text) \
-  ((otel_str_t){ (const char *)(text), (text) ? strlen(text) : 0 })
-#define OTEL_STR_NULL ((otel_str_t){ NULL, 0 })
+  ((otel_str_t){ .ptr = (const char *)(text), .len = (text) ? strlen(text) : 0 })
+#define OTEL_STR_NULL ((otel_str_t){ .ptr = NULL, .len = 0 })
 
 /* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
  * function that takes variadic attributes, for example:
@@ -26,73 +49,184 @@ const ATTRIBUTE_MACROS: &str = r#"
  * The _n forms take otel_str_t views, so keys and string values may contain
  * embedded bytes and need not be NUL-terminated.
  */
-#define otel_attr_string_n(key, value) \
-  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
-                       (key).ptr, (key).len, \
-                       { .string = (value).ptr }, (value).len })
-#define otel_attr_bool_n(key, value) \
-  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
-                       (key).ptr, (key).len, \
-                       { .boolean = !!(value) }, 0 })
-#define otel_attr_i64_n(key, value) \
-  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
-                       (key).ptr, (key).len, \
-                       { .integer = (int64_t)(value) }, 0 })
-#define otel_attr_f64_n(key, value) \
-  (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
-                       (key).ptr, (key).len, \
-                       { .double_value = (double)(value) }, 0 })
-#define otel_attr_string(key, value) \
-  otel_attr_string_n(OTEL_STR_VIEW(key), OTEL_STR_VIEW(value))
-#define otel_attr_bool(key, value) \
-  otel_attr_bool_n(OTEL_STR_VIEW(key), (value))
-#define otel_attr_i64(key, value) \
-  otel_attr_i64_n(OTEL_STR_VIEW(key), (value))
-#define otel_attr_f64(key, value) \
-  otel_attr_f64_n(OTEL_STR_VIEW(key), (value))
+#define otel_attr_string_n(key_, value_) \
+  (&(otel_attribute_t){ .kind = OTEL_ATTRIBUTE_TYPE_STRING, \
+                       .key = (key_).ptr, .key_len = (key_).len, \
+                       .value = { .string = (value_).ptr }, .value_len = (value_).len })
+#define otel_attr_bool_n(key_, value_) \
+  (&(otel_attribute_t){ .kind = OTEL_ATTRIBUTE_TYPE_BOOL, \
+                       .key = (key_).ptr, .key_len = (key_).len, \
+                       .value = { .boolean = !!(value_) }, .value_len = 0 })
+#define otel_attr_i64_n(key_, value_) \
+  (&(otel_attribute_t){ .kind = OTEL_ATTRIBUTE_TYPE_I64, \
+                       .key = (key_).ptr, .key_len = (key_).len, \
+                       .value = { .integer = (int64_t)(value_) }, .value_len = 0 })
+#define otel_attr_f64_n(key_, value_) \
+  (&(otel_attribute_t){ .kind = OTEL_ATTRIBUTE_TYPE_F64, \
+                       .key = (key_).ptr, .key_len = (key_).len, \
+                       .value = { .double_value = (double)(value_) }, .value_len = 0 })
+#define otel_attr_string(key_, value_) \
+  otel_attr_string_n(OTEL_STR_VIEW(key_), OTEL_STR_VIEW(value_))
+#define otel_attr_bool(key_, value_) \
+  otel_attr_bool_n(OTEL_STR_VIEW(key_), (value_))
+#define otel_attr_i64(key_, value_) \
+  otel_attr_i64_n(OTEL_STR_VIEW(key_), (value_))
+#define otel_attr_f64(key_, value_) \
+  otel_attr_f64_n(OTEL_STR_VIEW(key_), (value_))
 "#;
 
 const LOG_MACROS: &str = r#"
 /* One helper per severity level. Each appends OTEL_ATTR_END automatically, so
  * pass zero or more attribute builders as trailing arguments. The _N forms
  * take an otel_str_t body, for example OTEL_STR("message") or OTEL_STR_VIEW(s).
+ * The _REC forms wrap otel_logger_log_record and override its level.
  */
-#define OTEL_LOG_TRACE(logger, span, body, ...)                                \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_TRACE, (body)                 \
+static inline otel_log_record_options_t *otel_log_options_with_level(
+    const otel_log_record_options_t *options_, int32_t level_,
+    otel_log_record_options_t *slot_) {
+  *slot_ = options_ ? *options_
+                    : (otel_log_record_options_t)OTEL_LOG_RECORD_OPTIONS_INIT;
+  slot_->size = sizeof(*slot_);
+  slot_->level = level_;
+  return slot_;
+}
+#define OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, level_)                        \
+  otel_log_options_with_level((options_), (level_),                           \
+                              &(otel_log_record_options_t){ .size = 0 })
+
+#define OTEL_LOG_TRACE(logger_, span_, body_, ...)                             \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_TRACE, (body_)              \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_DEBUG(logger, span, body, ...)                                \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_DEBUG, (body)                 \
+#define OTEL_LOG_DEBUG(logger_, span_, body_, ...)                             \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_DEBUG, (body_)              \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_INFO(logger, span, body, ...)                                 \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_INFO, (body)                  \
+#define OTEL_LOG_INFO(logger_, span_, body_, ...)                              \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_INFO, (body_)               \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_WARN(logger, span, body, ...)                                 \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_WARN, (body)                  \
+#define OTEL_LOG_WARN(logger_, span_, body_, ...)                              \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_WARN, (body_)               \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_ERROR(logger, span, body, ...)                                \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_ERROR, (body)                 \
+#define OTEL_LOG_ERROR(logger_, span_, body_, ...)                             \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_ERROR, (body_)              \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_FATAL(logger, span, body, ...)                                \
-  otel_logger_log((logger), (span), OTEL_SEVERITY_FATAL, (body)                 \
+#define OTEL_LOG_FATAL(logger_, span_, body_, ...)                             \
+  otel_logger_log((logger_), (span_), OTEL_SEVERITY_FATAL, (body_)              \
                   __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_TRACE_N(logger, span, body, ...)                              \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_TRACE, (body)               \
+#define OTEL_LOG_TRACE_N(logger_, span_, body_, ...)                           \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_TRACE, (body_)            \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_DEBUG_N(logger, span, body, ...)                              \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_DEBUG, (body)               \
+#define OTEL_LOG_DEBUG_N(logger_, span_, body_, ...)                           \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_DEBUG, (body_)            \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_INFO_N(logger, span, body, ...)                               \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_INFO, (body)                \
+#define OTEL_LOG_INFO_N(logger_, span_, body_, ...)                            \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_INFO, (body_)             \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_WARN_N(logger, span, body, ...)                               \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_WARN, (body)                \
+#define OTEL_LOG_WARN_N(logger_, span_, body_, ...)                            \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_WARN, (body_)             \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_ERROR_N(logger, span, body, ...)                              \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_ERROR, (body)               \
+#define OTEL_LOG_ERROR_N(logger_, span_, body_, ...)                           \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_ERROR, (body_)            \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
-#define OTEL_LOG_FATAL_N(logger, span, body, ...)                              \
-  otel_logger_log_n((logger), (span), OTEL_SEVERITY_FATAL, (body)               \
+#define OTEL_LOG_FATAL_N(logger_, span_, body_, ...)                           \
+  otel_logger_log_n((logger_), (span_), OTEL_SEVERITY_FATAL, (body_)            \
                     __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+
+#define OTEL_LOG_TRACE_REC(logger_, options_, body_, ...)                      \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_TRACE), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG_REC(logger_, options_, body_, ...)                      \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_DEBUG), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO_REC(logger_, options_, body_, ...)                       \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_INFO), (body_)       \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN_REC(logger_, options_, body_, ...)                       \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_WARN), (body_)       \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR_REC(logger_, options_, body_, ...)                      \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_ERROR), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL_REC(logger_, options_, body_, ...)                      \
+  otel_logger_log_record((logger_),                                            \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_FATAL), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_TRACE_REC_N(logger_, options_, body_, ...)                    \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_TRACE), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG_REC_N(logger_, options_, body_, ...)                    \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_DEBUG), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO_REC_N(logger_, options_, body_, ...)                     \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_INFO), (body_)       \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN_REC_N(logger_, options_, body_, ...)                     \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_WARN), (body_)       \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR_REC_N(logger_, options_, body_, ...)                    \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_ERROR), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL_REC_N(logger_, options_, body_, ...)                    \
+  otel_logger_log_record_n((logger_),                                          \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_FATAL), (body_)      \
+      __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_TRACE_REC_ARR(logger_, options_, body_, attrs_, count_)       \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_TRACE), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_DEBUG_REC_ARR(logger_, options_, body_, attrs_, count_)       \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_DEBUG), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_INFO_REC_ARR(logger_, options_, body_, attrs_, count_)        \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_INFO), (body_),      \
+      (attrs_), (count_))
+#define OTEL_LOG_WARN_REC_ARR(logger_, options_, body_, attrs_, count_)        \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_WARN), (body_),      \
+      (attrs_), (count_))
+#define OTEL_LOG_ERROR_REC_ARR(logger_, options_, body_, attrs_, count_)       \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_ERROR), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_FATAL_REC_ARR(logger_, options_, body_, attrs_, count_)       \
+  otel_logger_log_record_arr((logger_),                                        \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_FATAL), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_TRACE_REC_ARR_N(logger_, options_, body_, attrs_, count_)     \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_TRACE), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_DEBUG_REC_ARR_N(logger_, options_, body_, attrs_, count_)     \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_DEBUG), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_INFO_REC_ARR_N(logger_, options_, body_, attrs_, count_)      \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_INFO), (body_),      \
+      (attrs_), (count_))
+#define OTEL_LOG_WARN_REC_ARR_N(logger_, options_, body_, attrs_, count_)      \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_WARN), (body_),      \
+      (attrs_), (count_))
+#define OTEL_LOG_ERROR_REC_ARR_N(logger_, options_, body_, attrs_, count_)     \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_ERROR), (body_),     \
+      (attrs_), (count_))
+#define OTEL_LOG_FATAL_REC_ARR_N(logger_, options_, body_, attrs_, count_)     \
+  otel_logger_log_record_arr_n((logger_),                                      \
+      OTEL_LOG_OPTIONS_WITH_LEVEL_(options_, OTEL_SEVERITY_FATAL), (body_),     \
+      (attrs_), (count_))
 "#;
 
 const SEMCONV_MODULES: [&str; 4] = ["attribute", "metric", "resource", "trace"];
@@ -139,16 +273,16 @@ const TYPED_BUFFER_MACROS: &str = r#"
  * forms are checked by the compiler: a literal longer than the fixed storage
  * is a hard error. Trace and span IDs are numeric, so use *_from_str at
  * runtime to parse hex text. */
-#define OTEL_TRACE_ID_INIT { 0, 0 }
-#define OTEL_SPAN_ID_INIT { 0 }
-#define OTEL_TRACEPARENT_INIT { { 0 } }
-#define OTEL_TRACESTATE_INIT { { 0 } }
-#define OTEL_BAGGAGE_INIT { { 0 } }
-#define OTEL_BAGGAGE_VALUE_INIT { { 0 } }
-#define OTEL_TRACEPARENT_INIT_STR(s) { { s } }
-#define OTEL_TRACESTATE_INIT_STR(s) { { s } }
-#define OTEL_BAGGAGE_INIT_STR(s) { { s } }
-#define OTEL_BAGGAGE_VALUE_INIT_STR(s) { { s } }
+#define OTEL_TRACE_ID_INIT { .hi = 0, .lo = 0 }
+#define OTEL_SPAN_ID_INIT { .value = 0 }
+#define OTEL_TRACEPARENT_INIT { .value = { 0 } }
+#define OTEL_TRACESTATE_INIT { .value = { 0 } }
+#define OTEL_BAGGAGE_INIT { .value = { 0 } }
+#define OTEL_BAGGAGE_VALUE_INIT { .value = { 0 } }
+#define OTEL_TRACEPARENT_INIT_STR(s) { .value = s }
+#define OTEL_TRACESTATE_INIT_STR(s) { .value = s }
+#define OTEL_BAGGAGE_INIT_STR(s) { .value = s }
+#define OTEL_BAGGAGE_VALUE_INIT_STR(s) { .value = s }
 "#;
 
 const OWNERSHIP_DOC: &str = r#"/* Ownership convention
@@ -198,15 +332,15 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     common_body.push('\n');
     common_body.push_str(types);
     common_body.push_str(ATTRIBUTE_MACROS);
-    common_body.push_str(LOG_MACROS);
     common_body.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     common_body.push_str(&sentinel_macros(header));
-    common_body.push_str(&handle_init_macros(header));
+    common_body.push_str(&handle_init_macros());
     common_body.push_str(
-        "#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }\n",
+        "#define OTEL_SPAN_OPTIONS_INIT { .size = sizeof(otel_span_options_t), .kind = -1, .start_time_unix_nano = 0, .parent = NULL, .end_on_release = 0 }\n",
     );
-    common_body.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
+    common_body.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { .size = sizeof(otel_log_record_options_t), .level = OTEL_SEVERITY_INFO, .event_name = NULL, .target = NULL, .severity_text = NULL, .timestamp_unix_nano = 0, .observed_timestamp_unix_nano = 0, .span = NULL }\n");
     common_body.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
+    common_body.push_str(LOG_MACROS);
     common_body.push_str(TYPED_BUFFER_MACROS);
     common_body.push_str("\n/* Compile-time version and error helpers. */\n");
     common_body.push_str(&version_macros());
@@ -234,7 +368,7 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     }
     if let Some(handles) = areas.get_mut("cotel_handles.h") {
         handles.push_str("\n/* Scope cleanup helpers for caller-owned handles. */\n");
-        handles.push_str(&cleanup_macros(header));
+        handles.push_str(&cleanup_macros());
     }
     if let Some(metrics) = areas.get_mut("cotel_metrics.h") {
         metrics.push_str("\n/* Generated semantic-convention metric helpers. */\n");
@@ -326,12 +460,10 @@ fn wrap_header(guard: &str, includes: &[&str], body: &str) -> String {
     if !includes.is_empty() {
         result.push('\n');
     }
-    result.push_str("#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n");
     result.push_str(body);
     if !body.ends_with('\n') {
         result.push('\n');
     }
-    result.push_str("\n#ifdef __cplusplus\n}\n#endif\n\n");
     result.push_str(&format!("#endif /* {guard} */\n"));
     result
 }
@@ -365,6 +497,9 @@ fn area_for_block(block: &str) -> &'static str {
     let Some(name) = exported_name(block) else {
         return "cotel_error.h";
     };
+    if name.starts_with("otel_trace_id_") || name.starts_with("otel_span_id_") {
+        return "cotel_trace.h";
+    }
     if name.ends_with("_retain") || name.ends_with("_release") || name.ends_with("_is_valid") {
         return "cotel_handles.h";
     }
@@ -395,9 +530,6 @@ fn area_for_block(block: &str) -> &'static str {
     if name.starts_with("otel_runtime_") {
         return "cotel_runtime.h";
     }
-    if name.starts_with("otel_trace_id_") || name.starts_with("otel_span_id_") {
-        return "cotel_trace.h";
-    }
     if name.starts_with("otel_meter_")
         || name.starts_with("otel_metric_")
         || name.starts_with("otel_counter_")
@@ -420,6 +552,7 @@ fn annotate_exports(header: &str) -> String {
         let exported = [
             "otel_result_t otel_",
             "const char *otel_",
+            "otel_str_t otel_",
             "void otel_",
             "size_t otel_",
             "bool otel_",
@@ -486,31 +619,19 @@ fn sentinel_macros(header: &str) -> String {
     result
 }
 
-/// Generates `OTEL_<TYPE>_INIT` macros from every caller-owned handle struct
-/// in the generated header.
-fn handle_init_macros(header: &str) -> String {
-    let mut result = String::new();
-    let mut pos = 0;
-    while let Some(rel) = header[pos..].find("typedef struct {") {
-        let start = pos + rel;
-        let Some(end_rel) = header[start..].find("} otel_") else {
-            break;
-        };
-        let body = &header[start + "typedef struct {".len()..start + end_rel];
-        let type_start = start + end_rel + 2;
-        let Some(suffix_rel) = header[type_start..].find("_t;") else {
-            break;
-        };
-        let ty = &header[type_start..type_start + suffix_rel + 2];
-        if body.contains("void *inner;") {
-            result.push_str(&format!(
-                "#define {}_INIT {{ NULL }}\n",
-                ty.to_ascii_uppercase()
-            ));
-        }
-        pos = type_start + suffix_rel + 3;
-    }
-    result
+/// Generates `OTEL_<TYPE>_INIT` macros from [`HANDLES`].
+fn handle_init_macros() -> String {
+    HANDLES
+        .iter()
+        .map(|ty| format!("#define {}_INIT {{ .inner = NULL }}\n", ty.to_ascii_uppercase()))
+        .collect()
+}
+
+/// Returns the short name (without `otel_` / `_t`) for a handle type.
+fn handle_short_name(ty: &str) -> &str {
+    ty.strip_prefix("otel_")
+        .and_then(|name| name.strip_suffix("_t"))
+        .unwrap_or(ty)
 }
 
 /// Emits compile-time version constants derived from `CARGO_PKG_VERSION`.
@@ -541,37 +662,14 @@ fn version_macros() -> String {
     )
 }
 
-/// Emits `OTEL_AUTO_<TYPE>` declarations that release handles at scope exit
-/// on compilers supporting `__attribute__((cleanup))`. Other compilers get an
-/// empty macro so source stays portable.
-fn cleanup_macros(header: &str) -> String {
-    let mut types = Vec::new();
-    let mut pos = 0;
-    while let Some(rel) = header[pos..].find("typedef struct {") {
-        let start = pos + rel;
-        let Some(end_rel) = header[start..].find("} otel_") else {
-            break;
-        };
-        let body = &header[start + "typedef struct {".len()..start + end_rel];
-        let type_start = start + end_rel + 2;
-        let Some(suffix_rel) = header[type_start..].find("_t;") else {
-            break;
-        };
-        let ty = &header[type_start..type_start + suffix_rel + 2];
-        if body.contains("void *inner;") {
-            types.push(ty.to_string());
-        }
-        pos = type_start + suffix_rel + 3;
-    }
-
-    let mut result =
-        String::from("#if (defined(__GNUC__) || defined(__clang__)) && !defined(__cplusplus)\n");
+/// Emits `OTEL_AUTO_<TYPE>` declarations from [`HANDLES`]. GCC and Clang get
+/// scope cleanup via `__attribute__((cleanup))`; other compilers get no-op
+/// macros so source stays portable.
+fn cleanup_macros() -> String {
+    let mut result = String::from("#if defined(__GNUC__) || defined(__clang__)\n");
     result.push_str("#define OTEL_CLEANUP(fn) __attribute__((cleanup(fn)))\n");
-    for ty in &types {
-        let short = ty
-            .strip_prefix("otel_")
-            .and_then(|name| name.strip_suffix("_t"))
-            .unwrap_or(ty);
+    for ty in HANDLES {
+        let short = handle_short_name(ty);
         let helper = format!("otel_cleanup_{short}");
         result.push_str(&format!("static inline void {helper}({ty} *handle) {{\n"));
         result.push_str("  if (handle != NULL) {\n");
@@ -583,11 +681,8 @@ fn cleanup_macros(header: &str) -> String {
         ));
     }
     result.push_str("#else\n#define OTEL_CLEANUP(fn)\n");
-    for ty in &types {
-        let short = ty
-            .strip_prefix("otel_")
-            .and_then(|name| name.strip_suffix("_t"))
-            .unwrap_or(ty);
+    for ty in HANDLES {
+        let short = handle_short_name(ty);
         result.push_str(&format!(
             "#define OTEL_AUTO_{}\n",
             short.to_ascii_uppercase()
@@ -740,6 +835,10 @@ fn generate_semconv_header(root: &Path) -> String {
             "f64" => "double value",
             other => panic!("unexpected attribute builder {other}"),
         };
+        let parameter_n = match builder.as_str() {
+            "string" => "otel_str_t value",
+            _other => parameter,
+        };
         let value_helper = format!(
             "otel_attr_value_{}",
             helper.trim_start_matches("otel_attr_")
@@ -750,6 +849,14 @@ fn generate_semconv_header(root: &Path) -> String {
         ));
         header.push_str(&format!(
             "#define {}(value) {}((value), &(otel_attribute_t){{0}})\n\n",
+            helper, value_helper
+        ));
+        header.push_str(&format!(
+            "static inline const otel_attribute_t *{}_n({}, otel_attribute_t *slot) {{\n    *slot = *otel_attr_{}_n(OTEL_STR({}), (value));\n    return slot;\n}}\n\n",
+            value_helper, parameter_n, builder, constant
+        ));
+        header.push_str(&format!(
+            "#define {}_n(value) {}_n((value), &(otel_attribute_t){{0}})\n\n",
             helper, value_helper
         ));
     }
@@ -765,6 +872,10 @@ fn generate_semconv_header(root: &Path) -> String {
         };
         header.push_str(&format!(
             "static inline otel_result_t {}(const otel_meter_t *meter, {}) {{\n    return {}(meter, handle, {}, \"{}\", \"{}\");\n}}\n\n",
+            helper, handle, constructor, constant, unit, description
+        ));
+        header.push_str(&format!(
+            "static inline otel_result_t {}_n(const otel_meter_t *meter, {}) {{\n    return {}_n(meter, handle, OTEL_STR({}), OTEL_STR(\"{}\"), OTEL_STR(\"{}\"));\n}}\n\n",
             helper, handle, constructor, constant, unit, description
         ));
     }

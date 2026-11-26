@@ -1392,12 +1392,26 @@ static inline const otel_attribute_t *otel_attr_value_android_app_state(const ch
 
 #define otel_attr_android_app_state(value) otel_attr_value_android_app_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_android_app_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ANDROID_APP_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_android_app_state_n(value) otel_attr_value_android_app_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_android_os_api_level(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL, (value));
     return slot;
 }
 
 #define otel_attr_android_os_api_level(value) otel_attr_value_android_os_api_level((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_android_os_api_level_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ANDROID_OS_API_LEVEL), (value));
+    return slot;
+}
+
+#define otel_attr_android_os_api_level_n(value) otel_attr_value_android_os_api_level_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_build_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_BUILD_ID, (value));
@@ -1406,12 +1420,26 @@ static inline const otel_attribute_t *otel_attr_value_app_build_id(const char *v
 
 #define otel_attr_app_build_id(value) otel_attr_value_app_build_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_build_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_BUILD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_app_build_id_n(value) otel_attr_value_app_build_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_crash_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_CRASH_ID, (value));
     return slot;
 }
 
 #define otel_attr_app_crash_id(value) otel_attr_value_app_crash_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_crash_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_CRASH_ID), (value));
+    return slot;
+}
+
+#define otel_attr_app_crash_id_n(value) otel_attr_value_app_crash_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_installation_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_INSTALLATION_ID, (value));
@@ -1420,12 +1448,26 @@ static inline const otel_attribute_t *otel_attr_value_app_installation_id(const 
 
 #define otel_attr_app_installation_id(value) otel_attr_value_app_installation_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_installation_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_INSTALLATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_app_installation_id_n(value) otel_attr_value_app_installation_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_jank_frame_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT, (value));
     return slot;
 }
 
 #define otel_attr_app_jank_frame_count(value) otel_attr_value_app_jank_frame_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_jank_frame_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_APP_JANK_FRAME_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_frame_count_n(value) otel_attr_value_app_jank_frame_count_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_jank_period(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_PERIOD, (value));
@@ -1434,12 +1476,26 @@ static inline const otel_attribute_t *otel_attr_value_app_jank_period(double val
 
 #define otel_attr_app_jank_period(value) otel_attr_value_app_jank_period((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_jank_period_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_APP_JANK_PERIOD), (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_period_n(value) otel_attr_value_app_jank_period_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_jank_threshold(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD, (value));
     return slot;
 }
 
 #define otel_attr_app_jank_threshold(value) otel_attr_value_app_jank_threshold((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_jank_threshold_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_APP_JANK_THRESHOLD), (value));
+    return slot;
+}
+
+#define otel_attr_app_jank_threshold_n(value) otel_attr_value_app_jank_threshold_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_x(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X, (value));
@@ -1448,12 +1504,26 @@ static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_x(in
 
 #define otel_attr_app_screen_coordinate_x(value) otel_attr_value_app_screen_coordinate_x((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_x_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_X), (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_coordinate_x_n(value) otel_attr_value_app_screen_coordinate_x_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_y(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y, (value));
     return slot;
 }
 
 #define otel_attr_app_screen_coordinate_y(value) otel_attr_value_app_screen_coordinate_y((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_coordinate_y_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_APP_SCREEN_COORDINATE_Y), (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_coordinate_y_n(value) otel_attr_value_app_screen_coordinate_y_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_screen_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_ID, (value));
@@ -1462,12 +1532,26 @@ static inline const otel_attribute_t *otel_attr_value_app_screen_id(const char *
 
 #define otel_attr_app_screen_id(value) otel_attr_value_app_screen_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_screen_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_SCREEN_ID), (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_id_n(value) otel_attr_value_app_screen_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_screen_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_SCREEN_NAME, (value));
     return slot;
 }
 
 #define otel_attr_app_screen_name(value) otel_attr_value_app_screen_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_screen_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_SCREEN_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_app_screen_name_n(value) otel_attr_value_app_screen_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_app_widget_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_ID, (value));
@@ -1476,12 +1560,26 @@ static inline const otel_attribute_t *otel_attr_value_app_widget_id(const char *
 
 #define otel_attr_app_widget_id(value) otel_attr_value_app_widget_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_app_widget_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_WIDGET_ID), (value));
+    return slot;
+}
+
+#define otel_attr_app_widget_id_n(value) otel_attr_value_app_widget_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_app_widget_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_APP_WIDGET_NAME, (value));
     return slot;
 }
 
 #define otel_attr_app_widget_name(value) otel_attr_value_app_widget_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_app_widget_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_APP_WIDGET_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_app_widget_name_n(value) otel_attr_value_app_widget_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_artifact_attestation_filename(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME, (value));
@@ -1490,12 +1588,26 @@ static inline const otel_attribute_t *otel_attr_value_artifact_attestation_filen
 
 #define otel_attr_artifact_attestation_filename(value) otel_attr_value_artifact_attestation_filename((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_filename_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_FILENAME), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_filename_n(value) otel_attr_value_artifact_attestation_filename_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_artifact_attestation_hash(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH, (value));
     return slot;
 }
 
 #define otel_attr_artifact_attestation_hash(value) otel_attr_value_artifact_attestation_hash((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_hash_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_HASH), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_hash_n(value) otel_attr_value_artifact_attestation_hash_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_artifact_attestation_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID, (value));
@@ -1504,12 +1616,26 @@ static inline const otel_attribute_t *otel_attr_value_artifact_attestation_id(co
 
 #define otel_attr_artifact_attestation_id(value) otel_attr_value_artifact_attestation_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_artifact_attestation_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_ATTESTATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_attestation_id_n(value) otel_attr_value_artifact_attestation_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_artifact_filename(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_FILENAME, (value));
     return slot;
 }
 
 #define otel_attr_artifact_filename(value) otel_attr_value_artifact_filename((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_filename_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_FILENAME), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_filename_n(value) otel_attr_value_artifact_filename_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_artifact_hash(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_HASH, (value));
@@ -1518,12 +1644,26 @@ static inline const otel_attribute_t *otel_attr_value_artifact_hash(const char *
 
 #define otel_attr_artifact_hash(value) otel_attr_value_artifact_hash((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_artifact_hash_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_HASH), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_hash_n(value) otel_attr_value_artifact_hash_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_artifact_purl(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_PURL, (value));
     return slot;
 }
 
 #define otel_attr_artifact_purl(value) otel_attr_value_artifact_purl((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_artifact_purl_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_PURL), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_purl_n(value) otel_attr_value_artifact_purl_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_artifact_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ARTIFACT_VERSION, (value));
@@ -1532,12 +1672,26 @@ static inline const otel_attribute_t *otel_attr_value_artifact_version(const cha
 
 #define otel_attr_artifact_version(value) otel_attr_value_artifact_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_artifact_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ARTIFACT_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_artifact_version_n(value) otel_attr_value_artifact_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_authentication_result(value) otel_attr_value_aspnetcore_authentication_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authentication_result_n(value) otel_attr_value_aspnetcore_authentication_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_scheme(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME, (value));
@@ -1546,12 +1700,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_
 
 #define otel_attr_aspnetcore_authentication_scheme(value) otel_attr_value_aspnetcore_authentication_scheme((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authentication_scheme_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_AUTHENTICATION_SCHEME), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authentication_scheme_n(value) otel_attr_value_aspnetcore_authentication_scheme_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_policy(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_authorization_policy(value) otel_attr_value_aspnetcore_authorization_policy((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_policy_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_POLICY), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authorization_policy_n(value) otel_attr_value_aspnetcore_authorization_policy_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT, (value));
@@ -1560,12 +1728,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_r
 
 #define otel_attr_aspnetcore_authorization_result(value) otel_attr_value_aspnetcore_authorization_result((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_authorization_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_AUTHORIZATION_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_authorization_result_n(value) otel_attr_value_aspnetcore_authorization_result_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_exception_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_diagnostics_exception_result(value) otel_attr_value_aspnetcore_diagnostics_exception_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_exception_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_EXCEPTION_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_diagnostics_exception_result_n(value) otel_attr_value_aspnetcore_diagnostics_exception_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_handler_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE, (value));
@@ -1574,12 +1756,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_han
 
 #define otel_attr_aspnetcore_diagnostics_handler_type(value) otel_attr_value_aspnetcore_diagnostics_handler_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_diagnostics_handler_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_DIAGNOSTICS_HANDLER_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_diagnostics_handler_type_n(value) otel_attr_value_aspnetcore_diagnostics_handler_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_error_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_identity_error_code(value) otel_attr_value_aspnetcore_identity_error_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_error_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_ERROR_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_error_code_n(value) otel_attr_value_aspnetcore_identity_error_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT, (value));
@@ -1588,12 +1784,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_result
 
 #define otel_attr_aspnetcore_identity_result(value) otel_attr_value_aspnetcore_identity_result((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_result_n(value) otel_attr_value_aspnetcore_identity_result_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_identity_sign_in_result(value) otel_attr_value_aspnetcore_identity_sign_in_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_sign_in_result_n(value) otel_attr_value_aspnetcore_identity_sign_in_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE, (value));
@@ -1602,12 +1812,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_i
 
 #define otel_attr_aspnetcore_identity_sign_in_type(value) otel_attr_value_aspnetcore_identity_sign_in_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_sign_in_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_SIGN_IN_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_sign_in_type_n(value) otel_attr_value_aspnetcore_identity_sign_in_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_purpose(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_identity_token_purpose(value) otel_attr_value_aspnetcore_identity_token_purpose((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_purpose_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_PURPOSE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_token_purpose_n(value) otel_attr_value_aspnetcore_identity_token_purpose_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_verified(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED, (value));
@@ -1616,12 +1840,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_
 
 #define otel_attr_aspnetcore_identity_token_verified(value) otel_attr_value_aspnetcore_identity_token_verified((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_token_verified_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_TOKEN_VERIFIED), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_token_verified_n(value) otel_attr_value_aspnetcore_identity_token_verified_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_identity_user_type(value) otel_attr_value_aspnetcore_identity_user_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_user_type_n(value) otel_attr_value_aspnetcore_identity_user_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_update_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE, (value));
@@ -1630,12 +1868,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_u
 
 #define otel_attr_aspnetcore_identity_user_update_type(value) otel_attr_value_aspnetcore_identity_user_update_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_identity_user_update_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_IDENTITY_USER_UPDATE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_identity_user_update_type_n(value) otel_attr_value_aspnetcore_identity_user_update_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_memory_pool_owner(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_memory_pool_owner(value) otel_attr_value_aspnetcore_memory_pool_owner((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_memory_pool_owner_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_MEMORY_POOL_OWNER), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_memory_pool_owner_n(value) otel_attr_value_aspnetcore_memory_pool_owner_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_policy(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY, (value));
@@ -1644,12 +1896,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_p
 
 #define otel_attr_aspnetcore_rate_limiting_policy(value) otel_attr_value_aspnetcore_rate_limiting_policy((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_policy_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_POLICY), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_rate_limiting_policy_n(value) otel_attr_value_aspnetcore_rate_limiting_policy_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_rate_limiting_result(value) otel_attr_value_aspnetcore_rate_limiting_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_rate_limiting_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_RATE_LIMITING_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_rate_limiting_result_n(value) otel_attr_value_aspnetcore_rate_limiting_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_request_is_unhandled(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED, (value));
@@ -1658,12 +1924,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_request_is_unha
 
 #define otel_attr_aspnetcore_request_is_unhandled(value) otel_attr_value_aspnetcore_request_is_unhandled((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_request_is_unhandled_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_REQUEST_IS_UNHANDLED), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_request_is_unhandled_n(value) otel_attr_value_aspnetcore_request_is_unhandled_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_is_fallback(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_routing_is_fallback(value) otel_attr_value_aspnetcore_routing_is_fallback((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_is_fallback_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_IS_FALLBACK), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_routing_is_fallback_n(value) otel_attr_value_aspnetcore_routing_is_fallback_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_match_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS, (value));
@@ -1672,12 +1952,26 @@ static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_match_s
 
 #define otel_attr_aspnetcore_routing_match_status(value) otel_attr_value_aspnetcore_routing_match_status((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_routing_match_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_ROUTING_MATCH_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_routing_match_status_n(value) otel_attr_value_aspnetcore_routing_match_status_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aspnetcore_user_is_authenticated(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED, (value));
     return slot;
 }
 
 #define otel_attr_aspnetcore_user_is_authenticated(value) otel_attr_value_aspnetcore_user_is_authenticated((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aspnetcore_user_is_authenticated_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_ASPNETCORE_USER_IS_AUTHENTICATED), (value));
+    return slot;
+}
+
+#define otel_attr_aspnetcore_user_is_authenticated_n(value) otel_attr_value_aspnetcore_user_is_authenticated_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_bedrock_guardrail_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID, (value));
@@ -1686,12 +1980,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_bedrock_guardrail_id(c
 
 #define otel_attr_aws_bedrock_guardrail_id(value) otel_attr_value_aws_bedrock_guardrail_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_bedrock_guardrail_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_BEDROCK_GUARDRAIL_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_bedrock_guardrail_id_n(value) otel_attr_value_aws_bedrock_guardrail_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_bedrock_knowledge_base_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID, (value));
     return slot;
 }
 
 #define otel_attr_aws_bedrock_knowledge_base_id(value) otel_attr_value_aws_bedrock_knowledge_base_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_bedrock_knowledge_base_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_BEDROCK_KNOWLEDGE_BASE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_bedrock_knowledge_base_id_n(value) otel_attr_value_aws_bedrock_knowledge_base_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT, (value));
@@ -1700,12 +2008,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_count(int64_t
 
 #define otel_attr_aws_dynamodb_count(value) otel_attr_value_aws_dynamodb_count((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_count_n(value) otel_attr_value_aws_dynamodb_count_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_exclusive_start_table(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_exclusive_start_table(value) otel_attr_value_aws_dynamodb_exclusive_start_table((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_exclusive_start_table_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_EXCLUSIVE_START_TABLE), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_exclusive_start_table_n(value) otel_attr_value_aws_dynamodb_exclusive_start_table_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_index_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME, (value));
@@ -1714,12 +2036,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_index_name(co
 
 #define otel_attr_aws_dynamodb_index_name(value) otel_attr_value_aws_dynamodb_index_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_index_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_INDEX_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_index_name_n(value) otel_attr_value_aws_dynamodb_index_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_item_collection_metrics(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_item_collection_metrics(value) otel_attr_value_aws_dynamodb_item_collection_metrics((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_item_collection_metrics_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_ITEM_COLLECTION_METRICS), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_item_collection_metrics_n(value) otel_attr_value_aws_dynamodb_item_collection_metrics_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_limit(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT, (value));
@@ -1728,12 +2064,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_limit(int64_t
 
 #define otel_attr_aws_dynamodb_limit(value) otel_attr_value_aws_dynamodb_limit((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_limit_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_LIMIT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_limit_n(value) otel_attr_value_aws_dynamodb_limit_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_projection(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_projection(value) otel_attr_value_aws_dynamodb_projection((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_projection_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROJECTION), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_projection_n(value) otel_attr_value_aws_dynamodb_projection_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_read_capacity(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY, (value));
@@ -1742,12 +2092,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_r
 
 #define otel_attr_aws_dynamodb_provisioned_read_capacity(value) otel_attr_value_aws_dynamodb_provisioned_read_capacity((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_read_capacity_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_READ_CAPACITY), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_provisioned_read_capacity_n(value) otel_attr_value_aws_dynamodb_provisioned_read_capacity_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_write_capacity(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_provisioned_write_capacity(value) otel_attr_value_aws_dynamodb_provisioned_write_capacity((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_provisioned_write_capacity_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_PROVISIONED_WRITE_CAPACITY), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_provisioned_write_capacity_n(value) otel_attr_value_aws_dynamodb_provisioned_write_capacity_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_scanned_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT, (value));
@@ -1756,12 +2120,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_scanned_count
 
 #define otel_attr_aws_dynamodb_scanned_count(value) otel_attr_value_aws_dynamodb_scanned_count((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_scanned_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_SCANNED_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_scanned_count_n(value) otel_attr_value_aws_dynamodb_scanned_count_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_segment(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_segment(value) otel_attr_value_aws_dynamodb_segment((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_segment_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_SEGMENT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_segment_n(value) otel_attr_value_aws_dynamodb_segment_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_select(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT, (value));
@@ -1770,12 +2148,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_select(const 
 
 #define otel_attr_aws_dynamodb_select(value) otel_attr_value_aws_dynamodb_select((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_select_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_SELECT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_select_n(value) otel_attr_value_aws_dynamodb_select_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_table_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT, (value));
     return slot;
 }
 
 #define otel_attr_aws_dynamodb_table_count(value) otel_attr_value_aws_dynamodb_table_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_table_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_TABLE_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_table_count_n(value) otel_attr_value_aws_dynamodb_table_count_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_total_segments(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS, (value));
@@ -1784,12 +2176,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_total_segment
 
 #define otel_attr_aws_dynamodb_total_segments(value) otel_attr_value_aws_dynamodb_total_segments((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_dynamodb_total_segments_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_DYNAMODB_TOTAL_SEGMENTS), (value));
+    return slot;
+}
+
+#define otel_attr_aws_dynamodb_total_segments_n(value) otel_attr_value_aws_dynamodb_total_segments_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_cluster_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN, (value));
     return slot;
 }
 
 #define otel_attr_aws_ecs_cluster_arn(value) otel_attr_value_aws_ecs_cluster_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_cluster_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_CLUSTER_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_cluster_arn_n(value) otel_attr_value_aws_ecs_cluster_arn_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_container_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN, (value));
@@ -1798,12 +2204,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_ecs_container_arn(cons
 
 #define otel_attr_aws_ecs_container_arn(value) otel_attr_value_aws_ecs_container_arn((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_container_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_CONTAINER_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_container_arn_n(value) otel_attr_value_aws_ecs_container_arn_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN, (value));
     return slot;
 }
 
 #define otel_attr_aws_ecs_task_arn(value) otel_attr_value_aws_ecs_task_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_TASK_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_arn_n(value) otel_attr_value_aws_ecs_task_arn_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_family(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY, (value));
@@ -1812,12 +2232,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_family(const 
 
 #define otel_attr_aws_ecs_task_family(value) otel_attr_value_aws_ecs_task_family((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_family_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_TASK_FAMILY), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_family_n(value) otel_attr_value_aws_ecs_task_family_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID, (value));
     return slot;
 }
 
 #define otel_attr_aws_ecs_task_id(value) otel_attr_value_aws_ecs_task_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_TASK_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_id_n(value) otel_attr_value_aws_ecs_task_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_revision(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION, (value));
@@ -1826,12 +2260,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_revision(cons
 
 #define otel_attr_aws_ecs_task_revision(value) otel_attr_value_aws_ecs_task_revision((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_ecs_task_revision_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_ECS_TASK_REVISION), (value));
+    return slot;
+}
+
+#define otel_attr_aws_ecs_task_revision_n(value) otel_attr_value_aws_ecs_task_revision_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_eks_cluster_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN, (value));
     return slot;
 }
 
 #define otel_attr_aws_eks_cluster_arn(value) otel_attr_value_aws_eks_cluster_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_eks_cluster_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_EKS_CLUSTER_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_eks_cluster_arn_n(value) otel_attr_value_aws_eks_cluster_arn_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_extended_request_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID, (value));
@@ -1840,12 +2288,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_extended_request_id(co
 
 #define otel_attr_aws_extended_request_id(value) otel_attr_value_aws_extended_request_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_extended_request_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_EXTENDED_REQUEST_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_extended_request_id_n(value) otel_attr_value_aws_extended_request_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_kinesis_stream_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME, (value));
     return slot;
 }
 
 #define otel_attr_aws_kinesis_stream_name(value) otel_attr_value_aws_kinesis_stream_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_kinesis_stream_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_KINESIS_STREAM_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_aws_kinesis_stream_name_n(value) otel_attr_value_aws_kinesis_stream_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_lambda_invoked_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN, (value));
@@ -1854,12 +2316,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_lambda_invoked_arn(con
 
 #define otel_attr_aws_lambda_invoked_arn(value) otel_attr_value_aws_lambda_invoked_arn((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_lambda_invoked_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_LAMBDA_INVOKED_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_lambda_invoked_arn_n(value) otel_attr_value_aws_lambda_invoked_arn_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_lambda_resource_mapping_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID, (value));
     return slot;
 }
 
 #define otel_attr_aws_lambda_resource_mapping_id(value) otel_attr_value_aws_lambda_resource_mapping_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_lambda_resource_mapping_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_LAMBDA_RESOURCE_MAPPING_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_lambda_resource_mapping_id_n(value) otel_attr_value_aws_lambda_resource_mapping_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_request_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_REQUEST_ID, (value));
@@ -1868,12 +2344,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_request_id(const char 
 
 #define otel_attr_aws_request_id(value) otel_attr_value_aws_request_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_request_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_REQUEST_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_request_id_n(value) otel_attr_value_aws_request_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_s3_bucket(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_BUCKET, (value));
     return slot;
 }
 
 #define otel_attr_aws_s3_bucket(value) otel_attr_value_aws_s3_bucket((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_bucket_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_BUCKET), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_bucket_n(value) otel_attr_value_aws_s3_bucket_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_s3_copy_source(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE, (value));
@@ -1882,12 +2372,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_s3_copy_source(const c
 
 #define otel_attr_aws_s3_copy_source(value) otel_attr_value_aws_s3_copy_source((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_s3_copy_source_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_COPY_SOURCE), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_copy_source_n(value) otel_attr_value_aws_s3_copy_source_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_s3_delete(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_DELETE, (value));
     return slot;
 }
 
 #define otel_attr_aws_s3_delete(value) otel_attr_value_aws_s3_delete((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_delete_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_DELETE), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_delete_n(value) otel_attr_value_aws_s3_delete_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_s3_key(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_KEY, (value));
@@ -1896,12 +2400,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_s3_key(const char *val
 
 #define otel_attr_aws_s3_key(value) otel_attr_value_aws_s3_key((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_s3_key_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_KEY), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_key_n(value) otel_attr_value_aws_s3_key_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_s3_part_number(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER, (value));
     return slot;
 }
 
 #define otel_attr_aws_s3_part_number(value) otel_attr_value_aws_s3_part_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_s3_part_number_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_PART_NUMBER), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_part_number_n(value) otel_attr_value_aws_s3_part_number_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_s3_upload_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID, (value));
@@ -1910,12 +2428,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_s3_upload_id(const cha
 
 #define otel_attr_aws_s3_upload_id(value) otel_attr_value_aws_s3_upload_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_s3_upload_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_S3_UPLOAD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_aws_s3_upload_id_n(value) otel_attr_value_aws_s3_upload_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_secretsmanager_secret_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN, (value));
     return slot;
 }
 
 #define otel_attr_aws_secretsmanager_secret_arn(value) otel_attr_value_aws_secretsmanager_secret_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_secretsmanager_secret_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_SECRETSMANAGER_SECRET_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_secretsmanager_secret_arn_n(value) otel_attr_value_aws_secretsmanager_secret_arn_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_sns_topic_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN, (value));
@@ -1924,12 +2456,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_sns_topic_arn(const ch
 
 #define otel_attr_aws_sns_topic_arn(value) otel_attr_value_aws_sns_topic_arn((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_sns_topic_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_SNS_TOPIC_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_sns_topic_arn_n(value) otel_attr_value_aws_sns_topic_arn_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_sqs_queue_url(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL, (value));
     return slot;
 }
 
 #define otel_attr_aws_sqs_queue_url(value) otel_attr_value_aws_sqs_queue_url((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_sqs_queue_url_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_SQS_QUEUE_URL), (value));
+    return slot;
+}
+
+#define otel_attr_aws_sqs_queue_url_n(value) otel_attr_value_aws_sqs_queue_url_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_aws_step_functions_activity_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN, (value));
@@ -1938,12 +2484,26 @@ static inline const otel_attribute_t *otel_attr_value_aws_step_functions_activit
 
 #define otel_attr_aws_step_functions_activity_arn(value) otel_attr_value_aws_step_functions_activity_arn((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_aws_step_functions_activity_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_ACTIVITY_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_step_functions_activity_arn_n(value) otel_attr_value_aws_step_functions_activity_arn_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_aws_step_functions_state_machine_arn(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN, (value));
     return slot;
 }
 
 #define otel_attr_aws_step_functions_state_machine_arn(value) otel_attr_value_aws_step_functions_state_machine_arn((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_aws_step_functions_state_machine_arn_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AWS_STEP_FUNCTIONS_STATE_MACHINE_ARN), (value));
+    return slot;
+}
+
+#define otel_attr_aws_step_functions_state_machine_arn_n(value) otel_attr_value_aws_step_functions_state_machine_arn_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_azure_client_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_CLIENT_ID, (value));
@@ -1952,12 +2512,26 @@ static inline const otel_attribute_t *otel_attr_value_azure_client_id(const char
 
 #define otel_attr_azure_client_id(value) otel_attr_value_azure_client_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_azure_client_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_CLIENT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_azure_client_id_n(value) otel_attr_value_azure_client_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_consistency_level(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL, (value));
     return slot;
 }
 
 #define otel_attr_azure_cosmosdb_consistency_level(value) otel_attr_value_azure_cosmosdb_consistency_level((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_consistency_level_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_COSMOSDB_CONSISTENCY_LEVEL), (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_consistency_level_n(value) otel_attr_value_azure_cosmosdb_consistency_level_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_operation_request_charge(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE, (value));
@@ -1966,12 +2540,26 @@ static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_operation_r
 
 #define otel_attr_azure_cosmosdb_operation_request_charge(value) otel_attr_value_azure_cosmosdb_operation_request_charge((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_operation_request_charge_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_COSMOSDB_OPERATION_REQUEST_CHARGE), (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_operation_request_charge_n(value) otel_attr_value_azure_cosmosdb_operation_request_charge_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_response_sub_status_code(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE, (value));
     return slot;
 }
 
 #define otel_attr_azure_cosmosdb_response_sub_status_code(value) otel_attr_value_azure_cosmosdb_response_sub_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_cosmosdb_response_sub_status_code_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_COSMOSDB_RESPONSE_SUB_STATUS_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_azure_cosmosdb_response_sub_status_code_n(value) otel_attr_value_azure_cosmosdb_response_sub_status_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_azure_resource_provider_namespace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE, (value));
@@ -1980,12 +2568,26 @@ static inline const otel_attribute_t *otel_attr_value_azure_resource_provider_na
 
 #define otel_attr_azure_resource_provider_namespace(value) otel_attr_value_azure_resource_provider_namespace((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_azure_resource_provider_namespace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_RESOURCE_PROVIDER_NAMESPACE), (value));
+    return slot;
+}
+
+#define otel_attr_azure_resource_provider_namespace_n(value) otel_attr_value_azure_resource_provider_namespace_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_azure_service_request_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID, (value));
     return slot;
 }
 
 #define otel_attr_azure_service_request_id(value) otel_attr_value_azure_service_request_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_azure_service_request_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_AZURE_SERVICE_REQUEST_ID), (value));
+    return slot;
+}
+
+#define otel_attr_azure_service_request_id_n(value) otel_attr_value_azure_service_request_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_browser_document_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL, (value));
@@ -1994,12 +2596,26 @@ static inline const otel_attribute_t *otel_attr_value_browser_document_url_full(
 
 #define otel_attr_browser_document_url_full(value) otel_attr_value_browser_document_url_full((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_browser_document_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_BROWSER_DOCUMENT_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_browser_document_url_full_n(value) otel_attr_value_browser_document_url_full_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_browser_language(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_LANGUAGE, (value));
     return slot;
 }
 
 #define otel_attr_browser_language(value) otel_attr_value_browser_language((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_browser_language_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_BROWSER_LANGUAGE), (value));
+    return slot;
+}
+
+#define otel_attr_browser_language_n(value) otel_attr_value_browser_language_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_browser_platform(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_BROWSER_PLATFORM, (value));
@@ -2008,12 +2624,26 @@ static inline const otel_attribute_t *otel_attr_value_browser_platform(const cha
 
 #define otel_attr_browser_platform(value) otel_attr_value_browser_platform((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_browser_platform_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_BROWSER_PLATFORM), (value));
+    return slot;
+}
+
+#define otel_attr_browser_platform_n(value) otel_attr_value_browser_platform_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_dc(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC, (value));
     return slot;
 }
 
 #define otel_attr_cassandra_coordinator_dc(value) otel_attr_value_cassandra_coordinator_dc((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_dc_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_DC), (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_coordinator_dc_n(value) otel_attr_value_cassandra_coordinator_dc_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID, (value));
@@ -2022,12 +2652,26 @@ static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_id(c
 
 #define otel_attr_cassandra_coordinator_id(value) otel_attr_value_cassandra_coordinator_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cassandra_coordinator_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CASSANDRA_COORDINATOR_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_coordinator_id_n(value) otel_attr_value_cassandra_coordinator_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cassandra_page_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE, (value));
     return slot;
 }
 
 #define otel_attr_cassandra_page_size(value) otel_attr_value_cassandra_page_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cassandra_page_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CASSANDRA_PAGE_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_page_size_n(value) otel_attr_value_cassandra_page_size_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cassandra_speculative_execution_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT, (value));
@@ -2036,12 +2680,26 @@ static inline const otel_attribute_t *otel_attr_value_cassandra_speculative_exec
 
 #define otel_attr_cassandra_speculative_execution_count(value) otel_attr_value_cassandra_speculative_execution_count((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cassandra_speculative_execution_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CASSANDRA_SPECULATIVE_EXECUTION_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_cassandra_speculative_execution_count_n(value) otel_attr_value_cassandra_speculative_execution_count_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_action_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_action_name(value) otel_attr_value_cicd_pipeline_action_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_action_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_ACTION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_action_name_n(value) otel_attr_value_cicd_pipeline_action_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME, (value));
@@ -2050,12 +2708,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_name(const c
 
 #define otel_attr_cicd_pipeline_name(value) otel_attr_value_cicd_pipeline_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_name_n(value) otel_attr_value_cicd_pipeline_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_result(value) otel_attr_value_cicd_pipeline_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_result_n(value) otel_attr_value_cicd_pipeline_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID, (value));
@@ -2064,12 +2736,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_id(const
 
 #define otel_attr_cicd_pipeline_run_id(value) otel_attr_value_cicd_pipeline_run_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_id_n(value) otel_attr_value_cicd_pipeline_run_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_run_state(value) otel_attr_value_cicd_pipeline_run_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_state_n(value) otel_attr_value_cicd_pipeline_run_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL, (value));
@@ -2078,12 +2764,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_url_full
 
 #define otel_attr_cicd_pipeline_run_url_full(value) otel_attr_value_cicd_pipeline_run_url_full((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_run_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_RUN_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_run_url_full_n(value) otel_attr_value_cicd_pipeline_run_url_full_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_task_name(value) otel_attr_value_cicd_pipeline_task_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_name_n(value) otel_attr_value_cicd_pipeline_task_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID, (value));
@@ -2092,12 +2792,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_id(
 
 #define otel_attr_cicd_pipeline_task_run_id(value) otel_attr_value_cicd_pipeline_task_run_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_id_n(value) otel_attr_value_cicd_pipeline_task_run_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_result(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_task_run_result(value) otel_attr_value_cicd_pipeline_task_run_result((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_result_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_RESULT), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_result_n(value) otel_attr_value_cicd_pipeline_task_run_result_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL, (value));
@@ -2106,12 +2820,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_url
 
 #define otel_attr_cicd_pipeline_task_run_url_full(value) otel_attr_value_cicd_pipeline_task_run_url_full((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_run_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_RUN_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_run_url_full_n(value) otel_attr_value_cicd_pipeline_task_run_url_full_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_cicd_pipeline_task_type(value) otel_attr_value_cicd_pipeline_task_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_pipeline_task_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_PIPELINE_TASK_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_pipeline_task_type_n(value) otel_attr_value_cicd_pipeline_task_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_system_component(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT, (value));
@@ -2120,12 +2848,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_system_component(cons
 
 #define otel_attr_cicd_system_component(value) otel_attr_value_cicd_system_component((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_system_component_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_SYSTEM_COMPONENT), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_system_component_n(value) otel_attr_value_cicd_system_component_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_worker_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_ID, (value));
     return slot;
 }
 
 #define otel_attr_cicd_worker_id(value) otel_attr_value_cicd_worker_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_WORKER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_id_n(value) otel_attr_value_cicd_worker_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_worker_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_NAME, (value));
@@ -2134,12 +2876,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_worker_name(const cha
 
 #define otel_attr_cicd_worker_name(value) otel_attr_value_cicd_worker_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_WORKER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_name_n(value) otel_attr_value_cicd_worker_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cicd_worker_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_STATE, (value));
     return slot;
 }
 
 #define otel_attr_cicd_worker_state(value) otel_attr_value_cicd_worker_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_WORKER_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_state_n(value) otel_attr_value_cicd_worker_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cicd_worker_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL, (value));
@@ -2148,12 +2904,26 @@ static inline const otel_attribute_t *otel_attr_value_cicd_worker_url_full(const
 
 #define otel_attr_cicd_worker_url_full(value) otel_attr_value_cicd_worker_url_full((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cicd_worker_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CICD_WORKER_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_cicd_worker_url_full_n(value) otel_attr_value_cicd_worker_url_full_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_client_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, (value));
     return slot;
 }
 
 #define otel_attr_client_address(value) otel_attr_value_client_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_client_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLIENT_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_client_address_n(value) otel_attr_value_client_address_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_client_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CLIENT_PORT, (value));
@@ -2162,12 +2932,26 @@ static inline const otel_attribute_t *otel_attr_value_client_port(int64_t value,
 
 #define otel_attr_client_port(value) otel_attr_value_client_port((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_client_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CLIENT_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_client_port_n(value) otel_attr_value_client_port_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloud_account_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloud_account_id(value) otel_attr_value_cloud_account_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_account_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUD_ACCOUNT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloud_account_id_n(value) otel_attr_value_cloud_account_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloud_availability_zone(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE, (value));
@@ -2176,12 +2960,26 @@ static inline const otel_attribute_t *otel_attr_value_cloud_availability_zone(co
 
 #define otel_attr_cloud_availability_zone(value) otel_attr_value_cloud_availability_zone((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloud_availability_zone_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUD_AVAILABILITY_ZONE), (value));
+    return slot;
+}
+
+#define otel_attr_cloud_availability_zone_n(value) otel_attr_value_cloud_availability_zone_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloud_region(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_REGION, (value));
     return slot;
 }
 
 #define otel_attr_cloud_region(value) otel_attr_value_cloud_region((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloud_region_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUD_REGION), (value));
+    return slot;
+}
+
+#define otel_attr_cloud_region_n(value) otel_attr_value_cloud_region_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloud_resource_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID, (value));
@@ -2190,12 +2988,26 @@ static inline const otel_attribute_t *otel_attr_value_cloud_resource_id(const ch
 
 #define otel_attr_cloud_resource_id(value) otel_attr_value_cloud_resource_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloud_resource_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUD_RESOURCE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloud_resource_id_n(value) otel_attr_value_cloud_resource_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudevents_event_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudevents_event_id(value) otel_attr_value_cloudevents_event_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_id_n(value) otel_attr_value_cloudevents_event_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudevents_event_source(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE, (value));
@@ -2204,12 +3016,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudevents_event_source(c
 
 #define otel_attr_cloudevents_event_source(value) otel_attr_value_cloudevents_event_source((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_source_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SOURCE), (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_source_n(value) otel_attr_value_cloudevents_event_source_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudevents_event_spec_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_cloudevents_event_spec_version(value) otel_attr_value_cloudevents_event_spec_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_spec_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SPEC_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_spec_version_n(value) otel_attr_value_cloudevents_event_spec_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudevents_event_subject(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT, (value));
@@ -2218,12 +3044,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudevents_event_subject(
 
 #define otel_attr_cloudevents_event_subject(value) otel_attr_value_cloudevents_event_subject((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_subject_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_SUBJECT), (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_subject_n(value) otel_attr_value_cloudevents_event_subject_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudevents_event_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_cloudevents_event_type(value) otel_attr_value_cloudevents_event_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudevents_event_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDEVENTS_EVENT_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_cloudevents_event_type_n(value) otel_attr_value_cloudevents_event_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID, (value));
@@ -2232,12 +3072,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_id(const 
 
 #define otel_attr_cloudfoundry_app_id(value) otel_attr_value_cloudfoundry_app_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_id_n(value) otel_attr_value_cloudfoundry_app_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_instance_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudfoundry_app_instance_id(value) otel_attr_value_cloudfoundry_app_instance_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_instance_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_INSTANCE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_instance_id_n(value) otel_attr_value_cloudfoundry_app_instance_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME, (value));
@@ -2246,12 +3100,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_name(cons
 
 #define otel_attr_cloudfoundry_app_name(value) otel_attr_value_cloudfoundry_app_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_app_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_APP_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_app_name_n(value) otel_attr_value_cloudfoundry_app_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudfoundry_org_id(value) otel_attr_value_cloudfoundry_org_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_org_id_n(value) otel_attr_value_cloudfoundry_org_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME, (value));
@@ -2260,12 +3128,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_name(cons
 
 #define otel_attr_cloudfoundry_org_name(value) otel_attr_value_cloudfoundry_org_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_org_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_ORG_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_org_name_n(value) otel_attr_value_cloudfoundry_org_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudfoundry_process_id(value) otel_attr_value_cloudfoundry_process_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_process_id_n(value) otel_attr_value_cloudfoundry_process_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE, (value));
@@ -2274,12 +3156,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_type(
 
 #define otel_attr_cloudfoundry_process_type(value) otel_attr_value_cloudfoundry_process_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_process_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_PROCESS_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_process_type_n(value) otel_attr_value_cloudfoundry_process_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudfoundry_space_id(value) otel_attr_value_cloudfoundry_space_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_space_id_n(value) otel_attr_value_cloudfoundry_space_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME, (value));
@@ -2288,12 +3184,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_name(co
 
 #define otel_attr_cloudfoundry_space_name(value) otel_attr_value_cloudfoundry_space_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_space_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SPACE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_space_name_n(value) otel_attr_value_cloudfoundry_space_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID, (value));
     return slot;
 }
 
 #define otel_attr_cloudfoundry_system_id(value) otel_attr_value_cloudfoundry_system_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_system_id_n(value) otel_attr_value_cloudfoundry_system_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_instance_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID, (value));
@@ -2302,12 +3212,26 @@ static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_instan
 
 #define otel_attr_cloudfoundry_system_instance_id(value) otel_attr_value_cloudfoundry_system_instance_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cloudfoundry_system_instance_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CLOUDFOUNDRY_SYSTEM_INSTANCE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_cloudfoundry_system_instance_id_n(value) otel_attr_value_cloudfoundry_system_instance_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_code_column_number(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER, (value));
     return slot;
 }
 
 #define otel_attr_code_column_number(value) otel_attr_value_code_column_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_column_number_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CODE_COLUMN_NUMBER), (value));
+    return slot;
+}
+
+#define otel_attr_code_column_number_n(value) otel_attr_value_code_column_number_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_code_file_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_FILE_PATH, (value));
@@ -2316,12 +3240,26 @@ static inline const otel_attribute_t *otel_attr_value_code_file_path(const char 
 
 #define otel_attr_code_file_path(value) otel_attr_value_code_file_path((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_code_file_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CODE_FILE_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_code_file_path_n(value) otel_attr_value_code_file_path_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_code_function_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME, (value));
     return slot;
 }
 
 #define otel_attr_code_function_name(value) otel_attr_value_code_function_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_function_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CODE_FUNCTION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_code_function_name_n(value) otel_attr_value_code_function_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_code_line_number(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CODE_LINE_NUMBER, (value));
@@ -2330,12 +3268,26 @@ static inline const otel_attribute_t *otel_attr_value_code_line_number(int64_t v
 
 #define otel_attr_code_line_number(value) otel_attr_value_code_line_number((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_code_line_number_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CODE_LINE_NUMBER), (value));
+    return slot;
+}
+
+#define otel_attr_code_line_number_n(value) otel_attr_value_code_line_number_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_code_stacktrace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CODE_STACKTRACE, (value));
     return slot;
 }
 
 #define otel_attr_code_stacktrace(value) otel_attr_value_code_stacktrace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_code_stacktrace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CODE_STACKTRACE), (value));
+    return slot;
+}
+
+#define otel_attr_code_stacktrace_n(value) otel_attr_value_code_stacktrace_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_command(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND, (value));
@@ -2344,12 +3296,26 @@ static inline const otel_attribute_t *otel_attr_value_container_command(const ch
 
 #define otel_attr_container_command(value) otel_attr_value_container_command((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_command_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_COMMAND), (value));
+    return slot;
+}
+
+#define otel_attr_container_command_n(value) otel_attr_value_container_command_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_command_line(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE, (value));
     return slot;
 }
 
 #define otel_attr_container_command_line(value) otel_attr_value_container_command_line((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_command_line_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_COMMAND_LINE), (value));
+    return slot;
+}
+
+#define otel_attr_container_command_line_n(value) otel_attr_value_container_command_line_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_cpu_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE, (value));
@@ -2358,12 +3324,26 @@ static inline const otel_attribute_t *otel_attr_value_container_cpu_state(const 
 
 #define otel_attr_container_cpu_state(value) otel_attr_value_container_cpu_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_cpu_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_CPU_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_container_cpu_state_n(value) otel_attr_value_container_cpu_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_csi_plugin_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME, (value));
     return slot;
 }
 
 #define otel_attr_container_csi_plugin_name(value) otel_attr_value_container_csi_plugin_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_csi_plugin_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_CSI_PLUGIN_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_container_csi_plugin_name_n(value) otel_attr_value_container_csi_plugin_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_csi_volume_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID, (value));
@@ -2372,12 +3352,26 @@ static inline const otel_attribute_t *otel_attr_value_container_csi_volume_id(co
 
 #define otel_attr_container_csi_volume_id(value) otel_attr_value_container_csi_volume_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_csi_volume_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_CSI_VOLUME_ID), (value));
+    return slot;
+}
+
+#define otel_attr_container_csi_volume_id_n(value) otel_attr_value_container_csi_volume_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_ID, (value));
     return slot;
 }
 
 #define otel_attr_container_id(value) otel_attr_value_container_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_container_id_n(value) otel_attr_value_container_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_image_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID, (value));
@@ -2386,12 +3380,26 @@ static inline const otel_attribute_t *otel_attr_value_container_image_id(const c
 
 #define otel_attr_container_image_id(value) otel_attr_value_container_image_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_image_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_IMAGE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_container_image_id_n(value) otel_attr_value_container_image_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_image_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_container_image_name(value) otel_attr_value_container_image_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_image_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_IMAGE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_container_image_name_n(value) otel_attr_value_container_image_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_LABEL, (value));
@@ -2400,12 +3408,26 @@ static inline const otel_attribute_t *otel_attr_value_container_label(const char
 
 #define otel_attr_container_label(value) otel_attr_value_container_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_container_label_n(value) otel_attr_value_container_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_container_name(value) otel_attr_value_container_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_container_name_n(value) otel_attr_value_container_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_runtime_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION, (value));
@@ -2414,12 +3436,26 @@ static inline const otel_attribute_t *otel_attr_value_container_runtime_descript
 
 #define otel_attr_container_runtime_description(value) otel_attr_value_container_runtime_description((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_runtime_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_description_n(value) otel_attr_value_container_runtime_description_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_container_runtime_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME, (value));
     return slot;
 }
 
 #define otel_attr_container_runtime_name(value) otel_attr_value_container_runtime_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_container_runtime_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_name_n(value) otel_attr_value_container_runtime_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_container_runtime_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION, (value));
@@ -2428,12 +3464,26 @@ static inline const otel_attribute_t *otel_attr_value_container_runtime_version(
 
 #define otel_attr_container_runtime_version(value) otel_attr_value_container_runtime_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_container_runtime_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CONTAINER_RUNTIME_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_container_runtime_version_n(value) otel_attr_value_container_runtime_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cpu_logical_number(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER, (value));
     return slot;
 }
 
 #define otel_attr_cpu_logical_number(value) otel_attr_value_cpu_logical_number((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cpu_logical_number_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CPU_LOGICAL_NUMBER), (value));
+    return slot;
+}
+
+#define otel_attr_cpu_logical_number_n(value) otel_attr_value_cpu_logical_number_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_cpu_mode(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_CPU_MODE, (value));
@@ -2442,12 +3492,26 @@ static inline const otel_attribute_t *otel_attr_value_cpu_mode(const char *value
 
 #define otel_attr_cpu_mode(value) otel_attr_value_cpu_mode((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_cpu_mode_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_CPU_MODE), (value));
+    return slot;
+}
+
+#define otel_attr_cpu_mode_n(value) otel_attr_value_cpu_mode_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_cpython_gc_generation(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION, (value));
     return slot;
 }
 
 #define otel_attr_cpython_gc_generation(value) otel_attr_value_cpython_gc_generation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_cpython_gc_generation_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_CPYTHON_GC_GENERATION), (value));
+    return slot;
+}
+
+#define otel_attr_cpython_gc_generation_n(value) otel_attr_value_cpython_gc_generation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_client_connection_pool_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME, (value));
@@ -2456,12 +3520,26 @@ static inline const otel_attribute_t *otel_attr_value_db_client_connection_pool_
 
 #define otel_attr_db_client_connection_pool_name(value) otel_attr_value_db_client_connection_pool_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_client_connection_pool_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_POOL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_client_connection_pool_name_n(value) otel_attr_value_db_client_connection_pool_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_client_connection_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE, (value));
     return slot;
 }
 
 #define otel_attr_db_client_connection_state(value) otel_attr_value_db_client_connection_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_client_connection_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_CLIENT_CONNECTION_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_db_client_connection_state_n(value) otel_attr_value_db_client_connection_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_collection_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_COLLECTION_NAME, (value));
@@ -2470,12 +3548,26 @@ static inline const otel_attribute_t *otel_attr_value_db_collection_name(const c
 
 #define otel_attr_db_collection_name(value) otel_attr_value_db_collection_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_collection_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_COLLECTION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_collection_name_n(value) otel_attr_value_db_collection_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_cosmosdb_status_code(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE, (value));
     return slot;
 }
 
 #define otel_attr_db_cosmosdb_status_code(value) otel_attr_value_db_cosmosdb_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_cosmosdb_status_code_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_DB_COSMOSDB_STATUS_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_db_cosmosdb_status_code_n(value) otel_attr_value_db_cosmosdb_status_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_jdbc_driver_classname(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME, (value));
@@ -2484,12 +3576,26 @@ static inline const otel_attribute_t *otel_attr_value_db_jdbc_driver_classname(c
 
 #define otel_attr_db_jdbc_driver_classname(value) otel_attr_value_db_jdbc_driver_classname((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_jdbc_driver_classname_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_JDBC_DRIVER_CLASSNAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_jdbc_driver_classname_n(value) otel_attr_value_db_jdbc_driver_classname_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_mssql_instance_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_db_mssql_instance_name(value) otel_attr_value_db_mssql_instance_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_mssql_instance_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_MSSQL_INSTANCE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_mssql_instance_name_n(value) otel_attr_value_db_mssql_instance_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_namespace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_NAMESPACE, (value));
@@ -2498,12 +3604,26 @@ static inline const otel_attribute_t *otel_attr_value_db_namespace(const char *v
 
 #define otel_attr_db_namespace(value) otel_attr_value_db_namespace((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_namespace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_NAMESPACE), (value));
+    return slot;
+}
+
+#define otel_attr_db_namespace_n(value) otel_attr_value_db_namespace_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_operation_batch_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE, (value));
     return slot;
 }
 
 #define otel_attr_db_operation_batch_size(value) otel_attr_value_db_operation_batch_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_operation_batch_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_DB_OPERATION_BATCH_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_batch_size_n(value) otel_attr_value_db_operation_batch_size_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_operation_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_NAME, (value));
@@ -2512,12 +3632,26 @@ static inline const otel_attribute_t *otel_attr_value_db_operation_name(const ch
 
 #define otel_attr_db_operation_name(value) otel_attr_value_db_operation_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_operation_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_OPERATION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_name_n(value) otel_attr_value_db_operation_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_operation_parameter(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER, (value));
     return slot;
 }
 
 #define otel_attr_db_operation_parameter(value) otel_attr_value_db_operation_parameter((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_operation_parameter_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_OPERATION_PARAMETER), (value));
+    return slot;
+}
+
+#define otel_attr_db_operation_parameter_n(value) otel_attr_value_db_operation_parameter_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_query_parameter(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER, (value));
@@ -2526,12 +3660,26 @@ static inline const otel_attribute_t *otel_attr_value_db_query_parameter(const c
 
 #define otel_attr_db_query_parameter(value) otel_attr_value_db_query_parameter((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_query_parameter_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_QUERY_PARAMETER), (value));
+    return slot;
+}
+
+#define otel_attr_db_query_parameter_n(value) otel_attr_value_db_query_parameter_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_query_summary(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY, (value));
     return slot;
 }
 
 #define otel_attr_db_query_summary(value) otel_attr_value_db_query_summary((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_query_summary_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_QUERY_SUMMARY), (value));
+    return slot;
+}
+
+#define otel_attr_db_query_summary_n(value) otel_attr_value_db_query_summary_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_query_text(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_QUERY_TEXT, (value));
@@ -2540,12 +3688,26 @@ static inline const otel_attribute_t *otel_attr_value_db_query_text(const char *
 
 #define otel_attr_db_query_text(value) otel_attr_value_db_query_text((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_query_text_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_QUERY_TEXT), (value));
+    return slot;
+}
+
+#define otel_attr_db_query_text_n(value) otel_attr_value_db_query_text_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_redis_database_index(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX, (value));
     return slot;
 }
 
 #define otel_attr_db_redis_database_index(value) otel_attr_value_db_redis_database_index((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_redis_database_index_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_DB_REDIS_DATABASE_INDEX), (value));
+    return slot;
+}
+
+#define otel_attr_db_redis_database_index_n(value) otel_attr_value_db_redis_database_index_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_response_returned_rows(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS, (value));
@@ -2554,12 +3716,26 @@ static inline const otel_attribute_t *otel_attr_value_db_response_returned_rows(
 
 #define otel_attr_db_response_returned_rows(value) otel_attr_value_db_response_returned_rows((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_response_returned_rows_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_DB_RESPONSE_RETURNED_ROWS), (value));
+    return slot;
+}
+
+#define otel_attr_db_response_returned_rows_n(value) otel_attr_value_db_response_returned_rows_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_response_status_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE, (value));
     return slot;
 }
 
 #define otel_attr_db_response_status_code(value) otel_attr_value_db_response_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_response_status_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_RESPONSE_STATUS_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_db_response_status_code_n(value) otel_attr_value_db_response_status_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_db_stored_procedure_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME, (value));
@@ -2568,12 +3744,26 @@ static inline const otel_attribute_t *otel_attr_value_db_stored_procedure_name(c
 
 #define otel_attr_db_stored_procedure_name(value) otel_attr_value_db_stored_procedure_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_db_stored_procedure_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_STORED_PROCEDURE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_db_stored_procedure_name_n(value) otel_attr_value_db_stored_procedure_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_db_user(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DB_USER, (value));
     return slot;
 }
 
 #define otel_attr_db_user(value) otel_attr_value_db_user((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_db_user_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DB_USER), (value));
+    return slot;
+}
+
+#define otel_attr_db_user_n(value) otel_attr_value_db_user_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_deployment_environment_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME, (value));
@@ -2582,12 +3772,26 @@ static inline const otel_attribute_t *otel_attr_value_deployment_environment_nam
 
 #define otel_attr_deployment_environment_name(value) otel_attr_value_deployment_environment_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_deployment_environment_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_deployment_environment_name_n(value) otel_attr_value_deployment_environment_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_deployment_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_ID, (value));
     return slot;
 }
 
 #define otel_attr_deployment_id(value) otel_attr_value_deployment_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_deployment_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEPLOYMENT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_deployment_id_n(value) otel_attr_value_deployment_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_deployment_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEPLOYMENT_NAME, (value));
@@ -2596,12 +3800,26 @@ static inline const otel_attribute_t *otel_attr_value_deployment_name(const char
 
 #define otel_attr_deployment_name(value) otel_attr_value_deployment_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_deployment_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEPLOYMENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_deployment_name_n(value) otel_attr_value_deployment_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_destination_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DESTINATION_ADDRESS, (value));
     return slot;
 }
 
 #define otel_attr_destination_address(value) otel_attr_value_destination_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_destination_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DESTINATION_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_destination_address_n(value) otel_attr_value_destination_address_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_destination_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_DESTINATION_PORT, (value));
@@ -2610,12 +3828,26 @@ static inline const otel_attribute_t *otel_attr_value_destination_port(int64_t v
 
 #define otel_attr_destination_port(value) otel_attr_value_destination_port((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_destination_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_DESTINATION_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_destination_port_n(value) otel_attr_value_destination_port_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_device_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_ID, (value));
     return slot;
 }
 
 #define otel_attr_device_id(value) otel_attr_value_device_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEVICE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_device_id_n(value) otel_attr_value_device_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_device_manufacturer(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER, (value));
@@ -2624,12 +3856,26 @@ static inline const otel_attribute_t *otel_attr_value_device_manufacturer(const 
 
 #define otel_attr_device_manufacturer(value) otel_attr_value_device_manufacturer((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_device_manufacturer_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEVICE_MANUFACTURER), (value));
+    return slot;
+}
+
+#define otel_attr_device_manufacturer_n(value) otel_attr_value_device_manufacturer_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_device_model_identifier(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER, (value));
     return slot;
 }
 
 #define otel_attr_device_model_identifier(value) otel_attr_value_device_model_identifier((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_device_model_identifier_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEVICE_MODEL_IDENTIFIER), (value));
+    return slot;
+}
+
+#define otel_attr_device_model_identifier_n(value) otel_attr_value_device_model_identifier_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_device_model_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME, (value));
@@ -2638,12 +3884,26 @@ static inline const otel_attribute_t *otel_attr_value_device_model_name(const ch
 
 #define otel_attr_device_model_name(value) otel_attr_value_device_model_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_device_model_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DEVICE_MODEL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_device_model_name_n(value) otel_attr_value_device_model_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_disk_io_direction(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DISK_IO_DIRECTION, (value));
     return slot;
 }
 
 #define otel_attr_disk_io_direction(value) otel_attr_value_disk_io_direction((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_disk_io_direction_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DISK_IO_DIRECTION), (value));
+    return slot;
+}
+
+#define otel_attr_disk_io_direction_n(value) otel_attr_value_disk_io_direction_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_dns_question_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DNS_QUESTION_NAME, (value));
@@ -2652,12 +3912,26 @@ static inline const otel_attribute_t *otel_attr_value_dns_question_name(const ch
 
 #define otel_attr_dns_question_name(value) otel_attr_value_dns_question_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_dns_question_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DNS_QUESTION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_dns_question_name_n(value) otel_attr_value_dns_question_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_dotnet_gc_heap_generation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION, (value));
     return slot;
 }
 
 #define otel_attr_dotnet_gc_heap_generation(value) otel_attr_value_dotnet_gc_heap_generation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_dotnet_gc_heap_generation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_DOTNET_GC_HEAP_GENERATION), (value));
+    return slot;
+}
+
+#define otel_attr_dotnet_gc_heap_generation_n(value) otel_attr_value_dotnet_gc_heap_generation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_elasticsearch_node_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME, (value));
@@ -2666,12 +3940,26 @@ static inline const otel_attribute_t *otel_attr_value_elasticsearch_node_name(co
 
 #define otel_attr_elasticsearch_node_name(value) otel_attr_value_elasticsearch_node_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_elasticsearch_node_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ELASTICSEARCH_NODE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_elasticsearch_node_name_n(value) otel_attr_value_elasticsearch_node_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_enduser_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ID, (value));
     return slot;
 }
 
 #define otel_attr_enduser_id(value) otel_attr_value_enduser_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ENDUSER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_enduser_id_n(value) otel_attr_value_enduser_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_enduser_pseudo_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID, (value));
@@ -2680,12 +3968,26 @@ static inline const otel_attribute_t *otel_attr_value_enduser_pseudo_id(const ch
 
 #define otel_attr_enduser_pseudo_id(value) otel_attr_value_enduser_pseudo_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_enduser_pseudo_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ENDUSER_PSEUDO_ID), (value));
+    return slot;
+}
+
+#define otel_attr_enduser_pseudo_id_n(value) otel_attr_value_enduser_pseudo_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_enduser_role(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_ROLE, (value));
     return slot;
 }
 
 #define otel_attr_enduser_role(value) otel_attr_value_enduser_role((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_enduser_role_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ENDUSER_ROLE), (value));
+    return slot;
+}
+
+#define otel_attr_enduser_role_n(value) otel_attr_value_enduser_role_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_enduser_scope(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ENDUSER_SCOPE, (value));
@@ -2694,12 +3996,26 @@ static inline const otel_attribute_t *otel_attr_value_enduser_scope(const char *
 
 #define otel_attr_enduser_scope(value) otel_attr_value_enduser_scope((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_enduser_scope_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ENDUSER_SCOPE), (value));
+    return slot;
+}
+
+#define otel_attr_enduser_scope_n(value) otel_attr_value_enduser_scope_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_error_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ERROR_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_error_type(value) otel_attr_value_error_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_error_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ERROR_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_error_type_n(value) otel_attr_value_error_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_exception_message(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE, (value));
@@ -2708,12 +4024,26 @@ static inline const otel_attribute_t *otel_attr_value_exception_message(const ch
 
 #define otel_attr_exception_message(value) otel_attr_value_exception_message((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_exception_message_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_EXCEPTION_MESSAGE), (value));
+    return slot;
+}
+
+#define otel_attr_exception_message_n(value) otel_attr_value_exception_message_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_exception_stacktrace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE, (value));
     return slot;
 }
 
 #define otel_attr_exception_stacktrace(value) otel_attr_value_exception_stacktrace((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_exception_stacktrace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_EXCEPTION_STACKTRACE), (value));
+    return slot;
+}
+
+#define otel_attr_exception_stacktrace_n(value) otel_attr_value_exception_stacktrace_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_exception_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_EXCEPTION_TYPE, (value));
@@ -2722,12 +4052,26 @@ static inline const otel_attribute_t *otel_attr_value_exception_type(const char 
 
 #define otel_attr_exception_type(value) otel_attr_value_exception_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_exception_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_EXCEPTION_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_exception_type_n(value) otel_attr_value_exception_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_cron(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_CRON, (value));
     return slot;
 }
 
 #define otel_attr_faas_cron(value) otel_attr_value_faas_cron((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_cron_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_CRON), (value));
+    return slot;
+}
+
+#define otel_attr_faas_cron_n(value) otel_attr_value_faas_cron_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_document_collection(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION, (value));
@@ -2736,12 +4080,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_document_collection(c
 
 #define otel_attr_faas_document_collection(value) otel_attr_value_faas_document_collection((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_document_collection_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_DOCUMENT_COLLECTION), (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_collection_n(value) otel_attr_value_faas_document_collection_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_document_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME, (value));
     return slot;
 }
 
 #define otel_attr_faas_document_name(value) otel_attr_value_faas_document_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_document_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_DOCUMENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_name_n(value) otel_attr_value_faas_document_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_document_time(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME, (value));
@@ -2750,12 +4108,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_document_time(const c
 
 #define otel_attr_faas_document_time(value) otel_attr_value_faas_document_time((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_document_time_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_DOCUMENT_TIME), (value));
+    return slot;
+}
+
+#define otel_attr_faas_document_time_n(value) otel_attr_value_faas_document_time_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_instance(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INSTANCE, (value));
     return slot;
 }
 
 #define otel_attr_faas_instance(value) otel_attr_value_faas_instance((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_instance_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_INSTANCE), (value));
+    return slot;
+}
+
+#define otel_attr_faas_instance_n(value) otel_attr_value_faas_instance_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_invocation_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID, (value));
@@ -2764,12 +4136,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_invocation_id(const c
 
 #define otel_attr_faas_invocation_id(value) otel_attr_value_faas_invocation_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_invocation_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_INVOCATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_faas_invocation_id_n(value) otel_attr_value_faas_invocation_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_invoked_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME, (value));
     return slot;
 }
 
 #define otel_attr_faas_invoked_name(value) otel_attr_value_faas_invoked_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_invoked_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_INVOKED_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_faas_invoked_name_n(value) otel_attr_value_faas_invoked_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_invoked_region(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION, (value));
@@ -2778,12 +4164,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_invoked_region(const 
 
 #define otel_attr_faas_invoked_region(value) otel_attr_value_faas_invoked_region((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_invoked_region_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_INVOKED_REGION), (value));
+    return slot;
+}
+
+#define otel_attr_faas_invoked_region_n(value) otel_attr_value_faas_invoked_region_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_max_memory(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY, (value));
     return slot;
 }
 
 #define otel_attr_faas_max_memory(value) otel_attr_value_faas_max_memory((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_max_memory_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_MAX_MEMORY), (value));
+    return slot;
+}
+
+#define otel_attr_faas_max_memory_n(value) otel_attr_value_faas_max_memory_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_NAME, (value));
@@ -2792,12 +4192,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_name(const char *valu
 
 #define otel_attr_faas_name(value) otel_attr_value_faas_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_faas_name_n(value) otel_attr_value_faas_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_faas_time(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_TIME, (value));
     return slot;
 }
 
 #define otel_attr_faas_time(value) otel_attr_value_faas_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_faas_time_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_TIME), (value));
+    return slot;
+}
+
+#define otel_attr_faas_time_n(value) otel_attr_value_faas_time_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_faas_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FAAS_VERSION, (value));
@@ -2806,12 +4220,26 @@ static inline const otel_attribute_t *otel_attr_value_faas_version(const char *v
 
 #define otel_attr_faas_version(value) otel_attr_value_faas_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_faas_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FAAS_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_faas_version_n(value) otel_attr_value_faas_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_feature_flag_context_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID, (value));
     return slot;
 }
 
 #define otel_attr_feature_flag_context_id(value) otel_attr_value_feature_flag_context_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_context_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_CONTEXT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_context_id_n(value) otel_attr_value_feature_flag_context_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_feature_flag_error_message(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE, (value));
@@ -2820,12 +4248,26 @@ static inline const otel_attribute_t *otel_attr_value_feature_flag_error_message
 
 #define otel_attr_feature_flag_error_message(value) otel_attr_value_feature_flag_error_message((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_feature_flag_error_message_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_ERROR_MESSAGE), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_error_message_n(value) otel_attr_value_feature_flag_error_message_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_feature_flag_key(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY, (value));
     return slot;
 }
 
 #define otel_attr_feature_flag_key(value) otel_attr_value_feature_flag_key((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_key_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_KEY), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_key_n(value) otel_attr_value_feature_flag_key_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_feature_flag_provider_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME, (value));
@@ -2834,12 +4276,26 @@ static inline const otel_attribute_t *otel_attr_value_feature_flag_provider_name
 
 #define otel_attr_feature_flag_provider_name(value) otel_attr_value_feature_flag_provider_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_feature_flag_provider_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_PROVIDER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_provider_name_n(value) otel_attr_value_feature_flag_provider_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_feature_flag_result_reason(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON, (value));
     return slot;
 }
 
 #define otel_attr_feature_flag_result_reason(value) otel_attr_value_feature_flag_result_reason((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_result_reason_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_REASON), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_result_reason_n(value) otel_attr_value_feature_flag_result_reason_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_feature_flag_result_variant(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT, (value));
@@ -2848,12 +4304,26 @@ static inline const otel_attribute_t *otel_attr_value_feature_flag_result_varian
 
 #define otel_attr_feature_flag_result_variant(value) otel_attr_value_feature_flag_result_variant((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_feature_flag_result_variant_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_RESULT_VARIANT), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_result_variant_n(value) otel_attr_value_feature_flag_result_variant_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_feature_flag_set_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID, (value));
     return slot;
 }
 
 #define otel_attr_feature_flag_set_id(value) otel_attr_value_feature_flag_set_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_feature_flag_set_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_SET_ID), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_set_id_n(value) otel_attr_value_feature_flag_set_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_feature_flag_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION, (value));
@@ -2862,12 +4332,26 @@ static inline const otel_attribute_t *otel_attr_value_feature_flag_version(const
 
 #define otel_attr_feature_flag_version(value) otel_attr_value_feature_flag_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_feature_flag_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FEATURE_FLAG_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_feature_flag_version_n(value) otel_attr_value_feature_flag_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_accessed(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_ACCESSED, (value));
     return slot;
 }
 
 #define otel_attr_file_accessed(value) otel_attr_value_file_accessed((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_accessed_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_ACCESSED), (value));
+    return slot;
+}
+
+#define otel_attr_file_accessed_n(value) otel_attr_value_file_accessed_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_changed(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_CHANGED, (value));
@@ -2876,12 +4360,26 @@ static inline const otel_attribute_t *otel_attr_value_file_changed(const char *v
 
 #define otel_attr_file_changed(value) otel_attr_value_file_changed((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_changed_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_CHANGED), (value));
+    return slot;
+}
+
+#define otel_attr_file_changed_n(value) otel_attr_value_file_changed_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_created(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_CREATED, (value));
     return slot;
 }
 
 #define otel_attr_file_created(value) otel_attr_value_file_created((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_created_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_CREATED), (value));
+    return slot;
+}
+
+#define otel_attr_file_created_n(value) otel_attr_value_file_created_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_directory(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_DIRECTORY, (value));
@@ -2890,12 +4388,26 @@ static inline const otel_attribute_t *otel_attr_value_file_directory(const char 
 
 #define otel_attr_file_directory(value) otel_attr_value_file_directory((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_directory_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_DIRECTORY), (value));
+    return slot;
+}
+
+#define otel_attr_file_directory_n(value) otel_attr_value_file_directory_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_extension(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_EXTENSION, (value));
     return slot;
 }
 
 #define otel_attr_file_extension(value) otel_attr_value_file_extension((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_extension_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_EXTENSION), (value));
+    return slot;
+}
+
+#define otel_attr_file_extension_n(value) otel_attr_value_file_extension_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_fork_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_FORK_NAME, (value));
@@ -2904,12 +4416,26 @@ static inline const otel_attribute_t *otel_attr_value_file_fork_name(const char 
 
 #define otel_attr_file_fork_name(value) otel_attr_value_file_fork_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_fork_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_FORK_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_file_fork_name_n(value) otel_attr_value_file_fork_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_group_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_ID, (value));
     return slot;
 }
 
 #define otel_attr_file_group_id(value) otel_attr_value_file_group_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_group_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_GROUP_ID), (value));
+    return slot;
+}
+
+#define otel_attr_file_group_id_n(value) otel_attr_value_file_group_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_group_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_GROUP_NAME, (value));
@@ -2918,12 +4444,26 @@ static inline const otel_attribute_t *otel_attr_value_file_group_name(const char
 
 #define otel_attr_file_group_name(value) otel_attr_value_file_group_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_group_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_GROUP_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_file_group_name_n(value) otel_attr_value_file_group_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_inode(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_INODE, (value));
     return slot;
 }
 
 #define otel_attr_file_inode(value) otel_attr_value_file_inode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_inode_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_INODE), (value));
+    return slot;
+}
+
+#define otel_attr_file_inode_n(value) otel_attr_value_file_inode_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_lock_mechanism(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM, (value));
@@ -2932,12 +4472,26 @@ static inline const otel_attribute_t *otel_attr_value_file_lock_mechanism(const 
 
 #define otel_attr_file_lock_mechanism(value) otel_attr_value_file_lock_mechanism((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_lock_mechanism_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_LOCK_MECHANISM), (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_mechanism_n(value) otel_attr_value_file_lock_mechanism_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_lock_mode(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_MODE, (value));
     return slot;
 }
 
 #define otel_attr_file_lock_mode(value) otel_attr_value_file_lock_mode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_lock_mode_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_LOCK_MODE), (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_mode_n(value) otel_attr_value_file_lock_mode_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_lock_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_LOCK_TYPE, (value));
@@ -2946,12 +4500,26 @@ static inline const otel_attribute_t *otel_attr_value_file_lock_type(const char 
 
 #define otel_attr_file_lock_type(value) otel_attr_value_file_lock_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_lock_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_LOCK_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_file_lock_type_n(value) otel_attr_value_file_lock_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_mode(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_MODE, (value));
     return slot;
 }
 
 #define otel_attr_file_mode(value) otel_attr_value_file_mode((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_mode_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_MODE), (value));
+    return slot;
+}
+
+#define otel_attr_file_mode_n(value) otel_attr_value_file_mode_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_modified(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_MODIFIED, (value));
@@ -2960,12 +4528,26 @@ static inline const otel_attribute_t *otel_attr_value_file_modified(const char *
 
 #define otel_attr_file_modified(value) otel_attr_value_file_modified((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_modified_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_MODIFIED), (value));
+    return slot;
+}
+
+#define otel_attr_file_modified_n(value) otel_attr_value_file_modified_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_file_name(value) otel_attr_value_file_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_file_name_n(value) otel_attr_value_file_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_owner_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_ID, (value));
@@ -2974,12 +4556,26 @@ static inline const otel_attribute_t *otel_attr_value_file_owner_id(const char *
 
 #define otel_attr_file_owner_id(value) otel_attr_value_file_owner_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_owner_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_OWNER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_file_owner_id_n(value) otel_attr_value_file_owner_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_owner_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_OWNER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_file_owner_name(value) otel_attr_value_file_owner_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_owner_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_OWNER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_file_owner_name_n(value) otel_attr_value_file_owner_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_file_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_PATH, (value));
@@ -2988,12 +4584,26 @@ static inline const otel_attribute_t *otel_attr_value_file_path(const char *valu
 
 #define otel_attr_file_path(value) otel_attr_value_file_path((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_file_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_file_path_n(value) otel_attr_value_file_path_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_file_symbolic_link_target_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH, (value));
     return slot;
 }
 
 #define otel_attr_file_symbolic_link_target_path(value) otel_attr_value_file_symbolic_link_target_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_file_symbolic_link_target_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_FILE_SYMBOLIC_LINK_TARGET_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_file_symbolic_link_target_path_n(value) otel_attr_value_file_symbolic_link_target_path_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_container(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER, (value));
@@ -3002,12 +4612,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_con
 
 #define otel_attr_gcp_apphub_application_container(value) otel_attr_value_gcp_apphub_application_container((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_container_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_CONTAINER), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_container_n(value) otel_attr_value_gcp_apphub_application_container_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID, (value));
     return slot;
 }
 
 #define otel_attr_gcp_apphub_application_id(value) otel_attr_value_gcp_apphub_application_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_id_n(value) otel_attr_value_gcp_apphub_application_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_location(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION, (value));
@@ -3016,12 +4640,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_loc
 
 #define otel_attr_gcp_apphub_application_location(value) otel_attr_value_gcp_apphub_application_location((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_application_location_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_APPLICATION_LOCATION), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_application_location_n(value) otel_attr_value_gcp_apphub_application_location_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_application_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID, (value));
     return slot;
 }
 
 #define otel_attr_gcp_apphub_destination_application_id(value) otel_attr_value_gcp_apphub_destination_application_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_application_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_APPLICATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_application_id_n(value) otel_attr_value_gcp_apphub_destination_application_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_service_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID, (value));
@@ -3030,12 +4668,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_ser
 
 #define otel_attr_gcp_apphub_destination_service_id(value) otel_attr_value_gcp_apphub_destination_service_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_service_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_SERVICE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_service_id_n(value) otel_attr_value_gcp_apphub_destination_service_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_workload_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID, (value));
     return slot;
 }
 
 #define otel_attr_gcp_apphub_destination_workload_id(value) otel_attr_value_gcp_apphub_destination_workload_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_destination_workload_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_DESTINATION_WORKLOAD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_destination_workload_id_n(value) otel_attr_value_gcp_apphub_destination_workload_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_service_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID, (value));
@@ -3044,12 +4696,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_apphub_service_id(cons
 
 #define otel_attr_gcp_apphub_service_id(value) otel_attr_value_gcp_apphub_service_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_service_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_SERVICE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_service_id_n(value) otel_attr_value_gcp_apphub_service_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_apphub_workload_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID, (value));
     return slot;
 }
 
 #define otel_attr_gcp_apphub_workload_id(value) otel_attr_value_gcp_apphub_workload_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_apphub_workload_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_APPHUB_WORKLOAD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_apphub_workload_id_n(value) otel_attr_value_gcp_apphub_workload_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_client_service(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE, (value));
@@ -3058,12 +4724,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_client_service(const c
 
 #define otel_attr_gcp_client_service(value) otel_attr_value_gcp_client_service((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_client_service_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_CLIENT_SERVICE), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_client_service_n(value) otel_attr_value_gcp_client_service_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_execution(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION, (value));
     return slot;
 }
 
 #define otel_attr_gcp_cloud_run_job_execution(value) otel_attr_value_gcp_cloud_run_job_execution((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_execution_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_EXECUTION), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_cloud_run_job_execution_n(value) otel_attr_value_gcp_cloud_run_job_execution_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_task_index(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX, (value));
@@ -3072,12 +4752,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_task_ind
 
 #define otel_attr_gcp_cloud_run_job_task_index(value) otel_attr_value_gcp_cloud_run_job_task_index((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_cloud_run_job_task_index_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_CLOUD_RUN_JOB_TASK_INDEX), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_cloud_run_job_task_index_n(value) otel_attr_value_gcp_cloud_run_job_task_index_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_gcp_gce_instance_group_manager_name(value) otel_attr_value_gcp_gce_instance_group_manager_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_name_n(value) otel_attr_value_gcp_gce_instance_group_manager_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_region(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION, (value));
@@ -3086,12 +4780,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_man
 
 #define otel_attr_gcp_gce_instance_group_manager_region(value) otel_attr_value_gcp_gce_instance_group_manager_region((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_region_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_REGION), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_region_n(value) otel_attr_value_gcp_gce_instance_group_manager_region_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_zone(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE, (value));
     return slot;
 }
 
 #define otel_attr_gcp_gce_instance_group_manager_zone(value) otel_attr_value_gcp_gce_instance_group_manager_zone((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_group_manager_zone_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_GROUP_MANAGER_ZONE), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_group_manager_zone_n(value) otel_attr_value_gcp_gce_instance_group_manager_zone_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_hostname(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME, (value));
@@ -3100,12 +4808,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_hostname(
 
 #define otel_attr_gcp_gce_instance_hostname(value) otel_attr_value_gcp_gce_instance_hostname((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_hostname_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_HOSTNAME), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_hostname_n(value) otel_attr_value_gcp_gce_instance_hostname_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_labels(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS, (value));
     return slot;
 }
 
 #define otel_attr_gcp_gce_instance_labels(value) otel_attr_value_gcp_gce_instance_labels((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_labels_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_LABELS), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_labels_n(value) otel_attr_value_gcp_gce_instance_labels_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME, (value));
@@ -3114,12 +4836,26 @@ static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_name(cons
 
 #define otel_attr_gcp_gce_instance_name(value) otel_attr_value_gcp_gce_instance_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gcp_gce_instance_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GCP_GCE_INSTANCE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_gcp_gce_instance_name_n(value) otel_attr_value_gcp_gce_instance_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_gen_ai_completion(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_COMPLETION, (value));
     return slot;
 }
 
 #define otel_attr_gen_ai_completion(value) otel_attr_value_gen_ai_completion((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_gen_ai_completion_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEN_AI_COMPLETION), (value));
+    return slot;
+}
+
+#define otel_attr_gen_ai_completion_n(value) otel_attr_value_gen_ai_completion_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_gen_ai_prompt(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEN_AI_PROMPT, (value));
@@ -3128,12 +4864,26 @@ static inline const otel_attribute_t *otel_attr_value_gen_ai_prompt(const char *
 
 #define otel_attr_gen_ai_prompt(value) otel_attr_value_gen_ai_prompt((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_gen_ai_prompt_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEN_AI_PROMPT), (value));
+    return slot;
+}
+
+#define otel_attr_gen_ai_prompt_n(value) otel_attr_value_gen_ai_prompt_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_geo_country_iso_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE, (value));
     return slot;
 }
 
 #define otel_attr_geo_country_iso_code(value) otel_attr_value_geo_country_iso_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_country_iso_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_COUNTRY_ISO_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_geo_country_iso_code_n(value) otel_attr_value_geo_country_iso_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_geo_locality_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME, (value));
@@ -3142,12 +4892,26 @@ static inline const otel_attribute_t *otel_attr_value_geo_locality_name(const ch
 
 #define otel_attr_geo_locality_name(value) otel_attr_value_geo_locality_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_geo_locality_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_LOCALITY_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_geo_locality_name_n(value) otel_attr_value_geo_locality_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_geo_location_lat(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LAT, (value));
     return slot;
 }
 
 #define otel_attr_geo_location_lat(value) otel_attr_value_geo_location_lat((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_location_lat_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_LOCATION_LAT), (value));
+    return slot;
+}
+
+#define otel_attr_geo_location_lat_n(value) otel_attr_value_geo_location_lat_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_geo_location_lon(double value, otel_attribute_t *slot) {
     *slot = *otel_attr_f64(OTEL_ATTRIBUTE_GEO_LOCATION_LON, (value));
@@ -3156,12 +4920,26 @@ static inline const otel_attribute_t *otel_attr_value_geo_location_lon(double va
 
 #define otel_attr_geo_location_lon(value) otel_attr_value_geo_location_lon((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_geo_location_lon_n(double value, otel_attribute_t *slot) {
+    *slot = *otel_attr_f64_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_LOCATION_LON), (value));
+    return slot;
+}
+
+#define otel_attr_geo_location_lon_n(value) otel_attr_value_geo_location_lon_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_geo_postal_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_POSTAL_CODE, (value));
     return slot;
 }
 
 #define otel_attr_geo_postal_code(value) otel_attr_value_geo_postal_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_geo_postal_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_POSTAL_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_geo_postal_code_n(value) otel_attr_value_geo_postal_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_geo_region_iso_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE, (value));
@@ -3170,12 +4948,26 @@ static inline const otel_attribute_t *otel_attr_value_geo_region_iso_code(const 
 
 #define otel_attr_geo_region_iso_code(value) otel_attr_value_geo_region_iso_code((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_geo_region_iso_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GEO_REGION_ISO_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_geo_region_iso_code_n(value) otel_attr_value_geo_region_iso_code_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_go_cpu_detailed_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE, (value));
     return slot;
 }
 
 #define otel_attr_go_cpu_detailed_state(value) otel_attr_value_go_cpu_detailed_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_cpu_detailed_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GO_CPU_DETAILED_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_go_cpu_detailed_state_n(value) otel_attr_value_go_cpu_detailed_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_go_cpu_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_CPU_STATE, (value));
@@ -3184,12 +4976,26 @@ static inline const otel_attribute_t *otel_attr_value_go_cpu_state(const char *v
 
 #define otel_attr_go_cpu_state(value) otel_attr_value_go_cpu_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_go_cpu_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GO_CPU_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_go_cpu_state_n(value) otel_attr_value_go_cpu_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_go_memory_detailed_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_go_memory_detailed_type(value) otel_attr_value_go_memory_detailed_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_go_memory_detailed_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GO_MEMORY_DETAILED_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_go_memory_detailed_type_n(value) otel_attr_value_go_memory_detailed_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_go_memory_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GO_MEMORY_TYPE, (value));
@@ -3198,12 +5004,26 @@ static inline const otel_attribute_t *otel_attr_value_go_memory_type(const char 
 
 #define otel_attr_go_memory_type(value) otel_attr_value_go_memory_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_go_memory_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GO_MEMORY_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_go_memory_type_n(value) otel_attr_value_go_memory_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_graphql_document(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT, (value));
     return slot;
 }
 
 #define otel_attr_graphql_document(value) otel_attr_value_graphql_document((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_graphql_document_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GRAPHQL_DOCUMENT), (value));
+    return slot;
+}
+
+#define otel_attr_graphql_document_n(value) otel_attr_value_graphql_document_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_graphql_operation_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME, (value));
@@ -3212,12 +5032,26 @@ static inline const otel_attribute_t *otel_attr_value_graphql_operation_name(con
 
 #define otel_attr_graphql_operation_name(value) otel_attr_value_graphql_operation_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_graphql_operation_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_graphql_operation_name_n(value) otel_attr_value_graphql_operation_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_graphql_operation_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_graphql_operation_type(value) otel_attr_value_graphql_operation_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_graphql_operation_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_GRAPHQL_OPERATION_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_graphql_operation_type_n(value) otel_attr_value_graphql_operation_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_heroku_app_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_APP_ID, (value));
@@ -3226,12 +5060,26 @@ static inline const otel_attribute_t *otel_attr_value_heroku_app_id(const char *
 
 #define otel_attr_heroku_app_id(value) otel_attr_value_heroku_app_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_heroku_app_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HEROKU_APP_ID), (value));
+    return slot;
+}
+
+#define otel_attr_heroku_app_id_n(value) otel_attr_value_heroku_app_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_heroku_release_commit(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT, (value));
     return slot;
 }
 
 #define otel_attr_heroku_release_commit(value) otel_attr_value_heroku_release_commit((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_heroku_release_commit_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HEROKU_RELEASE_COMMIT), (value));
+    return slot;
+}
+
+#define otel_attr_heroku_release_commit_n(value) otel_attr_value_heroku_release_commit_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_heroku_release_creation_timestamp(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP, (value));
@@ -3240,12 +5088,26 @@ static inline const otel_attribute_t *otel_attr_value_heroku_release_creation_ti
 
 #define otel_attr_heroku_release_creation_timestamp(value) otel_attr_value_heroku_release_creation_timestamp((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_heroku_release_creation_timestamp_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HEROKU_RELEASE_CREATION_TIMESTAMP), (value));
+    return slot;
+}
+
+#define otel_attr_heroku_release_creation_timestamp_n(value) otel_attr_value_heroku_release_creation_timestamp_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_cpu_cache_l2_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE, (value));
     return slot;
 }
 
 #define otel_attr_host_cpu_cache_l2_size(value) otel_attr_value_host_cpu_cache_l2_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_cache_l2_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_CACHE_L2_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_cache_l2_size_n(value) otel_attr_value_host_cpu_cache_l2_size_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_cpu_family(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_FAMILY, (value));
@@ -3254,12 +5116,26 @@ static inline const otel_attribute_t *otel_attr_value_host_cpu_family(const char
 
 #define otel_attr_host_cpu_family(value) otel_attr_value_host_cpu_family((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_cpu_family_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_FAMILY), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_family_n(value) otel_attr_value_host_cpu_family_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_cpu_model_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID, (value));
     return slot;
 }
 
 #define otel_attr_host_cpu_model_id(value) otel_attr_value_host_cpu_model_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_model_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_MODEL_ID), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_model_id_n(value) otel_attr_value_host_cpu_model_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_cpu_model_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME, (value));
@@ -3268,12 +5144,26 @@ static inline const otel_attribute_t *otel_attr_value_host_cpu_model_name(const 
 
 #define otel_attr_host_cpu_model_name(value) otel_attr_value_host_cpu_model_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_cpu_model_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_MODEL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_model_name_n(value) otel_attr_value_host_cpu_model_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_cpu_stepping(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_STEPPING, (value));
     return slot;
 }
 
 #define otel_attr_host_cpu_stepping(value) otel_attr_value_host_cpu_stepping((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_cpu_stepping_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_STEPPING), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_stepping_n(value) otel_attr_value_host_cpu_stepping_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_cpu_vendor_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID, (value));
@@ -3282,12 +5172,26 @@ static inline const otel_attribute_t *otel_attr_value_host_cpu_vendor_id(const c
 
 #define otel_attr_host_cpu_vendor_id(value) otel_attr_value_host_cpu_vendor_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_cpu_vendor_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_CPU_VENDOR_ID), (value));
+    return slot;
+}
+
+#define otel_attr_host_cpu_vendor_id_n(value) otel_attr_value_host_cpu_vendor_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_ID, (value));
     return slot;
 }
 
 #define otel_attr_host_id(value) otel_attr_value_host_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_ID), (value));
+    return slot;
+}
+
+#define otel_attr_host_id_n(value) otel_attr_value_host_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_image_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_ID, (value));
@@ -3296,12 +5200,26 @@ static inline const otel_attribute_t *otel_attr_value_host_image_id(const char *
 
 #define otel_attr_host_image_id(value) otel_attr_value_host_image_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_image_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_IMAGE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_host_image_id_n(value) otel_attr_value_host_image_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_image_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_host_image_name(value) otel_attr_value_host_image_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_image_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_IMAGE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_host_image_name_n(value) otel_attr_value_host_image_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_image_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION, (value));
@@ -3310,12 +5228,26 @@ static inline const otel_attribute_t *otel_attr_value_host_image_version(const c
 
 #define otel_attr_host_image_version(value) otel_attr_value_host_image_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_image_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_IMAGE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_host_image_version_n(value) otel_attr_value_host_image_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_host_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_NAME, (value));
     return slot;
 }
 
 #define otel_attr_host_name(value) otel_attr_value_host_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_host_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_host_name_n(value) otel_attr_value_host_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_host_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HOST_TYPE, (value));
@@ -3324,12 +5256,26 @@ static inline const otel_attribute_t *otel_attr_value_host_type(const char *valu
 
 #define otel_attr_host_type(value) otel_attr_value_host_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_host_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HOST_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_host_type_n(value) otel_attr_value_host_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_connection_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE, (value));
     return slot;
 }
 
 #define otel_attr_http_connection_state(value) otel_attr_value_http_connection_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_connection_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_CONNECTION_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_http_connection_state_n(value) otel_attr_value_http_connection_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_request_body_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE, (value));
@@ -3338,12 +5284,26 @@ static inline const otel_attribute_t *otel_attr_value_http_request_body_size(int
 
 #define otel_attr_http_request_body_size(value) otel_attr_value_http_request_body_size((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_request_body_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_REQUEST_BODY_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_http_request_body_size_n(value) otel_attr_value_http_request_body_size_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_request_method(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD, (value));
     return slot;
 }
 
 #define otel_attr_http_request_method(value) otel_attr_value_http_request_method((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_request_method_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD), (value));
+    return slot;
+}
+
+#define otel_attr_http_request_method_n(value) otel_attr_value_http_request_method_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_request_method_original(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL, (value));
@@ -3352,12 +5312,26 @@ static inline const otel_attribute_t *otel_attr_value_http_request_method_origin
 
 #define otel_attr_http_request_method_original(value) otel_attr_value_http_request_method_original((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_request_method_original_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_REQUEST_METHOD_ORIGINAL), (value));
+    return slot;
+}
+
+#define otel_attr_http_request_method_original_n(value) otel_attr_value_http_request_method_original_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_request_resend_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT, (value));
     return slot;
 }
 
 #define otel_attr_http_request_resend_count(value) otel_attr_value_http_request_resend_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_request_resend_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_REQUEST_RESEND_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_http_request_resend_count_n(value) otel_attr_value_http_request_resend_count_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_request_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE, (value));
@@ -3366,12 +5340,26 @@ static inline const otel_attribute_t *otel_attr_value_http_request_size(int64_t 
 
 #define otel_attr_http_request_size(value) otel_attr_value_http_request_size((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_request_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_REQUEST_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_http_request_size_n(value) otel_attr_value_http_request_size_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_response_body_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE, (value));
     return slot;
 }
 
 #define otel_attr_http_response_body_size(value) otel_attr_value_http_response_body_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_response_body_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_RESPONSE_BODY_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_http_response_body_size_n(value) otel_attr_value_http_response_body_size_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_response_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE, (value));
@@ -3380,12 +5368,26 @@ static inline const otel_attribute_t *otel_attr_value_http_response_size(int64_t
 
 #define otel_attr_http_response_size(value) otel_attr_value_http_response_size((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_response_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_RESPONSE_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_http_response_size_n(value) otel_attr_value_http_response_size_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_response_status_code(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE, (value));
     return slot;
 }
 
 #define otel_attr_http_response_status_code(value) otel_attr_value_http_response_status_code((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_response_status_code_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_RESPONSE_STATUS_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_http_response_status_code_n(value) otel_attr_value_http_response_status_code_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_route(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_ROUTE, (value));
@@ -3394,12 +5396,26 @@ static inline const otel_attribute_t *otel_attr_value_http_route(const char *val
 
 #define otel_attr_http_route(value) otel_attr_value_http_route((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_route_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_ROUTE), (value));
+    return slot;
+}
+
+#define otel_attr_http_route_n(value) otel_attr_value_http_route_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_scheme(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_SCHEME, (value));
     return slot;
 }
 
 #define otel_attr_http_scheme(value) otel_attr_value_http_scheme((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_scheme_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_SCHEME), (value));
+    return slot;
+}
+
+#define otel_attr_http_scheme_n(value) otel_attr_value_http_scheme_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_http_target(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_TARGET, (value));
@@ -3408,12 +5424,26 @@ static inline const otel_attribute_t *otel_attr_value_http_target(const char *va
 
 #define otel_attr_http_target(value) otel_attr_value_http_target((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_http_target_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_TARGET), (value));
+    return slot;
+}
+
+#define otel_attr_http_target_n(value) otel_attr_value_http_target_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_http_url(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HTTP_URL, (value));
     return slot;
 }
 
 #define otel_attr_http_url(value) otel_attr_value_http_url((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_http_url_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HTTP_URL), (value));
+    return slot;
+}
+
+#define otel_attr_http_url_n(value) otel_attr_value_http_url_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_battery_capacity(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY, (value));
@@ -3422,12 +5452,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_battery_capacity(const 
 
 #define otel_attr_hw_battery_capacity(value) otel_attr_value_hw_battery_capacity((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_battery_capacity_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_BATTERY_CAPACITY), (value));
+    return slot;
+}
+
+#define otel_attr_hw_battery_capacity_n(value) otel_attr_value_hw_battery_capacity_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_battery_chemistry(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY, (value));
     return slot;
 }
 
 #define otel_attr_hw_battery_chemistry(value) otel_attr_value_hw_battery_chemistry((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_battery_chemistry_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_BATTERY_CHEMISTRY), (value));
+    return slot;
+}
+
+#define otel_attr_hw_battery_chemistry_n(value) otel_attr_value_hw_battery_chemistry_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_bios_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_BIOS_VERSION, (value));
@@ -3436,12 +5480,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_bios_version(const char
 
 #define otel_attr_hw_bios_version(value) otel_attr_value_hw_bios_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_bios_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_BIOS_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_hw_bios_version_n(value) otel_attr_value_hw_bios_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_driver_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_DRIVER_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_hw_driver_version(value) otel_attr_value_hw_driver_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_driver_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_DRIVER_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_hw_driver_version_n(value) otel_attr_value_hw_driver_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_enclosure_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE, (value));
@@ -3450,12 +5508,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_enclosure_type(const ch
 
 #define otel_attr_hw_enclosure_type(value) otel_attr_value_hw_enclosure_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_enclosure_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_ENCLOSURE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_hw_enclosure_type_n(value) otel_attr_value_hw_enclosure_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_firmware_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_hw_firmware_version(value) otel_attr_value_hw_firmware_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_firmware_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_FIRMWARE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_hw_firmware_version_n(value) otel_attr_value_hw_firmware_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_ID, (value));
@@ -3464,12 +5536,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_id(const char *value, o
 
 #define otel_attr_hw_id(value) otel_attr_value_hw_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_ID), (value));
+    return slot;
+}
+
+#define otel_attr_hw_id_n(value) otel_attr_value_hw_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_logical_disk_raid_level(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL, (value));
     return slot;
 }
 
 #define otel_attr_hw_logical_disk_raid_level(value) otel_attr_value_hw_logical_disk_raid_level((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_logical_disk_raid_level_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_LOGICAL_DISK_RAID_LEVEL), (value));
+    return slot;
+}
+
+#define otel_attr_hw_logical_disk_raid_level_n(value) otel_attr_value_hw_logical_disk_raid_level_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_memory_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_MEMORY_TYPE, (value));
@@ -3478,12 +5564,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_memory_type(const char 
 
 #define otel_attr_hw_memory_type(value) otel_attr_value_hw_memory_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_memory_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_MEMORY_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_hw_memory_type_n(value) otel_attr_value_hw_memory_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_model(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_MODEL, (value));
     return slot;
 }
 
 #define otel_attr_hw_model(value) otel_attr_value_hw_model((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_model_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_MODEL), (value));
+    return slot;
+}
+
+#define otel_attr_hw_model_n(value) otel_attr_value_hw_model_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_NAME, (value));
@@ -3492,12 +5592,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_name(const char *value,
 
 #define otel_attr_hw_name(value) otel_attr_value_hw_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_hw_name_n(value) otel_attr_value_hw_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_network_physical_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS, (value));
     return slot;
 }
 
 #define otel_attr_hw_network_physical_address(value) otel_attr_value_hw_network_physical_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_network_physical_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_NETWORK_PHYSICAL_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_hw_network_physical_address_n(value) otel_attr_value_hw_network_physical_address_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_parent(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PARENT, (value));
@@ -3506,12 +5620,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_parent(const char *valu
 
 #define otel_attr_hw_parent(value) otel_attr_value_hw_parent((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_parent_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_PARENT), (value));
+    return slot;
+}
+
+#define otel_attr_hw_parent_n(value) otel_attr_value_hw_parent_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_smart_attribute(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE, (value));
     return slot;
 }
 
 #define otel_attr_hw_physical_disk_smart_attribute(value) otel_attr_value_hw_physical_disk_smart_attribute((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_smart_attribute_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_SMART_ATTRIBUTE), (value));
+    return slot;
+}
+
+#define otel_attr_hw_physical_disk_smart_attribute_n(value) otel_attr_value_hw_physical_disk_smart_attribute_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE, (value));
@@ -3520,12 +5648,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_type(cons
 
 #define otel_attr_hw_physical_disk_type(value) otel_attr_value_hw_physical_disk_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_physical_disk_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_PHYSICAL_DISK_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_hw_physical_disk_type_n(value) otel_attr_value_hw_physical_disk_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_sensor_location(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION, (value));
     return slot;
 }
 
 #define otel_attr_hw_sensor_location(value) otel_attr_value_hw_sensor_location((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_sensor_location_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_SENSOR_LOCATION), (value));
+    return slot;
+}
+
+#define otel_attr_hw_sensor_location_n(value) otel_attr_value_hw_sensor_location_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_hw_serial_number(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER, (value));
@@ -3534,12 +5676,26 @@ static inline const otel_attribute_t *otel_attr_value_hw_serial_number(const cha
 
 #define otel_attr_hw_serial_number(value) otel_attr_value_hw_serial_number((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_hw_serial_number_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_SERIAL_NUMBER), (value));
+    return slot;
+}
+
+#define otel_attr_hw_serial_number_n(value) otel_attr_value_hw_serial_number_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_hw_vendor(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_HW_VENDOR, (value));
     return slot;
 }
 
 #define otel_attr_hw_vendor(value) otel_attr_value_hw_vendor((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_hw_vendor_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_HW_VENDOR), (value));
+    return slot;
+}
+
+#define otel_attr_hw_vendor_n(value) otel_attr_value_hw_vendor_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_jsonrpc_protocol_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION, (value));
@@ -3548,12 +5704,26 @@ static inline const otel_attribute_t *otel_attr_value_jsonrpc_protocol_version(c
 
 #define otel_attr_jsonrpc_protocol_version(value) otel_attr_value_jsonrpc_protocol_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_jsonrpc_protocol_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JSONRPC_PROTOCOL_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_jsonrpc_protocol_version_n(value) otel_attr_value_jsonrpc_protocol_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_jsonrpc_request_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID, (value));
     return slot;
 }
 
 #define otel_attr_jsonrpc_request_id(value) otel_attr_value_jsonrpc_request_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jsonrpc_request_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JSONRPC_REQUEST_ID), (value));
+    return slot;
+}
+
+#define otel_attr_jsonrpc_request_id_n(value) otel_attr_value_jsonrpc_request_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_jvm_buffer_pool_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME, (value));
@@ -3562,12 +5732,26 @@ static inline const otel_attribute_t *otel_attr_value_jvm_buffer_pool_name(const
 
 #define otel_attr_jvm_buffer_pool_name(value) otel_attr_value_jvm_buffer_pool_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_jvm_buffer_pool_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_BUFFER_POOL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_buffer_pool_name_n(value) otel_attr_value_jvm_buffer_pool_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_jvm_gc_action(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_ACTION, (value));
     return slot;
 }
 
 #define otel_attr_jvm_gc_action(value) otel_attr_value_jvm_gc_action((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_action_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_GC_ACTION), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_gc_action_n(value) otel_attr_value_jvm_gc_action_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_jvm_gc_cause(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_CAUSE, (value));
@@ -3576,12 +5760,26 @@ static inline const otel_attribute_t *otel_attr_value_jvm_gc_cause(const char *v
 
 #define otel_attr_jvm_gc_cause(value) otel_attr_value_jvm_gc_cause((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_cause_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_GC_CAUSE), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_gc_cause_n(value) otel_attr_value_jvm_gc_cause_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_jvm_gc_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_GC_NAME, (value));
     return slot;
 }
 
 #define otel_attr_jvm_gc_name(value) otel_attr_value_jvm_gc_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_gc_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_GC_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_gc_name_n(value) otel_attr_value_jvm_gc_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_jvm_memory_pool_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME, (value));
@@ -3590,12 +5788,26 @@ static inline const otel_attribute_t *otel_attr_value_jvm_memory_pool_name(const
 
 #define otel_attr_jvm_memory_pool_name(value) otel_attr_value_jvm_memory_pool_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_jvm_memory_pool_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_MEMORY_POOL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_memory_pool_name_n(value) otel_attr_value_jvm_memory_pool_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_jvm_memory_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_jvm_memory_type(value) otel_attr_value_jvm_memory_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_jvm_memory_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_MEMORY_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_memory_type_n(value) otel_attr_value_jvm_memory_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_jvm_thread_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_JVM_THREAD_STATE, (value));
@@ -3604,12 +5816,26 @@ static inline const otel_attribute_t *otel_attr_value_jvm_thread_state(const cha
 
 #define otel_attr_jvm_thread_state(value) otel_attr_value_jvm_thread_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_jvm_thread_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_JVM_THREAD_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_jvm_thread_state_n(value) otel_attr_value_jvm_thread_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_cluster_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_cluster_name(value) otel_attr_value_k8s_cluster_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cluster_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CLUSTER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cluster_name_n(value) otel_attr_value_k8s_cluster_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_cluster_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CLUSTER_UID, (value));
@@ -3618,12 +5844,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_cluster_uid(const char
 
 #define otel_attr_k8s_cluster_uid(value) otel_attr_value_k8s_cluster_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_cluster_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CLUSTER_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cluster_uid_n(value) otel_attr_value_k8s_cluster_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_container_ephemeral_storage_fs_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_container_ephemeral_storage_fs_type(value) otel_attr_value_k8s_container_ephemeral_storage_fs_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_container_ephemeral_storage_fs_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CONTAINER_EPHEMERAL_STORAGE_FS_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_container_ephemeral_storage_fs_type_n(value) otel_attr_value_k8s_container_ephemeral_storage_fs_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_container_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME, (value));
@@ -3632,12 +5872,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_container_name(const c
 
 #define otel_attr_k8s_container_name(value) otel_attr_value_k8s_container_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_container_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CONTAINER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_container_name_n(value) otel_attr_value_k8s_container_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_container_status_reason(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON, (value));
     return slot;
 }
 
 #define otel_attr_k8s_container_status_reason(value) otel_attr_value_k8s_container_status_reason((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_container_status_reason_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_REASON), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_container_status_reason_n(value) otel_attr_value_k8s_container_status_reason_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_container_status_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE, (value));
@@ -3646,12 +5900,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_container_status_state
 
 #define otel_attr_k8s_container_status_state(value) otel_attr_value_k8s_container_status_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_container_status_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CONTAINER_STATUS_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_container_status_state_n(value) otel_attr_value_k8s_container_status_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_cronjob_annotation(value) otel_attr_value_k8s_cronjob_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CRONJOB_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cronjob_annotation_n(value) otel_attr_value_k8s_cronjob_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL, (value));
@@ -3660,12 +5928,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_label(const ch
 
 #define otel_attr_k8s_cronjob_label(value) otel_attr_value_k8s_cronjob_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CRONJOB_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cronjob_label_n(value) otel_attr_value_k8s_cronjob_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_cronjob_name(value) otel_attr_value_k8s_cronjob_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CRONJOB_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cronjob_name_n(value) otel_attr_value_k8s_cronjob_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_CRONJOB_UID, (value));
@@ -3674,12 +5956,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_uid(const char
 
 #define otel_attr_k8s_cronjob_uid(value) otel_attr_value_k8s_cronjob_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_cronjob_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_CRONJOB_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_cronjob_uid_n(value) otel_attr_value_k8s_cronjob_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_daemonset_annotation(value) otel_attr_value_k8s_daemonset_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DAEMONSET_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_daemonset_annotation_n(value) otel_attr_value_k8s_daemonset_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL, (value));
@@ -3688,12 +5984,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_label(const 
 
 #define otel_attr_k8s_daemonset_label(value) otel_attr_value_k8s_daemonset_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DAEMONSET_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_daemonset_label_n(value) otel_attr_value_k8s_daemonset_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_daemonset_name(value) otel_attr_value_k8s_daemonset_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DAEMONSET_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_daemonset_name_n(value) otel_attr_value_k8s_daemonset_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID, (value));
@@ -3702,12 +6012,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_uid(const ch
 
 #define otel_attr_k8s_daemonset_uid(value) otel_attr_value_k8s_daemonset_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_daemonset_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DAEMONSET_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_daemonset_uid_n(value) otel_attr_value_k8s_daemonset_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_deployment_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_deployment_annotation(value) otel_attr_value_k8s_deployment_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_deployment_annotation_n(value) otel_attr_value_k8s_deployment_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_deployment_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL, (value));
@@ -3716,12 +6040,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_deployment_label(const
 
 #define otel_attr_k8s_deployment_label(value) otel_attr_value_k8s_deployment_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_deployment_label_n(value) otel_attr_value_k8s_deployment_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_deployment_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_deployment_name(value) otel_attr_value_k8s_deployment_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_deployment_name_n(value) otel_attr_value_k8s_deployment_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_deployment_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID, (value));
@@ -3730,12 +6068,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_deployment_uid(const c
 
 #define otel_attr_k8s_deployment_uid(value) otel_attr_value_k8s_deployment_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_deployment_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_DEPLOYMENT_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_deployment_uid_n(value) otel_attr_value_k8s_deployment_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_metric_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_hpa_metric_type(value) otel_attr_value_k8s_hpa_metric_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_metric_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_METRIC_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_metric_type_n(value) otel_attr_value_k8s_hpa_metric_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_NAME, (value));
@@ -3744,12 +6096,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_hpa_name(const char *v
 
 #define otel_attr_k8s_hpa_name(value) otel_attr_value_k8s_hpa_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_name_n(value) otel_attr_value_k8s_hpa_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_api_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_hpa_scaletargetref_api_version(value) otel_attr_value_k8s_hpa_scaletargetref_api_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_api_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_API_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_scaletargetref_api_version_n(value) otel_attr_value_k8s_hpa_scaletargetref_api_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_kind(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND, (value));
@@ -3758,12 +6124,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_kin
 
 #define otel_attr_k8s_hpa_scaletargetref_kind(value) otel_attr_value_k8s_hpa_scaletargetref_kind((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_kind_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_KIND), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_scaletargetref_kind_n(value) otel_attr_value_k8s_hpa_scaletargetref_kind_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_hpa_scaletargetref_name(value) otel_attr_value_k8s_hpa_scaletargetref_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_scaletargetref_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_SCALETARGETREF_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_scaletargetref_name_n(value) otel_attr_value_k8s_hpa_scaletargetref_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_hpa_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HPA_UID, (value));
@@ -3772,12 +6152,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_hpa_uid(const char *va
 
 #define otel_attr_k8s_hpa_uid(value) otel_attr_value_k8s_hpa_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_hpa_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HPA_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hpa_uid_n(value) otel_attr_value_k8s_hpa_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_hugepage_size(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_hugepage_size(value) otel_attr_value_k8s_hugepage_size((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_hugepage_size_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_HUGEPAGE_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_hugepage_size_n(value) otel_attr_value_k8s_hugepage_size_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_job_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION, (value));
@@ -3786,12 +6180,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_job_annotation(const c
 
 #define otel_attr_k8s_job_annotation(value) otel_attr_value_k8s_job_annotation((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_job_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_JOB_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_job_annotation_n(value) otel_attr_value_k8s_job_annotation_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_job_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_LABEL, (value));
     return slot;
 }
 
 #define otel_attr_k8s_job_label(value) otel_attr_value_k8s_job_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_job_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_JOB_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_job_label_n(value) otel_attr_value_k8s_job_label_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_job_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_NAME, (value));
@@ -3800,12 +6208,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_job_name(const char *v
 
 #define otel_attr_k8s_job_name(value) otel_attr_value_k8s_job_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_job_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_JOB_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_job_name_n(value) otel_attr_value_k8s_job_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_job_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_JOB_UID, (value));
     return slot;
 }
 
 #define otel_attr_k8s_job_uid(value) otel_attr_value_k8s_job_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_job_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_JOB_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_job_uid_n(value) otel_attr_value_k8s_job_uid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_namespace_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION, (value));
@@ -3814,12 +6236,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_namespace_annotation(c
 
 #define otel_attr_k8s_namespace_annotation(value) otel_attr_value_k8s_namespace_annotation((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NAMESPACE_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_namespace_annotation_n(value) otel_attr_value_k8s_namespace_annotation_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_namespace_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL, (value));
     return slot;
 }
 
 #define otel_attr_k8s_namespace_label(value) otel_attr_value_k8s_namespace_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NAMESPACE_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_namespace_label_n(value) otel_attr_value_k8s_namespace_label_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_namespace_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME, (value));
@@ -3828,12 +6264,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_namespace_name(const c
 
 #define otel_attr_k8s_namespace_name(value) otel_attr_value_k8s_namespace_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NAMESPACE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_namespace_name_n(value) otel_attr_value_k8s_namespace_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_namespace_phase(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_namespace_phase(value) otel_attr_value_k8s_namespace_phase((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_namespace_phase_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NAMESPACE_PHASE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_namespace_phase_n(value) otel_attr_value_k8s_namespace_phase_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_node_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION, (value));
@@ -3842,12 +6292,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_node_annotation(const 
 
 #define otel_attr_k8s_node_annotation(value) otel_attr_value_k8s_node_annotation((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_node_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_annotation_n(value) otel_attr_value_k8s_node_annotation_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS, (value));
     return slot;
 }
 
 #define otel_attr_k8s_node_condition_status(value) otel_attr_value_k8s_node_condition_status((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_condition_status_n(value) otel_attr_value_k8s_node_condition_status_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE, (value));
@@ -3856,12 +6320,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_type(co
 
 #define otel_attr_k8s_node_condition_type(value) otel_attr_value_k8s_node_condition_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_node_condition_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_CONDITION_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_condition_type_n(value) otel_attr_value_k8s_node_condition_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_node_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_LABEL, (value));
     return slot;
 }
 
 #define otel_attr_k8s_node_label(value) otel_attr_value_k8s_node_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_label_n(value) otel_attr_value_k8s_node_label_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_node_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_NAME, (value));
@@ -3870,12 +6348,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_node_name(const char *
 
 #define otel_attr_k8s_node_name(value) otel_attr_value_k8s_node_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_node_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_name_n(value) otel_attr_value_k8s_node_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_node_system_container_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_node_system_container_name(value) otel_attr_value_k8s_node_system_container_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_node_system_container_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_SYSTEM_CONTAINER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_system_container_name_n(value) otel_attr_value_k8s_node_system_container_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_node_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_NODE_UID, (value));
@@ -3884,12 +6376,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_node_uid(const char *v
 
 #define otel_attr_k8s_node_uid(value) otel_attr_value_k8s_node_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_node_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_NODE_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_node_uid_n(value) otel_attr_value_k8s_node_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolume_annotation(value) otel_attr_value_k8s_persistentvolume_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_annotation_n(value) otel_attr_value_k8s_persistentvolume_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL, (value));
@@ -3898,12 +6404,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_label
 
 #define otel_attr_k8s_persistentvolume_label(value) otel_attr_value_k8s_persistentvolume_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_label_n(value) otel_attr_value_k8s_persistentvolume_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolume_name(value) otel_attr_value_k8s_persistentvolume_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_name_n(value) otel_attr_value_k8s_persistentvolume_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_reclaim_policy(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY, (value));
@@ -3912,12 +6432,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_recla
 
 #define otel_attr_k8s_persistentvolume_reclaim_policy(value) otel_attr_value_k8s_persistentvolume_reclaim_policy((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_reclaim_policy_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_RECLAIM_POLICY), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_reclaim_policy_n(value) otel_attr_value_k8s_persistentvolume_reclaim_policy_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_status_phase(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolume_status_phase(value) otel_attr_value_k8s_persistentvolume_status_phase((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_status_phase_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_STATUS_PHASE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_status_phase_n(value) otel_attr_value_k8s_persistentvolume_status_phase_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID, (value));
@@ -3926,12 +6460,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_uid(c
 
 #define otel_attr_k8s_persistentvolume_uid(value) otel_attr_value_k8s_persistentvolume_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolume_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUME_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolume_uid_n(value) otel_attr_value_k8s_persistentvolume_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolumeclaim_annotation(value) otel_attr_value_k8s_persistentvolumeclaim_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolumeclaim_annotation_n(value) otel_attr_value_k8s_persistentvolumeclaim_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL, (value));
@@ -3940,12 +6488,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_
 
 #define otel_attr_k8s_persistentvolumeclaim_label(value) otel_attr_value_k8s_persistentvolumeclaim_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolumeclaim_label_n(value) otel_attr_value_k8s_persistentvolumeclaim_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolumeclaim_name(value) otel_attr_value_k8s_persistentvolumeclaim_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolumeclaim_name_n(value) otel_attr_value_k8s_persistentvolumeclaim_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_status_phase(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE, (value));
@@ -3954,12 +6516,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_
 
 #define otel_attr_k8s_persistentvolumeclaim_status_phase(value) otel_attr_value_k8s_persistentvolumeclaim_status_phase((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_status_phase_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_STATUS_PHASE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolumeclaim_status_phase_n(value) otel_attr_value_k8s_persistentvolumeclaim_status_phase_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID, (value));
     return slot;
 }
 
 #define otel_attr_k8s_persistentvolumeclaim_uid(value) otel_attr_value_k8s_persistentvolumeclaim_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_persistentvolumeclaim_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_PERSISTENTVOLUMECLAIM_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_persistentvolumeclaim_uid_n(value) otel_attr_value_k8s_persistentvolumeclaim_uid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION, (value));
@@ -3968,12 +6544,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_pod_annotation(const c
 
 #define otel_attr_k8s_pod_annotation(value) otel_attr_value_k8s_pod_annotation((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_annotation_n(value) otel_attr_value_k8s_pod_annotation_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_hostname(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_pod_hostname(value) otel_attr_value_k8s_pod_hostname((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_hostname_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_HOSTNAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_hostname_n(value) otel_attr_value_k8s_pod_hostname_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_ip(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_IP, (value));
@@ -3982,12 +6572,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_pod_ip(const char *val
 
 #define otel_attr_k8s_pod_ip(value) otel_attr_value_k8s_pod_ip((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_ip_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_IP), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_ip_n(value) otel_attr_value_k8s_pod_ip_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_LABEL, (value));
     return slot;
 }
 
 #define otel_attr_k8s_pod_label(value) otel_attr_value_k8s_pod_label((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_label_n(value) otel_attr_value_k8s_pod_label_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_NAME, (value));
@@ -3996,12 +6600,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_pod_name(const char *v
 
 #define otel_attr_k8s_pod_name(value) otel_attr_value_k8s_pod_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_name_n(value) otel_attr_value_k8s_pod_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_start_time(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_START_TIME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_pod_start_time(value) otel_attr_value_k8s_pod_start_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_start_time_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_START_TIME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_start_time_n(value) otel_attr_value_k8s_pod_start_time_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_phase(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE, (value));
@@ -4010,12 +6628,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_phase(const
 
 #define otel_attr_k8s_pod_status_phase(value) otel_attr_value_k8s_pod_status_phase((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_phase_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_STATUS_PHASE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_status_phase_n(value) otel_attr_value_k8s_pod_status_phase_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_reason(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON, (value));
     return slot;
 }
 
 #define otel_attr_k8s_pod_status_reason(value) otel_attr_value_k8s_pod_status_reason((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_status_reason_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_STATUS_REASON), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_status_reason_n(value) otel_attr_value_k8s_pod_status_reason_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_pod_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_POD_UID, (value));
@@ -4024,12 +6656,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_pod_uid(const char *va
 
 #define otel_attr_k8s_pod_uid(value) otel_attr_value_k8s_pod_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_pod_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_POD_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_pod_uid_n(value) otel_attr_value_k8s_pod_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_replicaset_annotation(value) otel_attr_value_k8s_replicaset_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICASET_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicaset_annotation_n(value) otel_attr_value_k8s_replicaset_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL, (value));
@@ -4038,12 +6684,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_label(const
 
 #define otel_attr_k8s_replicaset_label(value) otel_attr_value_k8s_replicaset_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICASET_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicaset_label_n(value) otel_attr_value_k8s_replicaset_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_replicaset_name(value) otel_attr_value_k8s_replicaset_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICASET_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicaset_name_n(value) otel_attr_value_k8s_replicaset_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICASET_UID, (value));
@@ -4052,12 +6712,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_uid(const c
 
 #define otel_attr_k8s_replicaset_uid(value) otel_attr_value_k8s_replicaset_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_replicaset_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICASET_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicaset_uid_n(value) otel_attr_value_k8s_replicaset_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_replicationcontroller_name(value) otel_attr_value_k8s_replicationcontroller_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicationcontroller_name_n(value) otel_attr_value_k8s_replicationcontroller_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID, (value));
@@ -4066,12 +6740,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_
 
 #define otel_attr_k8s_replicationcontroller_uid(value) otel_attr_value_k8s_replicationcontroller_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_replicationcontroller_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_REPLICATIONCONTROLLER_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_replicationcontroller_uid_n(value) otel_attr_value_k8s_replicationcontroller_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_resourcequota_name(value) otel_attr_value_k8s_resourcequota_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_resourcequota_name_n(value) otel_attr_value_k8s_resourcequota_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_resource_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME, (value));
@@ -4080,12 +6768,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_resource
 
 #define otel_attr_k8s_resourcequota_resource_name(value) otel_attr_value_k8s_resourcequota_resource_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_resource_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_RESOURCE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_resourcequota_resource_name_n(value) otel_attr_value_k8s_resourcequota_resource_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID, (value));
     return slot;
 }
 
 #define otel_attr_k8s_resourcequota_uid(value) otel_attr_value_k8s_resourcequota_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_resourcequota_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_RESOURCEQUOTA_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_resourcequota_uid_n(value) otel_attr_value_k8s_resourcequota_uid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION, (value));
@@ -4094,12 +6796,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_annotation(con
 
 #define otel_attr_k8s_service_annotation(value) otel_attr_value_k8s_service_annotation((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_annotation_n(value) otel_attr_value_k8s_service_annotation_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_address_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_service_endpoint_address_type(value) otel_attr_value_k8s_service_endpoint_address_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_address_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ADDRESS_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_endpoint_address_type_n(value) otel_attr_value_k8s_service_endpoint_address_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_condition(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION, (value));
@@ -4108,12 +6824,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_condi
 
 #define otel_attr_k8s_service_endpoint_condition(value) otel_attr_value_k8s_service_endpoint_condition((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_condition_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_CONDITION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_endpoint_condition_n(value) otel_attr_value_k8s_service_endpoint_condition_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_zone(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_service_endpoint_zone(value) otel_attr_value_k8s_service_endpoint_zone((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_service_endpoint_zone_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_ENDPOINT_ZONE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_endpoint_zone_n(value) otel_attr_value_k8s_service_endpoint_zone_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL, (value));
@@ -4122,12 +6852,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_label(const ch
 
 #define otel_attr_k8s_service_label(value) otel_attr_value_k8s_service_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_label_n(value) otel_attr_value_k8s_service_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_service_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_service_name(value) otel_attr_value_k8s_service_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_service_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_name_n(value) otel_attr_value_k8s_service_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_publish_not_ready_addresses(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES, (value));
@@ -4136,12 +6880,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_publish_not_re
 
 #define otel_attr_k8s_service_publish_not_ready_addresses(value) otel_attr_value_k8s_service_publish_not_ready_addresses((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_publish_not_ready_addresses_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_PUBLISH_NOT_READY_ADDRESSES), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_publish_not_ready_addresses_n(value) otel_attr_value_k8s_service_publish_not_ready_addresses_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_service_selector(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR, (value));
     return slot;
 }
 
 #define otel_attr_k8s_service_selector(value) otel_attr_value_k8s_service_selector((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_service_selector_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_SELECTOR), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_selector_n(value) otel_attr_value_k8s_service_selector_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_traffic_distribution(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION, (value));
@@ -4150,12 +6908,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_traffic_distri
 
 #define otel_attr_k8s_service_traffic_distribution(value) otel_attr_value_k8s_service_traffic_distribution((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_traffic_distribution_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_TRAFFIC_DISTRIBUTION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_traffic_distribution_n(value) otel_attr_value_k8s_service_traffic_distribution_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_service_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_service_type(value) otel_attr_value_k8s_service_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_service_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_type_n(value) otel_attr_value_k8s_service_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_service_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_SERVICE_UID, (value));
@@ -4164,12 +6936,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_service_uid(const char
 
 #define otel_attr_k8s_service_uid(value) otel_attr_value_k8s_service_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_service_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_SERVICE_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_service_uid_n(value) otel_attr_value_k8s_service_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_annotation(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION, (value));
     return slot;
 }
 
 #define otel_attr_k8s_statefulset_annotation(value) otel_attr_value_k8s_statefulset_annotation((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_annotation_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_STATEFULSET_ANNOTATION), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_statefulset_annotation_n(value) otel_attr_value_k8s_statefulset_annotation_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_label(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL, (value));
@@ -4178,12 +6964,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_label(cons
 
 #define otel_attr_k8s_statefulset_label(value) otel_attr_value_k8s_statefulset_label((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_label_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_STATEFULSET_LABEL), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_statefulset_label_n(value) otel_attr_value_k8s_statefulset_label_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_statefulset_name(value) otel_attr_value_k8s_statefulset_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_STATEFULSET_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_statefulset_name_n(value) otel_attr_value_k8s_statefulset_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID, (value));
@@ -4192,12 +6992,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_uid(const 
 
 #define otel_attr_k8s_statefulset_uid(value) otel_attr_value_k8s_statefulset_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_statefulset_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_STATEFULSET_UID), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_statefulset_uid_n(value) otel_attr_value_k8s_statefulset_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_storageclass_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME, (value));
     return slot;
 }
 
 #define otel_attr_k8s_storageclass_name(value) otel_attr_value_k8s_storageclass_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_storageclass_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_STORAGECLASS_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_storageclass_name_n(value) otel_attr_value_k8s_storageclass_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_k8s_volume_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_NAME, (value));
@@ -4206,12 +7020,26 @@ static inline const otel_attribute_t *otel_attr_value_k8s_volume_name(const char
 
 #define otel_attr_k8s_volume_name(value) otel_attr_value_k8s_volume_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_k8s_volume_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_VOLUME_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_volume_name_n(value) otel_attr_value_k8s_volume_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_k8s_volume_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_k8s_volume_type(value) otel_attr_value_k8s_volume_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_k8s_volume_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_K8S_VOLUME_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_k8s_volume_type_n(value) otel_attr_value_k8s_volume_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_log_file_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME, (value));
@@ -4220,12 +7048,26 @@ static inline const otel_attribute_t *otel_attr_value_log_file_name(const char *
 
 #define otel_attr_log_file_name(value) otel_attr_value_log_file_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_log_file_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_FILE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_log_file_name_n(value) otel_attr_value_log_file_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_log_file_name_resolved(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED, (value));
     return slot;
 }
 
 #define otel_attr_log_file_name_resolved(value) otel_attr_value_log_file_name_resolved((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_log_file_name_resolved_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_FILE_NAME_RESOLVED), (value));
+    return slot;
+}
+
+#define otel_attr_log_file_name_resolved_n(value) otel_attr_value_log_file_name_resolved_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_log_file_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH, (value));
@@ -4234,12 +7076,26 @@ static inline const otel_attribute_t *otel_attr_value_log_file_path(const char *
 
 #define otel_attr_log_file_path(value) otel_attr_value_log_file_path((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_log_file_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_FILE_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_log_file_path_n(value) otel_attr_value_log_file_path_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_log_file_path_resolved(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED, (value));
     return slot;
 }
 
 #define otel_attr_log_file_path_resolved(value) otel_attr_value_log_file_path_resolved((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_log_file_path_resolved_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_FILE_PATH_RESOLVED), (value));
+    return slot;
+}
+
+#define otel_attr_log_file_path_resolved_n(value) otel_attr_value_log_file_path_resolved_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_log_record_original(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL, (value));
@@ -4248,12 +7104,26 @@ static inline const otel_attribute_t *otel_attr_value_log_record_original(const 
 
 #define otel_attr_log_record_original(value) otel_attr_value_log_record_original((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_log_record_original_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_RECORD_ORIGINAL), (value));
+    return slot;
+}
+
+#define otel_attr_log_record_original_n(value) otel_attr_value_log_record_original_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_log_record_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_LOG_RECORD_UID, (value));
     return slot;
 }
 
 #define otel_attr_log_record_uid(value) otel_attr_value_log_record_uid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_log_record_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_LOG_RECORD_UID), (value));
+    return slot;
+}
+
+#define otel_attr_log_record_uid_n(value) otel_attr_value_log_record_uid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_mainframe_lpar_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME, (value));
@@ -4262,12 +7132,26 @@ static inline const otel_attribute_t *otel_attr_value_mainframe_lpar_name(const 
 
 #define otel_attr_mainframe_lpar_name(value) otel_attr_value_mainframe_lpar_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_mainframe_lpar_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MAINFRAME_LPAR_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_mainframe_lpar_name_n(value) otel_attr_value_mainframe_lpar_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_batch_message_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT, (value));
     return slot;
 }
 
 #define otel_attr_messaging_batch_message_count(value) otel_attr_value_messaging_batch_message_count((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_batch_message_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_BATCH_MESSAGE_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_batch_message_count_n(value) otel_attr_value_messaging_batch_message_count_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_client_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID, (value));
@@ -4276,12 +7160,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_client_id(const 
 
 #define otel_attr_messaging_client_id(value) otel_attr_value_messaging_client_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_client_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_CLIENT_ID), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_client_id_n(value) otel_attr_value_messaging_client_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_consumer_group_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME, (value));
     return slot;
 }
 
 #define otel_attr_messaging_consumer_group_name(value) otel_attr_value_messaging_consumer_group_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_consumer_group_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_CONSUMER_GROUP_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_consumer_group_name_n(value) otel_attr_value_messaging_consumer_group_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_destination_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME, (value));
@@ -4290,12 +7188,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_destination_name
 
 #define otel_attr_messaging_destination_name(value) otel_attr_value_messaging_destination_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_destination_name_n(value) otel_attr_value_messaging_destination_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_destination_partition_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID, (value));
     return slot;
 }
 
 #define otel_attr_messaging_destination_partition_id(value) otel_attr_value_messaging_destination_partition_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_partition_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PARTITION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_destination_partition_id_n(value) otel_attr_value_messaging_destination_partition_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_destination_publish_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME, (value));
@@ -4304,12 +7216,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_destination_publ
 
 #define otel_attr_messaging_destination_publish_name(value) otel_attr_value_messaging_destination_publish_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_publish_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_PUBLISH_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_destination_publish_name_n(value) otel_attr_value_messaging_destination_publish_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_destination_subscription_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME, (value));
     return slot;
 }
 
 #define otel_attr_messaging_destination_subscription_name(value) otel_attr_value_messaging_destination_subscription_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_subscription_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_SUBSCRIPTION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_destination_subscription_name_n(value) otel_attr_value_messaging_destination_subscription_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_destination_template(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE, (value));
@@ -4318,12 +7244,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_destination_temp
 
 #define otel_attr_messaging_destination_template(value) otel_attr_value_messaging_destination_template((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_destination_template_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_DESTINATION_TEMPLATE), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_destination_template_n(value) otel_attr_value_messaging_destination_template_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_gcp_pubsub_message_ack_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID, (value));
     return slot;
 }
 
 #define otel_attr_messaging_gcp_pubsub_message_ack_id(value) otel_attr_value_messaging_gcp_pubsub_message_ack_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_gcp_pubsub_message_ack_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_GCP_PUBSUB_MESSAGE_ACK_ID), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_gcp_pubsub_message_ack_id_n(value) otel_attr_value_messaging_gcp_pubsub_message_ack_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_kafka_message_key(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY, (value));
@@ -4332,12 +7272,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_kafka_message_ke
 
 #define otel_attr_messaging_kafka_message_key(value) otel_attr_value_messaging_kafka_message_key((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_kafka_message_key_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_KAFKA_MESSAGE_KEY), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_kafka_message_key_n(value) otel_attr_value_messaging_kafka_message_key_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_kafka_offset(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET, (value));
     return slot;
 }
 
 #define otel_attr_messaging_kafka_offset(value) otel_attr_value_messaging_kafka_offset((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_kafka_offset_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_KAFKA_OFFSET), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_kafka_offset_n(value) otel_attr_value_messaging_kafka_offset_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_message_body_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE, (value));
@@ -4346,12 +7300,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_message_body_siz
 
 #define otel_attr_messaging_message_body_size(value) otel_attr_value_messaging_message_body_size((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_message_body_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_BODY_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_message_body_size_n(value) otel_attr_value_messaging_message_body_size_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_message_conversation_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID, (value));
     return slot;
 }
 
 #define otel_attr_messaging_message_conversation_id(value) otel_attr_value_messaging_message_conversation_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_message_conversation_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_CONVERSATION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_message_conversation_id_n(value) otel_attr_value_messaging_message_conversation_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_message_envelope_size(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE, (value));
@@ -4360,12 +7328,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_message_envelope
 
 #define otel_attr_messaging_message_envelope_size(value) otel_attr_value_messaging_message_envelope_size((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_message_envelope_size_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ENVELOPE_SIZE), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_message_envelope_size_n(value) otel_attr_value_messaging_message_envelope_size_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_message_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID, (value));
     return slot;
 }
 
 #define otel_attr_messaging_message_id(value) otel_attr_value_messaging_message_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_message_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_MESSAGE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_message_id_n(value) otel_attr_value_messaging_message_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_operation_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME, (value));
@@ -4374,12 +7356,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_operation_name(c
 
 #define otel_attr_messaging_operation_name(value) otel_attr_value_messaging_operation_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_operation_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_OPERATION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_operation_name_n(value) otel_attr_value_messaging_operation_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_rabbitmq_message_delivery_tag(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG, (value));
     return slot;
 }
 
 #define otel_attr_messaging_rabbitmq_message_delivery_tag(value) otel_attr_value_messaging_rabbitmq_message_delivery_tag((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_rabbitmq_message_delivery_tag_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_RABBITMQ_MESSAGE_DELIVERY_TAG), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_rabbitmq_message_delivery_tag_n(value) otel_attr_value_messaging_rabbitmq_message_delivery_tag_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_group(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP, (value));
@@ -4388,12 +7384,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message
 
 #define otel_attr_messaging_rocketmq_message_group(value) otel_attr_value_messaging_rocketmq_message_group((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_group_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_GROUP), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_rocketmq_message_group_n(value) otel_attr_value_messaging_rocketmq_message_group_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_tag(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG, (value));
     return slot;
 }
 
 #define otel_attr_messaging_rocketmq_message_tag(value) otel_attr_value_messaging_rocketmq_message_tag((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_message_tag_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_MESSAGE_TAG), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_rocketmq_message_tag_n(value) otel_attr_value_messaging_rocketmq_message_tag_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_namespace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE, (value));
@@ -4402,12 +7412,26 @@ static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_namespa
 
 #define otel_attr_messaging_rocketmq_namespace(value) otel_attr_value_messaging_rocketmq_namespace((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_messaging_rocketmq_namespace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_MESSAGING_ROCKETMQ_NAMESPACE), (value));
+    return slot;
+}
+
+#define otel_attr_messaging_rocketmq_namespace_n(value) otel_attr_value_messaging_rocketmq_namespace_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_net_host_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NET_HOST_PORT, (value));
     return slot;
 }
 
 #define otel_attr_net_host_port(value) otel_attr_value_net_host_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_net_host_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_NET_HOST_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_net_host_port_n(value) otel_attr_value_net_host_port_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_net_sock_peer_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME, (value));
@@ -4416,12 +7440,26 @@ static inline const otel_attribute_t *otel_attr_value_net_sock_peer_name(const c
 
 #define otel_attr_net_sock_peer_name(value) otel_attr_value_net_sock_peer_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_net_sock_peer_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NET_SOCK_PEER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_net_sock_peer_name_n(value) otel_attr_value_net_sock_peer_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_carrier_icc(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC, (value));
     return slot;
 }
 
 #define otel_attr_network_carrier_icc(value) otel_attr_value_network_carrier_icc((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_carrier_icc_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CARRIER_ICC), (value));
+    return slot;
+}
+
+#define otel_attr_network_carrier_icc_n(value) otel_attr_value_network_carrier_icc_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_carrier_mcc(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC, (value));
@@ -4430,12 +7468,26 @@ static inline const otel_attribute_t *otel_attr_value_network_carrier_mcc(const 
 
 #define otel_attr_network_carrier_mcc(value) otel_attr_value_network_carrier_mcc((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_carrier_mcc_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CARRIER_MCC), (value));
+    return slot;
+}
+
+#define otel_attr_network_carrier_mcc_n(value) otel_attr_value_network_carrier_mcc_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_carrier_mnc(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC, (value));
     return slot;
 }
 
 #define otel_attr_network_carrier_mnc(value) otel_attr_value_network_carrier_mnc((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_carrier_mnc_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CARRIER_MNC), (value));
+    return slot;
+}
+
+#define otel_attr_network_carrier_mnc_n(value) otel_attr_value_network_carrier_mnc_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_carrier_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME, (value));
@@ -4444,12 +7496,26 @@ static inline const otel_attribute_t *otel_attr_value_network_carrier_name(const
 
 #define otel_attr_network_carrier_name(value) otel_attr_value_network_carrier_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_carrier_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CARRIER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_network_carrier_name_n(value) otel_attr_value_network_carrier_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_connection_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE, (value));
     return slot;
 }
 
 #define otel_attr_network_connection_state(value) otel_attr_value_network_connection_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_connection_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CONNECTION_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_network_connection_state_n(value) otel_attr_value_network_connection_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_connection_subtype(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE, (value));
@@ -4458,12 +7524,26 @@ static inline const otel_attribute_t *otel_attr_value_network_connection_subtype
 
 #define otel_attr_network_connection_subtype(value) otel_attr_value_network_connection_subtype((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_connection_subtype_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CONNECTION_SUBTYPE), (value));
+    return slot;
+}
+
+#define otel_attr_network_connection_subtype_n(value) otel_attr_value_network_connection_subtype_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_connection_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_network_connection_type(value) otel_attr_value_network_connection_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_connection_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_CONNECTION_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_network_connection_type_n(value) otel_attr_value_network_connection_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_interface_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME, (value));
@@ -4472,12 +7552,26 @@ static inline const otel_attribute_t *otel_attr_value_network_interface_name(con
 
 #define otel_attr_network_interface_name(value) otel_attr_value_network_interface_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_interface_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_INTERFACE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_network_interface_name_n(value) otel_attr_value_network_interface_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_io_direction(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION, (value));
     return slot;
 }
 
 #define otel_attr_network_io_direction(value) otel_attr_value_network_io_direction((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_io_direction_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_IO_DIRECTION), (value));
+    return slot;
+}
+
+#define otel_attr_network_io_direction_n(value) otel_attr_value_network_io_direction_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_local_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS, (value));
@@ -4486,12 +7580,26 @@ static inline const otel_attribute_t *otel_attr_value_network_local_address(cons
 
 #define otel_attr_network_local_address(value) otel_attr_value_network_local_address((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_local_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_LOCAL_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_network_local_address_n(value) otel_attr_value_network_local_address_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_local_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT, (value));
     return slot;
 }
 
 #define otel_attr_network_local_port(value) otel_attr_value_network_local_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_local_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_LOCAL_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_network_local_port_n(value) otel_attr_value_network_local_port_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_peer_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS, (value));
@@ -4500,12 +7608,26 @@ static inline const otel_attribute_t *otel_attr_value_network_peer_address(const
 
 #define otel_attr_network_peer_address(value) otel_attr_value_network_peer_address((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_peer_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_PEER_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_network_peer_address_n(value) otel_attr_value_network_peer_address_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_peer_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_NETWORK_PEER_PORT, (value));
     return slot;
 }
 
 #define otel_attr_network_peer_port(value) otel_attr_value_network_peer_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_peer_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_PEER_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_network_peer_port_n(value) otel_attr_value_network_peer_port_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_protocol_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME, (value));
@@ -4514,12 +7636,26 @@ static inline const otel_attribute_t *otel_attr_value_network_protocol_name(cons
 
 #define otel_attr_network_protocol_name(value) otel_attr_value_network_protocol_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_protocol_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_network_protocol_name_n(value) otel_attr_value_network_protocol_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_protocol_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_network_protocol_version(value) otel_attr_value_network_protocol_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_protocol_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_PROTOCOL_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_network_protocol_version_n(value) otel_attr_value_network_protocol_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_network_transport(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TRANSPORT, (value));
@@ -4528,12 +7664,26 @@ static inline const otel_attribute_t *otel_attr_value_network_transport(const ch
 
 #define otel_attr_network_transport(value) otel_attr_value_network_transport((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_network_transport_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_TRANSPORT), (value));
+    return slot;
+}
+
+#define otel_attr_network_transport_n(value) otel_attr_value_network_transport_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_network_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NETWORK_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_network_type(value) otel_attr_value_network_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_network_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NETWORK_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_network_type_n(value) otel_attr_value_network_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_nfs_operation_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NFS_OPERATION_NAME, (value));
@@ -4542,12 +7692,26 @@ static inline const otel_attribute_t *otel_attr_value_nfs_operation_name(const c
 
 #define otel_attr_nfs_operation_name(value) otel_attr_value_nfs_operation_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_nfs_operation_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NFS_OPERATION_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_nfs_operation_name_n(value) otel_attr_value_nfs_operation_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_nfs_server_repcache_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS, (value));
     return slot;
 }
 
 #define otel_attr_nfs_server_repcache_status(value) otel_attr_value_nfs_server_repcache_status((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_nfs_server_repcache_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_NFS_SERVER_REPCACHE_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_nfs_server_repcache_status_n(value) otel_attr_value_nfs_server_repcache_status_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_oci_manifest_digest(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST, (value));
@@ -4556,12 +7720,26 @@ static inline const otel_attribute_t *otel_attr_value_oci_manifest_digest(const 
 
 #define otel_attr_oci_manifest_digest(value) otel_attr_value_oci_manifest_digest((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_oci_manifest_digest_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OCI_MANIFEST_DIGEST), (value));
+    return slot;
+}
+
+#define otel_attr_oci_manifest_digest_n(value) otel_attr_value_oci_manifest_digest_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_onc_rpc_procedure_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_onc_rpc_procedure_name(value) otel_attr_value_onc_rpc_procedure_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_onc_rpc_procedure_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ONC_RPC_PROCEDURE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_onc_rpc_procedure_name_n(value) otel_attr_value_onc_rpc_procedure_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_onc_rpc_program_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME, (value));
@@ -4570,12 +7748,26 @@ static inline const otel_attribute_t *otel_attr_value_onc_rpc_program_name(const
 
 #define otel_attr_onc_rpc_program_name(value) otel_attr_value_onc_rpc_program_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_onc_rpc_program_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ONC_RPC_PROGRAM_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_onc_rpc_program_name_n(value) otel_attr_value_onc_rpc_program_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME, (value));
     return slot;
 }
 
 #define otel_attr_openshift_clusterquota_name(value) otel_attr_value_openshift_clusterquota_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_openshift_clusterquota_name_n(value) otel_attr_value_openshift_clusterquota_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_uid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID, (value));
@@ -4584,12 +7776,26 @@ static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_uid
 
 #define otel_attr_openshift_clusterquota_uid(value) otel_attr_value_openshift_clusterquota_uid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_openshift_clusterquota_uid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OPENSHIFT_CLUSTERQUOTA_UID), (value));
+    return slot;
+}
+
+#define otel_attr_openshift_clusterquota_uid_n(value) otel_attr_value_openshift_clusterquota_uid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_oracle_cloud_realm(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM, (value));
     return slot;
 }
 
 #define otel_attr_oracle_cloud_realm(value) otel_attr_value_oracle_cloud_realm((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_oracle_cloud_realm_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_CLOUD_REALM), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_cloud_realm_n(value) otel_attr_value_oracle_cloud_realm_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_oracle_db_domain(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN, (value));
@@ -4598,12 +7804,26 @@ static inline const otel_attribute_t *otel_attr_value_oracle_db_domain(const cha
 
 #define otel_attr_oracle_db_domain(value) otel_attr_value_oracle_db_domain((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_oracle_db_domain_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_DB_DOMAIN), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_db_domain_n(value) otel_attr_value_oracle_db_domain_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_oracle_db_instance_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_oracle_db_instance_name(value) otel_attr_value_oracle_db_instance_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_oracle_db_instance_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_DB_INSTANCE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_db_instance_name_n(value) otel_attr_value_oracle_db_instance_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_oracle_db_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_NAME, (value));
@@ -4612,12 +7832,26 @@ static inline const otel_attribute_t *otel_attr_value_oracle_db_name(const char 
 
 #define otel_attr_oracle_db_name(value) otel_attr_value_oracle_db_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_oracle_db_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_DB_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_db_name_n(value) otel_attr_value_oracle_db_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_oracle_db_pdb(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_PDB, (value));
     return slot;
 }
 
 #define otel_attr_oracle_db_pdb(value) otel_attr_value_oracle_db_pdb((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_oracle_db_pdb_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_DB_PDB), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_db_pdb_n(value) otel_attr_value_oracle_db_pdb_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_oracle_db_service(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE, (value));
@@ -4626,12 +7860,26 @@ static inline const otel_attribute_t *otel_attr_value_oracle_db_service(const ch
 
 #define otel_attr_oracle_db_service(value) otel_attr_value_oracle_db_service((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_oracle_db_service_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ORACLE_DB_SERVICE), (value));
+    return slot;
+}
+
+#define otel_attr_oracle_db_service_n(value) otel_attr_value_oracle_db_service_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_os_build_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_BUILD_ID, (value));
     return slot;
 }
 
 #define otel_attr_os_build_id(value) otel_attr_value_os_build_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_os_build_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OS_BUILD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_os_build_id_n(value) otel_attr_value_os_build_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_os_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_DESCRIPTION, (value));
@@ -4640,12 +7888,26 @@ static inline const otel_attribute_t *otel_attr_value_os_description(const char 
 
 #define otel_attr_os_description(value) otel_attr_value_os_description((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_os_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OS_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_os_description_n(value) otel_attr_value_os_description_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_os_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_NAME, (value));
     return slot;
 }
 
 #define otel_attr_os_name(value) otel_attr_value_os_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_os_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OS_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_os_name_n(value) otel_attr_value_os_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_os_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OS_VERSION, (value));
@@ -4654,12 +7916,26 @@ static inline const otel_attribute_t *otel_attr_value_os_version(const char *val
 
 #define otel_attr_os_version(value) otel_attr_value_os_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_os_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OS_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_os_version_n(value) otel_attr_value_os_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_otel_component_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME, (value));
     return slot;
 }
 
 #define otel_attr_otel_component_name(value) otel_attr_value_otel_component_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_otel_component_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_COMPONENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_otel_component_name_n(value) otel_attr_value_otel_component_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_otel_component_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE, (value));
@@ -4668,12 +7944,26 @@ static inline const otel_attribute_t *otel_attr_value_otel_component_type(const 
 
 #define otel_attr_otel_component_type(value) otel_attr_value_otel_component_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_otel_component_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_COMPONENT_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_otel_component_type_n(value) otel_attr_value_otel_component_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_otel_event_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_EVENT_NAME, (value));
     return slot;
 }
 
 #define otel_attr_otel_event_name(value) otel_attr_value_otel_event_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_otel_event_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_EVENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_otel_event_name_n(value) otel_attr_value_otel_event_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_otel_scope_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME, (value));
@@ -4682,12 +7972,26 @@ static inline const otel_attribute_t *otel_attr_value_otel_scope_name(const char
 
 #define otel_attr_otel_scope_name(value) otel_attr_value_otel_scope_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_otel_scope_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_SCOPE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_otel_scope_name_n(value) otel_attr_value_otel_scope_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_otel_scope_schema_url(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL, (value));
     return slot;
 }
 
 #define otel_attr_otel_scope_schema_url(value) otel_attr_value_otel_scope_schema_url((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_otel_scope_schema_url_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_SCOPE_SCHEMA_URL), (value));
+    return slot;
+}
+
+#define otel_attr_otel_scope_schema_url_n(value) otel_attr_value_otel_scope_schema_url_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_otel_scope_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION, (value));
@@ -4696,12 +8000,26 @@ static inline const otel_attribute_t *otel_attr_value_otel_scope_version(const c
 
 #define otel_attr_otel_scope_version(value) otel_attr_value_otel_scope_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_otel_scope_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_SCOPE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_otel_scope_version_n(value) otel_attr_value_otel_scope_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_otel_status_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION, (value));
     return slot;
 }
 
 #define otel_attr_otel_status_description(value) otel_attr_value_otel_status_description((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_otel_status_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_OTEL_STATUS_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_otel_status_description_n(value) otel_attr_value_otel_status_description_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_pprof_profile_doc_url(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL, (value));
@@ -4710,12 +8028,26 @@ static inline const otel_attribute_t *otel_attr_value_pprof_profile_doc_url(cons
 
 #define otel_attr_pprof_profile_doc_url(value) otel_attr_value_pprof_profile_doc_url((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_doc_url_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PPROF_PROFILE_DOC_URL), (value));
+    return slot;
+}
+
+#define otel_attr_pprof_profile_doc_url_n(value) otel_attr_value_pprof_profile_doc_url_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_pprof_profile_drop_frames(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES, (value));
     return slot;
 }
 
 #define otel_attr_pprof_profile_drop_frames(value) otel_attr_value_pprof_profile_drop_frames((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_drop_frames_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PPROF_PROFILE_DROP_FRAMES), (value));
+    return slot;
+}
+
+#define otel_attr_pprof_profile_drop_frames_n(value) otel_attr_value_pprof_profile_drop_frames_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_pprof_profile_keep_frames(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES, (value));
@@ -4724,12 +8056,26 @@ static inline const otel_attribute_t *otel_attr_value_pprof_profile_keep_frames(
 
 #define otel_attr_pprof_profile_keep_frames(value) otel_attr_value_pprof_profile_keep_frames((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_pprof_profile_keep_frames_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PPROF_PROFILE_KEEP_FRAMES), (value));
+    return slot;
+}
+
+#define otel_attr_pprof_profile_keep_frames_n(value) otel_attr_value_pprof_profile_keep_frames_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_pprof_scope_default_sample_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_pprof_scope_default_sample_type(value) otel_attr_value_pprof_scope_default_sample_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_pprof_scope_default_sample_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PPROF_SCOPE_DEFAULT_SAMPLE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_pprof_scope_default_sample_type_n(value) otel_attr_value_pprof_scope_default_sample_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_args_count(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT, (value));
@@ -4738,12 +8084,26 @@ static inline const otel_attribute_t *otel_attr_value_process_args_count(int64_t
 
 #define otel_attr_process_args_count(value) otel_attr_value_process_args_count((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_args_count_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_ARGS_COUNT), (value));
+    return slot;
+}
+
+#define otel_attr_process_args_count_n(value) otel_attr_value_process_args_count_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_command(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND, (value));
     return slot;
 }
 
 #define otel_attr_process_command(value) otel_attr_value_process_command((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_command_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_COMMAND), (value));
+    return slot;
+}
+
+#define otel_attr_process_command_n(value) otel_attr_value_process_command_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_command_line(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE, (value));
@@ -4752,12 +8112,26 @@ static inline const otel_attribute_t *otel_attr_value_process_command_line(const
 
 #define otel_attr_process_command_line(value) otel_attr_value_process_command_line((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_command_line_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_COMMAND_LINE), (value));
+    return slot;
+}
+
+#define otel_attr_process_command_line_n(value) otel_attr_value_process_command_line_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_creation_time(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME, (value));
     return slot;
 }
 
 #define otel_attr_process_creation_time(value) otel_attr_value_process_creation_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_creation_time_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_CREATION_TIME), (value));
+    return slot;
+}
+
+#define otel_attr_process_creation_time_n(value) otel_attr_value_process_creation_time_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_environment_variable(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE, (value));
@@ -4766,12 +8140,26 @@ static inline const otel_attribute_t *otel_attr_value_process_environment_variab
 
 #define otel_attr_process_environment_variable(value) otel_attr_value_process_environment_variable((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_environment_variable_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_ENVIRONMENT_VARIABLE), (value));
+    return slot;
+}
+
+#define otel_attr_process_environment_variable_n(value) otel_attr_value_process_environment_variable_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_gnu(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU, (value));
     return slot;
 }
 
 #define otel_attr_process_executable_build_id_gnu(value) otel_attr_value_process_executable_build_id_gnu((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_gnu_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GNU), (value));
+    return slot;
+}
+
+#define otel_attr_process_executable_build_id_gnu_n(value) otel_attr_value_process_executable_build_id_gnu_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_go(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO, (value));
@@ -4780,12 +8168,26 @@ static inline const otel_attribute_t *otel_attr_value_process_executable_build_i
 
 #define otel_attr_process_executable_build_id_go(value) otel_attr_value_process_executable_build_id_go((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_go_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_GO), (value));
+    return slot;
+}
+
+#define otel_attr_process_executable_build_id_go_n(value) otel_attr_value_process_executable_build_id_go_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_htlhash(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH, (value));
     return slot;
 }
 
 #define otel_attr_process_executable_build_id_htlhash(value) otel_attr_value_process_executable_build_id_htlhash((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_executable_build_id_htlhash_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_BUILD_ID_HTLHASH), (value));
+    return slot;
+}
+
+#define otel_attr_process_executable_build_id_htlhash_n(value) otel_attr_value_process_executable_build_id_htlhash_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_executable_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME, (value));
@@ -4794,12 +8196,26 @@ static inline const otel_attribute_t *otel_attr_value_process_executable_name(co
 
 #define otel_attr_process_executable_name(value) otel_attr_value_process_executable_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_executable_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_process_executable_name_n(value) otel_attr_value_process_executable_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_executable_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH, (value));
     return slot;
 }
 
 #define otel_attr_process_executable_path(value) otel_attr_value_process_executable_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_executable_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXECUTABLE_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_process_executable_path_n(value) otel_attr_value_process_executable_path_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_exit_code(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE, (value));
@@ -4808,12 +8224,26 @@ static inline const otel_attribute_t *otel_attr_value_process_exit_code(int64_t 
 
 #define otel_attr_process_exit_code(value) otel_attr_value_process_exit_code((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_exit_code_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXIT_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_process_exit_code_n(value) otel_attr_value_process_exit_code_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_exit_time(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME, (value));
     return slot;
 }
 
 #define otel_attr_process_exit_time(value) otel_attr_value_process_exit_time((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_exit_time_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_EXIT_TIME), (value));
+    return slot;
+}
+
+#define otel_attr_process_exit_time_n(value) otel_attr_value_process_exit_time_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_group_leader_pid(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID, (value));
@@ -4822,12 +8252,26 @@ static inline const otel_attribute_t *otel_attr_value_process_group_leader_pid(i
 
 #define otel_attr_process_group_leader_pid(value) otel_attr_value_process_group_leader_pid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_group_leader_pid_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_GROUP_LEADER_PID), (value));
+    return slot;
+}
+
+#define otel_attr_process_group_leader_pid_n(value) otel_attr_value_process_group_leader_pid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_linux_cgroup(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP, (value));
     return slot;
 }
 
 #define otel_attr_process_linux_cgroup(value) otel_attr_value_process_linux_cgroup((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_linux_cgroup_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_LINUX_CGROUP), (value));
+    return slot;
+}
+
+#define otel_attr_process_linux_cgroup_n(value) otel_attr_value_process_linux_cgroup_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_owner(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_OWNER, (value));
@@ -4836,12 +8280,26 @@ static inline const otel_attribute_t *otel_attr_value_process_owner(const char *
 
 #define otel_attr_process_owner(value) otel_attr_value_process_owner((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_owner_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_OWNER), (value));
+    return slot;
+}
+
+#define otel_attr_process_owner_n(value) otel_attr_value_process_owner_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_parent_pid(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PARENT_PID, (value));
     return slot;
 }
 
 #define otel_attr_process_parent_pid(value) otel_attr_value_process_parent_pid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_parent_pid_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_PARENT_PID), (value));
+    return slot;
+}
+
+#define otel_attr_process_parent_pid_n(value) otel_attr_value_process_parent_pid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_pid(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_PID, (value));
@@ -4850,12 +8308,26 @@ static inline const otel_attribute_t *otel_attr_value_process_pid(int64_t value,
 
 #define otel_attr_process_pid(value) otel_attr_value_process_pid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_pid_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_PID), (value));
+    return slot;
+}
+
+#define otel_attr_process_pid_n(value) otel_attr_value_process_pid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_real_user_id(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID, (value));
     return slot;
 }
 
 #define otel_attr_process_real_user_id(value) otel_attr_value_process_real_user_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_real_user_id_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_REAL_USER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_process_real_user_id_n(value) otel_attr_value_process_real_user_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_real_user_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME, (value));
@@ -4864,12 +8336,26 @@ static inline const otel_attribute_t *otel_attr_value_process_real_user_name(con
 
 #define otel_attr_process_real_user_name(value) otel_attr_value_process_real_user_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_real_user_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_REAL_USER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_process_real_user_name_n(value) otel_attr_value_process_real_user_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_runtime_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION, (value));
     return slot;
 }
 
 #define otel_attr_process_runtime_description(value) otel_attr_value_process_runtime_description((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_runtime_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_RUNTIME_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_process_runtime_description_n(value) otel_attr_value_process_runtime_description_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_runtime_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME, (value));
@@ -4878,12 +8364,26 @@ static inline const otel_attribute_t *otel_attr_value_process_runtime_name(const
 
 #define otel_attr_process_runtime_name(value) otel_attr_value_process_runtime_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_runtime_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_RUNTIME_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_process_runtime_name_n(value) otel_attr_value_process_runtime_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_runtime_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_process_runtime_version(value) otel_attr_value_process_runtime_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_runtime_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_RUNTIME_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_process_runtime_version_n(value) otel_attr_value_process_runtime_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_saved_user_id(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID, (value));
@@ -4892,12 +8392,26 @@ static inline const otel_attribute_t *otel_attr_value_process_saved_user_id(int6
 
 #define otel_attr_process_saved_user_id(value) otel_attr_value_process_saved_user_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_saved_user_id_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_process_saved_user_id_n(value) otel_attr_value_process_saved_user_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_saved_user_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_process_saved_user_name(value) otel_attr_value_process_saved_user_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_saved_user_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_SAVED_USER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_process_saved_user_name_n(value) otel_attr_value_process_saved_user_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_session_leader_pid(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID, (value));
@@ -4906,12 +8420,26 @@ static inline const otel_attribute_t *otel_attr_value_process_session_leader_pid
 
 #define otel_attr_process_session_leader_pid(value) otel_attr_value_process_session_leader_pid((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_session_leader_pid_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_SESSION_LEADER_PID), (value));
+    return slot;
+}
+
+#define otel_attr_process_session_leader_pid_n(value) otel_attr_value_process_session_leader_pid_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_STATE, (value));
     return slot;
 }
 
 #define otel_attr_process_state(value) otel_attr_value_process_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_process_state_n(value) otel_attr_value_process_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_title(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_TITLE, (value));
@@ -4920,12 +8448,26 @@ static inline const otel_attribute_t *otel_attr_value_process_title(const char *
 
 #define otel_attr_process_title(value) otel_attr_value_process_title((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_title_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_TITLE), (value));
+    return slot;
+}
+
+#define otel_attr_process_title_n(value) otel_attr_value_process_title_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_user_id(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_USER_ID, (value));
     return slot;
 }
 
 #define otel_attr_process_user_id(value) otel_attr_value_process_user_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_user_id_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_USER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_process_user_id_n(value) otel_attr_value_process_user_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_user_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_USER_NAME, (value));
@@ -4934,12 +8476,26 @@ static inline const otel_attribute_t *otel_attr_value_process_user_name(const ch
 
 #define otel_attr_process_user_name(value) otel_attr_value_process_user_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_user_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_USER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_process_user_name_n(value) otel_attr_value_process_user_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_process_vpid(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_PROCESS_VPID, (value));
     return slot;
 }
 
 #define otel_attr_process_vpid(value) otel_attr_value_process_vpid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_process_vpid_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_VPID), (value));
+    return slot;
+}
+
+#define otel_attr_process_vpid_n(value) otel_attr_value_process_vpid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_process_working_directory(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY, (value));
@@ -4948,12 +8504,26 @@ static inline const otel_attribute_t *otel_attr_value_process_working_directory(
 
 #define otel_attr_process_working_directory(value) otel_attr_value_process_working_directory((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_process_working_directory_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROCESS_WORKING_DIRECTORY), (value));
+    return slot;
+}
+
+#define otel_attr_process_working_directory_n(value) otel_attr_value_process_working_directory_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_profile_frame_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_profile_frame_type(value) otel_attr_value_profile_frame_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_profile_frame_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_PROFILE_FRAME_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_profile_frame_type_n(value) otel_attr_value_profile_frame_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_rpc_method(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD, (value));
@@ -4962,12 +8532,26 @@ static inline const otel_attribute_t *otel_attr_value_rpc_method(const char *val
 
 #define otel_attr_rpc_method(value) otel_attr_value_rpc_method((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_rpc_method_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_RPC_METHOD), (value));
+    return slot;
+}
+
+#define otel_attr_rpc_method_n(value) otel_attr_value_rpc_method_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_rpc_method_original(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL, (value));
     return slot;
 }
 
 #define otel_attr_rpc_method_original(value) otel_attr_value_rpc_method_original((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_rpc_method_original_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_RPC_METHOD_ORIGINAL), (value));
+    return slot;
+}
+
+#define otel_attr_rpc_method_original_n(value) otel_attr_value_rpc_method_original_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_rpc_response_status_code(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE, (value));
@@ -4976,12 +8560,26 @@ static inline const otel_attribute_t *otel_attr_value_rpc_response_status_code(c
 
 #define otel_attr_rpc_response_status_code(value) otel_attr_value_rpc_response_status_code((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_rpc_response_status_code_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_RPC_RESPONSE_STATUS_CODE), (value));
+    return slot;
+}
+
+#define otel_attr_rpc_response_status_code_n(value) otel_attr_value_rpc_response_status_code_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_security_rule_category(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY, (value));
     return slot;
 }
 
 #define otel_attr_security_rule_category(value) otel_attr_value_security_rule_category((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_security_rule_category_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_CATEGORY), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_category_n(value) otel_attr_value_security_rule_category_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_security_rule_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION, (value));
@@ -4990,12 +8588,26 @@ static inline const otel_attribute_t *otel_attr_value_security_rule_description(
 
 #define otel_attr_security_rule_description(value) otel_attr_value_security_rule_description((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_security_rule_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_description_n(value) otel_attr_value_security_rule_description_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_security_rule_license(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE, (value));
     return slot;
 }
 
 #define otel_attr_security_rule_license(value) otel_attr_value_security_rule_license((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_security_rule_license_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_LICENSE), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_license_n(value) otel_attr_value_security_rule_license_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_security_rule_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_NAME, (value));
@@ -5004,12 +8616,26 @@ static inline const otel_attribute_t *otel_attr_value_security_rule_name(const c
 
 #define otel_attr_security_rule_name(value) otel_attr_value_security_rule_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_security_rule_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_name_n(value) otel_attr_value_security_rule_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_security_rule_reference(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE, (value));
     return slot;
 }
 
 #define otel_attr_security_rule_reference(value) otel_attr_value_security_rule_reference((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_security_rule_reference_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_REFERENCE), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_reference_n(value) otel_attr_value_security_rule_reference_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_security_rule_ruleset_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME, (value));
@@ -5018,12 +8644,26 @@ static inline const otel_attribute_t *otel_attr_value_security_rule_ruleset_name
 
 #define otel_attr_security_rule_ruleset_name(value) otel_attr_value_security_rule_ruleset_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_security_rule_ruleset_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_RULESET_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_ruleset_name_n(value) otel_attr_value_security_rule_ruleset_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_security_rule_uuid(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_UUID, (value));
     return slot;
 }
 
 #define otel_attr_security_rule_uuid(value) otel_attr_value_security_rule_uuid((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_security_rule_uuid_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_UUID), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_uuid_n(value) otel_attr_value_security_rule_uuid_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_security_rule_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION, (value));
@@ -5032,12 +8672,26 @@ static inline const otel_attribute_t *otel_attr_value_security_rule_version(cons
 
 #define otel_attr_security_rule_version(value) otel_attr_value_security_rule_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_security_rule_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SECURITY_RULE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_security_rule_version_n(value) otel_attr_value_security_rule_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_server_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVER_ADDRESS, (value));
     return slot;
 }
 
 #define otel_attr_server_address(value) otel_attr_value_server_address((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_server_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVER_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_server_address_n(value) otel_attr_value_server_address_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_server_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_SERVER_PORT, (value));
@@ -5046,12 +8700,26 @@ static inline const otel_attribute_t *otel_attr_value_server_port(int64_t value,
 
 #define otel_attr_server_port(value) otel_attr_value_server_port((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_server_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_SERVER_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_server_port_n(value) otel_attr_value_server_port_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_service_criticality(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_CRITICALITY, (value));
     return slot;
 }
 
 #define otel_attr_service_criticality(value) otel_attr_value_service_criticality((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_service_criticality_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_CRITICALITY), (value));
+    return slot;
+}
+
+#define otel_attr_service_criticality_n(value) otel_attr_value_service_criticality_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_service_instance_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID, (value));
@@ -5060,12 +8728,26 @@ static inline const otel_attribute_t *otel_attr_value_service_instance_id(const 
 
 #define otel_attr_service_instance_id(value) otel_attr_value_service_instance_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_service_instance_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_INSTANCE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_service_instance_id_n(value) otel_attr_value_service_instance_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_service_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_service_name(value) otel_attr_value_service_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_service_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_service_name_n(value) otel_attr_value_service_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_service_namespace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_NAMESPACE, (value));
@@ -5074,12 +8756,26 @@ static inline const otel_attribute_t *otel_attr_value_service_namespace(const ch
 
 #define otel_attr_service_namespace(value) otel_attr_value_service_namespace((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_service_namespace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_NAMESPACE), (value));
+    return slot;
+}
+
+#define otel_attr_service_namespace_n(value) otel_attr_value_service_namespace_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_service_peer_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_service_peer_name(value) otel_attr_value_service_peer_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_service_peer_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_PEER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_service_peer_name_n(value) otel_attr_value_service_peer_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_service_peer_namespace(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE, (value));
@@ -5088,12 +8784,26 @@ static inline const otel_attribute_t *otel_attr_value_service_peer_namespace(con
 
 #define otel_attr_service_peer_namespace(value) otel_attr_value_service_peer_namespace((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_service_peer_namespace_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_PEER_NAMESPACE), (value));
+    return slot;
+}
+
+#define otel_attr_service_peer_namespace_n(value) otel_attr_value_service_peer_namespace_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_service_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SERVICE_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_service_version(value) otel_attr_value_service_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_service_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SERVICE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_service_version_n(value) otel_attr_value_service_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_session_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SESSION_ID, (value));
@@ -5102,12 +8812,26 @@ static inline const otel_attribute_t *otel_attr_value_session_id(const char *val
 
 #define otel_attr_session_id(value) otel_attr_value_session_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_session_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SESSION_ID), (value));
+    return slot;
+}
+
+#define otel_attr_session_id_n(value) otel_attr_value_session_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_session_previous_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID, (value));
     return slot;
 }
 
 #define otel_attr_session_previous_id(value) otel_attr_value_session_previous_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_session_previous_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SESSION_PREVIOUS_ID), (value));
+    return slot;
+}
+
+#define otel_attr_session_previous_id_n(value) otel_attr_value_session_previous_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_signalr_connection_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS, (value));
@@ -5116,12 +8840,26 @@ static inline const otel_attribute_t *otel_attr_value_signalr_connection_status(
 
 #define otel_attr_signalr_connection_status(value) otel_attr_value_signalr_connection_status((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_signalr_connection_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SIGNALR_CONNECTION_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_signalr_connection_status_n(value) otel_attr_value_signalr_connection_status_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_signalr_transport(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT, (value));
     return slot;
 }
 
 #define otel_attr_signalr_transport(value) otel_attr_value_signalr_transport((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_signalr_transport_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SIGNALR_TRANSPORT), (value));
+    return slot;
+}
+
+#define otel_attr_signalr_transport_n(value) otel_attr_value_signalr_transport_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_source_address(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SOURCE_ADDRESS, (value));
@@ -5130,12 +8868,26 @@ static inline const otel_attribute_t *otel_attr_value_source_address(const char 
 
 #define otel_attr_source_address(value) otel_attr_value_source_address((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_source_address_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SOURCE_ADDRESS), (value));
+    return slot;
+}
+
+#define otel_attr_source_address_n(value) otel_attr_value_source_address_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_source_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_SOURCE_PORT, (value));
     return slot;
 }
 
 #define otel_attr_source_port(value) otel_attr_value_source_port((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_source_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_SOURCE_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_source_port_n(value) otel_attr_value_source_port_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_cpu_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE, (value));
@@ -5144,12 +8896,26 @@ static inline const otel_attribute_t *otel_attr_value_system_cpu_state(const cha
 
 #define otel_attr_system_cpu_state(value) otel_attr_value_system_cpu_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_cpu_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_CPU_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_cpu_state_n(value) otel_attr_value_system_cpu_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_device(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_DEVICE, (value));
     return slot;
 }
 
 #define otel_attr_system_device(value) otel_attr_value_system_device((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_device_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_DEVICE), (value));
+    return slot;
+}
+
+#define otel_attr_system_device_n(value) otel_attr_value_system_device_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_filesystem_mode(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE, (value));
@@ -5158,12 +8924,26 @@ static inline const otel_attribute_t *otel_attr_value_system_filesystem_mode(con
 
 #define otel_attr_system_filesystem_mode(value) otel_attr_value_system_filesystem_mode((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_mode_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MODE), (value));
+    return slot;
+}
+
+#define otel_attr_system_filesystem_mode_n(value) otel_attr_value_system_filesystem_mode_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_filesystem_mountpoint(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT, (value));
     return slot;
 }
 
 #define otel_attr_system_filesystem_mountpoint(value) otel_attr_value_system_filesystem_mountpoint((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_mountpoint_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_MOUNTPOINT), (value));
+    return slot;
+}
+
+#define otel_attr_system_filesystem_mountpoint_n(value) otel_attr_value_system_filesystem_mountpoint_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_filesystem_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE, (value));
@@ -5172,12 +8952,26 @@ static inline const otel_attribute_t *otel_attr_value_system_filesystem_state(co
 
 #define otel_attr_system_filesystem_state(value) otel_attr_value_system_filesystem_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_filesystem_state_n(value) otel_attr_value_system_filesystem_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_filesystem_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_system_filesystem_type(value) otel_attr_value_system_filesystem_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_filesystem_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_FILESYSTEM_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_system_filesystem_type_n(value) otel_attr_value_system_filesystem_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_memory_linux_hugepages_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE, (value));
@@ -5186,12 +8980,26 @@ static inline const otel_attribute_t *otel_attr_value_system_memory_linux_hugepa
 
 #define otel_attr_system_memory_linux_hugepages_state(value) otel_attr_value_system_memory_linux_hugepages_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_memory_linux_hugepages_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_HUGEPAGES_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_memory_linux_hugepages_state_n(value) otel_attr_value_system_memory_linux_hugepages_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_memory_linux_slab_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE, (value));
     return slot;
 }
 
 #define otel_attr_system_memory_linux_slab_state(value) otel_attr_value_system_memory_linux_slab_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_memory_linux_slab_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_MEMORY_LINUX_SLAB_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_memory_linux_slab_state_n(value) otel_attr_value_system_memory_linux_slab_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_memory_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE, (value));
@@ -5200,12 +9008,26 @@ static inline const otel_attribute_t *otel_attr_value_system_memory_state(const 
 
 #define otel_attr_system_memory_state(value) otel_attr_value_system_memory_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_memory_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_MEMORY_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_memory_state_n(value) otel_attr_value_system_memory_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_paging_direction(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION, (value));
     return slot;
 }
 
 #define otel_attr_system_paging_direction(value) otel_attr_value_system_paging_direction((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_paging_direction_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_PAGING_DIRECTION), (value));
+    return slot;
+}
+
+#define otel_attr_system_paging_direction_n(value) otel_attr_value_system_paging_direction_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_system_paging_fault_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE, (value));
@@ -5214,12 +9036,26 @@ static inline const otel_attribute_t *otel_attr_value_system_paging_fault_type(c
 
 #define otel_attr_system_paging_fault_type(value) otel_attr_value_system_paging_fault_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_system_paging_fault_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_PAGING_FAULT_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_system_paging_fault_type_n(value) otel_attr_value_system_paging_fault_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_system_paging_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE, (value));
     return slot;
 }
 
 #define otel_attr_system_paging_state(value) otel_attr_value_system_paging_state((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_system_paging_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_SYSTEM_PAGING_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_system_paging_state_n(value) otel_attr_value_system_paging_state_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_telemetry_distro_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME, (value));
@@ -5228,12 +9064,26 @@ static inline const otel_attribute_t *otel_attr_value_telemetry_distro_name(cons
 
 #define otel_attr_telemetry_distro_name(value) otel_attr_value_telemetry_distro_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_telemetry_distro_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_telemetry_distro_name_n(value) otel_attr_value_telemetry_distro_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_telemetry_distro_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_telemetry_distro_version(value) otel_attr_value_telemetry_distro_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_telemetry_distro_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TELEMETRY_DISTRO_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_telemetry_distro_version_n(value) otel_attr_value_telemetry_distro_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME, (value));
@@ -5242,12 +9092,26 @@ static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_name(const c
 
 #define otel_attr_telemetry_sdk_name(value) otel_attr_value_telemetry_sdk_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TELEMETRY_SDK_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_telemetry_sdk_name_n(value) otel_attr_value_telemetry_sdk_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_telemetry_sdk_version(value) otel_attr_value_telemetry_sdk_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_telemetry_sdk_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TELEMETRY_SDK_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_telemetry_sdk_version_n(value) otel_attr_value_telemetry_sdk_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_test_case_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_NAME, (value));
@@ -5256,12 +9120,26 @@ static inline const otel_attribute_t *otel_attr_value_test_case_name(const char 
 
 #define otel_attr_test_case_name(value) otel_attr_value_test_case_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_test_case_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TEST_CASE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_test_case_name_n(value) otel_attr_value_test_case_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_test_case_result_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS, (value));
     return slot;
 }
 
 #define otel_attr_test_case_result_status(value) otel_attr_value_test_case_result_status((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_test_case_result_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TEST_CASE_RESULT_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_test_case_result_status_n(value) otel_attr_value_test_case_result_status_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_test_suite_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_NAME, (value));
@@ -5270,12 +9148,26 @@ static inline const otel_attribute_t *otel_attr_value_test_suite_name(const char
 
 #define otel_attr_test_suite_name(value) otel_attr_value_test_suite_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_test_suite_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TEST_SUITE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_test_suite_name_n(value) otel_attr_value_test_suite_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_test_suite_run_status(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS, (value));
     return slot;
 }
 
 #define otel_attr_test_suite_run_status(value) otel_attr_value_test_suite_run_status((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_test_suite_run_status_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TEST_SUITE_RUN_STATUS), (value));
+    return slot;
+}
+
+#define otel_attr_test_suite_run_status_n(value) otel_attr_value_test_suite_run_status_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_thread_id(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_THREAD_ID, (value));
@@ -5284,12 +9176,26 @@ static inline const otel_attribute_t *otel_attr_value_thread_id(int64_t value, o
 
 #define otel_attr_thread_id(value) otel_attr_value_thread_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_thread_id_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_THREAD_ID), (value));
+    return slot;
+}
+
+#define otel_attr_thread_id_n(value) otel_attr_value_thread_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_thread_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_THREAD_NAME, (value));
     return slot;
 }
 
 #define otel_attr_thread_name(value) otel_attr_value_thread_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_thread_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_THREAD_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_thread_name_n(value) otel_attr_value_thread_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_cipher(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CIPHER, (value));
@@ -5298,12 +9204,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_cipher(const char *val
 
 #define otel_attr_tls_cipher(value) otel_attr_value_tls_cipher((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_cipher_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CIPHER), (value));
+    return slot;
+}
+
+#define otel_attr_tls_cipher_n(value) otel_attr_value_tls_cipher_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_client_certificate(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE, (value));
     return slot;
 }
 
 #define otel_attr_tls_client_certificate(value) otel_attr_value_tls_client_certificate((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_client_certificate_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_CERTIFICATE), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_certificate_n(value) otel_attr_value_tls_client_certificate_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_client_hash_md5(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5, (value));
@@ -5312,12 +9232,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_client_hash_md5(const 
 
 #define otel_attr_tls_client_hash_md5(value) otel_attr_value_tls_client_hash_md5((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_md5_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_MD5), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_hash_md5_n(value) otel_attr_value_tls_client_hash_md5_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha1(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1, (value));
     return slot;
 }
 
 #define otel_attr_tls_client_hash_sha1(value) otel_attr_value_tls_client_hash_sha1((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha1_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA1), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_hash_sha1_n(value) otel_attr_value_tls_client_hash_sha1_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha256(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256, (value));
@@ -5326,12 +9260,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha256(con
 
 #define otel_attr_tls_client_hash_sha256(value) otel_attr_value_tls_client_hash_sha256((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_client_hash_sha256_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_HASH_SHA256), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_hash_sha256_n(value) otel_attr_value_tls_client_hash_sha256_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_client_issuer(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER, (value));
     return slot;
 }
 
 #define otel_attr_tls_client_issuer(value) otel_attr_value_tls_client_issuer((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_client_issuer_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_ISSUER), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_issuer_n(value) otel_attr_value_tls_client_issuer_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_client_ja3(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_JA3, (value));
@@ -5340,12 +9288,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_client_ja3(const char 
 
 #define otel_attr_tls_client_ja3(value) otel_attr_value_tls_client_ja3((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_client_ja3_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_JA3), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_ja3_n(value) otel_attr_value_tls_client_ja3_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_client_not_after(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER, (value));
     return slot;
 }
 
 #define otel_attr_tls_client_not_after(value) otel_attr_value_tls_client_not_after((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_client_not_after_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_AFTER), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_not_after_n(value) otel_attr_value_tls_client_not_after_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_client_not_before(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE, (value));
@@ -5354,12 +9316,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_client_not_before(cons
 
 #define otel_attr_tls_client_not_before(value) otel_attr_value_tls_client_not_before((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_client_not_before_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_NOT_BEFORE), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_not_before_n(value) otel_attr_value_tls_client_not_before_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_client_subject(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT, (value));
     return slot;
 }
 
 #define otel_attr_tls_client_subject(value) otel_attr_value_tls_client_subject((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_client_subject_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CLIENT_SUBJECT), (value));
+    return slot;
+}
+
+#define otel_attr_tls_client_subject_n(value) otel_attr_value_tls_client_subject_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_curve(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_CURVE, (value));
@@ -5368,12 +9344,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_curve(const char *valu
 
 #define otel_attr_tls_curve(value) otel_attr_value_tls_curve((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_curve_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_CURVE), (value));
+    return slot;
+}
+
+#define otel_attr_tls_curve_n(value) otel_attr_value_tls_curve_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_established(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_TLS_ESTABLISHED, (value));
     return slot;
 }
 
 #define otel_attr_tls_established(value) otel_attr_value_tls_established((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_established_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_ESTABLISHED), (value));
+    return slot;
+}
+
+#define otel_attr_tls_established_n(value) otel_attr_value_tls_established_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_next_protocol(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL, (value));
@@ -5382,12 +9372,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_next_protocol(const ch
 
 #define otel_attr_tls_next_protocol(value) otel_attr_value_tls_next_protocol((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_next_protocol_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_NEXT_PROTOCOL), (value));
+    return slot;
+}
+
+#define otel_attr_tls_next_protocol_n(value) otel_attr_value_tls_next_protocol_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_protocol_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_tls_protocol_version(value) otel_attr_value_tls_protocol_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_protocol_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_PROTOCOL_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_tls_protocol_version_n(value) otel_attr_value_tls_protocol_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_resumed(int value, otel_attribute_t *slot) {
     *slot = *otel_attr_bool(OTEL_ATTRIBUTE_TLS_RESUMED, (value));
@@ -5396,12 +9400,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_resumed(int value, ote
 
 #define otel_attr_tls_resumed(value) otel_attr_value_tls_resumed((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_resumed_n(int value, otel_attribute_t *slot) {
+    *slot = *otel_attr_bool_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_RESUMED), (value));
+    return slot;
+}
+
+#define otel_attr_tls_resumed_n(value) otel_attr_value_tls_resumed_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_server_certificate(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE, (value));
     return slot;
 }
 
 #define otel_attr_tls_server_certificate(value) otel_attr_value_tls_server_certificate((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_server_certificate_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_CERTIFICATE), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_certificate_n(value) otel_attr_value_tls_server_certificate_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_server_hash_md5(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5, (value));
@@ -5410,12 +9428,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_server_hash_md5(const 
 
 #define otel_attr_tls_server_hash_md5(value) otel_attr_value_tls_server_hash_md5((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_md5_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_HASH_MD5), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_hash_md5_n(value) otel_attr_value_tls_server_hash_md5_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha1(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1, (value));
     return slot;
 }
 
 #define otel_attr_tls_server_hash_sha1(value) otel_attr_value_tls_server_hash_sha1((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha1_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA1), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_hash_sha1_n(value) otel_attr_value_tls_server_hash_sha1_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha256(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256, (value));
@@ -5424,12 +9456,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha256(con
 
 #define otel_attr_tls_server_hash_sha256(value) otel_attr_value_tls_server_hash_sha256((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_server_hash_sha256_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_HASH_SHA256), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_hash_sha256_n(value) otel_attr_value_tls_server_hash_sha256_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_server_issuer(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER, (value));
     return slot;
 }
 
 #define otel_attr_tls_server_issuer(value) otel_attr_value_tls_server_issuer((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_server_issuer_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_ISSUER), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_issuer_n(value) otel_attr_value_tls_server_issuer_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_server_ja3s(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_JA3S, (value));
@@ -5438,12 +9484,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_server_ja3s(const char
 
 #define otel_attr_tls_server_ja3s(value) otel_attr_value_tls_server_ja3s((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_server_ja3s_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_JA3S), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_ja3s_n(value) otel_attr_value_tls_server_ja3s_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_server_not_after(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER, (value));
     return slot;
 }
 
 #define otel_attr_tls_server_not_after(value) otel_attr_value_tls_server_not_after((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_server_not_after_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_NOT_AFTER), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_not_after_n(value) otel_attr_value_tls_server_not_after_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_tls_server_not_before(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE, (value));
@@ -5452,12 +9512,26 @@ static inline const otel_attribute_t *otel_attr_value_tls_server_not_before(cons
 
 #define otel_attr_tls_server_not_before(value) otel_attr_value_tls_server_not_before((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_tls_server_not_before_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_NOT_BEFORE), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_not_before_n(value) otel_attr_value_tls_server_not_before_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_tls_server_subject(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT, (value));
     return slot;
 }
 
 #define otel_attr_tls_server_subject(value) otel_attr_value_tls_server_subject((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_tls_server_subject_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_TLS_SERVER_SUBJECT), (value));
+    return slot;
+}
+
+#define otel_attr_tls_server_subject_n(value) otel_attr_value_tls_server_subject_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_domain(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_DOMAIN, (value));
@@ -5466,12 +9540,26 @@ static inline const otel_attribute_t *otel_attr_value_url_domain(const char *val
 
 #define otel_attr_url_domain(value) otel_attr_value_url_domain((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_domain_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_DOMAIN), (value));
+    return slot;
+}
+
+#define otel_attr_url_domain_n(value) otel_attr_value_url_domain_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_extension(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_EXTENSION, (value));
     return slot;
 }
 
 #define otel_attr_url_extension(value) otel_attr_value_url_extension((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_extension_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_EXTENSION), (value));
+    return slot;
+}
+
+#define otel_attr_url_extension_n(value) otel_attr_value_url_extension_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_fragment(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_FRAGMENT, (value));
@@ -5480,12 +9568,26 @@ static inline const otel_attribute_t *otel_attr_value_url_fragment(const char *v
 
 #define otel_attr_url_fragment(value) otel_attr_value_url_fragment((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_fragment_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_FRAGMENT), (value));
+    return slot;
+}
+
+#define otel_attr_url_fragment_n(value) otel_attr_value_url_fragment_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_FULL, (value));
     return slot;
 }
 
 #define otel_attr_url_full(value) otel_attr_value_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_url_full_n(value) otel_attr_value_url_full_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_original(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_ORIGINAL, (value));
@@ -5494,12 +9596,26 @@ static inline const otel_attribute_t *otel_attr_value_url_original(const char *v
 
 #define otel_attr_url_original(value) otel_attr_value_url_original((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_original_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_ORIGINAL), (value));
+    return slot;
+}
+
+#define otel_attr_url_original_n(value) otel_attr_value_url_original_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_path(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_PATH, (value));
     return slot;
 }
 
 #define otel_attr_url_path(value) otel_attr_value_url_path((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_path_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_PATH), (value));
+    return slot;
+}
+
+#define otel_attr_url_path_n(value) otel_attr_value_url_path_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_port(int64_t value, otel_attribute_t *slot) {
     *slot = *otel_attr_i64(OTEL_ATTRIBUTE_URL_PORT, (value));
@@ -5508,12 +9624,26 @@ static inline const otel_attribute_t *otel_attr_value_url_port(int64_t value, ot
 
 #define otel_attr_url_port(value) otel_attr_value_url_port((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_port_n(int64_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_i64_n(OTEL_STR(OTEL_ATTRIBUTE_URL_PORT), (value));
+    return slot;
+}
+
+#define otel_attr_url_port_n(value) otel_attr_value_url_port_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_query(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_QUERY, (value));
     return slot;
 }
 
 #define otel_attr_url_query(value) otel_attr_value_url_query((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_query_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_QUERY), (value));
+    return slot;
+}
+
+#define otel_attr_url_query_n(value) otel_attr_value_url_query_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_registered_domain(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN, (value));
@@ -5522,12 +9652,26 @@ static inline const otel_attribute_t *otel_attr_value_url_registered_domain(cons
 
 #define otel_attr_url_registered_domain(value) otel_attr_value_url_registered_domain((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_registered_domain_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_REGISTERED_DOMAIN), (value));
+    return slot;
+}
+
+#define otel_attr_url_registered_domain_n(value) otel_attr_value_url_registered_domain_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_scheme(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_SCHEME, (value));
     return slot;
 }
 
 #define otel_attr_url_scheme(value) otel_attr_value_url_scheme((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_scheme_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_SCHEME), (value));
+    return slot;
+}
+
+#define otel_attr_url_scheme_n(value) otel_attr_value_url_scheme_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_subdomain(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_SUBDOMAIN, (value));
@@ -5536,12 +9680,26 @@ static inline const otel_attribute_t *otel_attr_value_url_subdomain(const char *
 
 #define otel_attr_url_subdomain(value) otel_attr_value_url_subdomain((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_subdomain_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_SUBDOMAIN), (value));
+    return slot;
+}
+
+#define otel_attr_url_subdomain_n(value) otel_attr_value_url_subdomain_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_url_template(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_TEMPLATE, (value));
     return slot;
 }
 
 #define otel_attr_url_template(value) otel_attr_value_url_template((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_url_template_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_TEMPLATE), (value));
+    return slot;
+}
+
+#define otel_attr_url_template_n(value) otel_attr_value_url_template_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_url_top_level_domain(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN, (value));
@@ -5550,12 +9708,26 @@ static inline const otel_attribute_t *otel_attr_value_url_top_level_domain(const
 
 #define otel_attr_url_top_level_domain(value) otel_attr_value_url_top_level_domain((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_url_top_level_domain_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_URL_TOP_LEVEL_DOMAIN), (value));
+    return slot;
+}
+
+#define otel_attr_url_top_level_domain_n(value) otel_attr_value_url_top_level_domain_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_user_agent_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_NAME, (value));
     return slot;
 }
 
 #define otel_attr_user_agent_name(value) otel_attr_value_user_agent_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_user_agent_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_AGENT_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_user_agent_name_n(value) otel_attr_value_user_agent_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_user_agent_original(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL, (value));
@@ -5564,12 +9736,26 @@ static inline const otel_attribute_t *otel_attr_value_user_agent_original(const 
 
 #define otel_attr_user_agent_original(value) otel_attr_value_user_agent_original((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_user_agent_original_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_AGENT_ORIGINAL), (value));
+    return slot;
+}
+
+#define otel_attr_user_agent_original_n(value) otel_attr_value_user_agent_original_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_user_agent_os_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME, (value));
     return slot;
 }
 
 #define otel_attr_user_agent_os_name(value) otel_attr_value_user_agent_os_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_user_agent_os_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_AGENT_OS_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_user_agent_os_name_n(value) otel_attr_value_user_agent_os_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_user_agent_os_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION, (value));
@@ -5578,12 +9764,26 @@ static inline const otel_attribute_t *otel_attr_value_user_agent_os_version(cons
 
 #define otel_attr_user_agent_os_version(value) otel_attr_value_user_agent_os_version((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_user_agent_os_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_AGENT_OS_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_user_agent_os_version_n(value) otel_attr_value_user_agent_os_version_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_user_agent_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_AGENT_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_user_agent_version(value) otel_attr_value_user_agent_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_user_agent_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_AGENT_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_user_agent_version_n(value) otel_attr_value_user_agent_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_user_email(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_EMAIL, (value));
@@ -5592,12 +9792,26 @@ static inline const otel_attribute_t *otel_attr_value_user_email(const char *val
 
 #define otel_attr_user_email(value) otel_attr_value_user_email((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_user_email_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_EMAIL), (value));
+    return slot;
+}
+
+#define otel_attr_user_email_n(value) otel_attr_value_user_email_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_user_full_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_FULL_NAME, (value));
     return slot;
 }
 
 #define otel_attr_user_full_name(value) otel_attr_value_user_full_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_user_full_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_FULL_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_user_full_name_n(value) otel_attr_value_user_full_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_user_hash(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_HASH, (value));
@@ -5606,12 +9820,26 @@ static inline const otel_attribute_t *otel_attr_value_user_hash(const char *valu
 
 #define otel_attr_user_hash(value) otel_attr_value_user_hash((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_user_hash_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_HASH), (value));
+    return slot;
+}
+
+#define otel_attr_user_hash_n(value) otel_attr_value_user_hash_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_user_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_ID, (value));
     return slot;
 }
 
 #define otel_attr_user_id(value) otel_attr_value_user_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_user_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_ID), (value));
+    return slot;
+}
+
+#define otel_attr_user_id_n(value) otel_attr_value_user_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_user_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_USER_NAME, (value));
@@ -5620,12 +9848,26 @@ static inline const otel_attribute_t *otel_attr_value_user_name(const char *valu
 
 #define otel_attr_user_name(value) otel_attr_value_user_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_user_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_USER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_user_name_n(value) otel_attr_value_user_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_change_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_ID, (value));
     return slot;
 }
 
 #define otel_attr_vcs_change_id(value) otel_attr_value_vcs_change_id((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_change_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_CHANGE_ID), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_change_id_n(value) otel_attr_value_vcs_change_id_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_change_state(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_STATE, (value));
@@ -5634,12 +9876,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_change_state(const cha
 
 #define otel_attr_vcs_change_state(value) otel_attr_value_vcs_change_state((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_change_state_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_CHANGE_STATE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_change_state_n(value) otel_attr_value_vcs_change_state_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_change_title(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE, (value));
     return slot;
 }
 
 #define otel_attr_vcs_change_title(value) otel_attr_value_vcs_change_title((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_change_title_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_CHANGE_TITLE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_change_title_n(value) otel_attr_value_vcs_change_title_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_line_change_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE, (value));
@@ -5648,12 +9904,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_line_change_type(const
 
 #define otel_attr_vcs_line_change_type(value) otel_attr_value_vcs_line_change_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_line_change_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_LINE_CHANGE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_line_change_type_n(value) otel_attr_value_vcs_line_change_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_owner_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_OWNER_NAME, (value));
     return slot;
 }
 
 #define otel_attr_vcs_owner_name(value) otel_attr_value_vcs_owner_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_owner_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_OWNER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_owner_name_n(value) otel_attr_value_vcs_owner_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_provider_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME, (value));
@@ -5662,12 +9932,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_provider_name(const ch
 
 #define otel_attr_vcs_provider_name(value) otel_attr_value_vcs_provider_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_provider_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_PROVIDER_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_provider_name_n(value) otel_attr_value_vcs_provider_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME, (value));
     return slot;
 }
 
 #define otel_attr_vcs_ref_base_name(value) otel_attr_value_vcs_ref_base_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_BASE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_base_name_n(value) otel_attr_value_vcs_ref_base_name_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_revision(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION, (value));
@@ -5676,12 +9960,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_revision(cons
 
 #define otel_attr_vcs_ref_base_revision(value) otel_attr_value_vcs_ref_base_revision((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_revision_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_BASE_REVISION), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_base_revision_n(value) otel_attr_value_vcs_ref_base_revision_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_vcs_ref_base_type(value) otel_attr_value_vcs_ref_base_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_base_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_BASE_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_base_type_n(value) otel_attr_value_vcs_ref_base_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME, (value));
@@ -5690,12 +9988,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_name(const ch
 
 #define otel_attr_vcs_ref_head_name(value) otel_attr_value_vcs_ref_head_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_HEAD_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_head_name_n(value) otel_attr_value_vcs_ref_head_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_revision(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION, (value));
     return slot;
 }
 
 #define otel_attr_vcs_ref_head_revision(value) otel_attr_value_vcs_ref_head_revision((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_revision_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_HEAD_REVISION), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_head_revision_n(value) otel_attr_value_vcs_ref_head_revision_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE, (value));
@@ -5704,12 +10016,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_type(const ch
 
 #define otel_attr_vcs_ref_head_type(value) otel_attr_value_vcs_ref_head_type((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_head_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_HEAD_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_head_type_n(value) otel_attr_value_vcs_ref_head_type_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_ref_type(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REF_TYPE, (value));
     return slot;
 }
 
 #define otel_attr_vcs_ref_type(value) otel_attr_value_vcs_ref_type((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_ref_type_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REF_TYPE), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_ref_type_n(value) otel_attr_value_vcs_ref_type_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_repository_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME, (value));
@@ -5718,12 +10044,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_repository_name(const 
 
 #define otel_attr_vcs_repository_name(value) otel_attr_value_vcs_repository_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_repository_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REPOSITORY_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_repository_name_n(value) otel_attr_value_vcs_repository_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_vcs_repository_url_full(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL, (value));
     return slot;
 }
 
 #define otel_attr_vcs_repository_url_full(value) otel_attr_value_vcs_repository_url_full((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_vcs_repository_url_full_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REPOSITORY_URL_FULL), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_repository_url_full_n(value) otel_attr_value_vcs_repository_url_full_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_vcs_revision_delta_direction(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION, (value));
@@ -5732,12 +10072,26 @@ static inline const otel_attribute_t *otel_attr_value_vcs_revision_delta_directi
 
 #define otel_attr_vcs_revision_delta_direction(value) otel_attr_value_vcs_revision_delta_direction((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_vcs_revision_delta_direction_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_VCS_REVISION_DELTA_DIRECTION), (value));
+    return slot;
+}
+
+#define otel_attr_vcs_revision_delta_direction_n(value) otel_attr_value_vcs_revision_delta_direction_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_webengine_description(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION, (value));
     return slot;
 }
 
 #define otel_attr_webengine_description(value) otel_attr_value_webengine_description((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_webengine_description_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_WEBENGINE_DESCRIPTION), (value));
+    return slot;
+}
+
+#define otel_attr_webengine_description_n(value) otel_attr_value_webengine_description_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_webengine_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_NAME, (value));
@@ -5746,12 +10100,26 @@ static inline const otel_attribute_t *otel_attr_value_webengine_name(const char 
 
 #define otel_attr_webengine_name(value) otel_attr_value_webengine_name((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_webengine_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_WEBENGINE_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_webengine_name_n(value) otel_attr_value_webengine_name_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_webengine_version(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_WEBENGINE_VERSION, (value));
     return slot;
 }
 
 #define otel_attr_webengine_version(value) otel_attr_value_webengine_version((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_webengine_version_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_WEBENGINE_VERSION), (value));
+    return slot;
+}
+
+#define otel_attr_webengine_version_n(value) otel_attr_value_webengine_version_n((value), &(otel_attribute_t){0})
 
 static inline const otel_attribute_t *otel_attr_value_zos_smf_id(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ZOS_SMF_ID, (value));
@@ -5760,12 +10128,26 @@ static inline const otel_attribute_t *otel_attr_value_zos_smf_id(const char *val
 
 #define otel_attr_zos_smf_id(value) otel_attr_value_zos_smf_id((value), &(otel_attribute_t){0})
 
+static inline const otel_attribute_t *otel_attr_value_zos_smf_id_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ZOS_SMF_ID), (value));
+    return slot;
+}
+
+#define otel_attr_zos_smf_id_n(value) otel_attr_value_zos_smf_id_n((value), &(otel_attribute_t){0})
+
 static inline const otel_attribute_t *otel_attr_value_zos_sysplex_name(const char *value, otel_attribute_t *slot) {
     *slot = *otel_attr_string(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME, (value));
     return slot;
 }
 
 #define otel_attr_zos_sysplex_name(value) otel_attr_value_zos_sysplex_name((value), &(otel_attribute_t){0})
+
+static inline const otel_attribute_t *otel_attr_value_zos_sysplex_name_n(otel_str_t value, otel_attribute_t *slot) {
+    *slot = *otel_attr_string_n(OTEL_STR(OTEL_ATTRIBUTE_ZOS_SYSPLEX_NAME), (value));
+    return slot;
+}
+
+#define otel_attr_zos_sysplex_name_n(value) otel_attr_value_zos_sysplex_name_n((value), &(otel_attribute_t){0})
 
 
 #endif /* COTEL_SEMCONV_ATTRIBUTES_H */

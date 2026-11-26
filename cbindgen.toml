@@ -19,10 +19,6 @@ after_includes = """
 #  endif
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a

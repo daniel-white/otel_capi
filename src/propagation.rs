@@ -9,6 +9,7 @@ use std::slice;
 use std::str;
 
 use crate::error::{Error, Result, c_str, guard, otel_result_t, utf8};
+use crate::strings::otel_str_t;
 
 /// Full `traceparent` header: 55 characters plus a NUL terminator.
 #[repr(C)]
@@ -198,6 +199,28 @@ pub(crate) unsafe fn buffer_str<T: TypedBuffer>(value: *const T) -> *const c_cha
     value.bytes().as_ptr()
 }
 
+pub(crate) unsafe fn buffer_view<T: TypedBuffer>(value: *const T) -> otel_str_t {
+    if value.is_null() {
+        return otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
+        };
+    }
+    // SAFETY: the caller guarantees `value` points to a typed buffer that
+    // remains valid for at least the lifetime of the returned view.
+    let value = unsafe { &*value };
+    match value.text() {
+        Ok(text) => otel_str_t {
+            ptr: value.bytes().as_ptr(),
+            len: text.len(),
+        },
+        Err(_) => otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
+        },
+    }
+}
+
 /// Copies a NUL-terminated string into typed `traceparent` storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_from_str(
@@ -258,6 +281,34 @@ pub unsafe extern "C" fn otel_baggage_value_str(
     value: *const otel_baggage_value_t,
 ) -> *const c_char {
     unsafe { buffer_str(value) }
+}
+
+/// Returns a length-aware view of a `traceparent` header.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_traceparent_view(
+    value: *const otel_traceparent_t,
+) -> otel_str_t {
+    unsafe { buffer_view(value) }
+}
+
+/// Returns a length-aware view of a `tracestate` header.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracestate_view(value: *const otel_tracestate_t) -> otel_str_t {
+    unsafe { buffer_view(value) }
+}
+
+/// Returns a length-aware view of a `baggage` header.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_baggage_view(value: *const otel_baggage_t) -> otel_str_t {
+    unsafe { buffer_view(value) }
+}
+
+/// Returns a length-aware view of a baggage value.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_baggage_value_view(
+    value: *const otel_baggage_value_t,
+) -> otel_str_t {
+    unsafe { buffer_view(value) }
 }
 
 #[cfg(test)]

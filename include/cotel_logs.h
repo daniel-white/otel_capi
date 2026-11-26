@@ -4,10 +4,6 @@
 
 #include "cotel_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Creates a logger provider. `resource` and `runtime` may be NULL when the
  * selected exporter does not need them.
@@ -114,10 +110,5 @@ OTEL_API otel_result_t otel_logger_log_record_arr_n(const otel_logger_t *logger,
                                            otel_str_t body,
                                            const otel_attribute_t *const *attributes,
                                            size_t count);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* COTEL_LOGS_H */
