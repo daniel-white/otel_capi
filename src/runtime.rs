@@ -8,7 +8,7 @@
 use tokio::runtime::Builder;
 
 use crate::error::{Error, guard, otel_result_t};
-use crate::handles::{RuntimeInner, arc, const_slot, init, otel_runtime_t, slot};
+use crate::handles::{RuntimeInner, const_slot, init, otel_runtime_t, slot, valid};
 
 /// Creates a multi-threaded async runtime used by OTLP exporters.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
@@ -31,11 +31,8 @@ pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_r
     })
 }
 
-/// Returns `OK` when the runtime handle is usable.
+/// Returns whether the runtime handle is usable.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -> otel_result_t {
-    guard(|| {
-        unsafe { arc::<RuntimeInner>(const_slot(runtime)) }?;
-        Ok(())
-    })
+pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -> bool {
+    unsafe { valid::<RuntimeInner>(const_slot(runtime)) }
 }

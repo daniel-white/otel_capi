@@ -57,6 +57,7 @@ fn main() {
         .expect("cbindgen should generate the C header")
         .write(&mut bytes);
     let mut header = String::from_utf8(bytes).expect("generated header should be UTF-8");
+    header = annotate_exports(&header);
 
     // Insert helper macros before the include guard closes so they are part
     // of the guarded header content.
@@ -64,8 +65,13 @@ fn main() {
         .rfind("#endif")
         .expect("generated header should have an include guard");
     let mut injected = String::from(ATTRIBUTE_MACROS);
+    injected.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
+    injected.push_str(&sentinel_macros(&header));
+    injected.push_str(&handle_init_macros(&header));
+    injected.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
     injected.push_str("\n/* Generated semantic-convention helpers. */\n");
     injected.push_str("#include \"cotel_semconv.h\"\n");
+    injected.push_str("\n#ifdef __cplusplus\n}\n#endif\n");
     header.insert_str(guard_end, &injected);
 
     // Expose the headers to dependents via OUT_DIR, and keep the checked-in
@@ -79,6 +85,95 @@ fn main() {
     fs::write(include.join("cotel.h"), &header).expect("should write include/cotel.h");
     fs::write(include.join("cotel_semconv.h"), &semconv)
         .expect("should write include/cotel_semconv.h");
+}
+
+/// Prefixes exported declarations with `OTEL_API` for shared-library use.
+fn annotate_exports(header: &str) -> String {
+    let mut result = String::with_capacity(header.len());
+    for line in header.split_inclusive('\n') {
+        let trimmed = line.trim_start();
+        let exported = [
+            "otel_result_t otel_",
+            "const char *otel_",
+            "void otel_",
+            "size_t otel_",
+            "bool otel_",
+        ]
+        .iter()
+        .any(|prefix| trimmed.starts_with(prefix));
+        if exported {
+            let indent = &line[..line.len() - trimmed.len()];
+            result.push_str(indent);
+            result.push_str("OTEL_API ");
+            result.push_str(trimmed);
+        } else {
+            result.push_str(line);
+        }
+    }
+    result
+}
+
+/// Generates `OTEL_<ENUM>_SENTINEL` macros one past each exported enum's
+/// largest value. C callers can use these in exhaustive switches.
+fn sentinel_macros(header: &str) -> String {
+    let mut result = String::new();
+    for ty in [
+        "otel_result_t",
+        "otel_severity_t",
+        "otel_span_status_t",
+        "otel_attribute_type_t",
+    ] {
+        let marker = format!("}} {ty};");
+        let Some(end) = header.find(&marker) else { continue };
+        let Some(start) = header[..end].rfind("typedef enum {") else { continue };
+        let body = &header[start + "typedef enum {".len()..end];
+        let mut max = -1i64;
+        let mut next = 0i64;
+        for part in body.split(',') {
+            let part = part.trim();
+            if let Some(eq) = part.find('=') {
+                let digits: String = part[eq + 1..]
+                    .trim_start()
+                    .chars()
+                    .take_while(|c| c.is_ascii_digit() || *c == '-')
+                    .collect();
+                if let Ok(value) = digits.parse::<i64>() {
+                    max = max.max(value);
+                    next = value + 1;
+                }
+            } else if part.starts_with("OTEL_") {
+                max = max.max(next);
+                next += 1;
+            }
+        }
+        let macro_name = ty
+            .strip_prefix("otel_")
+            .and_then(|name| name.strip_suffix("_t"))
+            .unwrap_or(ty)
+            .to_ascii_uppercase();
+        result.push_str(&format!("#define OTEL_{macro_name}_SENTINEL {}\n", max + 1));
+    }
+    result
+}
+
+/// Generates `OTEL_<TYPE>_INIT` macros from every caller-owned handle struct
+/// in the generated header.
+fn handle_init_macros(header: &str) -> String {
+    let mut result = String::new();
+    let mut pos = 0;
+    while let Some(rel) = header[pos..].find("typedef struct {") {
+        let start = pos + rel;
+        let Some(end_rel) = header[start..].find("} otel_") else { break };
+        let body = &header[start + "typedef struct {".len()..start + end_rel];
+        let type_start = start + end_rel + 2;
+        let Some(suffix_rel) = header[type_start..].find("_t;") else { break };
+        let ty = &header[type_start..type_start + suffix_rel + 2];
+        if body.contains("void *inner;") {
+            result.push_str(&format!("#define {}_INIT {{ NULL }}\n", ty.to_ascii_uppercase()));
+        }
+        pos = type_start + suffix_rel + 3;
+    }
+    result
 }
 
 /// Locates the semantic-conventions crate through `cargo metadata` (rather

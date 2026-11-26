@@ -43,14 +43,15 @@ pub enum otel_severity_t {
     OTEL_SEVERITY_FATAL = 21,
 }
 
-fn severity(value: otel_severity_t) -> (Severity, &'static str) {
+fn severity(value: i32) -> Result<(Severity, &'static str)> {
     match value {
-        otel_severity_t::OTEL_SEVERITY_TRACE => (Severity::Trace, "TRACE"),
-        otel_severity_t::OTEL_SEVERITY_DEBUG => (Severity::Debug, "DEBUG"),
-        otel_severity_t::OTEL_SEVERITY_INFO => (Severity::Info, "INFO"),
-        otel_severity_t::OTEL_SEVERITY_WARN => (Severity::Warn, "WARN"),
-        otel_severity_t::OTEL_SEVERITY_ERROR => (Severity::Error, "ERROR"),
-        otel_severity_t::OTEL_SEVERITY_FATAL => (Severity::Fatal, "FATAL"),
+        1 => Ok((Severity::Trace, "TRACE")),
+        5 => Ok((Severity::Debug, "DEBUG")),
+        9 => Ok((Severity::Info, "INFO")),
+        13 => Ok((Severity::Warn, "WARN")),
+        17 => Ok((Severity::Error, "ERROR")),
+        21 => Ok((Severity::Fatal, "FATAL")),
+        other => Err(Error::invalid(format!("invalid severity {other}"))),
     }
 }
 
@@ -179,7 +180,7 @@ pub unsafe extern "C" fn otel_logger_provider_logger(
 pub unsafe extern "C" fn otel_logger_log(
     logger: *const otel_logger_t,
     span: *const otel_span_t,
-    level: otel_severity_t,
+    level: i32,
     body: *const c_char,
     attributes: ...,
 ) -> otel_result_t {
@@ -187,7 +188,7 @@ pub unsafe extern "C" fn otel_logger_log(
         let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
         let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
         let attributes = unsafe { from_varargs(attributes) }?;
-        let (number, text) = severity(level);
+        let (number, text) = severity(level)?;
 
         let mut record = logger.create_log_record();
         record.set_severity_number(number);
@@ -247,7 +248,7 @@ mod tests {
                 otel_logger_log(
                     &logger,
                     std::ptr::null(),
-                    otel_severity_t::OTEL_SEVERITY_INFO,
+                    otel_severity_t::OTEL_SEVERITY_INFO as i32,
                     c"hello".as_ptr(),
                     std::ptr::null::<otel_attribute_t>()
                 ),

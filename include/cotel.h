@@ -8,6 +8,22 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#ifndef OTEL_API
+#  if defined(_WIN32) && defined(COTEL_BUILDING_DLL)
+#    define OTEL_API __declspec(dllexport)
+#  elif defined(_WIN32)
+#    define OTEL_API __declspec(dllimport)
+#  elif defined(__GNUC__)
+#    define OTEL_API __attribute__((visibility("default")))
+#  else
+#    define OTEL_API
+#  endif
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a
@@ -33,6 +49,24 @@ typedef enum {
   OTEL_ERR_INTERNAL = 6,
   OTEL_ERR_PANIC = 7,
 } otel_result_t;
+
+/**
+ * Explicit span status exported to C.
+ */
+typedef enum {
+  /**
+   * No status has been set.
+   */
+  OTEL_SPAN_STATUS_UNSET = 0,
+  /**
+   * The operation succeeded.
+   */
+  OTEL_SPAN_STATUS_OK = 1,
+  /**
+   * The operation failed.
+   */
+  OTEL_SPAN_STATUS_ERROR = 2,
+} otel_span_status_t;
 
 /**
  * Log severity exported to C. Values match the OpenTelemetry severity scale.
@@ -65,43 +99,25 @@ typedef enum {
 } otel_severity_t;
 
 /**
- * Explicit span status exported to C.
- */
-typedef enum {
-  /**
-   * No status has been set.
-   */
-  OTEL_SPAN_STATUS_UNSET,
-  /**
-   * The operation succeeded.
-   */
-  OTEL_SPAN_STATUS_OK,
-  /**
-   * The operation failed.
-   */
-  OTEL_SPAN_STATUS_ERROR,
-} otel_span_status_t;
-
-/**
  * Discriminator for the active member of [`otel_attribute_value_t`].
  */
 typedef enum {
   /**
    * The `string` member is active.
    */
-  OTEL_ATTRIBUTE_TYPE_STRING,
+  OTEL_ATTRIBUTE_TYPE_STRING = 0,
   /**
    * The `boolean` member is active.
    */
-  OTEL_ATTRIBUTE_TYPE_BOOL,
+  OTEL_ATTRIBUTE_TYPE_BOOL = 1,
   /**
    * The `integer` member is active.
    */
-  OTEL_ATTRIBUTE_TYPE_I64,
+  OTEL_ATTRIBUTE_TYPE_I64 = 2,
   /**
    * The `double_value` member is active.
    */
-  OTEL_ATTRIBUTE_TYPE_F64,
+  OTEL_ATTRIBUTE_TYPE_F64 = 3,
 } otel_attribute_type_t;
 
 /**
@@ -273,7 +289,7 @@ typedef struct {
   /**
    * Which member of `value` is active.
    */
-  otel_attribute_type_t kind;
+  int32_t kind;
   /**
    * NUL-terminated UTF-8 attribute key. Must not be NULL.
    */
@@ -285,186 +301,262 @@ typedef struct {
 } otel_attribute_t;
 
 /**
+ * Returns the crate version as a NUL-terminated string.
+ */
+OTEL_API const char *otel_version(void);
+
+/**
  * Returns the last error message for the calling thread. The pointer remains
  * valid until another `cotel` call on the same thread records an error.
  */
-const char *otel_last_error(void);
+OTEL_API const char *otel_last_error(void);
+
+/**
+ * Returns a stable description for a result code. Unknown codes produce
+ * `"unknown status"`.
+ */
+OTEL_API const char *otel_strerror(int32_t code);
 
 /**
  * Copies the last error message, including its NUL terminator, into a
  * caller-owned buffer. Returns the required size (including NUL) if `buf` is
  * NULL or `capacity` is too small; otherwise returns the bytes written.
  */
-size_t otel_copy_last_error(char *buf, size_t capacity);
+OTEL_API size_t otel_copy_last_error(char *buf, size_t capacity);
 
 /**
  * Retains a `otel_resource_t` into caller-provided storage.
  */
-otel_result_t otel_resource_retain(const otel_resource_t *src, otel_resource_t *handle);
+OTEL_API otel_result_t otel_resource_retain(const otel_resource_t *src, otel_resource_t *handle);
 
 /**
  * Releases one reference to a `otel_resource_t` and clears the slot.
  */
-void otel_resource_release(otel_resource_t *handle);
+OTEL_API void otel_resource_release(otel_resource_t *handle);
 
 /**
  * Retains a `otel_runtime_t` into caller-provided storage.
  */
-otel_result_t otel_runtime_retain(const otel_runtime_t *src, otel_runtime_t *handle);
+OTEL_API otel_result_t otel_runtime_retain(const otel_runtime_t *src, otel_runtime_t *handle);
 
 /**
  * Releases one reference to a `otel_runtime_t` and clears the slot.
  */
-void otel_runtime_release(otel_runtime_t *handle);
+OTEL_API void otel_runtime_release(otel_runtime_t *handle);
 
 /**
  * Retains a `otel_tracer_provider_t` into caller-provided storage.
  */
-otel_result_t otel_tracer_provider_retain(const otel_tracer_provider_t *src,
+OTEL_API otel_result_t otel_tracer_provider_retain(const otel_tracer_provider_t *src,
                                           otel_tracer_provider_t *handle);
 
 /**
  * Releases one reference to a `otel_tracer_provider_t` and clears the slot.
  */
-void otel_tracer_provider_release(otel_tracer_provider_t *handle);
+OTEL_API void otel_tracer_provider_release(otel_tracer_provider_t *handle);
 
 /**
  * Retains a `otel_meter_provider_t` into caller-provided storage.
  */
-otel_result_t otel_meter_provider_retain(const otel_meter_provider_t *src,
+OTEL_API otel_result_t otel_meter_provider_retain(const otel_meter_provider_t *src,
                                          otel_meter_provider_t *handle);
 
 /**
  * Releases one reference to a `otel_meter_provider_t` and clears the slot.
  */
-void otel_meter_provider_release(otel_meter_provider_t *handle);
+OTEL_API void otel_meter_provider_release(otel_meter_provider_t *handle);
 
 /**
  * Retains a `otel_logger_provider_t` into caller-provided storage.
  */
-otel_result_t otel_logger_provider_retain(const otel_logger_provider_t *src,
+OTEL_API otel_result_t otel_logger_provider_retain(const otel_logger_provider_t *src,
                                           otel_logger_provider_t *handle);
 
 /**
  * Releases one reference to a `otel_logger_provider_t` and clears the slot.
  */
-void otel_logger_provider_release(otel_logger_provider_t *handle);
+OTEL_API void otel_logger_provider_release(otel_logger_provider_t *handle);
 
 /**
  * Retains a `otel_tracer_t` into caller-provided storage.
  */
-otel_result_t otel_tracer_retain(const otel_tracer_t *src, otel_tracer_t *handle);
+OTEL_API otel_result_t otel_tracer_retain(const otel_tracer_t *src, otel_tracer_t *handle);
 
 /**
  * Releases one reference to a `otel_tracer_t` and clears the slot.
  */
-void otel_tracer_release(otel_tracer_t *handle);
+OTEL_API void otel_tracer_release(otel_tracer_t *handle);
 
 /**
  * Retains a `otel_meter_t` into caller-provided storage.
  */
-otel_result_t otel_meter_retain(const otel_meter_t *src, otel_meter_t *handle);
+OTEL_API otel_result_t otel_meter_retain(const otel_meter_t *src, otel_meter_t *handle);
 
 /**
  * Releases one reference to a `otel_meter_t` and clears the slot.
  */
-void otel_meter_release(otel_meter_t *handle);
+OTEL_API void otel_meter_release(otel_meter_t *handle);
 
 /**
  * Retains a `otel_logger_t` into caller-provided storage.
  */
-otel_result_t otel_logger_retain(const otel_logger_t *src, otel_logger_t *handle);
+OTEL_API otel_result_t otel_logger_retain(const otel_logger_t *src, otel_logger_t *handle);
 
 /**
  * Releases one reference to a `otel_logger_t` and clears the slot.
  */
-void otel_logger_release(otel_logger_t *handle);
+OTEL_API void otel_logger_release(otel_logger_t *handle);
 
 /**
  * Retains a `otel_span_t` into caller-provided storage.
  */
-otel_result_t otel_span_retain(const otel_span_t *src, otel_span_t *handle);
+OTEL_API otel_result_t otel_span_retain(const otel_span_t *src, otel_span_t *handle);
 
 /**
  * Releases one reference to a `otel_span_t` and clears the slot.
  */
-void otel_span_release(otel_span_t *handle);
+OTEL_API void otel_span_release(otel_span_t *handle);
 
 /**
  * Retains a `otel_counter_u64_t` into caller-provided storage.
  */
-otel_result_t otel_counter_u64_retain(const otel_counter_u64_t *src, otel_counter_u64_t *handle);
+OTEL_API otel_result_t otel_counter_u64_retain(const otel_counter_u64_t *src, otel_counter_u64_t *handle);
 
 /**
  * Releases one reference to a `otel_counter_u64_t` and clears the slot.
  */
-void otel_counter_u64_release(otel_counter_u64_t *handle);
+OTEL_API void otel_counter_u64_release(otel_counter_u64_t *handle);
 
 /**
  * Retains a `otel_counter_f64_t` into caller-provided storage.
  */
-otel_result_t otel_counter_f64_retain(const otel_counter_f64_t *src, otel_counter_f64_t *handle);
+OTEL_API otel_result_t otel_counter_f64_retain(const otel_counter_f64_t *src, otel_counter_f64_t *handle);
 
 /**
  * Releases one reference to a `otel_counter_f64_t` and clears the slot.
  */
-void otel_counter_f64_release(otel_counter_f64_t *handle);
+OTEL_API void otel_counter_f64_release(otel_counter_f64_t *handle);
 
 /**
  * Retains a `otel_updown_counter_i64_t` into caller-provided storage.
  */
-otel_result_t otel_updown_counter_i64_retain(const otel_updown_counter_i64_t *src,
+OTEL_API otel_result_t otel_updown_counter_i64_retain(const otel_updown_counter_i64_t *src,
                                              otel_updown_counter_i64_t *handle);
 
 /**
  * Releases one reference to a `otel_updown_counter_i64_t` and clears the slot.
  */
-void otel_updown_counter_i64_release(otel_updown_counter_i64_t *handle);
+OTEL_API void otel_updown_counter_i64_release(otel_updown_counter_i64_t *handle);
 
 /**
  * Retains a `otel_histogram_f64_t` into caller-provided storage.
  */
-otel_result_t otel_histogram_f64_retain(const otel_histogram_f64_t *src,
+OTEL_API otel_result_t otel_histogram_f64_retain(const otel_histogram_f64_t *src,
                                         otel_histogram_f64_t *handle);
 
 /**
  * Releases one reference to a `otel_histogram_f64_t` and clears the slot.
  */
-void otel_histogram_f64_release(otel_histogram_f64_t *handle);
+OTEL_API void otel_histogram_f64_release(otel_histogram_f64_t *handle);
 
 /**
  * Retains a `otel_gauge_f64_t` into caller-provided storage.
  */
-otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_t *handle);
+OTEL_API otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_t *handle);
 
 /**
  * Releases one reference to a `otel_gauge_f64_t` and clears the slot.
  */
-void otel_gauge_f64_release(otel_gauge_f64_t *handle);
+OTEL_API void otel_gauge_f64_release(otel_gauge_f64_t *handle);
+
+/**
+ * Returns whether the resource handle is usable.
+ */
+OTEL_API bool otel_resource_is_valid(const otel_resource_t *handle);
+
+/**
+ * Returns whether the tracer provider handle is usable.
+ */
+OTEL_API bool otel_tracer_provider_is_valid(const otel_tracer_provider_t *handle);
+
+/**
+ * Returns whether the meter provider handle is usable.
+ */
+OTEL_API bool otel_meter_provider_is_valid(const otel_meter_provider_t *handle);
+
+/**
+ * Returns whether the logger provider handle is usable.
+ */
+OTEL_API bool otel_logger_provider_is_valid(const otel_logger_provider_t *handle);
+
+/**
+ * Returns whether the tracer handle is usable.
+ */
+OTEL_API bool otel_tracer_is_valid(const otel_tracer_t *handle);
+
+/**
+ * Returns whether the meter handle is usable.
+ */
+OTEL_API bool otel_meter_is_valid(const otel_meter_t *handle);
+
+/**
+ * Returns whether the logger handle is usable.
+ */
+OTEL_API bool otel_logger_is_valid(const otel_logger_t *handle);
+
+/**
+ * Returns whether the span handle is usable.
+ */
+OTEL_API bool otel_span_is_valid(const otel_span_t *handle);
+
+/**
+ * Returns whether the unsigned counter handle is usable.
+ */
+OTEL_API bool otel_counter_u64_is_valid(const otel_counter_u64_t *handle);
+
+/**
+ * Returns whether the double counter handle is usable.
+ */
+OTEL_API bool otel_counter_f64_is_valid(const otel_counter_f64_t *handle);
+
+/**
+ * Returns whether the signed up/down counter handle is usable.
+ */
+OTEL_API bool otel_updown_counter_i64_is_valid(const otel_updown_counter_i64_t *handle);
+
+/**
+ * Returns whether the histogram handle is usable.
+ */
+OTEL_API bool otel_histogram_f64_is_valid(const otel_histogram_f64_t *handle);
+
+/**
+ * Returns whether the gauge handle is usable.
+ */
+OTEL_API bool otel_gauge_f64_is_valid(const otel_gauge_f64_t *handle);
 
 /**
  * Creates a logger provider. `resource` and `runtime` may be NULL when the
  * selected exporter does not need them.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
-otel_result_t otel_logger_provider_new(otel_logger_provider_t *handle,
+OTEL_API otel_result_t otel_logger_provider_new(otel_logger_provider_t *handle,
                                        const otel_resource_t *resource,
                                        const otel_runtime_t *runtime);
 
 /**
  * Flushes all pending log records.
  */
-otel_result_t otel_logger_provider_force_flush(const otel_logger_provider_t *provider);
+OTEL_API otel_result_t otel_logger_provider_force_flush(const otel_logger_provider_t *provider);
 
 /**
  * Shuts down the provider and its processors.
  */
-otel_result_t otel_logger_provider_shutdown(const otel_logger_provider_t *provider);
+OTEL_API otel_result_t otel_logger_provider_shutdown(const otel_logger_provider_t *provider);
 
 /**
  * Creates a logger for an instrumentation scope.
  */
-otel_result_t otel_logger_provider_logger(const otel_logger_provider_t *provider,
+OTEL_API otel_result_t otel_logger_provider_logger(const otel_logger_provider_t *provider,
                                           otel_logger_t *handle,
                                           const char *name);
 
@@ -472,9 +564,9 @@ otel_result_t otel_logger_provider_logger(const otel_logger_provider_t *provider
  * Emits a log record with optional attributes. `span` may be NULL; when set,
  * the record carries that span's trace and span IDs.
  */
-otel_result_t otel_logger_log(const otel_logger_t *logger,
+OTEL_API otel_result_t otel_logger_log(const otel_logger_t *logger,
                               const otel_span_t *span,
-                              otel_severity_t level,
+                              int32_t level,
                               const char *body,
                               ...);
 
@@ -483,31 +575,31 @@ otel_result_t otel_logger_log(const otel_logger_t *logger,
  * selected exporter does not need them.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
-otel_result_t otel_meter_provider_new(otel_meter_provider_t *handle,
+OTEL_API otel_result_t otel_meter_provider_new(otel_meter_provider_t *handle,
                                       const otel_resource_t *resource,
                                       const otel_runtime_t *runtime);
 
 /**
  * Flushes all pending metric data.
  */
-otel_result_t otel_meter_provider_force_flush(const otel_meter_provider_t *provider);
+OTEL_API otel_result_t otel_meter_provider_force_flush(const otel_meter_provider_t *provider);
 
 /**
  * Shuts down the provider and its readers.
  */
-otel_result_t otel_meter_provider_shutdown(const otel_meter_provider_t *provider);
+OTEL_API otel_result_t otel_meter_provider_shutdown(const otel_meter_provider_t *provider);
 
 /**
  * Creates a meter for an instrumentation scope.
  */
-otel_result_t otel_meter_provider_meter(const otel_meter_provider_t *provider,
+OTEL_API otel_result_t otel_meter_provider_meter(const otel_meter_provider_t *provider,
                                         otel_meter_t *handle,
                                         const char *name);
 
 /**
  * Creates an unsigned 64-bit counter. `unit` and `description` may be NULL.
  */
-otel_result_t otel_meter_counter_u64(const otel_meter_t *meter,
+OTEL_API otel_result_t otel_meter_counter_u64(const otel_meter_t *meter,
                                      otel_counter_u64_t *handle,
                                      const char *name,
                                      const char *unit,
@@ -516,7 +608,7 @@ otel_result_t otel_meter_counter_u64(const otel_meter_t *meter,
 /**
  * Creates a double-precision counter. `unit` and `description` may be NULL.
  */
-otel_result_t otel_meter_counter_f64(const otel_meter_t *meter,
+OTEL_API otel_result_t otel_meter_counter_f64(const otel_meter_t *meter,
                                      otel_counter_f64_t *handle,
                                      const char *name,
                                      const char *unit,
@@ -525,7 +617,7 @@ otel_result_t otel_meter_counter_f64(const otel_meter_t *meter,
 /**
  * Creates a signed 64-bit up/down counter. Metadata may be NULL.
  */
-otel_result_t otel_meter_updown_counter_i64(const otel_meter_t *meter,
+OTEL_API otel_result_t otel_meter_updown_counter_i64(const otel_meter_t *meter,
                                             otel_updown_counter_i64_t *handle,
                                             const char *name,
                                             const char *unit,
@@ -534,7 +626,7 @@ otel_result_t otel_meter_updown_counter_i64(const otel_meter_t *meter,
 /**
  * Creates a double-precision histogram. Metadata may be NULL.
  */
-otel_result_t otel_meter_histogram_f64(const otel_meter_t *meter,
+OTEL_API otel_result_t otel_meter_histogram_f64(const otel_meter_t *meter,
                                        otel_histogram_f64_t *handle,
                                        const char *name,
                                        const char *unit,
@@ -543,7 +635,7 @@ otel_result_t otel_meter_histogram_f64(const otel_meter_t *meter,
 /**
  * Creates a double-precision gauge. Metadata may be NULL.
  */
-otel_result_t otel_meter_gauge_f64(const otel_meter_t *meter,
+OTEL_API otel_result_t otel_meter_gauge_f64(const otel_meter_t *meter,
                                    otel_gauge_f64_t *handle,
                                    const char *name,
                                    const char *unit,
@@ -552,46 +644,46 @@ otel_result_t otel_meter_gauge_f64(const otel_meter_t *meter,
 /**
  * Adds to an unsigned 64-bit counter with optional attributes.
  */
-otel_result_t otel_counter_u64_add(const otel_counter_u64_t *counter, uint64_t value, ...);
+OTEL_API otel_result_t otel_counter_u64_add(const otel_counter_u64_t *counter, uint64_t value, ...);
 
 /**
  * Adds to a double-precision counter with optional attributes.
  */
-otel_result_t otel_counter_f64_add(const otel_counter_f64_t *counter, double value, ...);
+OTEL_API otel_result_t otel_counter_f64_add(const otel_counter_f64_t *counter, double value, ...);
 
 /**
  * Adds to a signed 64-bit up/down counter with optional attributes.
  */
-otel_result_t otel_updown_counter_i64_add(const otel_updown_counter_i64_t *counter,
+OTEL_API otel_result_t otel_updown_counter_i64_add(const otel_updown_counter_i64_t *counter,
                                           int64_t value,
                                           ...);
 
 /**
  * Records a value in a histogram with optional attributes.
  */
-otel_result_t otel_histogram_f64_record(const otel_histogram_f64_t *histogram, double value, ...);
+OTEL_API otel_result_t otel_histogram_f64_record(const otel_histogram_f64_t *histogram, double value, ...);
 
 /**
  * Records a value in a gauge with optional attributes.
  */
-otel_result_t otel_gauge_f64_record(const otel_gauge_f64_t *gauge, double value, ...);
+OTEL_API otel_result_t otel_gauge_f64_record(const otel_gauge_f64_t *gauge, double value, ...);
 
 /**
  * Creates a resource from `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES`.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
-otel_result_t otel_resource_new(otel_resource_t *handle);
+OTEL_API otel_result_t otel_resource_new(otel_resource_t *handle);
 
 /**
  * Creates a multi-threaded async runtime used by OTLP exporters.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
-otel_result_t otel_runtime_new(otel_runtime_t *handle);
+OTEL_API otel_result_t otel_runtime_new(otel_runtime_t *handle);
 
 /**
- * Returns `OK` when the runtime handle is usable.
+ * Returns whether the runtime handle is usable.
  */
-otel_result_t otel_runtime_is_valid(const otel_runtime_t *runtime);
+OTEL_API bool otel_runtime_is_valid(const otel_runtime_t *runtime);
 
 /**
  * Creates a tracer provider using the current environment configuration.
@@ -599,31 +691,31 @@ otel_result_t otel_runtime_is_valid(const otel_runtime_t *runtime);
  * NULL unless `OTEL_TRACES_EXPORTER=otlp`.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
  */
-otel_result_t otel_tracer_provider_new(otel_tracer_provider_t *handle,
+OTEL_API otel_result_t otel_tracer_provider_new(otel_tracer_provider_t *handle,
                                        const otel_resource_t *resource,
                                        const otel_runtime_t *runtime);
 
 /**
  * Flushes all pending spans.
  */
-otel_result_t otel_tracer_provider_force_flush(const otel_tracer_provider_t *provider);
+OTEL_API otel_result_t otel_tracer_provider_force_flush(const otel_tracer_provider_t *provider);
 
 /**
  * Shuts down the provider and its processors.
  */
-otel_result_t otel_tracer_provider_shutdown(const otel_tracer_provider_t *provider);
+OTEL_API otel_result_t otel_tracer_provider_shutdown(const otel_tracer_provider_t *provider);
 
 /**
  * Creates a tracer for an instrumentation scope.
  */
-otel_result_t otel_tracer_provider_tracer(const otel_tracer_provider_t *provider,
+OTEL_API otel_result_t otel_tracer_provider_tracer(const otel_tracer_provider_t *provider,
                                           otel_tracer_t *handle,
                                           const char *name);
 
 /**
  * Starts a span with an optional `NULL`-terminated list of attributes.
  */
-otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
+OTEL_API otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
                                      otel_span_t *handle,
                                      const char *name,
                                      ...);
@@ -631,34 +723,34 @@ otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
 /**
  * Adds attributes to a started span.
  */
-otel_result_t otel_span_set_attributes(const otel_span_t *span, ...);
+OTEL_API otel_result_t otel_span_set_attributes(const otel_span_t *span, ...);
 
 /**
  * Adds a named event with optional attributes to a started span.
  */
-otel_result_t otel_span_add_event(const otel_span_t *span, const char *name, ...);
+OTEL_API otel_result_t otel_span_add_event(const otel_span_t *span, const char *name, ...);
 
 /**
  * Sets the span status. `description` may be NULL.
  */
-otel_result_t otel_span_set_status(const otel_span_t *span,
-                                   otel_span_status_t status,
+OTEL_API otel_result_t otel_span_set_status(const otel_span_t *span,
+                                   int32_t status,
                                    const char *description);
 
 /**
  * Ends a span. Calling this more than once is harmless.
  */
-otel_result_t otel_span_end(const otel_span_t *span);
+OTEL_API otel_result_t otel_span_end(const otel_span_t *span);
 
 /**
  * Copies the 32-hex-digit trace ID (plus NUL) into `buf`.
  */
-otel_result_t otel_span_trace_id(const otel_span_t *span, char *buf, size_t capacity);
+OTEL_API otel_result_t otel_span_trace_id(const otel_span_t *span, char *buf, size_t capacity);
 
 /**
  * Copies the 16-hex-digit span ID (plus NUL) into `buf`.
  */
-otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capacity);
+OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capacity);
 
 
 /* Attribute builders. Pass a NULL-terminated list of these to any function
@@ -686,6 +778,31 @@ otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, size_t capac
                        (const char *)(key), \
                        { .double_value = (double)(value) } })
 
+/* Sentinel values, handle initializers, and varargs terminator. */
+#define OTEL_RESULT_SENTINEL 8
+#define OTEL_SEVERITY_SENTINEL 22
+#define OTEL_SPAN_STATUS_SENTINEL 3
+#define OTEL_ATTRIBUTE_TYPE_SENTINEL 4
+#define OTEL_RESOURCE_T_INIT { NULL }
+#define OTEL_RUNTIME_T_INIT { NULL }
+#define OTEL_TRACER_PROVIDER_T_INIT { NULL }
+#define OTEL_METER_PROVIDER_T_INIT { NULL }
+#define OTEL_LOGGER_PROVIDER_T_INIT { NULL }
+#define OTEL_TRACER_T_INIT { NULL }
+#define OTEL_METER_T_INIT { NULL }
+#define OTEL_LOGGER_T_INIT { NULL }
+#define OTEL_SPAN_T_INIT { NULL }
+#define OTEL_COUNTER_U64_T_INIT { NULL }
+#define OTEL_COUNTER_F64_T_INIT { NULL }
+#define OTEL_UPDOWN_COUNTER_I64_T_INIT { NULL }
+#define OTEL_HISTOGRAM_F64_T_INIT { NULL }
+#define OTEL_GAUGE_F64_T_INIT { NULL }
+#define OTEL_ATTR_END ((otel_attribute_t *)0)
+
 /* Generated semantic-convention helpers. */
 #include "cotel_semconv.h"
+
+#ifdef __cplusplus
+}
+#endif
 #endif  /* COTEL_H */

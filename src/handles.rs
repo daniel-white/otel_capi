@@ -158,6 +158,16 @@ pub(crate) fn const_slot<T>(handle: *const T) -> *const *mut c_void {
     handle.cast::<*mut c_void>()
 }
 
+/// Returns whether a handle points to a live object without taking a reference.
+#[inline]
+pub(crate) unsafe fn valid<T: Send + Sync + 'static>(src: *const *mut c_void) -> bool {
+    if src.is_null() {
+        return false;
+    }
+    // SAFETY: caller guarantees `src` points to an initialized handle.
+    unsafe { !ptr::read(src).is_null() }
+}
+
 pub(crate) unsafe fn init<T: Send + Sync + 'static>(
     out: *mut *mut c_void,
     value: T,
@@ -510,4 +520,90 @@ mod tests {
         let err = unsafe { init(ptr::null_mut(), 1u8) }.unwrap_err();
         assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
     }
+}
+
+/// Returns whether the resource handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_resource_is_valid(handle: *const otel_resource_t) -> bool {
+    unsafe { valid::<ResourceInner>(const_slot(handle)) }
+}
+
+/// Returns whether the tracer provider handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_provider_is_valid(
+    handle: *const otel_tracer_provider_t,
+) -> bool {
+    unsafe { valid::<TracerProviderInner>(const_slot(handle)) }
+}
+
+/// Returns whether the meter provider handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_provider_is_valid(
+    handle: *const otel_meter_provider_t,
+) -> bool {
+    unsafe { valid::<MeterProviderInner>(const_slot(handle)) }
+}
+
+/// Returns whether the logger provider handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_provider_is_valid(
+    handle: *const otel_logger_provider_t,
+) -> bool {
+    unsafe { valid::<LoggerProviderInner>(const_slot(handle)) }
+}
+
+/// Returns whether the tracer handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_is_valid(handle: *const otel_tracer_t) -> bool {
+    unsafe { valid::<TracerInner>(const_slot(handle)) }
+}
+
+/// Returns whether the meter handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_is_valid(handle: *const otel_meter_t) -> bool {
+    unsafe { valid::<MeterInner>(const_slot(handle)) }
+}
+
+/// Returns whether the logger handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_is_valid(handle: *const otel_logger_t) -> bool {
+    unsafe { valid::<LoggerInner>(const_slot(handle)) }
+}
+
+/// Returns whether the span handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_is_valid(handle: *const otel_span_t) -> bool {
+    unsafe { valid::<SpanInner>(const_slot(handle)) }
+}
+
+/// Returns whether the unsigned counter handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_u64_is_valid(handle: *const otel_counter_u64_t) -> bool {
+    unsafe { valid::<CounterU64Inner>(const_slot(handle)) }
+}
+
+/// Returns whether the double counter handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_f64_is_valid(handle: *const otel_counter_f64_t) -> bool {
+    unsafe { valid::<CounterF64Inner>(const_slot(handle)) }
+}
+
+/// Returns whether the signed up/down counter handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_updown_counter_i64_is_valid(
+    handle: *const otel_updown_counter_i64_t,
+) -> bool {
+    unsafe { valid::<UpDownCounterI64Inner>(const_slot(handle)) }
+}
+
+/// Returns whether the histogram handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_histogram_f64_is_valid(handle: *const otel_histogram_f64_t) -> bool {
+    unsafe { valid::<HistogramF64Inner>(const_slot(handle)) }
+}
+
+/// Returns whether the gauge handle is usable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_gauge_f64_is_valid(handle: *const otel_gauge_f64_t) -> bool {
+    unsafe { valid::<GaugeF64Inner>(const_slot(handle)) }
 }

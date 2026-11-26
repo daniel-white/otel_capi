@@ -16,13 +16,13 @@ use crate::error::{Error, Result, c_str, utf8};
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum otel_attribute_type_t {
     /// The `string` member is active.
-    OTEL_ATTRIBUTE_TYPE_STRING,
+    OTEL_ATTRIBUTE_TYPE_STRING = 0,
     /// The `boolean` member is active.
-    OTEL_ATTRIBUTE_TYPE_BOOL,
+    OTEL_ATTRIBUTE_TYPE_BOOL = 1,
     /// The `integer` member is active.
-    OTEL_ATTRIBUTE_TYPE_I64,
+    OTEL_ATTRIBUTE_TYPE_I64 = 2,
     /// The `double_value` member is active.
-    OTEL_ATTRIBUTE_TYPE_F64,
+    OTEL_ATTRIBUTE_TYPE_F64 = 3,
 }
 
 /// Tagged value payload. Only the member named by `kind` may be read.
@@ -44,7 +44,7 @@ pub union otel_attribute_value_t {
 #[derive(Copy, Clone)]
 pub struct otel_attribute_t {
     /// Which member of `value` is active.
-    pub kind: otel_attribute_type_t,
+    pub kind: i32,
     /// NUL-terminated UTF-8 attribute key. Must not be NULL.
     pub key: *const c_char,
     /// Tagged value payload.
@@ -62,22 +62,25 @@ impl otel_attribute_t {
         let key = unsafe { c_str(self.key, "attribute key") }?;
         let key = Key::new(utf8(key, "attribute key")?);
         let value = match self.kind {
-            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING => {
+            0 => {
                 // SAFETY: caller guarantees `string` is active and valid.
                 let raw = unsafe { c_str(self.value.string, "string attribute value") }?;
                 Value::String(utf8(raw, "string attribute value")?.into())
             }
-            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL => {
+            1 => {
                 // SAFETY: caller guarantees `boolean` is active.
                 Value::Bool(unsafe { self.value.boolean } != 0)
             }
-            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64 => {
+            2 => {
                 // SAFETY: caller guarantees `integer` is active.
                 Value::I64(unsafe { self.value.integer })
             }
-            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64 => {
+            3 => {
                 // SAFETY: caller guarantees `double_value` is active.
                 Value::F64(unsafe { self.value.double_value })
+            }
+            other => {
+                return Err(Error::invalid(format!("invalid attribute type {other}")));
             }
         };
         Ok(KeyValue::new(key, value))
@@ -113,7 +116,7 @@ mod tests {
 
     fn attribute(key: &std::ffi::CStr, value: &std::ffi::CStr) -> otel_attribute_t {
         otel_attribute_t {
-            kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING,
+            kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
             key: key.as_ptr(),
             value: otel_attribute_value_t {
                 string: value.as_ptr(),
@@ -132,18 +135,18 @@ mod tests {
     #[test]
     fn converts_numeric_and_boolean_attributes() {
         let mut attr = attribute(c"k", c"unused");
-        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL;
+        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL as i32;
         attr.value = otel_attribute_value_t { boolean: 1 };
         assert_eq!(
             unsafe { attr.to_key_value() }.unwrap().value,
             Value::Bool(true)
         );
 
-        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64;
+        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64 as i32;
         attr.value = otel_attribute_value_t { integer: -42 };
         assert_eq!(unsafe { attr.to_key_value() }.unwrap().value, Value::I64(-42));
 
-        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64;
+        attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64 as i32;
         attr.value = otel_attribute_value_t { double_value: 1.5 };
         assert_eq!(unsafe { attr.to_key_value() }.unwrap().value, Value::F64(1.5));
     }

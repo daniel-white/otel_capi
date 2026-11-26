@@ -1,0 +1,10 @@
+prefix=@PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: cotel
+Description: C ABI wrapper for the OpenTelemetry Rust SDK
+Version: @VERSION@
+Libs: -L${libdir} -lcotel -pthread -ldl -lm
+Cflags: -I${includedir}

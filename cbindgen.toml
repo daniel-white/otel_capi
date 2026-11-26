@@ -7,6 +7,22 @@ documentation = true
 usize_is_size_t = true
 
 after_includes = """
+#ifndef OTEL_API
+#  if defined(_WIN32) && defined(COTEL_BUILDING_DLL)
+#    define OTEL_API __declspec(dllexport)
+#  elif defined(_WIN32)
+#    define OTEL_API __declspec(dllimport)
+#  elif defined(__GNUC__)
+#    define OTEL_API __attribute__((visibility("default")))
+#  else
+#    define OTEL_API
+#  endif
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a

@@ -27,11 +27,11 @@ use crate::handles::{otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_t
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum otel_span_status_t {
     /// No status has been set.
-    OTEL_SPAN_STATUS_UNSET,
+    OTEL_SPAN_STATUS_UNSET = 0,
     /// The operation succeeded.
-    OTEL_SPAN_STATUS_OK,
+    OTEL_SPAN_STATUS_OK = 1,
     /// The operation failed.
-    OTEL_SPAN_STATUS_ERROR,
+    OTEL_SPAN_STATUS_ERROR = 2,
 }
 
 fn sampler_from_env() -> Result<Sampler> {
@@ -235,7 +235,7 @@ pub unsafe extern "C" fn otel_span_add_event(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_status(
     span: *const otel_span_t,
-    status: otel_span_status_t,
+    status: i32,
     description: *const c_char,
 ) -> otel_result_t {
     guard(|| {
@@ -246,11 +246,14 @@ pub unsafe extern "C" fn otel_span_set_status(
             .ok_or_else(|| Error::invalid("span has already ended"))?;
         let description = unsafe { optional_utf8(description, "status description")? }.unwrap_or_default();
         let status = match status {
-            otel_span_status_t::OTEL_SPAN_STATUS_UNSET => Status::Unset,
-            otel_span_status_t::OTEL_SPAN_STATUS_OK => Status::Ok,
-            otel_span_status_t::OTEL_SPAN_STATUS_ERROR => Status::Error {
+            0 => Status::Unset,
+            1 => Status::Ok,
+            2 => Status::Error {
                 description: description.into(),
             },
+            other => {
+                return Err(Error::invalid(format!("invalid span status {other}")));
+            }
         };
         span.set_status(status);
         Ok(())

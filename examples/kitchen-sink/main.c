@@ -108,7 +108,7 @@ int main(void) {
       &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
 
   CHECK(otel_counter_u64_add(
-      &counter_u64, 3, otel_attr_string("method", "GET"), NULL));
+      &counter_u64, 3, otel_attr_http_request_method("GET"), NULL));
   CHECK(otel_counter_f64_add(&counter_f64, 2048.0, NULL));
   CHECK(otel_updown_counter_i64_add(&updown, 1, NULL));
   CHECK(otel_histogram_f64_record(&histogram, 0.042, NULL));

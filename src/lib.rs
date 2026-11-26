@@ -16,4 +16,17 @@ pub mod resource;
 pub mod runtime;
 pub mod trace;
 
+use std::ffi::{CString, c_char};
+use std::sync::OnceLock;
+
 pub use error::otel_result_t;
+
+static VERSION: OnceLock<CString> = OnceLock::new();
+
+/// Returns the crate version as a NUL-terminated string.
+#[unsafe(no_mangle)]
+pub extern "C" fn otel_version() -> *const c_char {
+    VERSION
+        .get_or_init(|| CString::new(env!("CARGO_PKG_VERSION")).expect("version has no NUL"))
+        .as_ptr()
+}

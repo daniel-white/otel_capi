@@ -121,6 +121,24 @@ pub extern "C" fn otel_last_error() -> *const c_char {
     })
 }
 
+/// Returns a stable description for a result code. Unknown codes produce
+/// `"unknown status"`.
+#[unsafe(no_mangle)]
+pub extern "C" fn otel_strerror(code: i32) -> *const c_char {
+    match code {
+        0 => c"ok",
+        1 => c"invalid argument",
+        2 => c"invalid UTF-8",
+        3 => c"configuration error",
+        4 => c"export failed",
+        5 => c"shutdown failed",
+        6 => c"internal error",
+        7 => c"panic",
+        _ => c"unknown status",
+    }
+    .as_ptr()
+}
+
 /// Copies the last error message, including its NUL terminator, into a
 /// caller-owned buffer. Returns the required size (including NUL) if `buf` is
 /// NULL or `capacity` is too small; otherwise returns the bytes written.

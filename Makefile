@@ -6,6 +6,7 @@ DESTDIR ?=
 
 GCC ?= gcc
 CLANG ?= clang
+CC ?= $(GCC)
 CARGO ?= cargo
 
 BUILD_DIR := build/artifacts
@@ -18,6 +19,7 @@ CFLAGS ?= -std=c11 -Wall -Wextra -Werror
 CPPFLAGS ?= -I$(INCLUDE_DIR)
 LDFLAGS ?=
 LDLIBS ?= -pthread -ldl -lm
+VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -26,8 +28,9 @@ else
 SHARED_EXT := so
 endif
 SHARED_LIB := target/release/libcotel.$(SHARED_EXT)
+PKG_CONFIG_FILE := $(BUILD_DIR)/cotel.pc
 
-.PHONY: all build test example-gcc example-clang check clean install
+.PHONY: all build test example-gcc example-clang compile-checks pkg-config-file check clean install
 
 all: build
 
@@ -56,13 +59,28 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-clang.log
 
-check: test example-gcc example-clang
+compile-checks: | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c
+	@for src in checks/compile-fail/*.c; do \
+		if $(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only $$src >/dev/null 2>&1; then \
+			echo "unexpectedly compiled $$src"; exit 1; \
+		fi; \
+	done
+	@echo "compile-time type checks passed"
 
-install: build
-	install -d $(DESTDIR)$(PREFIX)/include $(DESTDIR)$(PREFIX)/lib
+pkg-config-file: $(PKG_CONFIG_FILE)
+
+$(PKG_CONFIG_FILE): cotel.pc.in Makefile | $(BUILD_DIR)
+	sed -e 's|@PREFIX@|$(PREFIX)|g' -e 's|@VERSION@|$(VERSION)|g' $< > $@
+
+check: test example-gcc example-clang compile-checks
+
+install: build pkg-config-file
+	install -d $(DESTDIR)$(PREFIX)/include $(DESTDIR)$(PREFIX)/lib $(DESTDIR)$(PREFIX)/lib/pkgconfig
 	install -m 644 $(HEADERS) $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(PKG_CONFIG_FILE) $(DESTDIR)$(PREFIX)/lib/pkgconfig/
 
 clean:
 	$(CARGO) clean
