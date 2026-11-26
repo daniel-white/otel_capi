@@ -76,13 +76,22 @@ jobs:
         if: runner.os != 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/upload_release_assets.py --tag "$RELEASE_REF" --dir dist
+        run: |
+          shopt -s nullglob
+          assets=(dist/*.tar.gz dist/*.tar.gz.sha256 dist/*.zip dist/*.zip.sha256)
+          gh release upload "$RELEASE_REF" "${assets[@]}" --clobber
 
       - name: Upload release assets (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/upload_release_assets.py --tag $env:RELEASE_REF --dir dist
+        run: |
+          $assets = @()
+          $assets += Get-ChildItem -Path dist -Filter *.tar.gz -File | ForEach-Object { $_.FullName }
+          $assets += Get-ChildItem -Path dist -Filter *.tar.gz.sha256 -File | ForEach-Object { $_.FullName }
+          $assets += Get-ChildItem -Path dist -Filter *.zip -File | ForEach-Object { $_.FullName }
+          $assets += Get-ChildItem -Path dist -Filter *.zip.sha256 -File | ForEach-Object { $_.FullName }
+          gh release upload $env:RELEASE_REF @assets --clobber
 
   docs:
     name: API documentation
@@ -113,7 +122,10 @@ jobs:
       - name: Upload documentation
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/upload_release_assets.py --tag "$RELEASE_REF" --dir dist
+        run: |
+          shopt -s nullglob
+          assets=(dist/otel-capi-*-docs.tar.gz dist/otel-capi-*-docs.tar.gz.sha256)
+          gh release upload "$RELEASE_REF" "${assets[@]}" --clobber
 
       - uses: actions/configure-pages@v5
 
