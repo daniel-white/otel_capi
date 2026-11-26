@@ -323,3 +323,8 @@ which exercises handle reference counting and instrument thread safety. Handles
 use `OTEL_AUTO_<TYPE>` declarations so they are released when the example’s
 inner scope exits. It finishes with `otel_ensure_all_released()` to verify that
 every handle was released.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE), the same license used
+by OpenTelemetry.
