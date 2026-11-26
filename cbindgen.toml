@@ -6,8 +6,9 @@ documentation = true
 usize_is_size_t = true
 
 [export]
-include = ["otel_.*"]
+include = ["otel_result_t"]
 item_types = ["enums", "structs", "typedefs", "functions", "constants"]
 
 [enum]
-prefix_with_name = true
+prefix_with_name = false
+rename_variants = "None"

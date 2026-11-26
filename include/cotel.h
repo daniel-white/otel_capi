@@ -9,4 +9,31 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/**
+ * Status returned by every fallible `cotel` function.
+ */
+typedef enum otel_result_t {
+  OTEL_OK = 0,
+  OTEL_ERR_INVALID_ARGUMENT = 1,
+  OTEL_ERR_INVALID_UTF8 = 2,
+  OTEL_ERR_CONFIG = 3,
+  OTEL_ERR_EXPORT = 4,
+  OTEL_ERR_SHUTDOWN = 5,
+  OTEL_ERR_INTERNAL = 6,
+  OTEL_ERR_PANIC = 7,
+} otel_result_t;
+
+/**
+ * Returns the last error message for the calling thread. The pointer remains
+ * valid until another `cotel` call on the same thread records an error.
+ */
+const char *otel_last_error(void);
+
+/**
+ * Copies the last error message, including its NUL terminator, into a
+ * caller-owned buffer. Returns the required size (including NUL) if `buf` is
+ * NULL or `capacity` is too small; otherwise returns the bytes written.
+ */
+size_t otel_copy_last_error(char *buf, size_t capacity);
+
 #endif  /* COTEL_H */
