@@ -102,6 +102,7 @@ jobs:
           VERSION: ${{ env.RELEASE_REF }}
         run: |
           make docs
+          touch build/docs/html/.nojekyll
           version="${VERSION#v}"
           mkdir -p dist
           tar -C build/docs -czf "dist/otel-capi-${version}-docs.tar.gz" html
@@ -114,3 +115,30 @@ jobs:
           files: |
             dist/otel-capi-*-docs.tar.gz
             dist/otel-capi-*-docs.tar.gz.sha256
+
+      - uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/html
+
+  publish-pages:
+    name: Publish API docs to GitHub Pages
+    if: github.event_name == 'release'
+    needs: docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

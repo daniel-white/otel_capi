@@ -344,7 +344,8 @@ Each GitHub release publishes archives for Linux (x86_64 glibc and musl), macOS
 contains the generated headers, static and shared libraries, a relocatable
 `otel-capi.pc`, `LICENSE`, and `README.md`. A separate
 `otel-capi-<version>-docs.tar.gz` contains the Doxygen HTML reference for the
-generated headers. For example:
+generated headers. The same reference is published on release at
+<https://daniel-white.github.io/otel_capi/>. For example:
 
 ```sh
 version=0.1.0
