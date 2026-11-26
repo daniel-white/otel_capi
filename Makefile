@@ -50,6 +50,7 @@ example-gcc: build | $(BUILD_DIR)
 	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-gcc > $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-gcc.log
 
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
@@ -58,6 +59,7 @@ example-clang: build | $(BUILD_DIR)
 	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-clang > $(BUILD_DIR)/stdout-clang.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-clang.log
 
 compile-checks: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c

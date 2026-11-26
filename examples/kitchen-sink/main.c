@@ -8,18 +8,44 @@
 
 #include "cotel.h"
 
+#include <pthread.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+_Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_PANIC,
+               "result sentinel must follow the last result code");
 
 #define CHECK(call)                                                            \
   do {                                                                         \
     otel_result_t result_ = (call);                                            \
-    if (result_ != OTEL_OK) {                                                   \
-      fprintf(stderr, "%s:%d: %s failed: %s\n", __FILE__, __LINE__, #call,      \
-              otel_last_error());                                              \
+    if (result_ != OTEL_OK) {                                                  \
+      fprintf(stderr, "%s:%d: %s failed: %s (%s)\n", __FILE__, __LINE__,        \
+              #call, otel_strerror((int32_t)result_), otel_last_error());       \
       goto cleanup;                                                            \
     }                                                                          \
   } while (0)
+
+#define WORKER_CHECK(call)                                                     \
+  do {                                                                         \
+    otel_result_t result_ = (call);                                            \
+    if (result_ != OTEL_OK) {                                                  \
+      fprintf(stderr, "worker %d: %s failed: %s\n", args->id, #call,           \
+              otel_last_error());                                              \
+      atomic_fetch_add(args->failures, 1);                                     \
+      return NULL;                                                             \
+    }                                                                          \
+  } while (0)
+
+#define WORKER_COUNT 4
+
+typedef struct {
+  const otel_tracer_t *tracer;
+  const otel_logger_t *logger;
+  const otel_counter_u64_t *counter;
+  atomic_int *failures;
+  int id;
+} worker_args_t;
 
 static void configure_environment(void) {
   const char *exporter = getenv("COTEL_EXPORTER");
@@ -34,30 +60,62 @@ static void configure_environment(void) {
   }
 }
 
+static void *worker(void *arg) {
+  worker_args_t *args = (worker_args_t *)arg;
+  otel_span_t span = OTEL_SPAN_T_INIT;
+
+  WORKER_CHECK(otel_tracer_span_start(args->tracer, &span, "kitchen-sink.worker",
+                                      otel_attr_i64("worker.id", args->id),
+                                      OTEL_ATTR_END));
+  WORKER_CHECK(otel_counter_u64_add(args->counter, 1,
+                                    otel_attr_i64("worker.id", args->id),
+                                    OTEL_ATTR_END));
+  WORKER_CHECK(otel_logger_log(args->logger, &span, OTEL_SEVERITY_DEBUG,
+                               "worker tick", otel_attr_i64("worker.id", args->id),
+                               OTEL_ATTR_END));
+  WORKER_CHECK(otel_span_set_status(&span, OTEL_SPAN_STATUS_OK, NULL));
+  if (!otel_span_is_valid(&span)) {
+    fprintf(stderr, "worker %d: span handle became invalid\n", args->id);
+    atomic_fetch_add(args->failures, 1);
+  }
+  WORKER_CHECK(otel_span_end(&span));
+  otel_span_release(&span);
+  printf("worker %d complete\n", args->id);
+  return NULL;
+}
+
 int main(void) {
   int status = 1;
+  pthread_t threads[WORKER_COUNT];
+  worker_args_t args[WORKER_COUNT];
+  atomic_int failures = 0;
 
-  /* Every handle is caller-owned storage. Zero-initialize before use. */
-  otel_runtime_t runtime = {0};
-  otel_resource_t resource = {0};
-  otel_tracer_provider_t tracer_provider = {0};
-  otel_meter_provider_t meter_provider = {0};
-  otel_logger_provider_t logger_provider = {0};
-  otel_tracer_t tracer = {0};
-  otel_meter_t meter = {0};
-  otel_logger_t logger = {0};
-  otel_span_t span = {0};
-  otel_span_t span_copy = {0};
-  otel_counter_u64_t counter_u64 = {0};
-  otel_counter_f64_t counter_f64 = {0};
-  otel_updown_counter_i64_t updown = {0};
-  otel_histogram_f64_t histogram = {0};
-  otel_gauge_f64_t gauge = {0};
+  /* Every handle is caller-owned storage. Use the generated INIT macros. */
+  otel_runtime_t runtime = OTEL_RUNTIME_T_INIT;
+  otel_resource_t resource = OTEL_RESOURCE_T_INIT;
+  otel_tracer_provider_t tracer_provider = OTEL_TRACER_PROVIDER_T_INIT;
+  otel_meter_provider_t meter_provider = OTEL_METER_PROVIDER_T_INIT;
+  otel_logger_provider_t logger_provider = OTEL_LOGGER_PROVIDER_T_INIT;
+  otel_tracer_t tracer = OTEL_TRACER_T_INIT;
+  otel_meter_t meter = OTEL_METER_T_INIT;
+  otel_logger_t logger = OTEL_LOGGER_T_INIT;
+  otel_span_t span = OTEL_SPAN_T_INIT;
+  otel_span_t span_copy = OTEL_SPAN_T_INIT;
+  otel_counter_u64_t counter_u64 = OTEL_COUNTER_U64_T_INIT;
+  otel_counter_f64_t counter_f64 = OTEL_COUNTER_F64_T_INIT;
+  otel_updown_counter_i64_t updown = OTEL_UPDOWN_COUNTER_I64_T_INIT;
+  otel_histogram_f64_t histogram = OTEL_HISTOGRAM_F64_T_INIT;
+  otel_gauge_f64_t gauge = OTEL_GAUGE_F64_T_INIT;
 
   configure_environment();
+  printf("cotel version %s\n", otel_version());
 
   CHECK(otel_runtime_new(&runtime));
   CHECK(otel_resource_new(&resource));
+  if (!otel_runtime_is_valid(&runtime) || !otel_resource_is_valid(&resource)) {
+    fprintf(stderr, "runtime or resource handle is invalid\n");
+    goto cleanup;
+  }
 
   /* The async engine is explicit at construction time; providers retain it. */
   CHECK(otel_tracer_provider_new(&tracer_provider, &resource, &runtime));
@@ -69,17 +127,23 @@ int main(void) {
   CHECK(otel_tracer_provider_tracer(&tracer_provider, &tracer, "kitchen-sink"));
   CHECK(otel_meter_provider_meter(&meter_provider, &meter, "kitchen-sink"));
   CHECK(otel_logger_provider_logger(&logger_provider, &logger, "kitchen-sink"));
+  if (!otel_tracer_is_valid(&tracer) || !otel_meter_is_valid(&meter) ||
+      !otel_logger_is_valid(&logger)) {
+    fprintf(stderr, "signal scope handle is invalid\n");
+    goto cleanup;
+  }
 
   /* Traces: every attribute kind, events, status, and ID access. */
   CHECK(otel_tracer_span_start(
       &tracer, &span, "kitchen-sink.work",
       otel_attr_string("component", "example"),
       otel_attr_client_address("example.org"),
-      otel_attr_i64("attempt", 1), NULL));
+      otel_attr_i64("attempt", 1), OTEL_ATTR_END));
   CHECK(otel_span_set_attributes(
-      &span, otel_attr_bool("cache.hit", 0), otel_attr_f64("weight", 1.25), NULL));
+      &span, otel_attr_bool("cache.hit", 0), otel_attr_f64("weight", 1.25),
+      OTEL_ATTR_END));
   CHECK(otel_span_add_event(
-      &span, "validated", otel_attr_string("result", "ok"), NULL));
+      &span, "validated", otel_attr_string("result", "ok"), OTEL_ATTR_END));
 
   char trace_id[33];
   char span_id[17];
@@ -94,7 +158,8 @@ int main(void) {
   /* Logs: correlated with the retained span, with attributes. */
   CHECK(otel_logger_log(
       &logger, &span_copy, OTEL_SEVERITY_INFO, "work complete",
-      otel_attr_string("phase", "end"), otel_attr_i64("items", 3), NULL));
+      otel_attr_string("phase", "end"), otel_attr_i64("items", 3),
+      OTEL_ATTR_END));
 
   /* Metrics: all five supported instruments. */
   CHECK(otel_meter_counter_u64(
@@ -108,14 +173,34 @@ int main(void) {
       &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
 
   CHECK(otel_counter_u64_add(
-      &counter_u64, 3, otel_attr_http_request_method("GET"), NULL));
-  CHECK(otel_counter_f64_add(&counter_f64, 2048.0, NULL));
-  CHECK(otel_updown_counter_i64_add(&updown, 1, NULL));
-  CHECK(otel_histogram_f64_record(&histogram, 0.042, NULL));
-  CHECK(otel_gauge_f64_record(&gauge, 21.5, NULL));
+      &counter_u64, 3, otel_attr_http_request_method("GET"), OTEL_ATTR_END));
+  CHECK(otel_counter_f64_add(&counter_f64, 2048.0, OTEL_ATTR_END));
+  CHECK(otel_updown_counter_i64_add(&updown, 1, OTEL_ATTR_END));
+  CHECK(otel_histogram_f64_record(&histogram, 0.042, OTEL_ATTR_END));
+  CHECK(otel_gauge_f64_record(&gauge, 21.5, OTEL_ATTR_END));
 
   CHECK(otel_span_set_status(&span_copy, OTEL_SPAN_STATUS_OK, NULL));
   CHECK(otel_span_end(&span_copy));
+
+  /* Concurrent work against shared scopes and one instrument. */
+  for (int i = 0; i < WORKER_COUNT; ++i) {
+    args[i].tracer = &tracer;
+    args[i].logger = &logger;
+    args[i].counter = &counter_u64;
+    args[i].failures = &failures;
+    args[i].id = i;
+    if (pthread_create(&threads[i], NULL, worker, &args[i]) != 0) {
+      fprintf(stderr, "pthread_create failed for worker %d\n", i);
+      goto cleanup;
+    }
+  }
+  for (int i = 0; i < WORKER_COUNT; ++i) {
+    pthread_join(threads[i], NULL);
+  }
+  if (atomic_load(&failures) != 0) {
+    fprintf(stderr, "%d workers failed\n", atomic_load(&failures));
+    goto cleanup;
+  }
 
   CHECK(otel_meter_provider_force_flush(&meter_provider));
   CHECK(otel_logger_provider_force_flush(&logger_provider));
