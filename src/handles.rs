@@ -115,126 +115,126 @@ pub(crate) type ObservableCounterU64Inner = ObservableCounter<u64>;
 /// A resource describing the entity producing telemetry.
 #[repr(C)]
 pub struct otel_resource_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Immutable propagation context carrying trace context and baggage.
 #[repr(C)]
 pub struct otel_context_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Scope token for a context attached to the current thread.
 #[repr(C)]
 pub struct otel_context_scope_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Explicit async runtime used by OTLP exporters.
 #[repr(C)]
 pub struct otel_runtime_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Provider used to create tracers and control trace export.
 #[repr(C)]
 pub struct otel_tracer_provider_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Provider used to create meters and control metric export.
 #[repr(C)]
 pub struct otel_meter_provider_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Provider used to create loggers and control log export.
 #[repr(C)]
 pub struct otel_logger_provider_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Instrumentation scope for starting spans.
 #[repr(C)]
 pub struct otel_tracer_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Instrumentation scope for creating metric instruments.
 #[repr(C)]
 pub struct otel_meter_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Instrumentation scope for emitting log records.
 #[repr(C)]
 pub struct otel_logger_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// A started span. Ending is idempotent across retained handles.
 #[repr(C)]
 pub struct otel_span_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Async gauge that observes independent f64 values from a C callback.
 #[repr(C)]
 pub struct otel_observable_gauge_f64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Async counter that observes increasing u64 values from a C callback.
 #[repr(C)]
 pub struct otel_observable_counter_u64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Unsigned 64-bit monotonic counter instrument.
 #[repr(C)]
 pub struct otel_counter_u64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Double-precision monotonic counter instrument.
 #[repr(C)]
 pub struct otel_counter_f64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Signed 64-bit up/down counter instrument.
 #[repr(C)]
 pub struct otel_updown_counter_i64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Double-precision histogram instrument.
 #[repr(C)]
 pub struct otel_histogram_f64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
 /// Double-precision gauge instrument.
 #[repr(C)]
 pub struct otel_gauge_f64_t {
-    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
