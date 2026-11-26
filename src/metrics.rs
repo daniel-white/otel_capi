@@ -25,6 +25,7 @@ use crate::handles::{
     otel_meter_provider_t, otel_meter_t, otel_observable_counter_u64_t,
     otel_observable_gauge_f64_t, otel_runtime_t, otel_updown_counter_i64_t,
 };
+use crate::strings::{optional_str_slice, otel_str_t, str_slice};
 
 /// Opaque callback context passed back to `otel_observe_*`. It is valid only
 /// for the duration of the C callback invocation.
@@ -130,6 +131,207 @@ unsafe fn instrument_options(
     )
 }
 
+fn instrument_options_n(
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> Result<(Option<String>, Option<String>)> {
+    Ok((
+        unsafe { optional_str_slice(unit, "instrument unit")? }.map(str::to_owned),
+        unsafe { optional_str_slice(description, "instrument description")? }.map(str::to_owned),
+    ))
+}
+
+/// Length-aware variant of [`otel_meter_counter_u64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_counter_u64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_counter_u64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "counter name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let mut builder = meter.u64_counter(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        unsafe { init(slot(handle), builder.build()) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_counter_f64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_counter_f64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_counter_f64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "counter name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let mut builder = meter.f64_counter(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        unsafe { init(slot(handle), builder.build()) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_updown_counter_i64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_updown_counter_i64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_updown_counter_i64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "up/down counter name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let mut builder = meter.i64_up_down_counter(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        unsafe { init(slot(handle), builder.build()) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_histogram_f64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_histogram_f64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_histogram_f64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "histogram name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let mut builder = meter.f64_histogram(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        unsafe { init(slot(handle), builder.build()) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_gauge_f64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_gauge_f64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_gauge_f64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "gauge name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let mut builder = meter.f64_gauge(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        unsafe { init(slot(handle), builder.build()) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_observable_gauge_f64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_observable_gauge_f64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_observable_gauge_f64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+    callback: otel_observable_f64_callback_t,
+    user_data: *mut c_void,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "observable gauge name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let callback = callback.ok_or_else(|| Error::invalid("callback must not be NULL"))?;
+        let wrapper = Arc::new(CCallback::<f64> {
+            callback,
+            user_data,
+            _marker: PhantomData,
+        });
+        let mut builder = meter.f64_observable_gauge(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        let builder = builder.with_callback(move |observer| wrapper.invoke(observer));
+        unsafe { init(slot(handle), builder.build()) }
+    })
+}
+
+/// Length-aware variant of [`otel_meter_observable_counter_u64`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_observable_counter_u64_n(
+    meter: *const otel_meter_t,
+    handle: *mut otel_observable_counter_u64_t,
+    name: otel_str_t,
+    unit: otel_str_t,
+    description: otel_str_t,
+    callback: otel_observable_u64_callback_t,
+    user_data: *mut c_void,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = unsafe { str_slice(name, "observable counter name")? }.to_owned();
+        let (unit, description) = instrument_options_n(unit, description)?;
+        let callback = callback.ok_or_else(|| Error::invalid("callback must not be NULL"))?;
+        let wrapper = Arc::new(CCallback::<u64> {
+            callback,
+            user_data,
+            _marker: PhantomData,
+        });
+        let mut builder = meter.u64_observable_counter(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        let builder = builder.with_callback(move |observer| wrapper.invoke(observer));
+        unsafe { init(slot(handle), builder.build()) }
+    })
+}
+
 /// Creates a meter provider. `resource` and `runtime` may be NULL when the
 /// selected exporter does not need them.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
@@ -187,6 +389,23 @@ pub unsafe extern "C" fn otel_meter_provider_meter(
     guard(|| {
         let provider = unsafe { arc::<MeterProviderInner>(const_slot(provider)) }?;
         let name = utf8(unsafe { c_str(name, "meter name")? }, "meter name")?;
+        // Meter scope names are retained by the provider for its lifetime.
+        let name: &'static str = Box::leak(name.into_boxed_str());
+        unsafe { init(slot(handle), provider.provider.meter(name)) }?;
+        Ok(())
+    })
+}
+
+/// Length-aware variant of [`otel_meter_provider_meter`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_provider_meter_n(
+    provider: *const otel_meter_provider_t,
+    handle: *mut otel_meter_t,
+    name: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let provider = unsafe { arc::<MeterProviderInner>(const_slot(provider)) }?;
+        let name = unsafe { str_slice(name, "meter name")? }.to_owned();
         // Meter scope names are retained by the provider for its lifetime.
         let name: &'static str = Box::leak(name.into_boxed_str());
         unsafe { init(slot(handle), provider.provider.meter(name)) }?;

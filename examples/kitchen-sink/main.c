@@ -182,9 +182,12 @@ int main(void) {
     otel_runtime_release(&runtime);
     otel_resource_release(&resource);
 
-    CHECK(otel_tracer_provider_tracer(&tracer_provider, &tracer, "kitchen-sink"));
-    CHECK(otel_meter_provider_meter(&meter_provider, &meter, "kitchen-sink"));
-    CHECK(otel_logger_provider_logger(&logger_provider, &logger, "kitchen-sink"));
+    CHECK(otel_tracer_provider_tracer_n(&tracer_provider, &tracer,
+                                        OTEL_STR("kitchen-sink")));
+    CHECK(otel_meter_provider_meter_n(&meter_provider, &meter,
+                                      OTEL_STR("kitchen-sink")));
+    CHECK(otel_logger_provider_logger_n(&logger_provider, &logger,
+                                        OTEL_STR("kitchen-sink")));
     if (!otel_tracer_is_valid(&tracer) || !otel_meter_is_valid(&meter) ||
         !otel_logger_is_valid(&logger)) {
       fprintf(stderr, "signal scope handle is invalid\n");
@@ -200,10 +203,15 @@ int main(void) {
     otel_traceparent_t injected_traceparent = OTEL_TRACEPARENT_INIT;
     CHECK(otel_context_extract(&remote_traceparent, NULL, &remote_baggage,
                                &extracted));
-    CHECK(otel_context_get_baggage(&extracted, "tenant", &baggage_value));
+    CHECK(otel_context_get_baggage_n(&extracted, OTEL_STR("tenant"),
+                                     &baggage_value));
     printf("extracted tenant=%s\n", otel_baggage_value_str(&baggage_value));
-    CHECK(otel_context_set_baggage(&extracted, "request.id", &request_id,
-                                   &with_baggage));
+    otel_trace_id_t remote_trace_id = OTEL_TRACE_ID_INIT;
+    otel_span_id_t remote_span_id = OTEL_SPAN_ID_INIT;
+    CHECK(otel_traceparent_trace_id(&remote_traceparent, &remote_trace_id));
+    CHECK(otel_traceparent_span_id(&remote_traceparent, &remote_span_id));
+    CHECK(otel_context_set_baggage_n(&extracted, OTEL_STR("request.id"),
+                                     &request_id, &with_baggage));
     CHECK(otel_context_inject(&with_baggage, &injected_traceparent, NULL, NULL));
     printf("injected traceparent=%s\n",
            otel_traceparent_str(&injected_traceparent));
@@ -222,22 +230,25 @@ int main(void) {
     CHECK(otel_tracer_span_start_with_options(
         &tracer, &options, &child, "kitchen-sink.remote-child",
         otel_attr_string("rpc.system", "http"), OTEL_ATTR_END));
-    CHECK(otel_span_update_name(&child, "kitchen-sink.remote-child.updated"));
+    CHECK(otel_span_update_name_n(&child,
+                                  OTEL_STR("kitchen-sink.remote-child.updated")));
     CHECK(otel_span_add_link(
-        &child, "4bf92f3577b34da6a3ce929d0e0e4736", "00f067aa0ba902b7",
-        otel_attr_string("link.kind", "parent"), OTEL_ATTR_END));
-    CHECK(otel_span_add_event_with_timestamp(
-        &child, "queued", options.start_time_unix_nano,
+        &child, remote_trace_id, remote_span_id,
+        otel_attr_string_n(OTEL_STR("link.kind"), OTEL_STR("parent")),
+        OTEL_ATTR_END));
+    CHECK(otel_span_add_event_with_timestamp_n(
+        &child, OTEL_STR("queued"), options.start_time_unix_nano,
         otel_attr_string("queue", "default"), OTEL_ATTR_END));
-    CHECK(otel_span_record_exception(&child, "ExampleError", "recovered", NULL,
-                                     OTEL_ATTR_END));
+    CHECK(otel_span_record_exception_n(&child, OTEL_STR("ExampleError"),
+                                       OTEL_STR("recovered"), OTEL_STR_NULL,
+                                       OTEL_ATTR_END));
     /* Deferred close: releasing the last handle ends and exports the span. */
     otel_span_release(&child);
 
     /* Traces: every attribute kind, events, status, and ID access. */
-    CHECK(otel_tracer_span_start(
-        &tracer, &span, "kitchen-sink.work",
-        otel_attr_string("component", "example"),
+    CHECK(otel_tracer_span_start_n(
+        &tracer, &span, OTEL_STR("kitchen-sink.work"),
+        otel_attr_string_n(OTEL_STR("component"), OTEL_STR("example")),
         otel_attr_client_address("example.org"),
         otel_attr_i64("attempt", 1), OTEL_ATTR_END));
     const otel_attribute_t *span_attributes[] = {
@@ -245,15 +256,20 @@ int main(void) {
         otel_attr_f64("weight", 1.25),
     };
     CHECK(otel_span_set_attributes_arr(&span, span_attributes, 2));
-    CHECK(otel_span_add_event(
-        &span, "validated", otel_attr_string("result", "ok"), OTEL_ATTR_END));
+    CHECK(otel_span_add_event_n(
+        &span, OTEL_STR("validated"),
+        otel_attr_string_n(OTEL_STR("result"), OTEL_STR("ok")),
+        OTEL_ATTR_END));
 
     otel_trace_id_t trace_id = OTEL_TRACE_ID_INIT;
     otel_span_id_t span_id = OTEL_SPAN_ID_INIT;
     CHECK(otel_span_trace_id(&span, &trace_id));
     CHECK(otel_span_span_id(&span, &span_id));
-    printf("trace_id=%s span_id=%s\n", otel_trace_id_str(&trace_id),
-           otel_span_id_str(&span_id));
+    char trace_id_hex[33];
+    char span_id_hex[17];
+    CHECK(otel_trace_id_to_str(&trace_id, trace_id_hex, sizeof(trace_id_hex)));
+    CHECK(otel_span_id_to_str(&span_id, span_id_hex, sizeof(span_id_hex)));
+    printf("trace_id=%s span_id=%s\n", trace_id_hex, span_id_hex);
 
     /* Retain the span so the original handle can be released early. */
     CHECK(otel_span_retain(&span, &span_copy));
@@ -277,22 +293,37 @@ int main(void) {
         &logger, &log_options, "structured warning",
         otel_attr_string("warning.kind", "demo"), OTEL_ATTR_END));
 
+    /* One convenience macro per severity; the terminator is implicit. */
+    CHECK(OTEL_LOG_TRACE(&logger, &span_copy, "trace message"));
+    CHECK(OTEL_LOG_DEBUG(&logger, &span_copy, "debug message",
+                         otel_attr_i64("severity.step", 5)));
+    CHECK(OTEL_LOG_INFO(&logger, &span_copy, "info message"));
+    CHECK(OTEL_LOG_WARN(&logger, &span_copy, "warn message"));
+    CHECK(OTEL_LOG_ERROR(&logger, &span_copy, "error message"));
+    CHECK(OTEL_LOG_FATAL(&logger, &span_copy, "fatal message"));
+    CHECK(OTEL_LOG_INFO_N(&logger, &span_copy, OTEL_STR("length-aware info"),
+                          otel_attr_string_n(OTEL_STR("phase"),
+                                             OTEL_STR("macro"))));
+
     /* Metrics: all five supported instruments. */
     CHECK(otel_meter_counter_u64(
         &meter, &counter_u64, "kitchen_sink.requests", "1", "Total requests"));
-    CHECK(otel_meter_counter_f64(
-        &meter, &counter_f64, "kitchen_sink.bytes", "By", "Bytes processed"));
-    CHECK(otel_meter_updown_counter_i64(
-        &meter, &updown, "kitchen_sink.queue_depth", NULL, NULL));
+    CHECK(otel_meter_counter_f64_n(&meter, &counter_f64,
+                                   OTEL_STR("kitchen_sink.bytes"), OTEL_STR("By"),
+                                   OTEL_STR("Bytes processed")));
+    CHECK(otel_meter_updown_counter_i64_n(&meter, &updown,
+                                          OTEL_STR("kitchen_sink.queue_depth"),
+                                          OTEL_STR_NULL, OTEL_STR_NULL));
     CHECK(otel_metric_http_server_request_duration(&meter, &histogram));
     CHECK(otel_meter_gauge_f64(
         &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
     CHECK(otel_meter_observable_gauge_f64(
         &meter, &observable_gauge, "kitchen_sink.observed_temperature", "Cel",
         "Observed temperature", observe_temperature, &observed_temperature));
-    CHECK(otel_meter_observable_counter_u64(
-        &meter, &observable_counter, "kitchen_sink.observed_requests", "1",
-        "Observed requests", observe_requests, &observed_requests));
+    CHECK(otel_meter_observable_counter_u64_n(
+        &meter, &observable_counter, OTEL_STR("kitchen_sink.observed_requests"),
+        OTEL_STR("1"), OTEL_STR("Observed requests"), observe_requests,
+        &observed_requests));
 
     const otel_attribute_t *method_attributes[] = {
         otel_attr_http_request_method("GET"),
@@ -303,7 +334,7 @@ int main(void) {
     CHECK(otel_histogram_f64_record(&histogram, 0.042, OTEL_ATTR_END));
     CHECK(otel_gauge_f64_record(&gauge, 21.5, OTEL_ATTR_END));
 
-    CHECK(otel_span_set_status(&span_copy, OTEL_SPAN_STATUS_OK, NULL));
+    CHECK(otel_span_set_status_n(&span_copy, OTEL_SPAN_STATUS_OK, OTEL_STR_NULL));
     CHECK(otel_span_end_with_timestamp(&span_copy,
                                        options.start_time_unix_nano + 2000000LL));
 

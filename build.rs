@@ -7,6 +7,14 @@ use std::process::Command;
 /// Convenience constructors for the C `otel_attribute_t` struct. cbindgen
 /// cannot parse macro-generated Rust functions, so these are appended here.
 const ATTRIBUTE_MACROS: &str = r#"
+/* Length-aware views. OTEL_STR uses literal sizes at compile time;
+ * OTEL_STR_VIEW measures a NUL-terminated string at runtime. */
+#define OTEL_STR(literal) \
+  ((otel_str_t){ (const char *)(literal), sizeof(literal) - 1 })
+#define OTEL_STR_VIEW(text) \
+  ((otel_str_t){ (const char *)(text), (text) ? strlen(text) : 0 })
+#define OTEL_STR_NULL ((otel_str_t){ NULL, 0 })
+
 /* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
  * function that takes variadic attributes, for example:
  *
@@ -14,23 +22,77 @@ const ATTRIBUTE_MACROS: &str = r#"
  *       otel_attr_string("endpoint", "/checkout"),
  *       otel_attr_i64("retries", 2),
  *       OTEL_ATTR_END);
+ *
+ * The _n forms take otel_str_t views, so keys and string values may contain
+ * embedded bytes and need not be NUL-terminated.
  */
-#define otel_attr_string(key, value) \
+#define otel_attr_string_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
-                       (const char *)(key), \
-                       { .string = (const char *)(value) } })
-#define otel_attr_bool(key, value) \
+                       (key).ptr, (key).len, \
+                       { .string = (value).ptr }, (value).len })
+#define otel_attr_bool_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
-                       (const char *)(key), \
-                       { .boolean = !!(value) } })
-#define otel_attr_i64(key, value) \
+                       (key).ptr, (key).len, \
+                       { .boolean = !!(value) }, 0 })
+#define otel_attr_i64_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
-                       (const char *)(key), \
-                       { .integer = (int64_t)(value) } })
-#define otel_attr_f64(key, value) \
+                       (key).ptr, (key).len, \
+                       { .integer = (int64_t)(value) }, 0 })
+#define otel_attr_f64_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
-                       (const char *)(key), \
-                       { .double_value = (double)(value) } })
+                       (key).ptr, (key).len, \
+                       { .double_value = (double)(value) }, 0 })
+#define otel_attr_string(key, value) \
+  otel_attr_string_n(OTEL_STR_VIEW(key), OTEL_STR_VIEW(value))
+#define otel_attr_bool(key, value) \
+  otel_attr_bool_n(OTEL_STR_VIEW(key), (value))
+#define otel_attr_i64(key, value) \
+  otel_attr_i64_n(OTEL_STR_VIEW(key), (value))
+#define otel_attr_f64(key, value) \
+  otel_attr_f64_n(OTEL_STR_VIEW(key), (value))
+"#;
+
+const LOG_MACROS: &str = r#"
+/* One helper per severity level. Each appends OTEL_ATTR_END automatically, so
+ * pass zero or more attribute builders as trailing arguments. The _N forms
+ * take an otel_str_t body, for example OTEL_STR("message") or OTEL_STR_VIEW(s).
+ */
+#define OTEL_LOG_TRACE(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_TRACE, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_DEBUG, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO(logger, span, body, ...)                                 \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_INFO, (body)                  \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN(logger, span, body, ...)                                 \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_WARN, (body)                  \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_ERROR, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_FATAL, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_TRACE_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_TRACE, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_DEBUG, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO_N(logger, span, body, ...)                               \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_INFO, (body)                \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN_N(logger, span, body, ...)                               \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_WARN, (body)                \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_ERROR, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_FATAL, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
 "#;
 
 const SEMCONV_MODULES: [&str; 4] = ["attribute", "metric", "resource", "trace"];
@@ -73,16 +135,16 @@ fn main() {
 }
 
 const TYPED_BUFFER_MACROS: &str = r#"
-/* Typed propagation buffer initializers. The *_STR forms are checked by the
- * compiler: a literal longer than the fixed storage is a hard error. */
-#define OTEL_TRACE_ID_INIT { { 0 } }
-#define OTEL_SPAN_ID_INIT { { 0 } }
+/* Initializers for typed IDs and fixed-size propagation buffers. The *_STR
+ * forms are checked by the compiler: a literal longer than the fixed storage
+ * is a hard error. Trace and span IDs are numeric, so use *_from_str at
+ * runtime to parse hex text. */
+#define OTEL_TRACE_ID_INIT { 0, 0 }
+#define OTEL_SPAN_ID_INIT { 0 }
 #define OTEL_TRACEPARENT_INIT { { 0 } }
 #define OTEL_TRACESTATE_INIT { { 0 } }
 #define OTEL_BAGGAGE_INIT { { 0 } }
 #define OTEL_BAGGAGE_VALUE_INIT { { 0 } }
-#define OTEL_TRACE_ID_INIT_STR(s) { { s } }
-#define OTEL_SPAN_ID_INIT_STR(s) { { s } }
 #define OTEL_TRACEPARENT_INIT_STR(s) { { s } }
 #define OTEL_TRACESTATE_INIT_STR(s) { { s } }
 #define OTEL_BAGGAGE_INIT_STR(s) { { s } }
@@ -125,7 +187,7 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
 
     let mut common_body = String::new();
     common_body.push_str("#include <stdarg.h>\n#include <stdbool.h>\n#include <stddef.h>\n");
-    common_body.push_str("#include <stdint.h>\n#include <stdlib.h>\n");
+    common_body.push_str("#include <stdint.h>\n#include <stdlib.h>\n#include <string.h>\n");
     common_body
         .push_str("#ifndef OTEL_API\n#  if defined(_WIN32) && defined(COTEL_BUILDING_DLL)\n");
     common_body.push_str("#    define OTEL_API __declspec(dllexport)\n#  elif defined(_WIN32)\n");
@@ -136,6 +198,7 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     common_body.push('\n');
     common_body.push_str(types);
     common_body.push_str(ATTRIBUTE_MACROS);
+    common_body.push_str(LOG_MACROS);
     common_body.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     common_body.push_str(&sentinel_macros(header));
     common_body.push_str(&handle_init_macros(header));

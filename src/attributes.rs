@@ -9,7 +9,8 @@ use std::ffi::{VaList, c_char, c_int};
 
 use opentelemetry::{Key, KeyValue, Value};
 
-use crate::error::{Error, Result, c_str, utf8};
+use crate::error::{Error, Result};
+use crate::strings::{otel_str_t, str_slice};
 
 /// Maximum number of attributes accepted by one call.
 pub(crate) const MAX_ATTRIBUTES: usize = 1024;
@@ -33,7 +34,7 @@ pub enum otel_attribute_type_t {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union otel_attribute_value_t {
-    /// Borrowed NUL-terminated UTF-8 string.
+    /// Borrowed UTF-8 string bytes; length is in `otel_attribute_t::value_len`.
     pub string: *const c_char,
     /// Boolean stored as zero or non-zero.
     pub boolean: c_int,
@@ -49,27 +50,47 @@ pub union otel_attribute_value_t {
 pub struct otel_attribute_t {
     /// Which member of `value` is active.
     pub kind: i32,
-    /// NUL-terminated UTF-8 attribute key. Must not be NULL.
+    /// UTF-8 attribute key bytes. Must not be NULL.
     pub key: *const c_char,
+    /// Number of bytes in `key`.
+    pub key_len: usize,
     /// Tagged value payload.
     pub value: otel_attribute_value_t,
+    /// Number of bytes in the string value, when `kind` is string.
+    pub value_len: usize,
 }
 
 impl otel_attribute_t {
     /// Converts one C attribute into an OpenTelemetry `KeyValue`.
     ///
     /// # Safety
-    /// `key` and the active string pointer must reference NUL-terminated
-    /// strings that remain valid for the duration of the call. `kind` must
-    /// name the union member that was initialized.
+    /// `key` and the active string pointer must reference `key_len` and
+    /// `value_len` readable bytes respectively, valid for the duration of the
+    /// call. `kind` must name the union member that was initialized.
     pub(crate) unsafe fn to_key_value(&self) -> Result<KeyValue> {
-        let key = unsafe { c_str(self.key, "attribute key") }?;
-        let key = Key::new(utf8(key, "attribute key")?);
+        let key = unsafe {
+            str_slice(
+                otel_str_t {
+                    ptr: self.key,
+                    len: self.key_len,
+                },
+                "attribute key",
+            )?
+        };
+        let key = Key::new(key.to_owned());
         let value = match self.kind {
             0 => {
                 // SAFETY: caller guarantees `string` is active and valid.
-                let raw = unsafe { c_str(self.value.string, "string attribute value") }?;
-                Value::String(utf8(raw, "string attribute value")?.into())
+                let text = unsafe {
+                    str_slice(
+                        otel_str_t {
+                            ptr: self.value.string,
+                            len: self.value_len,
+                        },
+                        "string attribute value",
+                    )?
+                };
+                Value::String(text.to_owned().into())
             }
             1 => {
                 // SAFETY: caller guarantees `boolean` is active.
@@ -156,9 +177,11 @@ mod tests {
         otel_attribute_t {
             kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
             key: key.as_ptr(),
+            key_len: key.to_bytes().len(),
             value: otel_attribute_value_t {
                 string: value.as_ptr(),
             },
+            value_len: value.to_bytes().len(),
         }
     }
 

@@ -16,6 +16,7 @@ pub mod metrics;
 pub mod propagation;
 pub mod resource;
 pub mod runtime;
+pub mod strings;
 pub mod trace;
 mod util;
 

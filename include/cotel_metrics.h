@@ -9,6 +9,73 @@ extern "C" {
 #endif
 
 /**
+ * Length-aware variant of [`otel_meter_counter_u64`].
+ */
+OTEL_API otel_result_t otel_meter_counter_u64_n(const otel_meter_t *meter,
+                                       otel_counter_u64_t *handle,
+                                       otel_str_t name,
+                                       otel_str_t unit,
+                                       otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_meter_counter_f64`].
+ */
+OTEL_API otel_result_t otel_meter_counter_f64_n(const otel_meter_t *meter,
+                                       otel_counter_f64_t *handle,
+                                       otel_str_t name,
+                                       otel_str_t unit,
+                                       otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_meter_updown_counter_i64`].
+ */
+OTEL_API otel_result_t otel_meter_updown_counter_i64_n(const otel_meter_t *meter,
+                                              otel_updown_counter_i64_t *handle,
+                                              otel_str_t name,
+                                              otel_str_t unit,
+                                              otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_meter_histogram_f64`].
+ */
+OTEL_API otel_result_t otel_meter_histogram_f64_n(const otel_meter_t *meter,
+                                         otel_histogram_f64_t *handle,
+                                         otel_str_t name,
+                                         otel_str_t unit,
+                                         otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_meter_gauge_f64`].
+ */
+OTEL_API otel_result_t otel_meter_gauge_f64_n(const otel_meter_t *meter,
+                                     otel_gauge_f64_t *handle,
+                                     otel_str_t name,
+                                     otel_str_t unit,
+                                     otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_meter_observable_gauge_f64`].
+ */
+OTEL_API otel_result_t otel_meter_observable_gauge_f64_n(const otel_meter_t *meter,
+                                                otel_observable_gauge_f64_t *handle,
+                                                otel_str_t name,
+                                                otel_str_t unit,
+                                                otel_str_t description,
+                                                otel_observable_f64_callback_t callback,
+                                                void *user_data);
+
+/**
+ * Length-aware variant of [`otel_meter_observable_counter_u64`].
+ */
+OTEL_API otel_result_t otel_meter_observable_counter_u64_n(const otel_meter_t *meter,
+                                                  otel_observable_counter_u64_t *handle,
+                                                  otel_str_t name,
+                                                  otel_str_t unit,
+                                                  otel_str_t description,
+                                                  otel_observable_u64_callback_t callback,
+                                                  void *user_data);
+
+/**
  * Creates a meter provider. `resource` and `runtime` may be NULL when the
  * selected exporter does not need them.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
@@ -33,6 +100,13 @@ OTEL_API otel_result_t otel_meter_provider_shutdown(const otel_meter_provider_t 
 OTEL_API otel_result_t otel_meter_provider_meter(const otel_meter_provider_t *provider,
                                         otel_meter_t *handle,
                                         const char *name);
+
+/**
+ * Length-aware variant of [`otel_meter_provider_meter`].
+ */
+OTEL_API otel_result_t otel_meter_provider_meter_n(const otel_meter_provider_t *provider,
+                                          otel_meter_t *handle,
+                                          otel_str_t name);
 
 /**
  * Creates an unsigned 64-bit counter. `unit` and `description` may be NULL.

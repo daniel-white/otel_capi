@@ -55,6 +55,7 @@ include = [
   "otel_trace_id_t",
   "otel_traceparent_t",
   "otel_tracestate_t",
+  "otel_str_t",
 ]
 item_types = ["enums", "unions", "structs", "typedefs", "functions", "constants"]
 

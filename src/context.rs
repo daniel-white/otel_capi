@@ -25,6 +25,7 @@ use crate::propagation::{
     buffer_utf8, copy_into_buffer, optional_buffer_utf8, otel_baggage_t, otel_baggage_value_t,
     otel_traceparent_t, otel_tracestate_t,
 };
+use crate::strings::{otel_str_t, owned_c_string};
 
 thread_local! {
     /// Guards must be dropped on the thread that attached them.
@@ -195,6 +196,37 @@ pub unsafe extern "C" fn otel_context_get_baggage(
             .ok_or_else(|| Error::invalid("baggage key is not present"))?;
         unsafe { copy_into_buffer(baggage_value.as_ref(), value) }
     })
+}
+
+/// Length-aware variant of [`otel_context_set_baggage`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_set_baggage_n(
+    context: *const otel_context_t,
+    key: otel_str_t,
+    value: *const otel_baggage_value_t,
+    handle: *mut otel_context_t,
+) -> otel_result_t {
+    let key = unsafe { owned_c_string(key, "baggage key") }
+        .and_then(|key| key.ok_or_else(|| Error::invalid("baggage key must not be NULL")));
+    match key {
+        Ok(key) => unsafe { otel_context_set_baggage(context, key.as_ptr(), value, handle) },
+        Err(err) => err.report(),
+    }
+}
+
+/// Length-aware variant of [`otel_context_get_baggage`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_get_baggage_n(
+    context: *const otel_context_t,
+    key: otel_str_t,
+    value: *mut otel_baggage_value_t,
+) -> otel_result_t {
+    let key = unsafe { owned_c_string(key, "baggage key") }
+        .and_then(|key| key.ok_or_else(|| Error::invalid("baggage key must not be NULL")));
+    match key {
+        Ok(key) => unsafe { otel_context_get_baggage(context, key.as_ptr(), value) },
+        Err(err) => err.report(),
+    }
 }
 
 /// Attaches `context` to the calling thread until `otel_context_detach`.

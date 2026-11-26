@@ -140,6 +140,23 @@ context is invalid after the callback returns. `user_data` is borrowed by the
 provider and must remain valid and thread-safe until the meter provider is
 shut down.
 
+### Length-aware strings
+
+`otel_str_t` is a borrowed `{ const char *ptr; size_t len; }` view. It removes
+the need for NUL termination and allows embedded bytes. Use `OTEL_STR("literal")`
+for string literals, `OTEL_STR_VIEW(text)` for a C string of unknown length, or
+`OTEL_STR_NULL` for omitted optional fields.
+
+APIs that take names, bodies, or descriptions also have `_n` variants that
+accept `otel_str_t`; for example `otel_tracer_span_start_n`,
+`otel_span_add_event_n`, `otel_logger_log_n`, and
+`otel_meter_counter_u64_n`. The `_n` attribute builders
+(`otel_attr_string_n`, `otel_attr_bool_n`, `otel_attr_i64_n`,
+`otel_attr_f64_n`) take length-aware key and value views. The original
+`const char *` functions remain available and now accept non-NUL-terminated
+attribute keys/values through the attribute struct's `key_len` and `value_len`
+fields.
+
 ### Structured logs
 
 `otel_logger_log_record` takes an `otel_log_record_options_t` initialized with
@@ -149,6 +166,18 @@ nanoseconds, and a span for trace correlation. Like `otel_logger_log`, it
 accepts variadic attributes terminated by `OTEL_ATTR_END`. Event names and
 severity text are interned for the process lifetime because the SDK requires
 `'static` strings for those fields.
+
+For simple messages, `OTEL_LOG_TRACE`, `OTEL_LOG_DEBUG`, `OTEL_LOG_INFO`,
+`OTEL_LOG_WARN`, `OTEL_LOG_ERROR`, and `OTEL_LOG_FATAL` bind the severity and
+append `OTEL_ATTR_END` for you:
+
+```c
+CHECK(OTEL_LOG_INFO(&logger, &span, "work complete",
+                    otel_attr_i64("items", 3)));
+```
+
+The `OTEL_LOG_*_N` variants take an `otel_str_t` body, for example
+`OTEL_LOG_INFO_N(&logger, &span, OTEL_STR("work complete"))`.
 
 ### Propagation and span options
 
@@ -166,8 +195,22 @@ Use `otel_context_extract` / `otel_context_inject` with those typed buffers,
 `otel_context_set_baggage` / `otel_context_get_baggage` to edit baggage values,
 and `otel_context_attach` / `otel_context_detach` to make a context current on
 a thread. `otel_context_from_span` builds a context from a live span.
-`otel_span_trace_id` and `otel_span_span_id` now write `otel_trace_id_t` and
-`otel_span_id_t` storage rather than caller-sized buffers.
+Trace and span IDs are numeric, not strings. `otel_trace_id_t` holds the 16-byte
+trace ID as two big-endian `uint64_t` fields (`hi` and `lo`), and
+`otel_span_id_t` holds the 8-byte span ID in a single `uint64_t`. This avoids
+non-standard `unsigned __int128` while keeping the full ID width portable.
+`otel_span_trace_id` / `otel_span_span_id` write those structs;
+`otel_trace_id_from_str` / `otel_span_id_from_str` parse 32/16 hex digits;
+`otel_trace_id_to_str` / `otel_span_id_to_str` format them back into a caller
+buffer. `otel_traceparent_trace_id` and `otel_traceparent_span_id` parse the IDs
+directly from a validated `otel_traceparent_t`. Links take the numeric IDs
+directly:
+
+```c
+CHECK(otel_span_add_link(&span, trace_id, span_id,
+                         otel_attr_string("link.kind", "parent"),
+                         OTEL_ATTR_END));
+```
 
 `otel_span_options_t` (initialize with `OTEL_SPAN_OPTIONS_INIT`) can set a
 parent context, span kind, start timestamp, and `end_on_release`. With

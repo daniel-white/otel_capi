@@ -35,6 +35,13 @@ OTEL_API otel_result_t otel_logger_provider_logger(const otel_logger_provider_t 
                                           const char *name);
 
 /**
+ * Length-aware variant of [`otel_logger_provider_logger`].
+ */
+OTEL_API otel_result_t otel_logger_provider_logger_n(const otel_logger_provider_t *provider,
+                                            otel_logger_t *handle,
+                                            otel_str_t name);
+
+/**
  * Emits a log record with optional attributes. `span` may be NULL; when set,
  * the record carries that span's trace and span IDs.
  */
@@ -71,6 +78,42 @@ OTEL_API otel_result_t otel_logger_log_record_arr(const otel_logger_t *logger,
                                          const char *body,
                                          const otel_attribute_t *const *attributes,
                                          size_t count);
+
+/**
+ * Length-aware variant of [`otel_logger_log`].
+ */
+OTEL_API otel_result_t otel_logger_log_n(const otel_logger_t *logger,
+                                const otel_span_t *span,
+                                int32_t level,
+                                otel_str_t body,
+                                ...);
+
+/**
+ * Length-aware variant of [`otel_logger_log_arr`].
+ */
+OTEL_API otel_result_t otel_logger_log_arr_n(const otel_logger_t *logger,
+                                    const otel_span_t *span,
+                                    int32_t level,
+                                    otel_str_t body,
+                                    const otel_attribute_t *const *attributes,
+                                    size_t count);
+
+/**
+ * Length-aware variant of [`otel_logger_log_record`].
+ */
+OTEL_API otel_result_t otel_logger_log_record_n(const otel_logger_t *logger,
+                                       const otel_log_record_options_t *options,
+                                       otel_str_t body,
+                                       ...);
+
+/**
+ * Length-aware variant of [`otel_logger_log_record_arr`].
+ */
+OTEL_API otel_result_t otel_logger_log_record_arr_n(const otel_logger_t *logger,
+                                           const otel_log_record_options_t *options,
+                                           otel_str_t body,
+                                           const otel_attribute_t *const *attributes,
+                                           size_t count);
 
 
 #ifdef __cplusplus

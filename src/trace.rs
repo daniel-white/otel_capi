@@ -30,46 +30,84 @@ use crate::handles::{
 use crate::handles::{
     otel_context_t, otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_tracer_t,
 };
-use crate::propagation::{TypedBuffer, buffer_str, copy_into_buffer};
-use crate::util::system_time;
+use crate::propagation::{buffer_utf8, otel_traceparent_t};
+use crate::strings::{optional_str_slice, otel_str_t, str_slice};
+use crate::util::{copy_to_buffer, system_time};
 
-/// 32-hex-digit trace ID plus a NUL terminator.
+/// A 16-byte OpenTelemetry trace ID, stored as two big-endian 64-bit words.
+///
+/// Two `uint64_t` fields are used instead of `unsigned __int128` so the ABI is
+/// portable across C compilers. `hi` holds the first eight bytes of the ID.
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq, Eq, Hash)]
 pub struct otel_trace_id_t {
-    pub value: [c_char; 33],
+    pub hi: u64,
+    pub lo: u64,
 }
 
-/// 16-hex-digit span ID plus a NUL terminator.
+/// An 8-byte OpenTelemetry span ID, stored as a big-endian `uint64_t`.
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default, PartialEq, Eq, Hash)]
 pub struct otel_span_id_t {
-    pub value: [c_char; 17],
+    pub value: u64,
 }
 
-impl TypedBuffer for otel_trace_id_t {
-    const NAME: &'static str = "trace ID";
-    const CAPACITY: usize = 33;
-
-    fn bytes(&self) -> &[c_char] {
-        &self.value
+impl otel_trace_id_t {
+    fn from_trace_id(id: TraceId) -> Self {
+        let bytes = id.to_bytes();
+        Self {
+            hi: u64::from_be_bytes(
+                bytes[..8]
+                    .try_into()
+                    .expect("trace ID has eight high bytes"),
+            ),
+            lo: u64::from_be_bytes(bytes[8..].try_into().expect("trace ID has eight low bytes")),
+        }
     }
 
-    fn bytes_mut(&mut self) -> &mut [c_char] {
-        &mut self.value
+    fn to_trace_id(self) -> TraceId {
+        let mut bytes = [0u8; 16];
+        bytes[..8].copy_from_slice(&self.hi.to_be_bytes());
+        bytes[8..].copy_from_slice(&self.lo.to_be_bytes());
+        TraceId::from_bytes(bytes)
+    }
+
+    fn from_hex(text: &str) -> Result<Self> {
+        if text.len() != 32 {
+            return Err(Error::invalid("trace ID must be 32 hex digits"));
+        }
+        let id = TraceId::from_hex(text)
+            .map_err(|_| Error::invalid("trace ID must be 32 hex digits"))?;
+        Ok(Self::from_trace_id(id))
+    }
+
+    fn to_hex(self) -> String {
+        format!("{:016x}{:016x}", self.hi, self.lo)
     }
 }
 
-impl TypedBuffer for otel_span_id_t {
-    const NAME: &'static str = "span ID";
-    const CAPACITY: usize = 17;
-
-    fn bytes(&self) -> &[c_char] {
-        &self.value
+impl otel_span_id_t {
+    fn from_span_id(id: SpanId) -> Self {
+        Self {
+            value: u64::from_be_bytes(id.to_bytes()),
+        }
     }
 
-    fn bytes_mut(&mut self) -> &mut [c_char] {
-        &mut self.value
+    fn to_span_id(self) -> SpanId {
+        SpanId::from_bytes(self.value.to_be_bytes())
+    }
+
+    fn from_hex(text: &str) -> Result<Self> {
+        if text.len() != 16 {
+            return Err(Error::invalid("span ID must be 16 hex digits"));
+        }
+        let id =
+            SpanId::from_hex(text).map_err(|_| Error::invalid("span ID must be 16 hex digits"))?;
+        Ok(Self::from_span_id(id))
+    }
+
+    fn to_hex(self) -> String {
+        format!("{:016x}", self.value)
     }
 }
 
@@ -150,11 +188,10 @@ unsafe fn start_span_with_attributes(
     tracer: *const otel_tracer_t,
     options: *const otel_span_options_t,
     handle: *mut otel_span_t,
-    name: *const c_char,
+    name: String,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
     let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
-    let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
     let (kind, start, parent, end_on_release) = unsafe { span_options(options)? };
     let mut builder = tracer.span_builder(name).with_attributes(attributes);
     if let Some(kind) = kind {
@@ -174,7 +211,7 @@ unsafe fn start_span(
     tracer: *const otel_tracer_t,
     options: *const otel_span_options_t,
     handle: *mut otel_span_t,
-    name: *const c_char,
+    name: String,
     args: VaList,
 ) -> Result<()> {
     let attributes = unsafe { from_varargs(args) }?;
@@ -185,7 +222,7 @@ unsafe fn start_span_arr(
     tracer: *const otel_tracer_t,
     options: *const otel_span_options_t,
     handle: *mut otel_span_t,
-    name: *const c_char,
+    name: String,
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> Result<()> {
@@ -371,6 +408,21 @@ pub unsafe extern "C" fn otel_tracer_provider_tracer(
     })
 }
 
+/// Length-aware variant of [`otel_tracer_provider_tracer`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_provider_tracer_n(
+    provider: *const otel_tracer_provider_t,
+    handle: *mut otel_tracer_t,
+    name: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
+        let name = unsafe { str_slice(name, "tracer name")? }.to_owned();
+        unsafe { init(slot(handle), provider.provider.tracer(name)) }?;
+        Ok(())
+    })
+}
+
 /// Starts a span with an optional `OTEL_ATTR_END`-terminated attribute list.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start(
@@ -379,7 +431,10 @@ pub unsafe extern "C" fn otel_tracer_span_start(
     name: *const c_char,
     attributes: ...
 ) -> otel_result_t {
-    guard(|| unsafe { start_span(tracer, ptr::null(), handle, name, attributes) })
+    guard(|| {
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        unsafe { start_span(tracer, ptr::null(), handle, name, attributes) }
+    })
 }
 
 /// Array-based variant of [`otel_tracer_span_start`].
@@ -391,7 +446,10 @@ pub unsafe extern "C" fn otel_tracer_span_start_arr(
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> otel_result_t {
-    guard(|| unsafe { start_span_arr(tracer, ptr::null(), handle, name, attributes, count) })
+    guard(|| {
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        unsafe { start_span_arr(tracer, ptr::null(), handle, name, attributes, count) }
+    })
 }
 
 /// Starts a span with an explicit parent, kind, and start timestamp.
@@ -403,7 +461,10 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options(
     name: *const c_char,
     attributes: ...
 ) -> otel_result_t {
-    guard(|| unsafe { start_span(tracer, options, handle, name, attributes) })
+    guard(|| {
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        unsafe { start_span(tracer, options, handle, name, attributes) }
+    })
 }
 
 /// Array-based variant of [`otel_tracer_span_start_with_options`].
@@ -416,7 +477,70 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr(
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> otel_result_t {
-    guard(|| unsafe { start_span_arr(tracer, options, handle, name, attributes, count) })
+    guard(|| {
+        let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        unsafe { start_span_arr(tracer, options, handle, name, attributes, count) }
+    })
+}
+
+/// Length-aware variant of [`otel_tracer_span_start`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_span_start_n(
+    tracer: *const otel_tracer_t,
+    handle: *mut otel_span_t,
+    name: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        unsafe { start_span(tracer, ptr::null(), handle, name, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_tracer_span_start_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_span_start_arr_n(
+    tracer: *const otel_tracer_t,
+    handle: *mut otel_span_t,
+    name: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        unsafe { start_span_arr(tracer, ptr::null(), handle, name, attributes, count) }
+    })
+}
+
+/// Length-aware variant of [`otel_tracer_span_start_with_options`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_span_start_with_options_n(
+    tracer: *const otel_tracer_t,
+    options: *const otel_span_options_t,
+    handle: *mut otel_span_t,
+    name: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        unsafe { start_span(tracer, options, handle, name, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_tracer_span_start_with_options_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr_n(
+    tracer: *const otel_tracer_t,
+    options: *const otel_span_options_t,
+    handle: *mut otel_span_t,
+    name: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        unsafe { start_span_arr(tracer, options, handle, name, attributes, count) }
+    })
 }
 
 unsafe fn set_span_attributes(span: *const otel_span_t, attributes: Vec<KeyValue>) -> Result<()> {
@@ -455,11 +579,10 @@ pub unsafe extern "C" fn otel_span_set_attributes_arr(
 
 unsafe fn add_span_event(
     span: *const otel_span_t,
-    name: *const c_char,
+    name: String,
     timestamp: Option<i64>,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
-    let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
     unsafe {
         with_span(span, |span| {
             match timestamp {
@@ -484,6 +607,7 @@ pub unsafe extern "C" fn otel_span_add_event(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_varargs(attributes) }?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
@@ -498,6 +622,7 @@ pub unsafe extern "C" fn otel_span_add_event_arr(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_array(attributes, count) }?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
@@ -545,6 +670,49 @@ pub unsafe extern "C" fn otel_span_update_name(
     })
 }
 
+/// Length-aware variant of [`otel_span_set_status`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_set_status_n(
+    span: *const otel_span_t,
+    status: i32,
+    description: otel_str_t,
+) -> otel_result_t {
+    guard(|| unsafe {
+        with_span(span, |span| {
+            let description = optional_str_slice(description, "status description")?
+                .unwrap_or_default()
+                .to_owned();
+            let status = match status {
+                0 => Status::Unset,
+                1 => Status::Ok,
+                2 => Status::Error {
+                    description: description.into(),
+                },
+                other => return Err(Error::invalid(format!("invalid span status {other}"))),
+            };
+            span.set_status(status);
+            Ok(())
+        })
+    })
+}
+
+/// Length-aware variant of [`otel_span_update_name`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_update_name_n(
+    span: *const otel_span_t,
+    name: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        unsafe {
+            with_span(span, |span| {
+                span.update_name(name);
+                Ok(())
+            })
+        }
+    })
+}
+
 /// Adds an event with an explicit Unix timestamp in nanoseconds.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
@@ -555,6 +723,7 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_varargs(attributes) }?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
@@ -570,31 +739,80 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_array(attributes, count) }?;
+        let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_add_event`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_event_n(
+    span: *const otel_span_t,
+    name: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_varargs(attributes) }?;
+        let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        unsafe { add_span_event(span, name, None, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_add_event_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_event_arr_n(
+    span: *const otel_span_t,
+    name: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_array(attributes, count) }?;
+        let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        unsafe { add_span_event(span, name, None, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_add_event_with_timestamp`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_event_with_timestamp_n(
+    span: *const otel_span_t,
+    name: otel_str_t,
+    timestamp_unix_nano: i64,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_varargs(attributes) }?;
+        let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_add_event_with_timestamp_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr_n(
+    span: *const otel_span_t,
+    name: otel_str_t,
+    timestamp_unix_nano: i64,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_array(attributes, count) }?;
+        let name = unsafe { str_slice(name, "event name")? }.to_owned();
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
 
 unsafe fn add_span_link(
     span: *const otel_span_t,
-    trace_id_hex: *const c_char,
-    span_id_hex: *const c_char,
+    trace_id: otel_trace_id_t,
+    span_id: otel_span_id_t,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
-    let trace_id = utf8(
-        unsafe { c_str(trace_id_hex, "link trace ID")? },
-        "link trace ID",
-    )?;
-    let span_id = utf8(
-        unsafe { c_str(span_id_hex, "link span ID")? },
-        "link span ID",
-    )?;
-    let trace_id = TraceId::from_hex(&trace_id)
-        .map_err(|_| Error::invalid("link trace ID must be 32 hex digits"))?;
-    let span_id = SpanId::from_hex(&span_id)
-        .map_err(|_| Error::invalid("link span ID must be 16 hex digits"))?;
     let context = SpanContext::new(
-        trace_id,
-        span_id,
+        trace_id.to_trace_id(),
+        span_id.to_span_id(),
         TraceFlags::SAMPLED,
         false,
         TraceState::NONE,
@@ -610,17 +828,17 @@ unsafe fn add_span_link(
     }
 }
 
-/// Adds a link to a span using hex-encoded trace and span IDs.
+/// Adds a link to a span using numeric trace and span IDs.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link(
     span: *const otel_span_t,
-    trace_id_hex: *const c_char,
-    span_id_hex: *const c_char,
+    trace_id: otel_trace_id_t,
+    span_id: otel_span_id_t,
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_varargs(attributes) }?;
-        unsafe { add_span_link(span, trace_id_hex, span_id_hex, attributes) }
+        unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
 
@@ -628,32 +846,31 @@ pub unsafe extern "C" fn otel_span_add_link(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link_arr(
     span: *const otel_span_t,
-    trace_id_hex: *const c_char,
-    span_id_hex: *const c_char,
+    trace_id: otel_trace_id_t,
+    span_id: otel_span_id_t,
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_array(attributes, count) }?;
-        unsafe { add_span_link(span, trace_id_hex, span_id_hex, attributes) }
+        unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
 
 unsafe fn record_span_exception(
     span: *const otel_span_t,
-    exception_type: *const c_char,
-    message: *const c_char,
-    stacktrace: *const c_char,
+    exception_type: Option<String>,
+    message: Option<String>,
+    stacktrace: Option<String>,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
     let mut values = attributes;
-    for (key, pointer) in [
+    for (key, value) in [
         ("exception.type", exception_type),
         ("exception.message", message),
         ("exception.stacktrace", stacktrace),
     ] {
-        if !pointer.is_null() {
-            let value = utf8(unsafe { c_str(pointer, key)? }, key)?;
+        if let Some(value) = value {
             values.push(KeyValue::new(key, value));
         }
     }
@@ -676,6 +893,9 @@ pub unsafe extern "C" fn otel_span_record_exception(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_varargs(attributes) }?;
+        let exception_type = unsafe { optional_utf8(exception_type, "exception type")? };
+        let message = unsafe { optional_utf8(message, "exception message")? };
+        let stacktrace = unsafe { optional_utf8(stacktrace, "exception stacktrace")? };
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
@@ -692,6 +912,52 @@ pub unsafe extern "C" fn otel_span_record_exception_arr(
 ) -> otel_result_t {
     guard(|| {
         let attributes = unsafe { from_array(attributes, count) }?;
+        let exception_type = unsafe { optional_utf8(exception_type, "exception type")? };
+        let message = unsafe { optional_utf8(message, "exception message")? };
+        let stacktrace = unsafe { optional_utf8(stacktrace, "exception stacktrace")? };
+        unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_record_exception`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_record_exception_n(
+    span: *const otel_span_t,
+    exception_type: otel_str_t,
+    message: otel_str_t,
+    stacktrace: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_varargs(attributes) }?;
+        let exception_type =
+            unsafe { optional_str_slice(exception_type, "exception type")? }.map(str::to_owned);
+        let message =
+            unsafe { optional_str_slice(message, "exception message")? }.map(str::to_owned);
+        let stacktrace =
+            unsafe { optional_str_slice(stacktrace, "exception stacktrace")? }.map(str::to_owned);
+        unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_span_record_exception_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_record_exception_arr_n(
+    span: *const otel_span_t,
+    exception_type: otel_str_t,
+    message: otel_str_t,
+    stacktrace: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let attributes = unsafe { from_array(attributes, count) }?;
+        let exception_type =
+            unsafe { optional_str_slice(exception_type, "exception type")? }.map(str::to_owned);
+        let message =
+            unsafe { optional_str_slice(message, "exception message")? }.map(str::to_owned);
+        let stacktrace =
+            unsafe { optional_str_slice(stacktrace, "exception stacktrace")? }.map(str::to_owned);
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
@@ -732,13 +998,16 @@ pub unsafe extern "C" fn otel_span_end(span: *const otel_span_t) -> otel_result_
     })
 }
 
-/// Copies the 32-hex-digit trace ID into typed storage.
+/// Copies a span's 128-bit trace ID into numeric storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_trace_id(
     span: *const otel_span_t,
     out: *mut otel_trace_id_t,
 ) -> otel_result_t {
     guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("trace ID output must not be NULL"));
+        }
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let guard = inner
             .lock()
@@ -746,18 +1015,21 @@ pub unsafe extern "C" fn otel_span_trace_id(
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
-        let id = span.span_context().trace_id().to_string();
-        unsafe { copy_into_buffer(&id, out) }
+        unsafe { *out = otel_trace_id_t::from_trace_id(span.span_context().trace_id()) };
+        Ok(())
     })
 }
 
-/// Copies the 16-hex-digit span ID into typed storage.
+/// Copies a span's 64-bit span ID into numeric storage.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_span_id(
     span: *const otel_span_t,
     out: *mut otel_span_id_t,
 ) -> otel_result_t {
     guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("span ID output must not be NULL"));
+        }
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let guard = inner
             .lock()
@@ -765,21 +1037,107 @@ pub unsafe extern "C" fn otel_span_span_id(
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
-        let id = span.span_context().span_id().to_string();
-        unsafe { copy_into_buffer(&id, out) }
+        unsafe { *out = otel_span_id_t::from_span_id(span.span_context().span_id()) };
+        Ok(())
     })
 }
 
-/// Returns the stored trace ID, or NULL if it is not terminated.
+/// Parses 32 hex digits into a numeric trace ID.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_trace_id_str(value: *const otel_trace_id_t) -> *const c_char {
-    unsafe { buffer_str(value) }
+pub unsafe extern "C" fn otel_trace_id_from_str(
+    src: *const c_char,
+    out: *mut otel_trace_id_t,
+) -> otel_result_t {
+    guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("trace ID output must not be NULL"));
+        }
+        let text = utf8(unsafe { c_str(src, "trace ID")? }, "trace ID")?;
+        unsafe { *out = otel_trace_id_t::from_hex(&text)? };
+        Ok(())
+    })
 }
 
-/// Returns the stored span ID, or NULL if it is not terminated.
+/// Parses 16 hex digits into a numeric span ID.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_span_id_str(value: *const otel_span_id_t) -> *const c_char {
-    unsafe { buffer_str(value) }
+pub unsafe extern "C" fn otel_span_id_from_str(
+    src: *const c_char,
+    out: *mut otel_span_id_t,
+) -> otel_result_t {
+    guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("span ID output must not be NULL"));
+        }
+        let text = utf8(unsafe { c_str(src, "span ID")? }, "span ID")?;
+        unsafe { *out = otel_span_id_t::from_hex(&text)? };
+        Ok(())
+    })
+}
+
+/// Formats a trace ID as 32 lowercase hex digits plus a NUL terminator.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_trace_id_to_str(
+    value: *const otel_trace_id_t,
+    out: *mut c_char,
+    capacity: usize,
+) -> otel_result_t {
+    guard(|| {
+        if value.is_null() {
+            return Err(Error::invalid("trace ID must not be NULL"));
+        }
+        // SAFETY: the caller guarantees `value` points to a live trace ID.
+        let text = unsafe { &*value }.to_hex();
+        copy_to_buffer(&text, out, capacity)
+    })
+}
+
+/// Formats a span ID as 16 lowercase hex digits plus a NUL terminator.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_id_to_str(
+    value: *const otel_span_id_t,
+    out: *mut c_char,
+    capacity: usize,
+) -> otel_result_t {
+    guard(|| {
+        if value.is_null() {
+            return Err(Error::invalid("span ID must not be NULL"));
+        }
+        // SAFETY: the caller guarantees `value` points to a live span ID.
+        let text = unsafe { &*value }.to_hex();
+        copy_to_buffer(&text, out, capacity)
+    })
+}
+
+/// Extracts the trace ID from a validated W3C `traceparent` header.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_traceparent_trace_id(
+    parent: *const otel_traceparent_t,
+    out: *mut otel_trace_id_t,
+) -> otel_result_t {
+    guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("trace ID output must not be NULL"));
+        }
+        let text = unsafe { buffer_utf8(parent)? };
+        unsafe { *out = otel_trace_id_t::from_hex(&text[3..35])? };
+        Ok(())
+    })
+}
+
+/// Extracts the span ID from a validated W3C `traceparent` header.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_traceparent_span_id(
+    parent: *const otel_traceparent_t,
+    out: *mut otel_span_id_t,
+) -> otel_result_t {
+    guard(|| {
+        if out.is_null() {
+            return Err(Error::invalid("span ID output must not be NULL"));
+        }
+        let text = unsafe { buffer_utf8(parent)? };
+        unsafe { *out = otel_span_id_t::from_hex(&text[36..52])? };
+        Ok(())
+    })
 }
 
 #[cfg(test)]
@@ -871,5 +1229,15 @@ mod tests {
             otel_tracer_provider_release(&mut provider);
             env::remove_var("OTEL_TRACES_EXPORTER");
         }
+    }
+
+    #[test]
+    fn numeric_ids_round_trip_hex() {
+        let trace = otel_trace_id_t::from_hex("4bf92f3577b34da6a3ce929d0e0e4736").unwrap();
+        assert_eq!(trace.to_hex(), "4bf92f3577b34da6a3ce929d0e0e4736");
+        let span = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
+        assert_eq!(span.to_hex(), "00f067aa0ba902b7");
+        assert!(otel_trace_id_t::from_hex("42").is_err());
+        assert!(otel_span_id_t::from_hex("42").is_err());
     }
 }

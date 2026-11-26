@@ -36,6 +36,13 @@ OTEL_API otel_result_t otel_tracer_provider_tracer(const otel_tracer_provider_t 
                                           const char *name);
 
 /**
+ * Length-aware variant of [`otel_tracer_provider_tracer`].
+ */
+OTEL_API otel_result_t otel_tracer_provider_tracer_n(const otel_tracer_provider_t *provider,
+                                            otel_tracer_t *handle,
+                                            otel_str_t name);
+
+/**
  * Starts a span with an optional `OTEL_ATTR_END`-terminated attribute list.
  */
 OTEL_API otel_result_t otel_tracer_span_start(const otel_tracer_t *tracer,
@@ -70,6 +77,42 @@ OTEL_API otel_result_t otel_tracer_span_start_with_options_arr(const otel_tracer
                                                       const char *name,
                                                       const otel_attribute_t *const *attributes,
                                                       size_t count);
+
+/**
+ * Length-aware variant of [`otel_tracer_span_start`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_n(const otel_tracer_t *tracer,
+                                       otel_span_t *handle,
+                                       otel_str_t name,
+                                       ...);
+
+/**
+ * Length-aware variant of [`otel_tracer_span_start_arr`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_arr_n(const otel_tracer_t *tracer,
+                                           otel_span_t *handle,
+                                           otel_str_t name,
+                                           const otel_attribute_t *const *attributes,
+                                           size_t count);
+
+/**
+ * Length-aware variant of [`otel_tracer_span_start_with_options`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_with_options_n(const otel_tracer_t *tracer,
+                                                    const otel_span_options_t *options,
+                                                    otel_span_t *handle,
+                                                    otel_str_t name,
+                                                    ...);
+
+/**
+ * Length-aware variant of [`otel_tracer_span_start_with_options_arr`].
+ */
+OTEL_API otel_result_t otel_tracer_span_start_with_options_arr_n(const otel_tracer_t *tracer,
+                                                        const otel_span_options_t *options,
+                                                        otel_span_t *handle,
+                                                        otel_str_t name,
+                                                        const otel_attribute_t *const *attributes,
+                                                        size_t count);
 
 /**
  * Adds attributes to a started span.
@@ -109,6 +152,18 @@ OTEL_API otel_result_t otel_span_set_status(const otel_span_t *span,
 OTEL_API otel_result_t otel_span_update_name(const otel_span_t *span, const char *name);
 
 /**
+ * Length-aware variant of [`otel_span_set_status`].
+ */
+OTEL_API otel_result_t otel_span_set_status_n(const otel_span_t *span,
+                                     int32_t status,
+                                     otel_str_t description);
+
+/**
+ * Length-aware variant of [`otel_span_update_name`].
+ */
+OTEL_API otel_result_t otel_span_update_name_n(const otel_span_t *span, otel_str_t name);
+
+/**
  * Adds an event with an explicit Unix timestamp in nanoseconds.
  */
 OTEL_API otel_result_t otel_span_add_event_with_timestamp(const otel_span_t *span,
@@ -126,19 +181,49 @@ OTEL_API otel_result_t otel_span_add_event_with_timestamp_arr(const otel_span_t 
                                                      size_t count);
 
 /**
- * Adds a link to a span using hex-encoded trace and span IDs.
+ * Length-aware variant of [`otel_span_add_event`].
+ */
+OTEL_API otel_result_t otel_span_add_event_n(const otel_span_t *span, otel_str_t name, ...);
+
+/**
+ * Length-aware variant of [`otel_span_add_event_arr`].
+ */
+OTEL_API otel_result_t otel_span_add_event_arr_n(const otel_span_t *span,
+                                        otel_str_t name,
+                                        const otel_attribute_t *const *attributes,
+                                        size_t count);
+
+/**
+ * Length-aware variant of [`otel_span_add_event_with_timestamp`].
+ */
+OTEL_API otel_result_t otel_span_add_event_with_timestamp_n(const otel_span_t *span,
+                                                   otel_str_t name,
+                                                   int64_t timestamp_unix_nano,
+                                                   ...);
+
+/**
+ * Length-aware variant of [`otel_span_add_event_with_timestamp_arr`].
+ */
+OTEL_API otel_result_t otel_span_add_event_with_timestamp_arr_n(const otel_span_t *span,
+                                                       otel_str_t name,
+                                                       int64_t timestamp_unix_nano,
+                                                       const otel_attribute_t *const *attributes,
+                                                       size_t count);
+
+/**
+ * Adds a link to a span using numeric trace and span IDs.
  */
 OTEL_API otel_result_t otel_span_add_link(const otel_span_t *span,
-                                 const char *trace_id_hex,
-                                 const char *span_id_hex,
+                                 otel_trace_id_t trace_id,
+                                 otel_span_id_t span_id,
                                  ...);
 
 /**
  * Array-based variant of [`otel_span_add_link`].
  */
 OTEL_API otel_result_t otel_span_add_link_arr(const otel_span_t *span,
-                                     const char *trace_id_hex,
-                                     const char *span_id_hex,
+                                     otel_trace_id_t trace_id,
+                                     otel_span_id_t span_id,
                                      const otel_attribute_t *const *attributes,
                                      size_t count);
 
@@ -162,6 +247,25 @@ OTEL_API otel_result_t otel_span_record_exception_arr(const otel_span_t *span,
                                              size_t count);
 
 /**
+ * Length-aware variant of [`otel_span_record_exception`].
+ */
+OTEL_API otel_result_t otel_span_record_exception_n(const otel_span_t *span,
+                                           otel_str_t exception_type,
+                                           otel_str_t message,
+                                           otel_str_t stacktrace,
+                                           ...);
+
+/**
+ * Length-aware variant of [`otel_span_record_exception_arr`].
+ */
+OTEL_API otel_result_t otel_span_record_exception_arr_n(const otel_span_t *span,
+                                               otel_str_t exception_type,
+                                               otel_str_t message,
+                                               otel_str_t stacktrace,
+                                               const otel_attribute_t *const *attributes,
+                                               size_t count);
+
+/**
  * Ends a span at an explicit Unix timestamp in nanoseconds.
  */
 OTEL_API otel_result_t otel_span_end_with_timestamp(const otel_span_t *span, int64_t timestamp_unix_nano);
@@ -172,24 +276,34 @@ OTEL_API otel_result_t otel_span_end_with_timestamp(const otel_span_t *span, int
 OTEL_API otel_result_t otel_span_end(const otel_span_t *span);
 
 /**
- * Copies the 32-hex-digit trace ID into typed storage.
+ * Copies a span's 128-bit trace ID into numeric storage.
  */
 OTEL_API otel_result_t otel_span_trace_id(const otel_span_t *span, otel_trace_id_t *out);
 
 /**
- * Copies the 16-hex-digit span ID into typed storage.
+ * Copies a span's 64-bit span ID into numeric storage.
  */
 OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, otel_span_id_t *out);
 
 /**
- * Returns the stored trace ID, or NULL if it is not terminated.
+ * Parses 32 hex digits into a numeric trace ID.
  */
-OTEL_API const char *otel_trace_id_str(const otel_trace_id_t *value);
+OTEL_API otel_result_t otel_trace_id_from_str(const char *src, otel_trace_id_t *out);
 
 /**
- * Returns the stored span ID, or NULL if it is not terminated.
+ * Parses 16 hex digits into a numeric span ID.
  */
-OTEL_API const char *otel_span_id_str(const otel_span_id_t *value);
+OTEL_API otel_result_t otel_span_id_from_str(const char *src, otel_span_id_t *out);
+
+/**
+ * Formats a trace ID as 32 lowercase hex digits plus a NUL terminator.
+ */
+OTEL_API otel_result_t otel_trace_id_to_str(const otel_trace_id_t *value, char *out, size_t capacity);
+
+/**
+ * Formats a span ID as 16 lowercase hex digits plus a NUL terminator.
+ */
+OTEL_API otel_result_t otel_span_id_to_str(const otel_span_id_t *value, char *out, size_t capacity);
 
 
 #ifdef __cplusplus

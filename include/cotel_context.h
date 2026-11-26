@@ -58,6 +58,21 @@ OTEL_API otel_result_t otel_context_get_baggage(const otel_context_t *context,
                                        otel_baggage_value_t *value);
 
 /**
+ * Length-aware variant of [`otel_context_set_baggage`].
+ */
+OTEL_API otel_result_t otel_context_set_baggage_n(const otel_context_t *context,
+                                         otel_str_t key,
+                                         const otel_baggage_value_t *value,
+                                         otel_context_t *handle);
+
+/**
+ * Length-aware variant of [`otel_context_get_baggage`].
+ */
+OTEL_API otel_result_t otel_context_get_baggage_n(const otel_context_t *context,
+                                         otel_str_t key,
+                                         otel_baggage_value_t *value);
+
+/**
  * Attaches `context` to the calling thread until `otel_context_detach`.
  */
 OTEL_API otel_result_t otel_context_attach(const otel_context_t *context, otel_context_scope_t *handle);
@@ -106,6 +121,16 @@ OTEL_API const char *otel_baggage_str(const otel_baggage_t *value);
  * Returns the stored baggage value, or NULL if it is not terminated.
  */
 OTEL_API const char *otel_baggage_value_str(const otel_baggage_value_t *value);
+
+/**
+ * Extracts the trace ID from a validated W3C `traceparent` header.
+ */
+OTEL_API otel_result_t otel_traceparent_trace_id(const otel_traceparent_t *parent, otel_trace_id_t *out);
+
+/**
+ * Extracts the span ID from a validated W3C `traceparent` header.
+ */
+OTEL_API otel_result_t otel_traceparent_span_id(const otel_traceparent_t *parent, otel_span_id_t *out);
 
 
 #ifdef __cplusplus

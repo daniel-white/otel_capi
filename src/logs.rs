@@ -23,6 +23,7 @@ use crate::handles::{
     optional_runtime, slot,
 };
 use crate::handles::{otel_logger_provider_t, otel_logger_t, otel_runtime_t, otel_span_t};
+use crate::strings::{otel_str_t, str_slice};
 use crate::util::system_time;
 
 /// Log severity exported to C. Values match the OpenTelemetry severity scale.
@@ -84,7 +85,7 @@ fn interned(text: String) -> &'static str {
 unsafe fn emit_log_with_attributes(
     logger: *const otel_logger_t,
     options: *const otel_log_record_options_t,
-    body: *const c_char,
+    body: String,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
     if options.is_null() {
@@ -97,7 +98,6 @@ unsafe fn emit_log_with_attributes(
         ));
     }
     let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
-    let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
     let (number, default_text) = severity(options.level)?;
     let timestamp = system_time(options.timestamp_unix_nano)?;
     let observed = system_time(options.observed_timestamp_unix_nano)?;
@@ -141,7 +141,7 @@ unsafe fn emit_log_with_attributes(
 unsafe fn emit_log(
     logger: *const otel_logger_t,
     options: *const otel_log_record_options_t,
-    body: *const c_char,
+    body: String,
     args: VaList,
 ) -> Result<()> {
     let attributes = unsafe { from_varargs(args) }?;
@@ -151,7 +151,7 @@ unsafe fn emit_log(
 unsafe fn emit_log_arr(
     logger: *const otel_logger_t,
     options: *const otel_log_record_options_t,
-    body: *const c_char,
+    body: String,
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> Result<()> {
@@ -290,6 +290,23 @@ pub unsafe extern "C" fn otel_logger_provider_logger(
     })
 }
 
+/// Length-aware variant of [`otel_logger_provider_logger`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_provider_logger_n(
+    provider: *const otel_logger_provider_t,
+    handle: *mut otel_logger_t,
+    name: otel_str_t,
+) -> otel_result_t {
+    guard(|| {
+        let provider = unsafe { arc::<LoggerProviderInner>(const_slot(provider)) }?;
+        let name = unsafe { str_slice(name, "logger name")? }.to_owned();
+        // The scope name is retained by the provider for its lifetime.
+        let name: &'static str = Box::leak(name.into_boxed_str());
+        unsafe { init(slot(handle), provider.provider.logger(name)) }?;
+        Ok(())
+    })
+}
+
 /// Emits a log record with optional attributes. `span` may be NULL; when set,
 /// the record carries that span's trace and span IDs.
 #[unsafe(no_mangle)]
@@ -311,6 +328,7 @@ pub unsafe extern "C" fn otel_logger_log(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
         unsafe { emit_log(logger, &options, body, attributes) }
     })
 }
@@ -336,6 +354,7 @@ pub unsafe extern "C" fn otel_logger_log_arr(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
         unsafe { emit_log_arr(logger, &options, body, attributes, count) }
     })
 }
@@ -349,7 +368,10 @@ pub unsafe extern "C" fn otel_logger_log_record(
     body: *const c_char,
     attributes: ...
 ) -> otel_result_t {
-    guard(|| unsafe { emit_log(logger, options, body, attributes) })
+    guard(|| {
+        let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        unsafe { emit_log(logger, options, body, attributes) }
+    })
 }
 
 /// Array-based variant of [`otel_logger_log_record`].
@@ -361,7 +383,90 @@ pub unsafe extern "C" fn otel_logger_log_record_arr(
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> otel_result_t {
-    guard(|| unsafe { emit_log_arr(logger, options, body, attributes, count) })
+    guard(|| {
+        let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        unsafe { emit_log_arr(logger, options, body, attributes, count) }
+    })
+}
+
+/// Length-aware variant of [`otel_logger_log`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_n(
+    logger: *const otel_logger_t,
+    span: *const otel_span_t,
+    level: i32,
+    body: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let options = otel_log_record_options_t {
+            size: std::mem::size_of::<otel_log_record_options_t>(),
+            level,
+            event_name: std::ptr::null(),
+            target: std::ptr::null(),
+            severity_text: std::ptr::null(),
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            span,
+        };
+        let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        unsafe { emit_log(logger, &options, body, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_logger_log_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_arr_n(
+    logger: *const otel_logger_t,
+    span: *const otel_span_t,
+    level: i32,
+    body: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let options = otel_log_record_options_t {
+            size: std::mem::size_of::<otel_log_record_options_t>(),
+            level,
+            event_name: std::ptr::null(),
+            target: std::ptr::null(),
+            severity_text: std::ptr::null(),
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            span,
+        };
+        let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        unsafe { emit_log_arr(logger, &options, body, attributes, count) }
+    })
+}
+
+/// Length-aware variant of [`otel_logger_log_record`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_record_n(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: otel_str_t,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        unsafe { emit_log(logger, options, body, attributes) }
+    })
+}
+
+/// Length-aware variant of [`otel_logger_log_record_arr`].
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_record_arr_n(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: otel_str_t,
+    attributes: *const *const otel_attribute_t,
+    count: usize,
+) -> otel_result_t {
+    guard(|| {
+        let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        unsafe { emit_log_arr(logger, options, body, attributes, count) }
+    })
 }
 
 #[cfg(test)]
@@ -412,9 +517,11 @@ mod tests {
             let attribute = otel_attribute_t {
                 kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
                 key: key.as_ptr(),
+                key_len: key.to_bytes().len(),
                 value: otel_attribute_value_t {
                     string: value.as_ptr(),
                 },
+                value_len: value.to_bytes().len(),
             };
             let options = otel_log_record_options_t {
                 size: std::mem::size_of::<otel_log_record_options_t>(),

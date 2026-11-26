@@ -11,6 +11,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #ifndef OTEL_API
 #  if defined(_WIN32) && defined(COTEL_BUILDING_DLL)
 #    define OTEL_API __declspec(dllexport)
@@ -179,6 +180,15 @@ typedef struct {
 } otel_baggage_value_t;
 
 /**
+ * A borrowed UTF-8 byte range. Unlike `const char *`, this does not require a
+ * NUL terminator and can therefore represent embedded bytes safely.
+ */
+typedef struct {
+  const char *ptr;
+  size_t len;
+} otel_str_t;
+
+/**
  * Scope token for a context attached to the current thread.
  */
 typedef struct {
@@ -343,7 +353,7 @@ typedef struct {
  */
 typedef union {
   /**
-   * Borrowed NUL-terminated UTF-8 string.
+   * Borrowed UTF-8 string bytes; length is in `otel_attribute_t::value_len`.
    */
   const char *string;
   /**
@@ -369,13 +379,21 @@ typedef struct {
    */
   int32_t kind;
   /**
-   * NUL-terminated UTF-8 attribute key. Must not be NULL.
+   * UTF-8 attribute key bytes. Must not be NULL.
    */
   const char *key;
+  /**
+   * Number of bytes in `key`.
+   */
+  size_t key_len;
   /**
    * Tagged value payload.
    */
   otel_attribute_value_t value;
+  /**
+   * Number of bytes in the string value, when `kind` is string.
+   */
+  size_t value_len;
 } otel_attribute_t;
 
 /**
@@ -459,19 +477,31 @@ typedef struct {
 } otel_span_options_t;
 
 /**
- * 32-hex-digit trace ID plus a NUL terminator.
+ * A 16-byte OpenTelemetry trace ID, stored as two big-endian 64-bit words.
+ *
+ * Two `uint64_t` fields are used instead of `unsigned __int128` so the ABI is
+ * portable across C compilers. `hi` holds the first eight bytes of the ID.
  */
 typedef struct {
-  char value[33];
+  uint64_t hi;
+  uint64_t lo;
 } otel_trace_id_t;
 
 /**
- * 16-hex-digit span ID plus a NUL terminator.
+ * An 8-byte OpenTelemetry span ID, stored as a big-endian `uint64_t`.
  */
 typedef struct {
-  char value[17];
+  uint64_t value;
 } otel_span_id_t;
 
+
+/* Length-aware views. OTEL_STR uses literal sizes at compile time;
+ * OTEL_STR_VIEW measures a NUL-terminated string at runtime. */
+#define OTEL_STR(literal) \
+  ((otel_str_t){ (const char *)(literal), sizeof(literal) - 1 })
+#define OTEL_STR_VIEW(text) \
+  ((otel_str_t){ (const char *)(text), (text) ? strlen(text) : 0 })
+#define OTEL_STR_NULL ((otel_str_t){ NULL, 0 })
 
 /* Attribute builders. Pass an OTEL_ATTR_END-terminated list of these to any
  * function that takes variadic attributes, for example:
@@ -480,23 +510,75 @@ typedef struct {
  *       otel_attr_string("endpoint", "/checkout"),
  *       otel_attr_i64("retries", 2),
  *       OTEL_ATTR_END);
+ *
+ * The _n forms take otel_str_t views, so keys and string values may contain
+ * embedded bytes and need not be NUL-terminated.
  */
-#define otel_attr_string(key, value) \
+#define otel_attr_string_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
-                       (const char *)(key), \
-                       { .string = (const char *)(value) } })
-#define otel_attr_bool(key, value) \
+                       (key).ptr, (key).len, \
+                       { .string = (value).ptr }, (value).len })
+#define otel_attr_bool_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
-                       (const char *)(key), \
-                       { .boolean = !!(value) } })
-#define otel_attr_i64(key, value) \
+                       (key).ptr, (key).len, \
+                       { .boolean = !!(value) }, 0 })
+#define otel_attr_i64_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
-                       (const char *)(key), \
-                       { .integer = (int64_t)(value) } })
-#define otel_attr_f64(key, value) \
+                       (key).ptr, (key).len, \
+                       { .integer = (int64_t)(value) }, 0 })
+#define otel_attr_f64_n(key, value) \
   (&(otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
-                       (const char *)(key), \
-                       { .double_value = (double)(value) } })
+                       (key).ptr, (key).len, \
+                       { .double_value = (double)(value) }, 0 })
+#define otel_attr_string(key, value) \
+  otel_attr_string_n(OTEL_STR_VIEW(key), OTEL_STR_VIEW(value))
+#define otel_attr_bool(key, value) \
+  otel_attr_bool_n(OTEL_STR_VIEW(key), (value))
+#define otel_attr_i64(key, value) \
+  otel_attr_i64_n(OTEL_STR_VIEW(key), (value))
+#define otel_attr_f64(key, value) \
+  otel_attr_f64_n(OTEL_STR_VIEW(key), (value))
+
+/* One helper per severity level. Each appends OTEL_ATTR_END automatically, so
+ * pass zero or more attribute builders as trailing arguments. The _N forms
+ * take an otel_str_t body, for example OTEL_STR("message") or OTEL_STR_VIEW(s).
+ */
+#define OTEL_LOG_TRACE(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_TRACE, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_DEBUG, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO(logger, span, body, ...)                                 \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_INFO, (body)                  \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN(logger, span, body, ...)                                 \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_WARN, (body)                  \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_ERROR, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL(logger, span, body, ...)                                \
+  otel_logger_log((logger), (span), OTEL_SEVERITY_FATAL, (body)                 \
+                  __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_TRACE_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_TRACE, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_DEBUG_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_DEBUG, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_INFO_N(logger, span, body, ...)                               \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_INFO, (body)                \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_WARN_N(logger, span, body, ...)                               \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_WARN, (body)                \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_ERROR_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_ERROR, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
+#define OTEL_LOG_FATAL_N(logger, span, body, ...)                              \
+  otel_logger_log_n((logger), (span), OTEL_SEVERITY_FATAL, (body)               \
+                    __VA_OPT__(, ) __VA_ARGS__, OTEL_ATTR_END)
 
 /* Sentinel values, handle initializers, and varargs terminator. */
 #define OTEL_RESULT_SENTINEL 9
@@ -526,16 +608,16 @@ typedef struct {
 #define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
 
-/* Typed propagation buffer initializers. The *_STR forms are checked by the
- * compiler: a literal longer than the fixed storage is a hard error. */
-#define OTEL_TRACE_ID_INIT { { 0 } }
-#define OTEL_SPAN_ID_INIT { { 0 } }
+/* Initializers for typed IDs and fixed-size propagation buffers. The *_STR
+ * forms are checked by the compiler: a literal longer than the fixed storage
+ * is a hard error. Trace and span IDs are numeric, so use *_from_str at
+ * runtime to parse hex text. */
+#define OTEL_TRACE_ID_INIT { 0, 0 }
+#define OTEL_SPAN_ID_INIT { 0 }
 #define OTEL_TRACEPARENT_INIT { { 0 } }
 #define OTEL_TRACESTATE_INIT { { 0 } }
 #define OTEL_BAGGAGE_INIT { { 0 } }
 #define OTEL_BAGGAGE_VALUE_INIT { { 0 } }
-#define OTEL_TRACE_ID_INIT_STR(s) { { s } }
-#define OTEL_SPAN_ID_INIT_STR(s) { { s } }
 #define OTEL_TRACEPARENT_INIT_STR(s) { { s } }
 #define OTEL_TRACESTATE_INIT_STR(s) { { s } }
 #define OTEL_BAGGAGE_INIT_STR(s) { { s } }
