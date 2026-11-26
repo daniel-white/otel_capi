@@ -1,10 +1,12 @@
 //! Meter provider, meter, and metric instrument APIs.
 
+#[cfg(test)]
 use std::env;
+
 use std::ffi::c_char;
 use std::sync::Arc;
 
-use opentelemetry::metrics::{InstrumentProvider as _, MeterProvider as _};
+use opentelemetry::metrics::MeterProvider as _;
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 
 use crate::attributes::from_varargs;
@@ -272,7 +274,7 @@ pub unsafe extern "C" fn otel_meter_gauge_f64(
 pub unsafe extern "C" fn otel_counter_u64_add(
     counter: *const otel_counter_u64_t,
     value: u64,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<CounterU64Inner>(const_slot(counter)) }?;
@@ -287,7 +289,7 @@ pub unsafe extern "C" fn otel_counter_u64_add(
 pub unsafe extern "C" fn otel_counter_f64_add(
     counter: *const otel_counter_f64_t,
     value: f64,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<CounterF64Inner>(const_slot(counter)) }?;
@@ -302,7 +304,7 @@ pub unsafe extern "C" fn otel_counter_f64_add(
 pub unsafe extern "C" fn otel_updown_counter_i64_add(
     counter: *const otel_updown_counter_i64_t,
     value: i64,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<UpDownCounterI64Inner>(const_slot(counter)) }?;
@@ -317,7 +319,7 @@ pub unsafe extern "C" fn otel_updown_counter_i64_add(
 pub unsafe extern "C" fn otel_histogram_f64_record(
     histogram: *const otel_histogram_f64_t,
     value: f64,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let histogram = unsafe { arc::<HistogramF64Inner>(const_slot(histogram)) }?;
@@ -332,7 +334,7 @@ pub unsafe extern "C" fn otel_histogram_f64_record(
 pub unsafe extern "C" fn otel_gauge_f64_record(
     gauge: *const otel_gauge_f64_t,
     value: f64,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let gauge = unsafe { arc::<GaugeF64Inner>(const_slot(gauge)) }?;

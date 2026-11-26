@@ -179,7 +179,7 @@ pub unsafe extern "C" fn otel_tracer_span_start(
     tracer: *const otel_tracer_t,
     handle: *mut otel_span_t,
     name: *const c_char,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
@@ -197,7 +197,7 @@ pub unsafe extern "C" fn otel_tracer_span_start(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_attributes(
     span: *const otel_span_t,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
@@ -216,7 +216,7 @@ pub unsafe extern "C" fn otel_span_set_attributes(
 pub unsafe extern "C" fn otel_span_add_event(
     span: *const otel_span_t,
     name: *const c_char,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;

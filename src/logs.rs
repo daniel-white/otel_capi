@@ -1,12 +1,13 @@
 //! Logger provider, logger, and log record APIs.
 
+#[cfg(test)]
 use std::env;
+
 use std::ffi::c_char;
 use std::sync::Arc;
 
 use opentelemetry::global::ObjectSafeSpan as _;
 use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
-use opentelemetry::trace::SpanContext as _;
 use opentelemetry::Value;
 use opentelemetry_sdk::logs::{
     BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider, SimpleLogProcessor,
@@ -50,11 +51,6 @@ fn severity(value: otel_severity_t) -> (Severity, &'static str) {
         otel_severity_t::OTEL_SEVERITY_WARN => (Severity::Warn, "WARN"),
         otel_severity_t::OTEL_SEVERITY_ERROR => (Severity::Error, "ERROR"),
         otel_severity_t::OTEL_SEVERITY_FATAL => (Severity::Fatal, "FATAL"),
-        other => {
-            // Forward compatibility with future severity values.
-            let _ = other;
-            (Severity::Info, "INFO")
-        }
     }
 }
 
@@ -185,7 +181,7 @@ pub unsafe extern "C" fn otel_logger_log(
     span: *const otel_span_t,
     level: otel_severity_t,
     body: *const c_char,
-    mut attributes: ...,
+    attributes: ...,
 ) -> otel_result_t {
     guard(|| {
         let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;

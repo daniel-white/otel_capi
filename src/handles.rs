@@ -17,23 +17,26 @@ use opentelemetry_sdk::logs::SdkLogger;
 use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider, Span as SdkSpan};
 
-use crate::error::{Error, Result, otel_result_t, guard, ok};
+use crate::error::{Error, Result, guard, otel_result_t};
 
 pub(crate) type ResourceInner = opentelemetry_sdk::Resource;
 pub(crate) type RuntimeInner = Runtime;
 
 pub(crate) struct TracerProviderInner {
     pub(crate) provider: SdkTracerProvider,
+    #[allow(dead_code)] // Retained to keep the async runtime alive.
     pub(crate) runtime: Option<Arc<Runtime>>,
 }
 
 pub(crate) struct MeterProviderInner {
     pub(crate) provider: SdkMeterProvider,
+    #[allow(dead_code)] // Retained to keep the async runtime alive.
     pub(crate) runtime: Option<Arc<Runtime>>,
 }
 
 pub(crate) struct LoggerProviderInner {
     pub(crate) provider: opentelemetry_sdk::logs::SdkLoggerProvider,
+    #[allow(dead_code)] // Retained to keep the async runtime alive.
     pub(crate) runtime: Option<Arc<Runtime>>,
 }
 pub(crate) type TracerInner = SdkTracer;
@@ -246,12 +249,6 @@ pub(crate) fn copy_string(value: &str, buf: *mut c_char, capacity: usize) -> Res
     Ok(needed)
 }
 
-pub(crate) fn report(result: Result<()>) -> otel_result_t {
-    match result {
-        Ok(()) => ok(),
-        Err(err) => err.report(),
-    }
-}
 
 /// Retains a `otel_resource_t` into caller-provided storage.
 #[unsafe(no_mangle)]
