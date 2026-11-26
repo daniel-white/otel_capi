@@ -6,8 +6,15 @@ structs.
 
 ## Layout
 
-- `include/cotel.h` — generated C header; do not edit by hand.
-- `include/cotel_semconv.h` — generated semantic-convention attribute macros.
+- `include/cotel.h` — generated umbrella header; do not edit by hand. It
+  composes the area headers below.
+- `include/cotel_common.h`, `include/cotel_context.h`, `include/cotel_trace.h`,
+  `include/cotel_metrics.h`, `include/cotel_logs.h`, and the other
+  `include/cotel_*.h` files — generated headers by API area. Include only the
+  areas you need, or include `cotel.h` for all of them.
+- `include/cotel_semconv.h` — generated semantic-convention umbrella header;
+  helpers are split into `cotel_semconv_attributes.h` and
+  `cotel_semconv_metrics.h`.
 - `src/` — Rust implementation. `build.rs` generates the header with cbindgen.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
@@ -108,8 +115,9 @@ Key rules:
   `otel_ensure_all_released()` returns `OTEL_OK` only when that count is zero,
   otherwise `OTEL_ERR_LEAK` with the count in `otel_last_error()`.
 
-`cotel.h` includes `cotel_semconv.h`, which `build.rs` generates from the
-`opentelemetry-semantic-conventions` crate at build time. Macro names are
+`cotel.h` includes the generated semantic-convention headers, which `build.rs`
+generates from the `opentelemetry-semantic-conventions` crate at build time.
+Macro names are
 `OTEL_<MODULE>_<CONSTANT>`, for example `OTEL_ATTRIBUTE_CLIENT_ADDRESS`,
 `OTEL_ATTRIBUTE_RPC_SYSTEM`, and `OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION`.
 

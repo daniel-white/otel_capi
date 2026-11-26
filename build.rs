@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -59,49 +59,269 @@ fn main() {
     let mut header = String::from_utf8(bytes).expect("generated header should be UTF-8");
     header = annotate_exports(&header);
 
-    // Insert helper macros before the include guard closes so they are part
-    // of the guarded header content.
-    let guard_end = header
-        .rfind("#endif")
-        .expect("generated header should have an include guard");
-    let mut injected = String::from(ATTRIBUTE_MACROS);
-    injected.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
-    injected.push_str(&sentinel_macros(&header));
-    injected.push_str(&handle_init_macros(&header));
-    injected.push_str(
-        "#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }\n",
-    );
-    injected.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
-    injected.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
-    injected.push_str("\n/* Compile-time version and error helpers. */\n");
-    injected.push_str(&version_macros());
-    injected
-        .push_str("#define OTEL_RETURN_IF_ERROR(call)                                        \\\n");
-    injected
-        .push_str("  do {                                                                   \\\n");
-    injected
-        .push_str("    otel_result_t otel_result__ = (call);                               \\\n");
-    injected
-        .push_str("    if (otel_result__ != OTEL_OK) return otel_result__;                 \\\n");
-    injected.push_str("  } while (0)\n");
-    injected.push_str("\n/* Scope cleanup helpers for caller-owned handles. */\n");
-    injected.push_str(&cleanup_macros(&header));
-    injected.push_str("\n/* Generated semantic-convention helpers. */\n");
-    injected.push_str("#include \"cotel_semconv.h\"\n");
-    injected.push_str("\n#ifdef __cplusplus\n}\n#endif\n");
-    header.insert_str(guard_end, &injected);
-
-    // Expose the headers to dependents via OUT_DIR, and keep the checked-in
-    // copies used by C consumers current.
-    fs::write(out_dir.join("cotel.h"), &header).expect("should write OUT_DIR/cotel.h");
-    fs::write(out_dir.join("cotel_semconv.h"), &semconv)
-        .expect("should write OUT_DIR/cotel_semconv.h");
-
+    // Split the generated declarations into area headers and compose the
+    // umbrella header from them. All files remain build outputs.
+    let headers = compose_headers(&header, &semconv);
     let include = root.join("include");
     fs::create_dir_all(&include).expect("should create include/");
-    fs::write(include.join("cotel.h"), &header).expect("should write include/cotel.h");
-    fs::write(include.join("cotel_semconv.h"), &semconv)
-        .expect("should write include/cotel_semconv.h");
+    for (name, contents) in headers {
+        fs::write(out_dir.join(&name), &contents)
+            .unwrap_or_else(|_| panic!("should write OUT_DIR/{name}"));
+        fs::write(include.join(&name), &contents)
+            .unwrap_or_else(|_| panic!("should write include/{name}"));
+    }
+}
+
+const OWNERSHIP_DOC: &str = r#"/* Ownership convention
+ *
+ * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a
+ * pointer to the matching `otel_foo_new` or `otel_foo_retain` function; the
+ * library writes into that storage and never allocates the struct. On success
+ * the struct owns one reference, so pair it with `otel_foo_release`, which
+ * clears the struct and is safe to call on a zero-initialized one.
+ *
+ * All strings are borrowed for the duration of a call only.
+ */
+"#;
+
+/// Builds the public header set from a single cbindgen header. Types live in
+/// `cotel_common.h`; function declarations are grouped by area.
+fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
+    let first_api = header
+        .match_indices("\nOTEL_API ")
+        .map(|(offset, _)| offset + 1)
+        .next()
+        .expect("generated header should have exported functions");
+    let first_type = header
+        .find("typedef")
+        .expect("generated header should have types");
+    let functions_start = header[first_type..first_api]
+        .rfind("/**")
+        .map(|offset| first_type + offset)
+        .unwrap_or(first_api);
+    let types = &header[first_type..functions_start];
+    let functions_end = header[functions_start..]
+        .find("#endif")
+        .map(|offset| functions_start + offset)
+        .unwrap_or(header.len());
+    let functions = &header[functions_start..functions_end];
+
+    let mut common_body = String::new();
+    common_body.push_str("#include <stdarg.h>\n#include <stdbool.h>\n#include <stddef.h>\n");
+    common_body.push_str("#include <stdint.h>\n#include <stdlib.h>\n");
+    common_body
+        .push_str("#ifndef OTEL_API\n#  if defined(_WIN32) && defined(COTEL_BUILDING_DLL)\n");
+    common_body.push_str("#    define OTEL_API __declspec(dllexport)\n#  elif defined(_WIN32)\n");
+    common_body.push_str("#    define OTEL_API __declspec(dllimport)\n#  elif defined(__GNUC__)\n");
+    common_body.push_str("#    define OTEL_API __attribute__((visibility(\"default\")))\n");
+    common_body.push_str("#  else\n#    define OTEL_API\n#  endif\n#endif\n\n");
+    common_body.push_str(OWNERSHIP_DOC);
+    common_body.push('\n');
+    common_body.push_str(types);
+    common_body.push_str(ATTRIBUTE_MACROS);
+    common_body.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
+    common_body.push_str(&sentinel_macros(header));
+    common_body.push_str(&handle_init_macros(header));
+    common_body.push_str(
+        "#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }\n",
+    );
+    common_body.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
+    common_body.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
+    common_body.push_str("\n/* Compile-time version and error helpers. */\n");
+    common_body.push_str(&version_macros());
+    common_body
+        .push_str("#define OTEL_RETURN_IF_ERROR(call)                                        \\\n");
+    common_body
+        .push_str("  do {                                                                   \\\n");
+    common_body
+        .push_str("    otel_result_t otel_result__ = (call);                               \\\n");
+    common_body
+        .push_str("    if (otel_result__ != OTEL_OK) return otel_result__;                 \\\n");
+    common_body.push_str("  } while (0)\n");
+    common_body.push_str("\n/* Generated semantic-convention attribute helpers. */\n");
+    common_body.push_str("#include \"cotel_semconv_attributes.h\"\n");
+
+    let mut areas: BTreeMap<&str, String> = BTreeMap::new();
+    for block in function_blocks(functions) {
+        let area = area_for_block(&block);
+        let body = areas.entry(area).or_default();
+        body.push_str(&block);
+        if !body.ends_with('\n') {
+            body.push('\n');
+        }
+        body.push('\n');
+    }
+    if let Some(handles) = areas.get_mut("cotel_handles.h") {
+        handles.push_str("\n/* Scope cleanup helpers for caller-owned handles. */\n");
+        handles.push_str(&cleanup_macros(header));
+    }
+    if let Some(metrics) = areas.get_mut("cotel_metrics.h") {
+        metrics.push_str("\n/* Generated semantic-convention metric helpers. */\n");
+        metrics.push_str("#include \"cotel_semconv_metrics.h\"\n");
+    }
+
+    let (semconv_attributes, semconv_metrics) = split_semconv(semconv);
+    let semconv_umbrella = concat!(
+        "/* Generated by build.rs from opentelemetry-semantic-conventions. */\n",
+        "#ifndef COTEL_SEMCONV_H\n#define COTEL_SEMCONV_H\n\n",
+        "#include \"cotel_semconv_attributes.h\"\n",
+        "#include \"cotel_semconv_metrics.h\"\n\n",
+        "#endif /* COTEL_SEMCONV_H */\n"
+    );
+    let mut headers = vec![
+        ("cotel_semconv.h".to_string(), semconv_umbrella.to_string()),
+        ("cotel_semconv_attributes.h".to_string(), semconv_attributes),
+        ("cotel_semconv_metrics.h".to_string(), semconv_metrics),
+        (
+            "cotel_common.h".to_string(),
+            wrap_header("COTEL_COMMON_H", &[], &common_body),
+        ),
+    ];
+    for (file, body) in areas {
+        let guard = file
+            .strip_prefix("cotel_")
+            .and_then(|name| name.strip_suffix(".h"))
+            .expect("area header name")
+            .to_ascii_uppercase();
+        let guard = format!("COTEL_{guard}_H");
+        headers.push((
+            file.to_string(),
+            wrap_header(&guard, &["cotel_common.h"], &body),
+        ));
+    }
+
+    let umbrella = concat!(
+        "/* Generated by cotel/build.rs. Do not edit; edit the Rust sources instead. */\n",
+        "#ifndef COTEL_H\n#define COTEL_H\n\n",
+        "#include \"cotel_common.h\"\n",
+        "#include \"cotel_error.h\"\n",
+        "#include \"cotel_handles.h\"\n",
+        "#include \"cotel_resource.h\"\n",
+        "#include \"cotel_runtime.h\"\n",
+        "#include \"cotel_context.h\"\n",
+        "#include \"cotel_trace.h\"\n",
+        "#include \"cotel_metrics.h\"\n",
+        "#include \"cotel_logs.h\"\n\n",
+        "#endif /* COTEL_H */\n"
+    );
+    headers.push(("cotel.h".to_string(), umbrella.to_string()));
+    headers
+}
+
+/// Splits the generated semantic-convention header into attribute helpers and
+/// metric helpers so metric declarations are available before metric helpers.
+fn split_semconv(semconv: &str) -> (String, String) {
+    let metric_marker = "/* Metric helpers using the semconv instrument, unit, and description. */";
+    let metric_start = semconv
+        .find(metric_marker)
+        .expect("semconv header should have metric helpers");
+    let end = semconv
+        .find("#endif /* COTEL_SEMCONV_H */")
+        .expect("semconv header should end with a guard");
+
+    let attributes =
+        semconv[..metric_start].replace("COTEL_SEMCONV_H", "COTEL_SEMCONV_ATTRIBUTES_H");
+    let attributes = format!("{attributes}#endif /* COTEL_SEMCONV_ATTRIBUTES_H */\n");
+
+    let mut metrics =
+        String::from("/* Generated by build.rs from opentelemetry-semantic-conventions. */\n");
+    metrics.push_str("#ifndef COTEL_SEMCONV_METRICS_H\n");
+    metrics.push_str("#define COTEL_SEMCONV_METRICS_H\n\n");
+    metrics.push_str("#include \"cotel_common.h\"\n#include \"cotel_metrics.h\"\n\n");
+    metrics.push_str(&semconv[metric_start..end]);
+    metrics.push_str("#endif /* COTEL_SEMCONV_METRICS_H */\n");
+
+    (attributes, metrics)
+}
+
+fn wrap_header(guard: &str, includes: &[&str], body: &str) -> String {
+    let mut result = String::from(
+        "/* Generated by cotel/build.rs. Do not edit; edit the Rust sources instead. */\n",
+    );
+    result.push_str(&format!("#ifndef {guard}\n#define {guard}\n\n"));
+    for include in includes {
+        result.push_str(&format!("#include \"{include}\"\n"));
+    }
+    if !includes.is_empty() {
+        result.push('\n');
+    }
+    result.push_str("#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n");
+    result.push_str(body);
+    if !body.ends_with('\n') {
+        result.push('\n');
+    }
+    result.push_str("\n#ifdef __cplusplus\n}\n#endif\n\n");
+    result.push_str(&format!("#endif /* {guard} */\n"));
+    result
+}
+
+fn function_blocks(functions: &str) -> Vec<String> {
+    let mut blocks = Vec::new();
+    let mut current = Vec::new();
+    for line in functions.lines() {
+        if line.trim_start().starts_with("/**") && !current.is_empty() {
+            blocks.push(current.join("\n"));
+            current.clear();
+        }
+        current.push(line.to_string());
+    }
+    if !current.is_empty() {
+        blocks.push(current.join("\n"));
+    }
+    blocks
+}
+
+fn exported_name(block: &str) -> Option<String> {
+    let api = block.find("OTEL_API")?;
+    let open = block[api..].find('(')? + api;
+    let prefix = &block[api..open];
+    let token = prefix.rsplit(char::is_whitespace).next()?;
+    let name = token.trim_start_matches(|c: char| !(c.is_ascii_alphanumeric() || c == '_'));
+    (!name.is_empty()).then(|| name.to_string())
+}
+
+fn area_for_block(block: &str) -> &'static str {
+    let Some(name) = exported_name(block) else {
+        return "cotel_error.h";
+    };
+    if name.ends_with("_retain") || name.ends_with("_release") || name.ends_with("_is_valid") {
+        return "cotel_handles.h";
+    }
+    if matches!(
+        name.as_str(),
+        "otel_version"
+            | "otel_last_error"
+            | "otel_strerror"
+            | "otel_copy_last_error"
+            | "otel_live_handle_count"
+            | "otel_ensure_all_released"
+    ) {
+        return "cotel_error.h";
+    }
+    if name.starts_with("otel_context_") {
+        return "cotel_context.h";
+    }
+    if name.starts_with("otel_logger_") {
+        return "cotel_logs.h";
+    }
+    if name.starts_with("otel_resource_") {
+        return "cotel_resource.h";
+    }
+    if name.starts_with("otel_runtime_") {
+        return "cotel_runtime.h";
+    }
+    if name.starts_with("otel_meter_")
+        || name.starts_with("otel_metric_")
+        || name.starts_with("otel_counter_")
+        || name.starts_with("otel_updown_counter_")
+        || name.starts_with("otel_histogram_")
+        || name.starts_with("otel_gauge_")
+        || name.starts_with("otel_observable_")
+        || name.starts_with("otel_observe_")
+    {
+        return "cotel_metrics.h";
+    }
+    "cotel_trace.h"
 }
 
 /// Prefixes exported declarations with `OTEL_API` for shared-library use.
