@@ -11,7 +11,7 @@ CARGO ?= cargo
 
 BUILD_DIR := build/artifacts
 INCLUDE_DIR := include
-HEADERS := $(wildcard $(INCLUDE_DIR)/otel_capi*.h)
+HEADERS = $(wildcard $(INCLUDE_DIR)/otel_capi*.h)
 STATIC_LIB := target/release/libotel_capi.a
 EXAMPLE_SRC := examples/kitchen-sink/main.c
 
@@ -103,7 +103,7 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'source: callback' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'observer.kind: array' $(BUILD_DIR)/stdout-clang.log
 
-compile-checks: | $(BUILD_DIR)
+compile-checks: build | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c
 	@for src in checks/compile-fail/*.c; do \
 		if $(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only $$src >/dev/null 2>&1; then \

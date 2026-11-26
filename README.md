@@ -5,16 +5,15 @@ through generated headers and caller-owned handle structs.
 
 ## Layout
 
-- `include/otel_capi.h` — generated umbrella header; do not edit by hand. It
-  composes the area headers below.
-- `include/otel_capi_common.h`, `include/otel_capi_context.h`, `include/otel_capi_trace.h`,
-  `include/otel_capi_metrics.h`, `include/otel_capi_logs.h`, and the other
-  `include/otel_capi_*.h` files — generated headers by API area. Include only the
-  areas you need, or include `otel_capi.h` for all of them.
-- `include/otel_capi_semconv.h` — generated semantic-convention umbrella header;
-  helpers are split into `otel_capi_semconv_attributes.h` and
+- `include/otel_capi*.h` — generated into `include/` by `build.rs` during
+  `make build` and gitignored. Do not edit by hand. `otel_capi.h` is the umbrella
+  header; area headers such as `otel_capi_common.h`, `otel_capi_context.h`,
+  `otel_capi_trace.h`, `otel_capi_metrics.h`, and `otel_capi_logs.h` can be
+  included individually. Semantic-convention helpers live in
+  `otel_capi_semconv.h`, split into `otel_capi_semconv_attributes.h` and
   `otel_capi_semconv_metrics.h`.
-- `src/` — Rust implementation. `build.rs` generates the header with cbindgen.
+- `build.rs` — generates the headers with cbindgen and semantic-convention data.
+- `src/` — Rust implementation.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
 - `checks/` — compile-pass and compile-fail checks for the C API.
