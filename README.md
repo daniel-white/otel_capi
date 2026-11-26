@@ -109,6 +109,16 @@ Metric constants with complete semconv metadata get matching helpers such as
 `otel_metric_http_server_request_duration(&meter, &histogram)`, which uses the
 standard instrument, unit, and description from the semantic conventions.
 
+### Structured logs
+
+`otel_logger_log_record` takes an `otel_log_record_options_t` initialized with
+`OTEL_LOG_RECORD_OPTIONS_INIT`. It can set an event name, instrumentation
+target, severity text override, explicit event/observed timestamps in Unix
+nanoseconds, and a span for trace correlation. Like `otel_logger_log`, it
+accepts variadic attributes terminated by `OTEL_ATTR_END`. Event names and
+severity text are interned for the process lifetime because the SDK requires
+`'static` strings for those fields.
+
 ### Propagation and span options
 
 `otel_context_t` carries W3C trace context and baggage. Use
@@ -160,10 +170,11 @@ COTEL_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
 ```
 
 The example creates a resource, all three providers, a correlated span/log
-pair, all five metric instruments, retains/releases a span, and flushes and
-shuts down every provider. It extracts and injects a remote W3C context,
-attaches baggage to the current thread, and starts a child span with an
-explicit parent, kind, link, timestamped event, exception event, and
-timestamped end. It also starts four pthread workers that create
+pair, a structured log record with event name/target/timestamps, all five
+metric instruments, retains/releases a span, and flushes and shuts down every
+provider. It extracts and injects a remote W3C context, attaches baggage to
+the current thread, and starts a child span with an explicit parent, kind,
+link, timestamped event, and exception event. It also starts four pthread
+workers that create
 concurrent spans, correlated logs, and counter updates against shared scopes,
 which exercises handle reference counting and instrument thread safety.

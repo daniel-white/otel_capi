@@ -3,12 +3,12 @@
 #[cfg(test)]
 use std::env;
 
-use std::ffi::c_char;
-use std::sync::Arc;
+use std::collections::HashSet;
+use std::ffi::{VaList, c_char};
+use std::sync::{Arc, Mutex, OnceLock};
 
-use opentelemetry::global::ObjectSafeSpan as _;
-use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
 use opentelemetry::Value;
+use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
 use opentelemetry_sdk::logs::{
     BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider, SimpleLogProcessor,
 };
@@ -19,10 +19,11 @@ use crate::config::{
 };
 use crate::error::{Error, Result, c_str, guard, otel_result_t, utf8};
 use crate::handles::{
-    LoggerInner, LoggerProviderInner, RuntimeInner, SpanInner, arc, const_slot, init,
-    optional_resource, optional_runtime, slot,
+    LoggerInner, LoggerProviderInner, RuntimeInner, arc, const_slot, init, optional_resource,
+    optional_runtime, slot,
 };
-use crate::handles::{otel_logger_t, otel_logger_provider_t, otel_runtime_t, otel_span_t};
+use crate::handles::{otel_logger_provider_t, otel_logger_t, otel_runtime_t, otel_span_t};
+use crate::util::system_time;
 
 /// Log severity exported to C. Values match the OpenTelemetry severity scale.
 #[non_exhaustive]
@@ -41,6 +42,101 @@ pub enum otel_severity_t {
     OTEL_SEVERITY_ERROR = 17,
     /// Fatal error.
     OTEL_SEVERITY_FATAL = 21,
+}
+
+/// Optional fields for a structured log record. Initialize with
+/// `OTEL_LOG_RECORD_OPTIONS_INIT` and set `size` to
+/// `sizeof(otel_log_record_options_t)`.
+#[repr(C)]
+pub struct otel_log_record_options_t {
+    pub size: usize,
+    /// One of `otel_severity_t`.
+    pub level: i32,
+    /// Event name; interned for the process lifetime.
+    pub event_name: *const c_char,
+    /// Instrumentation target. May be NULL.
+    pub target: *const c_char,
+    /// Severity text override; interned for the process lifetime. May be NULL.
+    pub severity_text: *const c_char,
+    /// Event Unix timestamp in nanoseconds; zero means unset.
+    pub timestamp_unix_nano: i64,
+    /// Observed Unix timestamp in nanoseconds; zero means unset.
+    pub observed_timestamp_unix_nano: i64,
+    /// Optional span used for trace correlation.
+    pub span: *const otel_span_t,
+}
+
+static INTERNED: OnceLock<Mutex<HashSet<&'static str>>> = OnceLock::new();
+
+fn interned(text: String) -> &'static str {
+    let mut set = INTERNED
+        .get_or_init(|| Mutex::new(HashSet::new()))
+        .lock()
+        .expect("string interner is poisoned");
+    if let Some(existing) = set.get(text.as_str()) {
+        return existing;
+    }
+    let leaked: &'static str = Box::leak(text.into_boxed_str());
+    set.insert(leaked);
+    leaked
+}
+
+unsafe fn emit_log(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: *const c_char,
+    attributes: VaList,
+) -> Result<()> {
+    if options.is_null() {
+        return Err(Error::invalid("log options must not be NULL"));
+    }
+    let options = unsafe { &*options };
+    if options.size < std::mem::size_of::<otel_log_record_options_t>() {
+        return Err(Error::invalid(
+            "otel_log_record_options_t.size is too small",
+        ));
+    }
+    let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
+    let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+    let attributes = unsafe { from_varargs(attributes) }?;
+    let (number, default_text) = severity(options.level)?;
+    let timestamp = system_time(options.timestamp_unix_nano)?;
+    let observed = system_time(options.observed_timestamp_unix_nano)?;
+
+    let mut record = logger.create_log_record();
+    record.set_severity_number(number);
+    record.set_severity_text(
+        match unsafe { crate::util::optional_str(options.severity_text, "severity text")? } {
+            Some(text) => interned(text.to_owned()),
+            None => default_text,
+        },
+    );
+    record.set_body(AnyValue::String(body.into()));
+    if let Some(name) = unsafe { crate::util::optional_str(options.event_name, "event name")? } {
+        record.set_event_name(interned(name.to_owned()));
+    }
+    if let Some(target) = unsafe { crate::util::optional_str(options.target, "target")? } {
+        record.set_target(target.to_owned());
+    }
+    if let Some(timestamp) = timestamp {
+        record.set_timestamp(timestamp);
+    }
+    if let Some(observed) = observed {
+        record.set_observed_timestamp(observed);
+    }
+    for attribute in attributes {
+        record.add_attribute(attribute.key.to_string(), any_value(attribute.value));
+    }
+    if !options.span.is_null() {
+        let context = unsafe { crate::trace::span_context(options.span)? };
+        record.set_trace_context(
+            context.trace_id(),
+            context.span_id(),
+            Some(context.trace_flags()),
+        );
+    }
+    logger.emit(record);
+    Ok(())
 }
 
 fn severity(value: i32) -> Result<(Severity, &'static str)> {
@@ -182,54 +278,48 @@ pub unsafe extern "C" fn otel_logger_log(
     span: *const otel_span_t,
     level: i32,
     body: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
-        let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
-        let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
-        let attributes = unsafe { from_varargs(attributes) }?;
-        let (number, text) = severity(level)?;
-
-        let mut record = logger.create_log_record();
-        record.set_severity_number(number);
-        record.set_severity_text(text);
-        record.set_body(AnyValue::String(body.into()));
-        for attribute in attributes {
-            record.add_attribute(attribute.key.to_string(), any_value(attribute.value));
-        }
-
-        if !span.is_null() {
-            let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-            let guard = inner
-                .lock()
-                .map_err(|_| Error::internal("span lock is poisoned"))?;
-            if let Some(span) = guard.as_ref() {
-                let context = span.span_context();
-                record.set_trace_context(
-                    context.trace_id(),
-                    context.span_id(),
-                    Some(context.trace_flags()),
-                );
-            }
-        }
-
-        logger.emit(record);
-        Ok(())
+        let options = otel_log_record_options_t {
+            size: std::mem::size_of::<otel_log_record_options_t>(),
+            level,
+            event_name: std::ptr::null(),
+            target: std::ptr::null(),
+            severity_text: std::ptr::null(),
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            span,
+        };
+        unsafe { emit_log(logger, &options, body, attributes) }
     })
+}
+
+/// Emits a structured log record with event name, target, timestamps, and
+/// optional span correlation configured through `options`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_log_record(
+    logger: *const otel_logger_t,
+    options: *const otel_log_record_options_t,
+    body: *const c_char,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| unsafe { emit_log(logger, options, body, attributes) })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::attributes::otel_attribute_t;
-    use crate::handles::{
-        otel_logger_provider_release, otel_logger_release,
-    };
+    use crate::attributes::{otel_attribute_t, otel_attribute_type_t, otel_attribute_value_t};
+    use crate::handles::{otel_logger_provider_release, otel_logger_release};
 
     #[test]
     fn rejects_invalid_severity() {
         let error = severity(999).unwrap_err();
-        assert_eq!(error.status, crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert_eq!(
+            error.status,
+            crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
     }
 
     #[test]
@@ -259,6 +349,44 @@ mod tests {
                     std::ptr::null::<otel_attribute_t>()
                 ),
                 otel_result_t::OTEL_OK
+            );
+            let key = c"key";
+            let value = c"value";
+            let attribute = otel_attribute_t {
+                kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
+                key: key.as_ptr(),
+                value: otel_attribute_value_t {
+                    string: value.as_ptr(),
+                },
+            };
+            let options = otel_log_record_options_t {
+                size: std::mem::size_of::<otel_log_record_options_t>(),
+                level: otel_severity_t::OTEL_SEVERITY_WARN as i32,
+                event_name: c"test.event".as_ptr(),
+                target: c"test.target".as_ptr(),
+                severity_text: c"CRITICAL".as_ptr(),
+                timestamp_unix_nano: 1,
+                observed_timestamp_unix_nano: 2,
+                span: std::ptr::null(),
+            };
+            assert_eq!(
+                otel_logger_log_record(
+                    &logger,
+                    &options,
+                    c"structured".as_ptr(),
+                    &attribute,
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log_record(
+                    &logger,
+                    std::ptr::null(),
+                    c"structured".as_ptr(),
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
             );
             otel_logger_release(&mut logger);
             otel_logger_provider_release(&mut provider);

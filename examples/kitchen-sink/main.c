@@ -112,6 +112,7 @@ int main(void) {
   otel_updown_counter_i64_t updown = OTEL_UPDOWN_COUNTER_I64_T_INIT;
   otel_histogram_f64_t histogram = OTEL_HISTOGRAM_F64_T_INIT;
   otel_gauge_f64_t gauge = OTEL_GAUGE_F64_T_INIT;
+  otel_log_record_options_t log_options = OTEL_LOG_RECORD_OPTIONS_INIT;
 
   configure_environment();
   printf("cotel version %s\n", otel_version());
@@ -208,6 +209,18 @@ int main(void) {
       &logger, &span_copy, OTEL_SEVERITY_INFO, "work complete",
       otel_attr_string("phase", "end"), otel_attr_i64("items", 3),
       OTEL_ATTR_END));
+
+  log_options.level = OTEL_SEVERITY_WARN;
+  log_options.event_name = "kitchen.sink.warning";
+  log_options.target = "kitchen-sink.structured";
+  log_options.severity_text = "CRITICAL";
+  log_options.timestamp_unix_nano = options.start_time_unix_nano;
+  log_options.observed_timestamp_unix_nano =
+      options.start_time_unix_nano + 1000000LL;
+  log_options.span = &span_copy;
+  CHECK(otel_logger_log_record(
+      &logger, &log_options, "structured warning",
+      otel_attr_string("warning.kind", "demo"), OTEL_ATTR_END));
 
   /* Metrics: all five supported instruments. */
   CHECK(otel_meter_counter_u64(

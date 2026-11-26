@@ -292,6 +292,43 @@ typedef struct {
 } otel_gauge_f64_t;
 
 /**
+ * Optional fields for a structured log record. Initialize with
+ * `OTEL_LOG_RECORD_OPTIONS_INIT` and set `size` to
+ * `sizeof(otel_log_record_options_t)`.
+ */
+typedef struct {
+  size_t size;
+  /**
+   * One of `otel_severity_t`.
+   */
+  int32_t level;
+  /**
+   * Event name; interned for the process lifetime.
+   */
+  const char *event_name;
+  /**
+   * Instrumentation target. May be NULL.
+   */
+  const char *target;
+  /**
+   * Severity text override; interned for the process lifetime. May be NULL.
+   */
+  const char *severity_text;
+  /**
+   * Event Unix timestamp in nanoseconds; zero means unset.
+   */
+  int64_t timestamp_unix_nano;
+  /**
+   * Observed Unix timestamp in nanoseconds; zero means unset.
+   */
+  int64_t observed_timestamp_unix_nano;
+  /**
+   * Optional span used for trace correlation.
+   */
+  const otel_span_t *span;
+} otel_log_record_options_t;
+
+/**
  * Optional span-start configuration. Initialize with
  * `OTEL_SPAN_OPTIONS_INIT` and set `size` to `sizeof(otel_span_options_t)`.
  */
@@ -709,6 +746,15 @@ OTEL_API otel_result_t otel_logger_log(const otel_logger_t *logger,
                               ...);
 
 /**
+ * Emits a structured log record with event name, target, timestamps, and
+ * optional span correlation configured through `options`.
+ */
+OTEL_API otel_result_t otel_logger_log_record(const otel_logger_t *logger,
+                                     const otel_log_record_options_t *options,
+                                     const char *body,
+                                     ...);
+
+/**
  * Creates a meter provider. `resource` and `runtime` may be NULL when the
  * selected exporter does not need them.
  * Writes into caller-owned `handle`; initialize it with `{0}` before calling.
@@ -989,6 +1035,7 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_HISTOGRAM_F64_T_INIT { NULL }
 #define OTEL_GAUGE_F64_T_INIT { NULL }
 #define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL }
+#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
 
 /* Generated semantic-convention helpers. */

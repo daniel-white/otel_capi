@@ -69,6 +69,7 @@ fn main() {
     injected.push_str(&sentinel_macros(&header));
     injected.push_str(&handle_init_macros(&header));
     injected.push_str("#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL }\n");
+    injected.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
     injected.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
     injected.push_str("\n/* Generated semantic-convention helpers. */\n");
     injected.push_str("#include \"cotel_semconv.h\"\n");
