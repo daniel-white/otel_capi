@@ -218,20 +218,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f8f80099a98041a3d1622845c271458a2d73e688351bf3cb999266764b81d48"
 
 [[package]]
-name = "cotel"
-version = "0.1.0"
-dependencies = [
- "cbindgen",
- "opentelemetry",
- "opentelemetry-otlp",
- "opentelemetry-semantic-conventions",
- "opentelemetry-stdout",
- "opentelemetry_sdk",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "cpufeatures"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -850,6 +836,20 @@ dependencies = [
  "portable-atomic",
  "rand 0.9.5",
  "thiserror",
+]
+
+[[package]]
+name = "otel-capi"
+version = "0.1.0"
+dependencies = [
+ "cbindgen",
+ "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry-semantic-conventions",
+ "opentelemetry-stdout",
+ "opentelemetry_sdk",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]

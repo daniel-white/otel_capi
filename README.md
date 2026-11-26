@@ -1,25 +1,24 @@
-# cotel
+# otel-capi
 
-`cotel` is a C ABI wrapper around the OpenTelemetry Rust SDK. It exposes
-traces, metrics, and logs through a generated C header and caller-owned handle
-structs.
+`otel-capi` is a C API for OpenTelemetry. It exposes traces, metrics, and logs
+through generated headers and caller-owned handle structs.
 
 ## Layout
 
-- `include/cotel.h` — generated umbrella header; do not edit by hand. It
+- `include/otel_capi.h` — generated umbrella header; do not edit by hand. It
   composes the area headers below.
-- `include/cotel_common.h`, `include/cotel_context.h`, `include/cotel_trace.h`,
-  `include/cotel_metrics.h`, `include/cotel_logs.h`, and the other
-  `include/cotel_*.h` files — generated headers by API area. Include only the
-  areas you need, or include `cotel.h` for all of them.
-- `include/cotel_semconv.h` — generated semantic-convention umbrella header;
-  helpers are split into `cotel_semconv_attributes.h` and
-  `cotel_semconv_metrics.h`.
+- `include/otel_capi_common.h`, `include/otel_capi_context.h`, `include/otel_capi_trace.h`,
+  `include/otel_capi_metrics.h`, `include/otel_capi_logs.h`, and the other
+  `include/otel_capi_*.h` files — generated headers by API area. Include only the
+  areas you need, or include `otel_capi.h` for all of them.
+- `include/otel_capi_semconv.h` — generated semantic-convention umbrella header;
+  helpers are split into `otel_capi_semconv_attributes.h` and
+  `otel_capi_semconv_metrics.h`.
 - `src/` — Rust implementation. `build.rs` generates the header with cbindgen.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
 - `checks/` — compile-pass and compile-fail checks for the C API.
-- `cotel.pc.in` — pkg-config metadata template.
+- `otel-capi.pc.in` — pkg-config metadata template.
 - `flake.nix` — optional dev shell that provides Rust 1.100.0 and C compilers.
 
 ## Build and test
@@ -45,7 +44,7 @@ shell automatically. Run `direnv allow` once after cloning, then plain
 
 `make check` runs the Rust unit tests, compiles the kitchen-sink example with
 both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, runs it with both
-`COTEL_EXPORTER=none` and `COTEL_EXPORTER=stdout`, and verifies the
+`OTEL_CAPI_EXPORTER=none` and `OTEL_CAPI_EXPORTER=stdout`, and verifies the
 compile-pass/compile-fail checks in `checks/`.
 
 Install the library, headers, and pkg-config metadata with:
@@ -56,11 +55,11 @@ nix develop --command make install PREFIX=/path/to/prefix
 
 ## Using the C API
 
-Include `cotel.h`, declare handles as zero-initialized storage, and pass their
+Include `otel_capi.h`, declare handles as zero-initialized storage, and pass their
 addresses to the matching `_new` function:
 
 ```c
-#include "cotel.h"
+#include "otel_capi.h"
 
 otel_runtime_t runtime = {0};
 otel_tracer_provider_t provider = {0};
@@ -133,7 +132,7 @@ Suffixes are consistent across the generated headers:
 - `_str` returns a borrowed NUL-terminated `const char *` from typed
   propagation storage; `_view` returns a borrowed `otel_str_t` with length.
 
-`cotel.h` includes the generated semantic-convention headers, which `build.rs`
+`otel_capi.h` includes the generated semantic-convention headers, which `build.rs`
 generates from the `opentelemetry-semantic-conventions` crate at build time.
 Macro names are
 `OTEL_<MODULE>_<CONSTANT>`, for example `OTEL_ATTRIBUTE_CLIENT_ADDRESS`,
@@ -295,7 +294,7 @@ without one, construction fails with `OTEL_ERR_CONFIG`.
 
 ### Explicit providers instead of globals
 
-`cotel` does not install process-global tracer, meter, or logger providers.
+`otel-capi` does not install process-global tracer, meter, or logger providers.
 Handles make initialization order, exporter/runtime lifetime, and shutdown
 deterministic, and avoid hidden global state when the library is embedded.
 Pass provider and scope handles through your C call graph; the standard
@@ -307,8 +306,8 @@ The only implicit context is the thread-local one managed by
 
 ```sh
 nix develop --command make example-gcc
-COTEL_EXPORTER=none build/artifacts/kitchen-sink-gcc
-COTEL_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
+OTEL_CAPI_EXPORTER=none build/artifacts/kitchen-sink-gcc
+OTEL_CAPI_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
 ```
 
 The example creates a resource, all three providers, a correlated span/log

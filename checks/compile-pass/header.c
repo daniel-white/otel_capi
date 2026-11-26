@@ -1,4 +1,4 @@
-#include "cotel.h"
+#include "otel_capi.h"
 
 _Static_assert(OTEL_VERSION_MAJOR == 0 && OTEL_VERSION_MINOR == 1 &&
                    OTEL_VERSION_PATCH == 0,

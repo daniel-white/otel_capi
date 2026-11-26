@@ -1,12 +1,12 @@
 /*
- * Kitchen-sink example for cotel.
+ * Kitchen-sink example for otel-capi.
  *
  * Build against the generated header and the static library, then run with:
- *   COTEL_EXPORTER=stdout ./kitchen-sink
- *   COTEL_EXPORTER=none ./kitchen-sink
+ *   OTEL_CAPI_EXPORTER=stdout ./kitchen-sink
+ *   OTEL_CAPI_EXPORTER=none ./kitchen-sink
  */
 
-#include "cotel.h"
+#include "otel_capi.h"
 
 #include <pthread.h>
 #include <stdatomic.h>
@@ -17,7 +17,7 @@
 _Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_LEAK,
                "result sentinel must follow the last result code");
 _Static_assert(OTEL_VERSION_AT_LEAST(0, 1, 0),
-               "kitchen sink requires cotel 0.1.0 or newer");
+               "kitchen sink requires otel-capi 0.1.0 or newer");
 
 #define CHECK(call)                                                            \
   do {                                                                         \
@@ -51,7 +51,7 @@ typedef struct {
 } worker_args_t;
 
 static void configure_environment(void) {
-  const char *exporter = getenv("COTEL_EXPORTER");
+  const char *exporter = getenv("OTEL_CAPI_EXPORTER");
   if (exporter == NULL) {
     exporter = "stdout";
   }
@@ -59,7 +59,7 @@ static void configure_environment(void) {
   setenv("OTEL_METRICS_EXPORTER", exporter, 1);
   setenv("OTEL_LOGS_EXPORTER", exporter, 1);
   if (getenv("OTEL_SERVICE_NAME") == NULL) {
-    setenv("OTEL_SERVICE_NAME", "cotel-kitchen-sink", 1);
+    setenv("OTEL_SERVICE_NAME", "otel-capi-kitchen-sink", 1);
   }
 }
 
@@ -163,12 +163,12 @@ int main(void) {
     otel_log_record_options_t log_options = OTEL_LOG_RECORD_OPTIONS_INIT;
 
     configure_environment();
-    printf("cotel version %s\n", otel_version());
+    printf("otel-capi version %s\n", otel_version());
 
     CHECK(otel_runtime_new(&runtime));
     const otel_attribute_t *resource_attributes[] = {
         otel_attr_string("deployment.environment", "kitchen-sink"),
-        otel_attr_i64("cotel.kitchen_sink", 1),
+        otel_attr_i64("otel_capi.kitchen_sink", 1),
     };
     CHECK(otel_resource_new_with_attributes_arr(
         &resource, resource_attributes, 2));

@@ -1,5 +1,5 @@
 {
-  description = "cotel - C bindings for the OpenTelemetry Rust SDK";
+  description = "otel-capi - C API for OpenTelemetry";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";

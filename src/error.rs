@@ -3,7 +3,7 @@ use std::ffi::{CStr, CString, c_char};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::ptr;
 
-/// Status returned by every fallible `cotel` function.
+/// Status returned by every fallible `otel-capi` function.
 #[non_exhaustive]
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -80,7 +80,7 @@ where
     match catch_unwind(AssertUnwindSafe(f)) {
         Ok(Ok(())) => ok(),
         Ok(Err(err)) => err.report(),
-        Err(_) => set_error(otel_result_t::OTEL_ERR_PANIC, "panic while calling cotel"),
+        Err(_) => set_error(otel_result_t::OTEL_ERR_PANIC, "panic while calling otel-capi"),
     }
 }
 
@@ -114,7 +114,7 @@ pub(crate) unsafe fn optional_utf8(ptr: *const c_char, name: &str) -> Result<Opt
 }
 
 /// Returns the last error message for the calling thread. The pointer remains
-/// valid until another `cotel` call on the same thread records an error.
+/// valid until another `otel-capi` call on the same thread records an error.
 #[unsafe(no_mangle)]
 pub extern "C" fn otel_last_error() -> *const c_char {
     LAST_ERROR.with(|last| match last.borrow().as_ref() {

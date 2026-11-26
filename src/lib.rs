@@ -1,4 +1,4 @@
-//! C ABI bindings for the OpenTelemetry Rust SDK.
+//! C API for OpenTelemetry.
 //!
 //! All handles are caller-allocated structs holding an opaque pointer to an
 //! `Arc`. Use the matching `otel_*_retain` and `otel_*_release` functions to

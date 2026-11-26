@@ -11,8 +11,8 @@ CARGO ?= cargo
 
 BUILD_DIR := build/artifacts
 INCLUDE_DIR := include
-HEADERS := $(INCLUDE_DIR)/cotel.h $(INCLUDE_DIR)/cotel_semconv.h
-STATIC_LIB := target/release/libcotel.a
+HEADERS := $(wildcard $(INCLUDE_DIR)/otel_capi*.h)
+STATIC_LIB := target/release/libotel_capi.a
 EXAMPLE_SRC := examples/kitchen-sink/main.c
 
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror
@@ -27,8 +27,8 @@ SHARED_EXT := dylib
 else
 SHARED_EXT := so
 endif
-SHARED_LIB := target/release/libcotel.$(SHARED_EXT)
-PKG_CONFIG_FILE := $(BUILD_DIR)/cotel.pc
+SHARED_LIB := target/release/libotel_capi.$(SHARED_EXT)
+PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
 .PHONY: all build test example-gcc example-clang compile-checks pkg-config-file check clean install
 
@@ -46,8 +46,8 @@ $(BUILD_DIR):
 example-gcc: build | $(BUILD_DIR)
 	$(GCC) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
 		$(LDFLAGS) $(LDLIBS) -o $(BUILD_DIR)/kitchen-sink-gcc
-	COTEL_EXPORTER=none $(BUILD_DIR)/kitchen-sink-gcc
-	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-gcc > $(BUILD_DIR)/stdout-gcc.log
+	OTEL_CAPI_EXPORTER=none $(BUILD_DIR)/kitchen-sink-gcc
+	OTEL_CAPI_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-gcc > $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'all handles released' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-gcc.log
@@ -76,8 +76,8 @@ example-gcc: build | $(BUILD_DIR)
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
 		$(LDFLAGS) $(LDLIBS) -o $(BUILD_DIR)/kitchen-sink-clang
-	COTEL_EXPORTER=none $(BUILD_DIR)/kitchen-sink-clang
-	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-clang > $(BUILD_DIR)/stdout-clang.log
+	OTEL_CAPI_EXPORTER=none $(BUILD_DIR)/kitchen-sink-clang
+	OTEL_CAPI_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-clang > $(BUILD_DIR)/stdout-clang.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'all handles released' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-clang.log
@@ -114,7 +114,7 @@ compile-checks: | $(BUILD_DIR)
 
 pkg-config-file: $(PKG_CONFIG_FILE)
 
-$(PKG_CONFIG_FILE): cotel.pc.in Makefile | $(BUILD_DIR)
+$(PKG_CONFIG_FILE): otel-capi.pc.in Makefile | $(BUILD_DIR)
 	sed -e 's|@PREFIX@|$(PREFIX)|g' -e 's|@VERSION@|$(VERSION)|g' $< > $@
 
 check: test example-gcc example-clang compile-checks

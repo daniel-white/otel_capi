@@ -17,7 +17,7 @@ pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_r
     guard(|| {
         let runtime = Builder::new_multi_thread()
             .worker_threads(2)
-            .thread_name("cotel-worker")
+            .thread_name("otel-capi-worker")
             .enable_all()
             .build()
             .map_err(|err| {

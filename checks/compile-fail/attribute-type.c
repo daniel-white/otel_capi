@@ -1,4 +1,4 @@
-#include "cotel.h"
+#include "otel_capi.h"
 
 /* Must fail: generated string helper rejects an integer. */
 void bad_attribute_type(void) {

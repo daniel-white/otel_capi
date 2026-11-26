@@ -1,4 +1,4 @@
-#include "cotel.h"
+#include "otel_capi.h"
 
 /* Must fail: this metric helper requires a counter_u64 handle. */
 void bad_metric_handle(const otel_meter_t *meter, otel_counter_f64_t *wrong) {

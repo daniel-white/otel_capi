@@ -1,4 +1,4 @@
-#include "cotel.h"
+#include "otel_capi.h"
 
 /* A baggage value must not be accepted where a traceparent is expected. */
 void wrong_propagation_buffer_type(void) {

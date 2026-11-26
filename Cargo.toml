@@ -1,11 +1,12 @@
 [package]
-name = "cotel"
+name = "otel-capi"
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-description = "C bindings for the OpenTelemetry Rust SDK"
+description = "C API for OpenTelemetry"
 
 [lib]
+name = "otel_capi"
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [build-dependencies]
