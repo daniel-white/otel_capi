@@ -116,16 +116,17 @@ fn build_provider(
 /// Creates a tracer provider using the current environment configuration.
 /// `resource` may be NULL to build one from the environment. `runtime` may be
 /// NULL unless `OTEL_TRACES_EXPORTER=otlp`.
+/// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_new(
-    out: *mut otel_tracer_provider_t,
+    handle: *mut otel_tracer_provider_t,
     resource: *const crate::handles::otel_resource_t,
     runtime: *const otel_runtime_t,
 ) -> otel_result_t {
     guard(|| {
         let resource = optional_resource(resource)?;
         let runtime = optional_runtime(runtime)?;
-        unsafe { init(slot(out), build_provider(resource, runtime)?) }?;
+        unsafe { init(slot(handle), build_provider(resource, runtime)?) }?;
         Ok(())
     })
 }
@@ -161,13 +162,13 @@ pub unsafe extern "C" fn otel_tracer_provider_shutdown(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_tracer(
     provider: *const otel_tracer_provider_t,
-    out: *mut otel_tracer_t,
+    handle: *mut otel_tracer_t,
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
         let name = utf8(unsafe { c_str(name, "tracer name")? }, "tracer name")?;
-        unsafe { init(slot(out), provider.provider.tracer(name)) }?;
+        unsafe { init(slot(handle), provider.provider.tracer(name)) }?;
         Ok(())
     })
 }
@@ -176,7 +177,7 @@ pub unsafe extern "C" fn otel_tracer_provider_tracer(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start(
     tracer: *const otel_tracer_t,
-    out: *mut otel_span_t,
+    handle: *mut otel_span_t,
     name: *const c_char,
     mut attributes: ...,
 ) -> otel_result_t {
@@ -187,7 +188,7 @@ pub unsafe extern "C" fn otel_tracer_span_start(
         let mut builder = tracer.span_builder(name);
         builder.attributes = Some(attributes);
         let span: SdkSpan = tracer.build(builder);
-        unsafe { init(slot(out), Mutex::new(Some(span))) }?;
+        unsafe { init(slot(handle), Mutex::new(Some(span))) }?;
         Ok(())
     })
 }

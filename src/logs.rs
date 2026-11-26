@@ -115,16 +115,17 @@ fn build_provider(
 
 /// Creates a logger provider. `resource` and `runtime` may be NULL when the
 /// selected exporter does not need them.
+/// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_new(
-    out: *mut otel_logger_provider_t,
+    handle: *mut otel_logger_provider_t,
     resource: *const crate::handles::otel_resource_t,
     runtime: *const otel_runtime_t,
 ) -> otel_result_t {
     guard(|| {
         let resource = optional_resource(resource)?;
         let runtime = optional_runtime(runtime)?;
-        unsafe { init(slot(out), build_provider(resource, runtime)?) }?;
+        unsafe { init(slot(handle), build_provider(resource, runtime)?) }?;
         Ok(())
     })
 }
@@ -163,7 +164,7 @@ pub unsafe extern "C" fn otel_logger_provider_shutdown(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_logger(
     provider: *const otel_logger_provider_t,
-    out: *mut otel_logger_t,
+    handle: *mut otel_logger_t,
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
@@ -171,7 +172,7 @@ pub unsafe extern "C" fn otel_logger_provider_logger(
         let name = utf8(unsafe { c_str(name, "logger name")? }, "logger name")?;
         // The scope name is retained by the provider for its lifetime.
         let name: &'static str = Box::leak(name.into_boxed_str());
-        unsafe { init(slot(out), provider.provider.logger(name)) }?;
+        unsafe { init(slot(handle), provider.provider.logger(name)) }?;
         Ok(())
     })
 }

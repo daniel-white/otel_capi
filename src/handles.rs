@@ -257,9 +257,9 @@ pub(crate) fn report(result: Result<()>) -> otel_result_t {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_resource_retain(
     src: *const otel_resource_t,
-    out: *mut otel_resource_t,
+    handle: *mut otel_resource_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<ResourceInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<ResourceInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_resource_t` and clears the slot.
@@ -272,9 +272,9 @@ pub unsafe extern "C" fn otel_resource_release(handle: *mut otel_resource_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_retain(
     src: *const otel_runtime_t,
-    out: *mut otel_runtime_t,
+    handle: *mut otel_runtime_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<RuntimeInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<RuntimeInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_runtime_t` and clears the slot.
@@ -287,9 +287,9 @@ pub unsafe extern "C" fn otel_runtime_release(handle: *mut otel_runtime_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_retain(
     src: *const otel_tracer_provider_t,
-    out: *mut otel_tracer_provider_t,
+    handle: *mut otel_tracer_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<TracerProviderInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<TracerProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_tracer_provider_t` and clears the slot.
@@ -302,9 +302,9 @@ pub unsafe extern "C" fn otel_tracer_provider_release(handle: *mut otel_tracer_p
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_provider_retain(
     src: *const otel_meter_provider_t,
-    out: *mut otel_meter_provider_t,
+    handle: *mut otel_meter_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<MeterProviderInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<MeterProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_meter_provider_t` and clears the slot.
@@ -317,9 +317,9 @@ pub unsafe extern "C" fn otel_meter_provider_release(handle: *mut otel_meter_pro
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_retain(
     src: *const otel_logger_provider_t,
-    out: *mut otel_logger_provider_t,
+    handle: *mut otel_logger_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<LoggerProviderInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<LoggerProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_logger_provider_t` and clears the slot.
@@ -332,9 +332,9 @@ pub unsafe extern "C" fn otel_logger_provider_release(handle: *mut otel_logger_p
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_retain(
     src: *const otel_tracer_t,
-    out: *mut otel_tracer_t,
+    handle: *mut otel_tracer_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<TracerInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<TracerInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_tracer_t` and clears the slot.
@@ -347,9 +347,9 @@ pub unsafe extern "C" fn otel_tracer_release(handle: *mut otel_tracer_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_retain(
     src: *const otel_meter_t,
-    out: *mut otel_meter_t,
+    handle: *mut otel_meter_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<MeterInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<MeterInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_meter_t` and clears the slot.
@@ -362,9 +362,9 @@ pub unsafe extern "C" fn otel_meter_release(handle: *mut otel_meter_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_retain(
     src: *const otel_logger_t,
-    out: *mut otel_logger_t,
+    handle: *mut otel_logger_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<LoggerInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<LoggerInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_logger_t` and clears the slot.
@@ -377,9 +377,9 @@ pub unsafe extern "C" fn otel_logger_release(handle: *mut otel_logger_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_retain(
     src: *const otel_span_t,
-    out: *mut otel_span_t,
+    handle: *mut otel_span_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<SpanInner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<SpanInner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_span_t` and clears the slot.
@@ -392,9 +392,9 @@ pub unsafe extern "C" fn otel_span_release(handle: *mut otel_span_t) {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_u64_retain(
     src: *const otel_counter_u64_t,
-    out: *mut otel_counter_u64_t,
+    handle: *mut otel_counter_u64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<CounterU64Inner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<CounterU64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_counter_u64_t` and clears the slot.
@@ -407,9 +407,9 @@ pub unsafe extern "C" fn otel_counter_u64_release(handle: *mut otel_counter_u64_
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_f64_retain(
     src: *const otel_counter_f64_t,
-    out: *mut otel_counter_f64_t,
+    handle: *mut otel_counter_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<CounterF64Inner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<CounterF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_counter_f64_t` and clears the slot.
@@ -422,9 +422,9 @@ pub unsafe extern "C" fn otel_counter_f64_release(handle: *mut otel_counter_f64_
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_updown_counter_i64_retain(
     src: *const otel_updown_counter_i64_t,
-    out: *mut otel_updown_counter_i64_t,
+    handle: *mut otel_updown_counter_i64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<UpDownCounterI64Inner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<UpDownCounterI64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_updown_counter_i64_t` and clears the slot.
@@ -437,9 +437,9 @@ pub unsafe extern "C" fn otel_updown_counter_i64_release(handle: *mut otel_updow
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_histogram_f64_retain(
     src: *const otel_histogram_f64_t,
-    out: *mut otel_histogram_f64_t,
+    handle: *mut otel_histogram_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<HistogramF64Inner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<HistogramF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_histogram_f64_t` and clears the slot.
@@ -452,9 +452,9 @@ pub unsafe extern "C" fn otel_histogram_f64_release(handle: *mut otel_histogram_
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_gauge_f64_retain(
     src: *const otel_gauge_f64_t,
-    out: *mut otel_gauge_f64_t,
+    handle: *mut otel_gauge_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<GaugeF64Inner>(src.cast(), slot(out)) }?; Ok(()) })
+    guard(|| { unsafe { retain::<GaugeF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
 }
 
 /// Releases one reference to a `otel_gauge_f64_t` and clears the slot.

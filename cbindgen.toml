@@ -6,6 +6,18 @@ tab_width = 2
 documentation = true
 usize_is_size_t = true
 
+after_includes = """
+/* Ownership convention
+ *
+ * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a
+ * pointer to the matching `otel_foo_new` or `otel_foo_retain` function; the
+ * library writes into that storage and never allocates the struct. On success
+ * the struct owns one reference, so pair it with `otel_foo_release`, which
+ * clears the struct and is safe to call on a zero-initialized one.
+ *
+ * All strings are borrowed for the duration of a call only.
+ */
+"""
 
 [export]
 include = [

@@ -11,8 +11,9 @@ use crate::error::{Error, guard, otel_result_t};
 use crate::handles::{RuntimeInner, arc, const_slot, init, otel_runtime_t, slot};
 
 /// Creates a multi-threaded async runtime used by OTLP exporters.
+/// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_runtime_new(out: *mut otel_runtime_t) -> otel_result_t {
+pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_result_t {
     guard(|| {
         let runtime = Builder::new_multi_thread()
             .worker_threads(2)
@@ -25,7 +26,7 @@ pub unsafe extern "C" fn otel_runtime_new(out: *mut otel_runtime_t) -> otel_resu
                     format!("failed to create async runtime: {err}"),
                 )
             })?;
-        unsafe { init(slot(out), runtime) }?;
+        unsafe { init(slot(handle), runtime) }?;
         Ok(())
     })
 }

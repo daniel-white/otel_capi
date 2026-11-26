@@ -80,16 +80,17 @@ unsafe fn instrument_options(
 
 /// Creates a meter provider. `resource` and `runtime` may be NULL when the
 /// selected exporter does not need them.
+/// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_provider_new(
-    out: *mut otel_meter_provider_t,
+    handle: *mut otel_meter_provider_t,
     resource: *const crate::handles::otel_resource_t,
     runtime: *const otel_runtime_t,
 ) -> otel_result_t {
     guard(|| {
         let resource = optional_resource(resource)?;
         let runtime = optional_runtime(runtime)?;
-        unsafe { init(slot(out), build_provider(resource, runtime)?) }?;
+        unsafe { init(slot(handle), build_provider(resource, runtime)?) }?;
         Ok(())
     })
 }
@@ -128,7 +129,7 @@ pub unsafe extern "C" fn otel_meter_provider_shutdown(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_provider_meter(
     provider: *const otel_meter_provider_t,
-    out: *mut otel_meter_t,
+    handle: *mut otel_meter_t,
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
@@ -136,7 +137,7 @@ pub unsafe extern "C" fn otel_meter_provider_meter(
         let name = utf8(unsafe { c_str(name, "meter name")? }, "meter name")?;
         // Meter scope names are retained by the provider for its lifetime.
         let name: &'static str = Box::leak(name.into_boxed_str());
-        unsafe { init(slot(out), provider.provider.meter(name)) }?;
+        unsafe { init(slot(handle), provider.provider.meter(name)) }?;
         Ok(())
     })
 }
@@ -145,7 +146,7 @@ pub unsafe extern "C" fn otel_meter_provider_meter(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_counter_u64(
     meter: *const otel_meter_t,
-    out: *mut otel_counter_u64_t,
+    handle: *mut otel_counter_u64_t,
     name: *const c_char,
     unit: *const c_char,
     description: *const c_char,
@@ -161,7 +162,7 @@ pub unsafe extern "C" fn otel_meter_counter_u64(
         if let Some(description) = description {
             builder = builder.with_description(description);
         }
-        unsafe { init(slot(out), builder.build()) }?;
+        unsafe { init(slot(handle), builder.build()) }?;
         Ok(())
     })
 }
@@ -170,7 +171,7 @@ pub unsafe extern "C" fn otel_meter_counter_u64(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_counter_f64(
     meter: *const otel_meter_t,
-    out: *mut otel_counter_f64_t,
+    handle: *mut otel_counter_f64_t,
     name: *const c_char,
     unit: *const c_char,
     description: *const c_char,
@@ -186,7 +187,7 @@ pub unsafe extern "C" fn otel_meter_counter_f64(
         if let Some(description) = description {
             builder = builder.with_description(description);
         }
-        unsafe { init(slot(out), builder.build()) }?;
+        unsafe { init(slot(handle), builder.build()) }?;
         Ok(())
     })
 }
@@ -195,7 +196,7 @@ pub unsafe extern "C" fn otel_meter_counter_f64(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_updown_counter_i64(
     meter: *const otel_meter_t,
-    out: *mut otel_updown_counter_i64_t,
+    handle: *mut otel_updown_counter_i64_t,
     name: *const c_char,
     unit: *const c_char,
     description: *const c_char,
@@ -211,7 +212,7 @@ pub unsafe extern "C" fn otel_meter_updown_counter_i64(
         if let Some(description) = description {
             builder = builder.with_description(description);
         }
-        unsafe { init(slot(out), builder.build()) }?;
+        unsafe { init(slot(handle), builder.build()) }?;
         Ok(())
     })
 }
@@ -220,7 +221,7 @@ pub unsafe extern "C" fn otel_meter_updown_counter_i64(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_histogram_f64(
     meter: *const otel_meter_t,
-    out: *mut otel_histogram_f64_t,
+    handle: *mut otel_histogram_f64_t,
     name: *const c_char,
     unit: *const c_char,
     description: *const c_char,
@@ -236,7 +237,7 @@ pub unsafe extern "C" fn otel_meter_histogram_f64(
         if let Some(description) = description {
             builder = builder.with_description(description);
         }
-        unsafe { init(slot(out), builder.build()) }?;
+        unsafe { init(slot(handle), builder.build()) }?;
         Ok(())
     })
 }
@@ -245,7 +246,7 @@ pub unsafe extern "C" fn otel_meter_histogram_f64(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_gauge_f64(
     meter: *const otel_meter_t,
-    out: *mut otel_gauge_f64_t,
+    handle: *mut otel_gauge_f64_t,
     name: *const c_char,
     unit: *const c_char,
     description: *const c_char,
@@ -261,7 +262,7 @@ pub unsafe extern "C" fn otel_meter_gauge_f64(
         if let Some(description) = description {
             builder = builder.with_description(description);
         }
-        unsafe { init(slot(out), builder.build()) }?;
+        unsafe { init(slot(handle), builder.build()) }?;
         Ok(())
     })
 }
