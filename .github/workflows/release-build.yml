@@ -69,3 +69,36 @@ jobs:
             dist/*.tar.gz.sha256
             dist/*.zip
             dist/*.zip.sha256
+
+  docs:
+    name: API documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_REF }}
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - name: Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen
+
+      - name: Generate API documentation
+        env:
+          VERSION: ${{ env.RELEASE_REF }}
+        run: |
+          make docs
+          version="${VERSION#v}"
+          mkdir -p dist
+          tar -C build/docs -czf "dist/otel-capi-${version}-docs.tar.gz" html
+          (cd dist && shasum -a 256 "otel-capi-${version}-docs.tar.gz" > "otel-capi-${version}-docs.tar.gz.sha256")
+
+      - name: Upload documentation
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_REF }}
+          files: |
+            dist/otel-capi-*-docs.tar.gz
+            dist/otel-capi-*-docs.tar.gz.sha256

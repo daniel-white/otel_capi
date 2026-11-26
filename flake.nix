@@ -29,6 +29,8 @@
           packages = [
             rustToolchain
             pkgs.cmake
+            pkgs.doxygen
+            pkgs.python3
             pkgs.pkg-config
             pkgs.gcc
             pkgs.clang

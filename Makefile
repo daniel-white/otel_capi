@@ -10,6 +10,7 @@ CC ?= $(GCC)
 CARGO ?= cargo
 
 BUILD_DIR := build/artifacts
+DOCS_DIR := build/docs
 INCLUDE_DIR := include
 HEADERS = $(wildcard $(INCLUDE_DIR)/otel_capi*.h)
 STATIC_LIB := target/release/libotel_capi.a
@@ -30,7 +31,7 @@ endif
 SHARED_LIB := target/release/libotel_capi.$(SHARED_EXT)
 PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
-.PHONY: all build test example-gcc example-clang compile-checks pkg-config-file check clean install
+.PHONY: all build test docs example-gcc example-clang compile-checks pkg-config-file check clean install
 
 all: build
 
@@ -39,6 +40,9 @@ build:
 
 test:
 	$(CARGO) test --lib
+
+docs: build | $(BUILD_DIR)
+	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -128,4 +132,4 @@ install: build pkg-config-file
 
 clean:
 	$(CARGO) clean
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(DOCS_DIR)

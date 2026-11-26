@@ -20,6 +20,7 @@ through generated headers and caller-owned handle structs.
 - `checks/` — compile-pass and compile-fail checks for the C API.
 - `otel-capi.pc.in` — pkg-config metadata template.
 - `scripts/package_release.py` — packages Cargo release output into archives.
+- `scripts/generate_docs.py` — renders Doxygen HTML from the generated headers.
 - `.github/workflows/` — CI, release-please, and release artifact builds.
 - `Formula/`, `bucket/`, `conanfile.py`, `ports/otel-capi/` — package-manager
   manifests for Homebrew, Scoop, Conan, and vcpkg.
@@ -50,6 +51,14 @@ shell automatically. Run `direnv allow` once after cloning, then plain
 both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, runs it with both
 `OTEL_CAPI_EXPORTER=none` and `OTEL_CAPI_EXPORTER=stdout`, and verifies the
 compile-pass/compile-fail checks in `checks/`.
+
+Generate HTML API documentation from the generated headers with:
+
+```sh
+nix develop --command make docs
+```
+
+The output is in `build/docs/html`. Doxygen is provided by the dev shell.
 
 Install the library, headers, and pkg-config metadata with:
 
@@ -333,13 +342,18 @@ every handle was released.
 Each GitHub release publishes archives for Linux (x86_64), macOS (x86_64 and
 arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
 contains the generated headers, static and shared libraries, a relocatable
-`otel-capi.pc`, `LICENSE`, and `README.md`. For example:
+`otel-capi.pc`, `LICENSE`, and `README.md`. A separate
+`otel-capi-<version>-docs.tar.gz` contains the Doxygen HTML reference for the
+generated headers. For example:
 
 ```sh
 version=0.1.0
 target=x86_64-unknown-linux-gnu
 curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}.tar.gz"
 tar xzf "otel-capi-${version}-${target}.tar.gz"
+
+curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-docs.tar.gz"
+tar xzf "otel-capi-${version}-docs.tar.gz"
 ```
 
 ## Package managers
