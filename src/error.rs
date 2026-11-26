@@ -16,6 +16,8 @@ pub enum otel_result_t {
     OTEL_ERR_SHUTDOWN = 5,
     OTEL_ERR_INTERNAL = 6,
     OTEL_ERR_PANIC = 7,
+    /// Handles are still live at an explicit cleanup check.
+    OTEL_ERR_LEAK = 8,
 }
 
 thread_local! {
@@ -134,6 +136,7 @@ pub extern "C" fn otel_strerror(code: i32) -> *const c_char {
         5 => c"shutdown failed",
         6 => c"internal error",
         7 => c"panic",
+        8 => c"handles still live",
         _ => c"unknown status",
     }
     .as_ptr()
@@ -172,6 +175,9 @@ mod tests {
         let mut buf = [0i8; 32];
         let written = unsafe { otel_copy_last_error(buf.as_mut_ptr(), buf.len()) };
         assert_eq!(written, 11);
-        assert_eq!(unsafe { CStr::from_ptr(buf.as_ptr()) }.to_str().unwrap(), "bad config");
+        assert_eq!(
+            unsafe { CStr::from_ptr(buf.as_ptr()) }.to_str().unwrap(),
+            "bad config"
+        );
     }
 }

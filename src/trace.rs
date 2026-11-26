@@ -3,26 +3,26 @@
 use std::env;
 use std::ffi::{VaList, c_char};
 use std::ptr;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::SystemTime;
 
 use opentelemetry::Context;
 use opentelemetry::KeyValue;
 use opentelemetry::trace::{
-    Span as _, SpanContext, SpanId, SpanKind, Status, TraceFlags, TraceId, TraceState,
-    Tracer as _, TracerProvider as _,
+    Span as _, SpanContext, SpanId, SpanKind, Status, TraceFlags, TraceId, TraceState, Tracer as _,
+    TracerProvider as _,
 };
 use opentelemetry_sdk::trace::{
-    BatchConfigBuilder, BatchSpanProcessor, Sampler, SimpleSpanProcessor, SdkTracerProvider,
+    BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider, SimpleSpanProcessor,
     Span as SdkSpan,
 };
 
 use crate::attributes::from_varargs;
-use crate::handles::ContextInner;
 use crate::config::{
     build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
 };
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
+use crate::handles::ContextInner;
 use crate::handles::{
     RuntimeInner, SpanInner, TracerInner, TracerProviderInner, arc, const_slot, copy_string, init,
     optional_resource, optional_runtime, slot,
@@ -68,6 +68,8 @@ pub struct otel_span_options_t {
     pub start_time_unix_nano: i64,
     /// Optional parent context; NULL uses the context attached to this thread.
     pub parent: *const otel_context_t,
+    /// Non-zero to end the span when its last handle is released.
+    pub end_on_release: i32,
 }
 
 fn span_kind(value: i32) -> Result<Option<SpanKind>> {
@@ -84,9 +86,9 @@ fn span_kind(value: i32) -> Result<Option<SpanKind>> {
 
 unsafe fn span_options(
     options: *const otel_span_options_t,
-) -> Result<(Option<SpanKind>, Option<SystemTime>, Option<Context>)> {
+) -> Result<(Option<SpanKind>, Option<SystemTime>, Option<Context>, bool)> {
     if options.is_null() {
-        return Ok((None, None, None));
+        return Ok((None, None, None, false));
     }
     let options = unsafe { &*options };
     if options.size < std::mem::size_of::<otel_span_options_t>() {
@@ -100,7 +102,7 @@ unsafe fn span_options(
         let context = unsafe { arc::<ContextInner>(const_slot(options.parent)) }?;
         Some(context.as_ref().clone())
     };
-    Ok((kind, start, parent))
+    Ok((kind, start, parent, options.end_on_release != 0))
 }
 
 unsafe fn start_span(
@@ -113,7 +115,7 @@ unsafe fn start_span(
     let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
     let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
     let attributes = unsafe { from_varargs(attributes) }?;
-    let (kind, start, parent) = unsafe { span_options(options)? };
+    let (kind, start, parent, end_on_release) = unsafe { span_options(options)? };
     let mut builder = tracer.span_builder(name).with_attributes(attributes);
     if let Some(kind) = kind {
         builder = builder.with_kind(kind);
@@ -125,13 +127,25 @@ unsafe fn start_span(
         Some(parent) => tracer.build_with_context(builder, &parent),
         None => tracer.build(builder),
     };
-    unsafe { init(slot(handle), Mutex::new(Some(span))) }
+    unsafe { init(slot(handle), SpanInner::new(span, end_on_release)) }
+}
+
+/// Ends a span once, ignoring a poisoned lock because the handle is already
+/// being released.
+pub(crate) fn end_span_once(inner: &SpanInner) {
+    if let Ok(mut guard) = inner.lock() {
+        if let Some(span) = guard.as_mut() {
+            span.end();
+        }
+    }
 }
 
 /// Returns the `SpanContext` behind a handle, including ended spans.
 pub(crate) unsafe fn span_context(span: *const otel_span_t) -> Result<SpanContext> {
     let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-    let guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+    let guard = inner
+        .lock()
+        .map_err(|_| Error::internal("span lock is poisoned"))?;
     let span = guard
         .as_ref()
         .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -242,7 +256,10 @@ pub unsafe extern "C" fn otel_tracer_provider_force_flush(
 ) -> otel_result_t {
     guard(|| {
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
-        provider.provider.force_flush().map_err(|err| sdk_error("failed to flush spans", err))?;
+        provider
+            .provider
+            .force_flush()
+            .map_err(|err| sdk_error("failed to flush spans", err))?;
         Ok(())
     })
 }
@@ -283,7 +300,7 @@ pub unsafe extern "C" fn otel_tracer_span_start(
     tracer: *const otel_tracer_t,
     handle: *mut otel_span_t,
     name: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| unsafe { start_span(tracer, ptr::null(), handle, name, attributes) })
 }
@@ -295,7 +312,7 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options(
     options: *const otel_span_options_t,
     handle: *mut otel_span_t,
     name: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| unsafe { start_span(tracer, options, handle, name, attributes) })
 }
@@ -304,11 +321,13 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_attributes(
     span: *const otel_span_t,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -323,11 +342,13 @@ pub unsafe extern "C" fn otel_span_set_attributes(
 pub unsafe extern "C" fn otel_span_add_event(
     span: *const otel_span_t,
     name: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -347,11 +368,14 @@ pub unsafe extern "C" fn otel_span_set_status(
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
-        let description = unsafe { optional_utf8(description, "status description")? }.unwrap_or_default();
+        let description =
+            unsafe { optional_utf8(description, "status description")? }.unwrap_or_default();
         let status = match status {
             0 => Status::Unset,
             1 => Status::Ok,
@@ -375,7 +399,9 @@ pub unsafe extern "C" fn otel_span_update_name(
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -391,11 +417,13 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
     span: *const otel_span_t,
     name: *const c_char,
     timestamp_unix_nano: i64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -414,11 +442,13 @@ pub unsafe extern "C" fn otel_span_add_link(
     span: *const otel_span_t,
     trace_id_hex: *const c_char,
     span_id_hex: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -457,11 +487,13 @@ pub unsafe extern "C" fn otel_span_record_exception(
     exception_type: *const c_char,
     message: *const c_char,
     stacktrace: *const c_char,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_mut()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -472,10 +504,7 @@ pub unsafe extern "C" fn otel_span_record_exception(
             ("exception.stacktrace", stacktrace),
         ] {
             if !pointer.is_null() {
-                let value = utf8(
-                    unsafe { c_str(pointer, key)? },
-                    key,
-                )?;
+                let value = utf8(unsafe { c_str(pointer, key)? }, key)?;
                 values.push(KeyValue::new(key, value));
             }
         }
@@ -492,7 +521,9 @@ pub unsafe extern "C" fn otel_span_end_with_timestamp(
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         if let Some(span) = guard.as_mut() {
             match system_time(timestamp_unix_nano)? {
                 Some(timestamp) => span.end_with_timestamp(timestamp),
@@ -508,7 +539,9 @@ pub unsafe extern "C" fn otel_span_end_with_timestamp(
 pub unsafe extern "C" fn otel_span_end(span: *const otel_span_t) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let mut guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let mut guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         if let Some(span) = guard.as_mut() {
             span.end();
         }
@@ -525,7 +558,9 @@ pub unsafe extern "C" fn otel_span_trace_id(
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -544,7 +579,9 @@ pub unsafe extern "C" fn otel_span_span_id(
 ) -> otel_result_t {
     guard(|| {
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
-        let guard = inner.lock().map_err(|_| Error::internal("span lock is poisoned"))?;
+        let guard = inner
+            .lock()
+            .map_err(|_| Error::internal("span lock is poisoned"))?;
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
@@ -557,7 +594,66 @@ pub unsafe extern "C" fn otel_span_span_id(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::handles::{otel_tracer_provider_release, otel_tracer_release};
+    use crate::handles::{
+        otel_span_release, otel_span_retain, otel_tracer_provider_release, otel_tracer_release,
+    };
+
+    #[test]
+    fn end_on_release_ends_retained_span() {
+        unsafe { env::set_var("OTEL_TRACES_EXPORTER", "none") };
+        let mut provider = crate::handles::otel_tracer_provider_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut tracer = crate::handles::otel_tracer_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut span = crate::handles::otel_span_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut retained = crate::handles::otel_span_t {
+            inner: std::ptr::null_mut(),
+        };
+        unsafe {
+            assert_eq!(
+                otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_provider_tracer(&provider, &mut tracer, c"test".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            let options = otel_span_options_t {
+                size: std::mem::size_of::<otel_span_options_t>(),
+                kind: -1,
+                start_time_unix_nano: 0,
+                parent: std::ptr::null(),
+                end_on_release: 1,
+            };
+            assert_eq!(
+                otel_tracer_span_start_with_options(
+                    &tracer,
+                    &options,
+                    &mut span,
+                    c"deferred".as_ptr(),
+                    std::ptr::null::<crate::attributes::otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_retain(&span, &mut retained),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut span);
+            assert_eq!(
+                otel_span_update_name(&retained, c"still-open".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut retained);
+            otel_tracer_release(&mut tracer);
+            otel_tracer_provider_release(&mut provider);
+            env::remove_var("OTEL_TRACES_EXPORTER");
+        }
+    }
 
     #[test]
     fn no_exporter_provider_creates_tracer_and_span() {

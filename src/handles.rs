@@ -5,10 +5,12 @@
 //! it never allocates the handle itself. `*_retain` duplicates into another
 //! caller-owned slot and `*_release` drops the `Arc` and nulls the slot.
 
-use std::ffi::{c_void, c_char};
+use std::ffi::{c_char, c_void};
+use std::ops::{Deref, DerefMut};
 use std::ptr;
 use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Mutex, MutexGuard};
 
 use tokio::runtime::Runtime;
 
@@ -45,7 +47,61 @@ pub(crate) struct LoggerProviderInner {
 pub(crate) type TracerInner = SdkTracer;
 pub(crate) type MeterInner = opentelemetry::metrics::Meter;
 pub(crate) type LoggerInner = SdkLogger;
-pub(crate) type SpanInner = Mutex<Option<SdkSpan>>;
+/// Tracks a started span plus whether its last handle release ends it.
+pub(crate) struct SpanInner {
+    span: Mutex<Option<SdkSpan>>,
+    end_on_release: bool,
+}
+
+impl SpanInner {
+    pub(crate) fn new(span: SdkSpan, end_on_release: bool) -> Self {
+        Self {
+            span: Mutex::new(Some(span)),
+            end_on_release,
+        }
+    }
+
+    pub(crate) fn lock(
+        &self,
+    ) -> std::result::Result<SpanGuard<'_>, std::sync::PoisonError<MutexGuard<'_, Option<SdkSpan>>>>
+    {
+        self.span.lock().map(SpanGuard)
+    }
+
+    pub(crate) fn end_on_release(&self) -> bool {
+        self.end_on_release
+    }
+}
+
+pub(crate) struct SpanGuard<'a>(MutexGuard<'a, Option<SdkSpan>>);
+
+impl Deref for SpanGuard<'_> {
+    type Target = Option<SdkSpan>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for SpanGuard<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+static LIVE_HANDLES: AtomicUsize = AtomicUsize::new(0);
+
+fn handle_created() {
+    LIVE_HANDLES.fetch_add(1, Ordering::SeqCst);
+}
+
+fn handle_destroyed() {
+    LIVE_HANDLES.fetch_sub(1, Ordering::SeqCst);
+}
+
+pub(crate) fn live_handle_count() -> usize {
+    LIVE_HANDLES.load(Ordering::SeqCst)
+}
 pub(crate) type CounterU64Inner = Counter<u64>;
 pub(crate) type CounterF64Inner = Counter<f64>;
 pub(crate) type UpDownCounterI64Inner = UpDownCounter<i64>;
@@ -185,15 +241,18 @@ pub(crate) unsafe fn valid<T: Send + Sync + 'static>(src: *const *mut c_void) ->
     unsafe { !ptr::read(src).is_null() }
 }
 
-pub(crate) unsafe fn init<T: Send + Sync + 'static>(
-    out: *mut *mut c_void,
-    value: T,
-) -> Result<()> {
+pub(crate) unsafe fn init<T: Send + Sync + 'static>(out: *mut *mut c_void, value: T) -> Result<()> {
     if out.is_null() {
         return Err(Error::invalid("out must not be NULL"));
     }
     // SAFETY: caller guarantees `out` points to writable, aligned storage.
-    unsafe { ptr::write(out, Arc::into_raw(Arc::new(value)).cast_mut().cast::<c_void>()) };
+    unsafe {
+        ptr::write(
+            out,
+            Arc::into_raw(Arc::new(value)).cast_mut().cast::<c_void>(),
+        )
+    };
+    handle_created();
     Ok(())
 }
 
@@ -224,6 +283,7 @@ pub(crate) unsafe fn retain<T: Send + Sync + 'static>(
     let value: Arc<T> = unsafe { arc::<T>(src)? };
     // SAFETY: caller guarantees `out` points to writable, aligned storage.
     unsafe { ptr::write(out, Arc::into_raw(value).cast_mut().cast::<c_void>()) };
+    handle_created();
     Ok(())
 }
 
@@ -236,15 +296,36 @@ pub(crate) unsafe fn release<T: Send + Sync + 'static>(handle: *mut *mut c_void)
     // SAFETY: nulling the slot makes double-release a no-op.
     unsafe { ptr::write(handle, ptr::null_mut()) };
     if !raw.is_null() {
+        handle_destroyed();
         // SAFETY: `raw` came from `Arc::into_raw::<T>` and we consumed one count.
         unsafe { drop(Arc::from_raw(raw.cast::<T>())) };
     }
 }
 
+/// Releases a span handle, ending the span first when it was started with
+/// `end_on_release` and this is the last live handle.
+pub(crate) unsafe fn release_span(handle: *mut *mut c_void) {
+    if handle.is_null() {
+        return;
+    }
+    // SAFETY: caller guarantees `handle` points to an initialized handle.
+    let raw = unsafe { ptr::read(handle) };
+    // SAFETY: nulling the slot makes double-release a no-op.
+    unsafe { ptr::write(handle, ptr::null_mut()) };
+    if raw.is_null() {
+        return;
+    }
+    // SAFETY: `raw` came from `Arc::into_raw::<SpanInner>`.
+    let inner = unsafe { Arc::from_raw(raw.cast::<SpanInner>()) };
+    if inner.end_on_release() && Arc::strong_count(&inner) == 1 {
+        crate::trace::end_span_once(&inner);
+    }
+    handle_destroyed();
+    drop(inner);
+}
+
 /// Clones the resource behind an optional handle, or returns `None` for NULL.
-pub(crate) fn optional_resource(
-    handle: *const otel_resource_t,
-) -> Result<Option<ResourceInner>> {
+pub(crate) fn optional_resource(handle: *const otel_resource_t) -> Result<Option<ResourceInner>> {
     if handle.is_null() {
         return Ok(None);
     }
@@ -276,6 +357,27 @@ pub(crate) fn copy_string(value: &str, buf: *mut c_char, capacity: usize) -> Res
     Ok(needed)
 }
 
+/// Returns the number of live handles created by this library.
+#[unsafe(no_mangle)]
+pub extern "C" fn otel_live_handle_count() -> usize {
+    live_handle_count()
+}
+
+/// Returns `OTEL_OK` when every handle created by this library has been
+/// released. Otherwise it reports `OTEL_ERR_LEAK` with the live-handle count
+/// in the thread-local error message.
+#[unsafe(no_mangle)]
+pub extern "C" fn otel_ensure_all_released() -> otel_result_t {
+    let live = live_handle_count();
+    if live == 0 {
+        otel_result_t::OTEL_OK
+    } else {
+        crate::error::set_error(
+            otel_result_t::OTEL_ERR_LEAK,
+            &format!("{live} handle(s) are still live"),
+        )
+    }
+}
 
 /// Retains a `otel_resource_t` into caller-provided storage.
 #[unsafe(no_mangle)]
@@ -283,7 +385,10 @@ pub unsafe extern "C" fn otel_resource_retain(
     src: *const otel_resource_t,
     handle: *mut otel_resource_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<ResourceInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<ResourceInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_resource_t` and clears the slot.
@@ -298,7 +403,10 @@ pub unsafe extern "C" fn otel_runtime_retain(
     src: *const otel_runtime_t,
     handle: *mut otel_runtime_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<RuntimeInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<RuntimeInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_runtime_t` and clears the slot.
@@ -313,7 +421,10 @@ pub unsafe extern "C" fn otel_tracer_provider_retain(
     src: *const otel_tracer_provider_t,
     handle: *mut otel_tracer_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<TracerProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<TracerProviderInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_tracer_provider_t` and clears the slot.
@@ -328,7 +439,10 @@ pub unsafe extern "C" fn otel_meter_provider_retain(
     src: *const otel_meter_provider_t,
     handle: *mut otel_meter_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<MeterProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<MeterProviderInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_meter_provider_t` and clears the slot.
@@ -343,7 +457,10 @@ pub unsafe extern "C" fn otel_logger_provider_retain(
     src: *const otel_logger_provider_t,
     handle: *mut otel_logger_provider_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<LoggerProviderInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<LoggerProviderInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_logger_provider_t` and clears the slot.
@@ -358,7 +475,10 @@ pub unsafe extern "C" fn otel_tracer_retain(
     src: *const otel_tracer_t,
     handle: *mut otel_tracer_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<TracerInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<TracerInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_tracer_t` and clears the slot.
@@ -373,7 +493,10 @@ pub unsafe extern "C" fn otel_meter_retain(
     src: *const otel_meter_t,
     handle: *mut otel_meter_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<MeterInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<MeterInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_meter_t` and clears the slot.
@@ -388,7 +511,10 @@ pub unsafe extern "C" fn otel_logger_retain(
     src: *const otel_logger_t,
     handle: *mut otel_logger_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<LoggerInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<LoggerInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_logger_t` and clears the slot.
@@ -403,13 +529,16 @@ pub unsafe extern "C" fn otel_span_retain(
     src: *const otel_span_t,
     handle: *mut otel_span_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<SpanInner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<SpanInner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_span_t` and clears the slot.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_release(handle: *mut otel_span_t) {
-    unsafe { release::<SpanInner>(slot(handle)) }
+    unsafe { release_span(slot(handle)) }
 }
 
 /// Retains a `otel_counter_u64_t` into caller-provided storage.
@@ -418,7 +547,10 @@ pub unsafe extern "C" fn otel_counter_u64_retain(
     src: *const otel_counter_u64_t,
     handle: *mut otel_counter_u64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<CounterU64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<CounterU64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_counter_u64_t` and clears the slot.
@@ -433,7 +565,10 @@ pub unsafe extern "C" fn otel_counter_f64_retain(
     src: *const otel_counter_f64_t,
     handle: *mut otel_counter_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<CounterF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<CounterF64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_counter_f64_t` and clears the slot.
@@ -448,7 +583,10 @@ pub unsafe extern "C" fn otel_updown_counter_i64_retain(
     src: *const otel_updown_counter_i64_t,
     handle: *mut otel_updown_counter_i64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<UpDownCounterI64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<UpDownCounterI64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_updown_counter_i64_t` and clears the slot.
@@ -463,7 +601,10 @@ pub unsafe extern "C" fn otel_histogram_f64_retain(
     src: *const otel_histogram_f64_t,
     handle: *mut otel_histogram_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<HistogramF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<HistogramF64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_histogram_f64_t` and clears the slot.
@@ -478,7 +619,10 @@ pub unsafe extern "C" fn otel_gauge_f64_retain(
     src: *const otel_gauge_f64_t,
     handle: *mut otel_gauge_f64_t,
 ) -> otel_result_t {
-    guard(|| { unsafe { retain::<GaugeF64Inner>(src.cast(), slot(handle)) }?; Ok(()) })
+    guard(|| {
+        unsafe { retain::<GaugeF64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
 }
 
 /// Releases one reference to a `otel_gauge_f64_t` and clears the slot.

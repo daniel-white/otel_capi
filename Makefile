@@ -49,6 +49,7 @@ example-gcc: build | $(BUILD_DIR)
 	COTEL_EXPORTER=none $(BUILD_DIR)/kitchen-sink-gcc
 	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-gcc > $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'all handles released' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-gcc.log
 	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-gcc.log
@@ -67,6 +68,7 @@ example-clang: build | $(BUILD_DIR)
 	COTEL_EXPORTER=none $(BUILD_DIR)/kitchen-sink-clang
 	COTEL_EXPORTER=stdout $(BUILD_DIR)/kitchen-sink-clang > $(BUILD_DIR)/stdout-clang.log
 	grep -q 'all signals completed' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'all handles released' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'trace_id=' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'worker 3 complete' $(BUILD_DIR)/stdout-clang.log
 	grep -q ' ->  items: Int(3)' $(BUILD_DIR)/stdout-clang.log

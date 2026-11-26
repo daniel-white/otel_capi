@@ -48,6 +48,10 @@ typedef enum {
   OTEL_ERR_SHUTDOWN = 5,
   OTEL_ERR_INTERNAL = 6,
   OTEL_ERR_PANIC = 7,
+  /**
+   * Handles are still live at an explicit cleanup check.
+   */
+  OTEL_ERR_LEAK = 8,
 } otel_result_t;
 
 /**
@@ -346,6 +350,10 @@ typedef struct {
    * Optional parent context; NULL uses the context attached to this thread.
    */
   const otel_context_t *parent;
+  /**
+   * Non-zero to end the span when its last handle is released.
+   */
+  int32_t end_on_release;
 } otel_span_options_t;
 
 /**
@@ -488,6 +496,18 @@ OTEL_API const char *otel_strerror(int32_t code);
  * NULL or `capacity` is too small; otherwise returns the bytes written.
  */
 OTEL_API size_t otel_copy_last_error(char *buf, size_t capacity);
+
+/**
+ * Returns the number of live handles created by this library.
+ */
+OTEL_API size_t otel_live_handle_count(void);
+
+/**
+ * Returns `OTEL_OK` when every handle created by this library has been
+ * released. Otherwise it reports `OTEL_ERR_LEAK` with the live-handle count
+ * in the thread-local error message.
+ */
+OTEL_API otel_result_t otel_ensure_all_released(void);
 
 /**
  * Retains a `otel_resource_t` into caller-provided storage.
@@ -1013,7 +1033,7 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
                        { .double_value = (double)(value) } })
 
 /* Sentinel values, handle initializers, and varargs terminator. */
-#define OTEL_RESULT_SENTINEL 8
+#define OTEL_RESULT_SENTINEL 9
 #define OTEL_SEVERITY_SENTINEL 22
 #define OTEL_SPAN_STATUS_SENTINEL 3
 #define OTEL_SPAN_KIND_SENTINEL 5
@@ -1034,7 +1054,7 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_UPDOWN_COUNTER_I64_T_INIT { NULL }
 #define OTEL_HISTOGRAM_F64_T_INIT { NULL }
 #define OTEL_GAUGE_F64_T_INIT { NULL }
-#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL }
+#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }
 #define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
 

@@ -167,6 +167,7 @@ int main(void) {
   options.kind = OTEL_SPAN_KIND_CLIENT;
   options.parent = &with_baggage;
   options.start_time_unix_nano = (int64_t)time(NULL) * 1000000000LL;
+  options.end_on_release = 1;
   CHECK(otel_tracer_span_start_with_options(
       &tracer, &options, &child, "kitchen-sink.remote-child",
       otel_attr_string("rpc.system", "http"), OTEL_ATTR_END));
@@ -179,8 +180,8 @@ int main(void) {
       otel_attr_string("queue", "default"), OTEL_ATTR_END));
   CHECK(otel_span_record_exception(&child, "ExampleError", "recovered", NULL,
                                    OTEL_ATTR_END));
-  CHECK(otel_span_end_with_timestamp(&child,
-                                     options.start_time_unix_nano + 1000000LL));
+  /* Deferred close: releasing the last handle ends and exports the span. */
+  otel_span_release(&child);
 
   /* Traces: every attribute kind, events, status, and ID access. */
   CHECK(otel_tracer_span_start(
@@ -241,7 +242,8 @@ int main(void) {
   CHECK(otel_gauge_f64_record(&gauge, 21.5, OTEL_ATTR_END));
 
   CHECK(otel_span_set_status(&span_copy, OTEL_SPAN_STATUS_OK, NULL));
-  CHECK(otel_span_end(&span_copy));
+  CHECK(otel_span_end_with_timestamp(&span_copy,
+                                     options.start_time_unix_nano + 2000000LL));
 
   /* Concurrent work against shared scopes and one instrument. */
   for (int i = 0; i < WORKER_COUNT; ++i) {
@@ -295,5 +297,12 @@ cleanup:
   otel_tracer_provider_release(&tracer_provider);
   otel_resource_release(&resource);
   otel_runtime_release(&runtime);
+
+  if (otel_ensure_all_released() != OTEL_OK) {
+    fprintf(stderr, "cleanup check failed: %s\n", otel_last_error());
+    status = 1;
+  } else {
+    printf("all handles released\n");
+  }
   return status;
 }

@@ -92,6 +92,9 @@ Key rules:
 - `otel_version()` returns the library version; `otel_strerror()` provides a
   stable description for result codes. `otel_last_error()` is thread-local and
   valid only until the next fallible call on that thread.
+- `otel_live_handle_count()` reports how many handles are currently live;
+  `otel_ensure_all_released()` returns `OTEL_OK` only when that count is zero,
+  otherwise `OTEL_ERR_LEAK` with the count in `otel_last_error()`.
 
 `cotel.h` includes `cotel_semconv.h`, which `build.rs` generates from the
 `opentelemetry-semantic-conventions` crate at build time. Macro names are
@@ -128,8 +131,10 @@ severity text are interned for the process lifetime because the SDK requires
 thread. `otel_context_from_span` builds a context from a live span.
 
 `otel_span_options_t` (initialize with `OTEL_SPAN_OPTIONS_INIT`) can set a
-parent context, span kind, and start timestamp for
-`otel_tracer_span_start_with_options`. Started spans also support
+parent context, span kind, start timestamp, and `end_on_release`. With
+`end_on_release` set, the span is ended automatically when the last handle
+reference is released, so C callers can use release as a deferred close.
+Started spans also support
 `otel_span_update_name`, timestamped events, links, exception events, and
 timestamped ends via the `otel_span_*` APIs.
 
@@ -174,7 +179,9 @@ pair, a structured log record with event name/target/timestamps, all five
 metric instruments, retains/releases a span, and flushes and shuts down every
 provider. It extracts and injects a remote W3C context, attaches baggage to
 the current thread, and starts a child span with an explicit parent, kind,
-link, timestamped event, and exception event. It also starts four pthread
-workers that create
+link, timestamped event, exception event, and deferred close on release. It
+also starts four pthread workers that create
 concurrent spans, correlated logs, and counter updates against shared scopes,
-which exercises handle reference counting and instrument thread safety.
+which exercises handle reference counting and instrument thread safety. It
+finishes with `otel_ensure_all_released()` to verify that every handle was
+released.
