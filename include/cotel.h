@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "cotel_semconv.h"
+
 /* Ownership convention
  *
  * Handles are caller-allocated. Declare `otel_foo_t foo = {0};` and pass a

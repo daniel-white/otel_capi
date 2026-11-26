@@ -1,6 +1,8 @@
+use std::collections::BTreeSet;
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 /// Convenience constructors for the C `otel_attribute_t` struct. cbindgen
 /// cannot parse macro-generated Rust functions, so these are appended here.
@@ -31,11 +33,19 @@ const ATTRIBUTE_MACROS: &str = r#"
                        { .double_value = (double)(value) } })
 "#;
 
+const SEMCONV_MODULES: [&str; 4] = ["attribute", "metric", "resource", "trace"];
+
 fn main() {
     println!("cargo:rerun-if-changed=cbindgen.toml");
     println!("cargo:rerun-if-changed=src");
+    println!("cargo:rerun-if-changed=Cargo.toml");
+    println!("cargo:rerun-if-changed=Cargo.lock");
 
     let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is set"));
+    let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR is set"));
+
+    let semconv = generate_semconv_header(&root);
+
     let config = cbindgen::Config::from_file(root.join("cbindgen.toml"))
         .expect("cbindgen.toml should be valid");
 
@@ -55,12 +65,159 @@ fn main() {
         .expect("generated header should have an include guard");
     header.insert_str(guard_end, ATTRIBUTE_MACROS);
 
-    // Expose the header to dependents via OUT_DIR, and keep the checked-in
-    // copy used by C consumers current.
-    let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR is set"));
+    // Expose the headers to dependents via OUT_DIR, and keep the checked-in
+    // copies used by C consumers current.
     fs::write(out_dir.join("cotel.h"), &header).expect("should write OUT_DIR/cotel.h");
+    fs::write(out_dir.join("cotel_semconv.h"), &semconv)
+        .expect("should write OUT_DIR/cotel_semconv.h");
 
-    let checked_in = root.join("include").join("cotel.h");
-    fs::create_dir_all(checked_in.parent().unwrap()).expect("should create include/");
-    fs::write(&checked_in, &header).expect("should write include/cotel.h");
+    let include = root.join("include");
+    fs::create_dir_all(&include).expect("should create include/");
+    fs::write(include.join("cotel.h"), &header).expect("should write include/cotel.h");
+    fs::write(include.join("cotel_semconv.h"), &semconv)
+        .expect("should write include/cotel_semconv.h");
+}
+
+/// Locates the semantic-conventions crate through `cargo metadata` (rather
+/// than a hard-coded registry path) and turns its `&str` constants into C
+/// macros named `OTEL_SEMCONV_<MODULE>_<CONSTANT>`.
+fn generate_semconv_header(root: &Path) -> String {
+    let cargo = env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
+    let metadata = Command::new(&cargo)
+        .args(["metadata", "--format-version", "1"])
+        .current_dir(root)
+        .output()
+        .expect("cargo metadata should run");
+    assert!(
+        metadata.status.success(),
+        "cargo metadata failed: {}",
+        String::from_utf8_lossy(&metadata.stderr)
+    );
+
+    let metadata: serde_json::Value =
+        serde_json::from_slice(&metadata.stdout).expect("cargo metadata should be valid JSON");
+    let package = metadata["packages"]
+        .as_array()
+        .and_then(|packages| {
+            packages.iter().find(|package| {
+                package["name"].as_str() == Some("opentelemetry-semantic-conventions")
+                    && package["version"].as_str() == Some("0.33.1")
+            })
+        })
+        .expect("opentelemetry-semantic-conventions 0.33.1 should be a build dependency");
+
+    let manifest = PathBuf::from(
+        package["manifest_path"]
+            .as_str()
+            .expect("manifest_path should be a string"),
+    );
+    let src = manifest.parent().expect("manifest should have a parent").join("src");
+    println!(
+        "cargo:rerun-if-changed={}",
+        src.display()
+    );
+
+    // Use the crate itself for the schema URL so the build dependency is real.
+    let schema_url = opentelemetry_semantic_conventions::SCHEMA_URL;
+
+    let mut macros: BTreeSet<(String, String, String)> = BTreeSet::new();
+    for module in SEMCONV_MODULES {
+        let source = fs::read_to_string(src.join(format!("{module}.rs")))
+            .unwrap_or_else(|_| panic!("semconv {module}.rs should be readable"));
+        for line in source.lines() {
+            let Some(rest) = line.strip_prefix("pub const ") else {
+                continue;
+            };
+            let Some((name, value)) = rest.split_once(": &str = ") else {
+                continue;
+            };
+            let value = value.trim().trim_end_matches(';').trim();
+            if !value.starts_with('"') || !value.ends_with('"') {
+                continue;
+            }
+            let c_value = c_string(&unescape_rust(&value[1..value.len() - 1]));
+            macros.insert((
+                module.to_string(),
+                name.to_string(),
+                c_value,
+            ));
+        }
+    }
+    assert!(!macros.is_empty(), "semantic convention constants should exist");
+
+    let mut header = String::new();
+    header.push_str("/* Generated by build.rs from opentelemetry-semantic-conventions. */\n");
+    header.push_str("#ifndef COTEL_SEMCONV_H\n");
+    header.push_str("#define COTEL_SEMCONV_H\n\n");
+    header.push_str(&format!("/* Schema: {} */\n\n", c_string(&schema_url)));
+    let mut previous_module = "";
+    for (module, name, value) in &macros {
+        if module != previous_module {
+            header.push_str(&format!("/* {} */\n", module));
+            previous_module = module;
+        }
+        header.push_str(&format!(
+            "#define OTEL_{}_{} \"{}\"\n",
+            module.to_ascii_uppercase(),
+            name,
+            value
+        ));
+    }
+    header.push_str("\n#endif /* COTEL_SEMCONV_H */\n");
+
+    header
+}
+
+fn unescape_rust(literal: &str) -> String {
+    let mut result = String::new();
+    let mut chars = literal.chars();
+    while let Some(ch) = chars.next() {
+        if ch != '\\' {
+            result.push(ch);
+            continue;
+        }
+        match chars.next() {
+            Some('n') => result.push('\n'),
+            Some('r') => result.push('\r'),
+            Some('t') => result.push('\t'),
+            Some('0') => result.push('\0'),
+            Some('\\') => result.push('\\'),
+            Some('"') => result.push('"'),
+            Some('\'') => result.push('\''),
+            Some('u') if chars.clone().next() == Some('{') => {
+                chars.next();
+                let mut hex = String::new();
+                for ch in chars.by_ref() {
+                    if ch == '}' {
+                        break;
+                    }
+                    hex.push(ch);
+                }
+                if let Ok(code) = u32::from_str_radix(&hex, 16) {
+                    if let Some(value) = char::from_u32(code) {
+                        result.push(value);
+                    }
+                }
+            }
+            Some(other) => result.push(other),
+            None => result.push('\\'),
+        }
+    }
+    result
+}
+
+fn c_string(value: &str) -> String {
+    let mut result = String::new();
+    for ch in value.chars() {
+        match ch {
+            '\\' => result.push_str("\\\\"),
+            '"' => result.push_str("\\\""),
+            '\n' => result.push_str("\\n"),
+            '\r' => result.push_str("\\r"),
+            '\t' => result.push_str("\\t"),
+            '\0' => result.push_str("\\0"),
+            other => result.push(other),
+        }
+    }
+    result
 }

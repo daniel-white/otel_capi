@@ -7,6 +7,7 @@ structs.
 ## Layout
 
 - `include/cotel.h` — generated C header; do not edit by hand.
+- `include/cotel_semconv.h` — generated semantic-convention attribute macros.
 - `src/` — Rust implementation. `build.rs` generates the header with cbindgen.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
@@ -80,6 +81,11 @@ Key rules:
 - Variadic attribute calls use `otel_attribute_t` values built with
   `otel_attr_string`, `otel_attr_bool`, `otel_attr_i64`, and `otel_attr_f64`,
   terminated by `NULL`.
+
+`cotel.h` includes `cotel_semconv.h`, which `build.rs` generates from the
+`opentelemetry-semantic-conventions` crate at build time. Macro names are
+`OTEL_<MODULE>_<CONSTANT>`, for example `OTEL_ATTRIBUTE_CLIENT_ADDRESS`,
+`OTEL_ATTRIBUTE_RPC_SYSTEM`, and `OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION`.
 
 ### Async runtime
 

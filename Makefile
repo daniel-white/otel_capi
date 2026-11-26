@@ -10,6 +10,7 @@ CARGO ?= cargo
 
 BUILD_DIR := build/artifacts
 INCLUDE_DIR := include
+HEADERS := $(INCLUDE_DIR)/cotel.h $(INCLUDE_DIR)/cotel_semconv.h
 STATIC_LIB := target/release/libcotel.a
 EXAMPLE_SRC := examples/kitchen-sink/main.c
 
@@ -59,7 +60,7 @@ check: test example-gcc example-clang
 
 install: build
 	install -d $(DESTDIR)$(PREFIX)/include $(DESTDIR)$(PREFIX)/lib
-	install -m 644 $(INCLUDE_DIR)/cotel.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(HEADERS) $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
 

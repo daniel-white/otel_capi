@@ -74,6 +74,7 @@ int main(void) {
   CHECK(otel_tracer_span_start(
       &tracer, &span, "kitchen-sink.work",
       otel_attr_string("component", "example"),
+      otel_attr_string(OTEL_ATTRIBUTE_CLIENT_ADDRESS, "example.org"),
       otel_attr_i64("attempt", 1), NULL));
   CHECK(otel_span_set_attributes(
       &span, otel_attr_bool("cache.hit", 0), otel_attr_f64("weight", 1.25), NULL));

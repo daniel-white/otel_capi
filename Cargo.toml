@@ -10,6 +10,8 @@ crate-type = ["cdylib", "staticlib", "rlib"]
 
 [build-dependencies]
 cbindgen = "0.29.4"
+opentelemetry-semantic-conventions = "0.33.1"
+serde_json = "1"
 
 [dependencies]
 opentelemetry = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
