@@ -454,7 +454,7 @@ mod tests {
 
     #[test]
     fn init_rejects_null_out() {
-        let err = unsafe { init(ptr::null_mut(), Dummy) }.unwrap_err();
+        let err = unsafe { init(ptr::null_mut(), 1u8) }.unwrap_err();
         assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
     }
 }

@@ -24,6 +24,28 @@ typedef enum {
 } otel_result_t;
 
 /**
+ * Discriminator for the value stored in an [`otel_attribute_t`].
+ */
+typedef enum {
+  /**
+   * A borrowed NUL-terminated UTF-8 string in `string_value`.
+   */
+  OTEL_ATTRIBUTE_TYPE_STRING,
+  /**
+   * A boolean stored as zero or non-zero in `bool_value`.
+   */
+  OTEL_ATTRIBUTE_TYPE_BOOL,
+  /**
+   * A signed 64-bit integer in `int_value`.
+   */
+  OTEL_ATTRIBUTE_TYPE_I64,
+  /**
+   * A double-precision float in `double_value`.
+   */
+  OTEL_ATTRIBUTE_TYPE_F64,
+} otel_attribute_type_t;
+
+/**
  * A resource describing the entity producing telemetry.
  */
 typedef struct {
@@ -152,6 +174,36 @@ typedef struct {
    */
   void *inner;
 } otel_gauge_f64_t;
+
+/**
+ * A single attribute. Use the `otel_attr_*` macros to initialize it.
+ */
+typedef struct {
+  /**
+   * Which value field is valid.
+   */
+  otel_attribute_type_t kind;
+  /**
+   * NUL-terminated UTF-8 attribute key. Must not be NULL.
+   */
+  const char *key;
+  /**
+   * String value, used only for `OTEL_ATTRIBUTE_TYPE_STRING`.
+   */
+  const char *string_value;
+  /**
+   * Boolean value, used only for `OTEL_ATTRIBUTE_TYPE_BOOL`.
+   */
+  int bool_value;
+  /**
+   * Integer value, used only for `OTEL_ATTRIBUTE_TYPE_I64`.
+   */
+  int64_t int_value;
+  /**
+   * Float value, used only for `OTEL_ATTRIBUTE_TYPE_F64`.
+   */
+  double double_value;
+} otel_attribute_t;
 
 /**
  * Returns the last error message for the calling thread. The pointer remains
@@ -300,4 +352,29 @@ otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_gauge_f64_
  */
 void otel_gauge_f64_release(otel_gauge_f64_t *handle);
 
+
+/* Attribute builders. Pass a NULL-terminated list of these to any function
+ * that takes variadic attributes, for example:
+ *
+ *   otel_span_set_attributes(span,
+ *       otel_attr_string("endpoint", "/checkout"),
+ *       otel_attr_i64("retries", 2),
+ *       NULL);
+ */
+#define otel_attr_string(key, value) \
+  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_STRING, \
+                       (const char *)(key), (const char *)(value), \
+                       0, 0, 0.0 })
+#define otel_attr_bool(key, value) \
+  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_BOOL, \
+                       (const char *)(key), NULL, \
+                       !!(value), 0, 0.0 })
+#define otel_attr_i64(key, value) \
+  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_I64, \
+                       (const char *)(key), NULL, \
+                       0, (int64_t)(value), 0.0 })
+#define otel_attr_f64(key, value) \
+  ((otel_attribute_t){ OTEL_ATTRIBUTE_TYPE_F64, \
+                       (const char *)(key), NULL, \
+                       0, 0, (double)(value) })
 #endif  /* COTEL_H */

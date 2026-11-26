@@ -6,10 +6,16 @@ tab_width = 2
 documentation = true
 usize_is_size_t = true
 
+
 [export]
-include = ["otel_result_t"]
+include = [
+  "otel_result_t",
+  "otel_attribute_type_t",
+  "otel_attribute_t",
+]
 item_types = ["enums", "structs", "typedefs", "functions", "constants"]
 
 [enum]
 prefix_with_name = false
 rename_variants = "None"
+
