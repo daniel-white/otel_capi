@@ -87,6 +87,11 @@ Key rules:
 `OTEL_<MODULE>_<CONSTANT>`, for example `OTEL_ATTRIBUTE_CLIENT_ADDRESS`,
 `OTEL_ATTRIBUTE_RPC_SYSTEM`, and `OTEL_METRIC_HTTP_SERVER_REQUEST_DURATION`.
 
+Where the generated docs make the value type unambiguous, it also emits a
+typed helper such as `otel_attr_client_address("example.org")` or
+`otel_attr_http_response_status_code(200)`. The original key macros remain
+available so you can still choose the type explicitly.
+
 ### Async runtime
 
 `otel_runtime_t` is created explicitly with `otel_runtime_new` and passed to
