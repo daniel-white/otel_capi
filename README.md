@@ -409,8 +409,8 @@ Versioning and changelogs are handled by
 Commit messages for commits and pull request titles; see
 [CONTRIBUTING.md](CONTRIBUTING.md). Release-please opens a release PR that
 updates `Cargo.toml`, `Cargo.lock`, `CHANGELOG.md`, and the package-manager
-manifests. Merging that PR creates the tag and GitHub release, which triggers
-the cross-platform artifact build workflow.
+manifests. Merging that PR creates the tag and GitHub release and dispatches
+the cross-platform artifact and documentation workflow.
 
 If GitHub Actions is not allowed to create pull requests in this repository,
 add a PAT with repository write access as the `RELEASE_PLEASE_TOKEN` secret, or
