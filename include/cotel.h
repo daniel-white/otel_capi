@@ -1159,6 +1159,153 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)
 
+/* Compile-time version and error helpers. */
+#define OTEL_VERSION_STRING "0.1.0"
+#define OTEL_VERSION_MAJOR 0
+#define OTEL_VERSION_MINOR 1
+#define OTEL_VERSION_PATCH 0
+#define OTEL_VERSION_CODE ((OTEL_VERSION_MAJOR << 16) | (OTEL_VERSION_MINOR << 8) | OTEL_VERSION_PATCH)
+#define OTEL_VERSION_AT_LEAST(major, minor, patch) \
+(OTEL_VERSION_CODE >= (((major) << 16) | ((minor) << 8) | (patch)))
+#define OTEL_RETURN_IF_ERROR(call)                                        \
+  do {                                                                   \
+    otel_result_t otel_result__ = (call);                               \
+    if (otel_result__ != OTEL_OK) return otel_result__;                 \
+  } while (0)
+
+/* Scope cleanup helpers for caller-owned handles. */
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(__cplusplus)
+#define OTEL_CLEANUP(fn) __attribute__((cleanup(fn)))
+static inline void otel_cleanup_context(otel_context_t *handle) {
+  if (handle != NULL) {
+    otel_context_release(handle);
+  }
+}
+#define OTEL_AUTO_CONTEXT OTEL_CLEANUP(otel_cleanup_context)
+static inline void otel_cleanup_span(otel_span_t *handle) {
+  if (handle != NULL) {
+    otel_span_release(handle);
+  }
+}
+#define OTEL_AUTO_SPAN OTEL_CLEANUP(otel_cleanup_span)
+static inline void otel_cleanup_context_scope(otel_context_scope_t *handle) {
+  if (handle != NULL) {
+    otel_context_scope_release(handle);
+  }
+}
+#define OTEL_AUTO_CONTEXT_SCOPE OTEL_CLEANUP(otel_cleanup_context_scope)
+static inline void otel_cleanup_resource(otel_resource_t *handle) {
+  if (handle != NULL) {
+    otel_resource_release(handle);
+  }
+}
+#define OTEL_AUTO_RESOURCE OTEL_CLEANUP(otel_cleanup_resource)
+static inline void otel_cleanup_runtime(otel_runtime_t *handle) {
+  if (handle != NULL) {
+    otel_runtime_release(handle);
+  }
+}
+#define OTEL_AUTO_RUNTIME OTEL_CLEANUP(otel_cleanup_runtime)
+static inline void otel_cleanup_tracer_provider(otel_tracer_provider_t *handle) {
+  if (handle != NULL) {
+    otel_tracer_provider_release(handle);
+  }
+}
+#define OTEL_AUTO_TRACER_PROVIDER OTEL_CLEANUP(otel_cleanup_tracer_provider)
+static inline void otel_cleanup_meter_provider(otel_meter_provider_t *handle) {
+  if (handle != NULL) {
+    otel_meter_provider_release(handle);
+  }
+}
+#define OTEL_AUTO_METER_PROVIDER OTEL_CLEANUP(otel_cleanup_meter_provider)
+static inline void otel_cleanup_logger_provider(otel_logger_provider_t *handle) {
+  if (handle != NULL) {
+    otel_logger_provider_release(handle);
+  }
+}
+#define OTEL_AUTO_LOGGER_PROVIDER OTEL_CLEANUP(otel_cleanup_logger_provider)
+static inline void otel_cleanup_tracer(otel_tracer_t *handle) {
+  if (handle != NULL) {
+    otel_tracer_release(handle);
+  }
+}
+#define OTEL_AUTO_TRACER OTEL_CLEANUP(otel_cleanup_tracer)
+static inline void otel_cleanup_meter(otel_meter_t *handle) {
+  if (handle != NULL) {
+    otel_meter_release(handle);
+  }
+}
+#define OTEL_AUTO_METER OTEL_CLEANUP(otel_cleanup_meter)
+static inline void otel_cleanup_logger(otel_logger_t *handle) {
+  if (handle != NULL) {
+    otel_logger_release(handle);
+  }
+}
+#define OTEL_AUTO_LOGGER OTEL_CLEANUP(otel_cleanup_logger)
+static inline void otel_cleanup_counter_u64(otel_counter_u64_t *handle) {
+  if (handle != NULL) {
+    otel_counter_u64_release(handle);
+  }
+}
+#define OTEL_AUTO_COUNTER_U64 OTEL_CLEANUP(otel_cleanup_counter_u64)
+static inline void otel_cleanup_counter_f64(otel_counter_f64_t *handle) {
+  if (handle != NULL) {
+    otel_counter_f64_release(handle);
+  }
+}
+#define OTEL_AUTO_COUNTER_F64 OTEL_CLEANUP(otel_cleanup_counter_f64)
+static inline void otel_cleanup_updown_counter_i64(otel_updown_counter_i64_t *handle) {
+  if (handle != NULL) {
+    otel_updown_counter_i64_release(handle);
+  }
+}
+#define OTEL_AUTO_UPDOWN_COUNTER_I64 OTEL_CLEANUP(otel_cleanup_updown_counter_i64)
+static inline void otel_cleanup_histogram_f64(otel_histogram_f64_t *handle) {
+  if (handle != NULL) {
+    otel_histogram_f64_release(handle);
+  }
+}
+#define OTEL_AUTO_HISTOGRAM_F64 OTEL_CLEANUP(otel_cleanup_histogram_f64)
+static inline void otel_cleanup_gauge_f64(otel_gauge_f64_t *handle) {
+  if (handle != NULL) {
+    otel_gauge_f64_release(handle);
+  }
+}
+#define OTEL_AUTO_GAUGE_F64 OTEL_CLEANUP(otel_cleanup_gauge_f64)
+static inline void otel_cleanup_observable_gauge_f64(otel_observable_gauge_f64_t *handle) {
+  if (handle != NULL) {
+    otel_observable_gauge_f64_release(handle);
+  }
+}
+#define OTEL_AUTO_OBSERVABLE_GAUGE_F64 OTEL_CLEANUP(otel_cleanup_observable_gauge_f64)
+static inline void otel_cleanup_observable_counter_u64(otel_observable_counter_u64_t *handle) {
+  if (handle != NULL) {
+    otel_observable_counter_u64_release(handle);
+  }
+}
+#define OTEL_AUTO_OBSERVABLE_COUNTER_U64 OTEL_CLEANUP(otel_cleanup_observable_counter_u64)
+#else
+#define OTEL_CLEANUP(fn)
+#define OTEL_AUTO_CONTEXT
+#define OTEL_AUTO_SPAN
+#define OTEL_AUTO_CONTEXT_SCOPE
+#define OTEL_AUTO_RESOURCE
+#define OTEL_AUTO_RUNTIME
+#define OTEL_AUTO_TRACER_PROVIDER
+#define OTEL_AUTO_METER_PROVIDER
+#define OTEL_AUTO_LOGGER_PROVIDER
+#define OTEL_AUTO_TRACER
+#define OTEL_AUTO_METER
+#define OTEL_AUTO_LOGGER
+#define OTEL_AUTO_COUNTER_U64
+#define OTEL_AUTO_COUNTER_F64
+#define OTEL_AUTO_UPDOWN_COUNTER_I64
+#define OTEL_AUTO_HISTOGRAM_F64
+#define OTEL_AUTO_GAUGE_F64
+#define OTEL_AUTO_OBSERVABLE_GAUGE_F64
+#define OTEL_AUTO_OBSERVABLE_COUNTER_U64
+#endif
+
 /* Generated semantic-convention helpers. */
 #include "cotel_semconv.h"
 

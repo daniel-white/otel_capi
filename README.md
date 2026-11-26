@@ -86,6 +86,15 @@ Key rules:
   `OTEL_ERR_INVALID_ARGUMENT`.
 - Use `OTEL_<TYPE>_INIT` for zero-initialized handle storage, and
   `otel_<type>_is_valid()` to check whether a handle holds an object.
+- On GCC and Clang, add `OTEL_AUTO_<TYPE>` to a handle declaration to release
+  it automatically at scope exit, for example
+  `otel_span_t span OTEL_AUTO_SPAN = OTEL_SPAN_T_INIT;`. The macro is empty on
+  other compilers, where explicit `release` calls are still required.
+- `OTEL_VERSION_MAJOR`, `OTEL_VERSION_MINOR`, `OTEL_VERSION_PATCH`,
+  `OTEL_VERSION_STRING`, `OTEL_VERSION_CODE`, and `OTEL_VERSION_AT_LEAST(...)`
+  support compile-time version checks.
+- `OTEL_RETURN_IF_ERROR(call)` returns the failing status from a function that
+  itself returns `otel_result_t`.
 - Variadic attribute calls use `otel_attribute_t` values built with
   `otel_attr_string`, `otel_attr_bool`, `otel_attr_i64`, and `otel_attr_f64`,
   terminated by `OTEL_ATTR_END`.
@@ -201,6 +210,7 @@ the current thread, and starts a child span with an explicit parent, kind,
 link, timestamped event, exception event, and deferred close on release. It
 also starts four pthread workers that create
 concurrent spans, correlated logs, and counter updates against shared scopes,
-which exercises handle reference counting and instrument thread safety. It
-finishes with `otel_ensure_all_released()` to verify that every handle was
-released.
+which exercises handle reference counting and instrument thread safety. Handles
+use `OTEL_AUTO_<TYPE>` declarations so they are released when the example’s
+inner scope exits. It finishes with `otel_ensure_all_released()` to verify that
+every handle was released.

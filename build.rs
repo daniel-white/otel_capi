@@ -68,9 +68,24 @@ fn main() {
     injected.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     injected.push_str(&sentinel_macros(&header));
     injected.push_str(&handle_init_macros(&header));
-    injected.push_str("#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }\n");
+    injected.push_str(
+        "#define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }\n",
+    );
     injected.push_str("#define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }\n");
     injected.push_str("#define OTEL_ATTR_END ((otel_attribute_t *)0)\n");
+    injected.push_str("\n/* Compile-time version and error helpers. */\n");
+    injected.push_str(&version_macros());
+    injected
+        .push_str("#define OTEL_RETURN_IF_ERROR(call)                                        \\\n");
+    injected
+        .push_str("  do {                                                                   \\\n");
+    injected
+        .push_str("    otel_result_t otel_result__ = (call);                               \\\n");
+    injected
+        .push_str("    if (otel_result__ != OTEL_OK) return otel_result__;                 \\\n");
+    injected.push_str("  } while (0)\n");
+    injected.push_str("\n/* Scope cleanup helpers for caller-owned handles. */\n");
+    injected.push_str(&cleanup_macros(&header));
     injected.push_str("\n/* Generated semantic-convention helpers. */\n");
     injected.push_str("#include \"cotel_semconv.h\"\n");
     injected.push_str("\n#ifdef __cplusplus\n}\n#endif\n");
@@ -127,8 +142,12 @@ fn sentinel_macros(header: &str) -> String {
         "otel_attribute_type_t",
     ] {
         let marker = format!("}} {ty};");
-        let Some(end) = header.find(&marker) else { continue };
-        let Some(start) = header[..end].rfind("typedef enum {") else { continue };
+        let Some(end) = header.find(&marker) else {
+            continue;
+        };
+        let Some(start) = header[..end].rfind("typedef enum {") else {
+            continue;
+        };
         let body = &header[start + "typedef enum {".len()..end];
         let mut max = -1i64;
         let mut next = 0i64;
@@ -166,16 +185,107 @@ fn handle_init_macros(header: &str) -> String {
     let mut pos = 0;
     while let Some(rel) = header[pos..].find("typedef struct {") {
         let start = pos + rel;
-        let Some(end_rel) = header[start..].find("} otel_") else { break };
+        let Some(end_rel) = header[start..].find("} otel_") else {
+            break;
+        };
         let body = &header[start + "typedef struct {".len()..start + end_rel];
         let type_start = start + end_rel + 2;
-        let Some(suffix_rel) = header[type_start..].find("_t;") else { break };
+        let Some(suffix_rel) = header[type_start..].find("_t;") else {
+            break;
+        };
         let ty = &header[type_start..type_start + suffix_rel + 2];
         if body.contains("void *inner;") {
-            result.push_str(&format!("#define {}_INIT {{ NULL }}\n", ty.to_ascii_uppercase()));
+            result.push_str(&format!(
+                "#define {}_INIT {{ NULL }}\n",
+                ty.to_ascii_uppercase()
+            ));
         }
         pos = type_start + suffix_rel + 3;
     }
+    result
+}
+
+/// Emits compile-time version constants derived from `CARGO_PKG_VERSION`.
+fn version_macros() -> String {
+    let version = env::var("CARGO_PKG_VERSION").expect("CARGO_PKG_VERSION is set");
+    let mut parts = version.split('.');
+    let mut number = || -> u32 {
+        parts
+            .next()
+            .unwrap_or("0")
+            .chars()
+            .take_while(|c| c.is_ascii_digit())
+            .collect::<String>()
+            .parse()
+            .unwrap_or(0)
+    };
+    let major = number();
+    let minor = number();
+    let patch = number();
+    format!(
+        "#define OTEL_VERSION_STRING \"{version}\"\n\
+         #define OTEL_VERSION_MAJOR {major}\n\
+         #define OTEL_VERSION_MINOR {minor}\n\
+         #define OTEL_VERSION_PATCH {patch}\n\
+         #define OTEL_VERSION_CODE ((OTEL_VERSION_MAJOR << 16) | (OTEL_VERSION_MINOR << 8) | OTEL_VERSION_PATCH)\n\
+         #define OTEL_VERSION_AT_LEAST(major, minor, patch) \\\n\
+           (OTEL_VERSION_CODE >= (((major) << 16) | ((minor) << 8) | (patch)))\n"
+    )
+}
+
+/// Emits `OTEL_AUTO_<TYPE>` declarations that release handles at scope exit
+/// on compilers supporting `__attribute__((cleanup))`. Other compilers get an
+/// empty macro so source stays portable.
+fn cleanup_macros(header: &str) -> String {
+    let mut types = Vec::new();
+    let mut pos = 0;
+    while let Some(rel) = header[pos..].find("typedef struct {") {
+        let start = pos + rel;
+        let Some(end_rel) = header[start..].find("} otel_") else {
+            break;
+        };
+        let body = &header[start + "typedef struct {".len()..start + end_rel];
+        let type_start = start + end_rel + 2;
+        let Some(suffix_rel) = header[type_start..].find("_t;") else {
+            break;
+        };
+        let ty = &header[type_start..type_start + suffix_rel + 2];
+        if body.contains("void *inner;") {
+            types.push(ty.to_string());
+        }
+        pos = type_start + suffix_rel + 3;
+    }
+
+    let mut result =
+        String::from("#if (defined(__GNUC__) || defined(__clang__)) && !defined(__cplusplus)\n");
+    result.push_str("#define OTEL_CLEANUP(fn) __attribute__((cleanup(fn)))\n");
+    for ty in &types {
+        let short = ty
+            .strip_prefix("otel_")
+            .and_then(|name| name.strip_suffix("_t"))
+            .unwrap_or(ty);
+        let helper = format!("otel_cleanup_{short}");
+        result.push_str(&format!("static inline void {helper}({ty} *handle) {{\n"));
+        result.push_str("  if (handle != NULL) {\n");
+        result.push_str(&format!("    otel_{short}_release(handle);\n"));
+        result.push_str("  }\n}\n");
+        result.push_str(&format!(
+            "#define OTEL_AUTO_{} OTEL_CLEANUP({helper})\n",
+            short.to_ascii_uppercase()
+        ));
+    }
+    result.push_str("#else\n#define OTEL_CLEANUP(fn)\n");
+    for ty in &types {
+        let short = ty
+            .strip_prefix("otel_")
+            .and_then(|name| name.strip_suffix("_t"))
+            .unwrap_or(ty);
+        result.push_str(&format!(
+            "#define OTEL_AUTO_{}\n",
+            short.to_ascii_uppercase()
+        ));
+    }
+    result.push_str("#endif\n");
     result
 }
 
@@ -212,11 +322,11 @@ fn generate_semconv_header(root: &Path) -> String {
             .as_str()
             .expect("manifest_path should be a string"),
     );
-    let src = manifest.parent().expect("manifest should have a parent").join("src");
-    println!(
-        "cargo:rerun-if-changed={}",
-        src.display()
-    );
+    let src = manifest
+        .parent()
+        .expect("manifest should have a parent")
+        .join("src");
+    println!("cargo:rerun-if-changed={}", src.display());
 
     // Use the crate itself for the schema URL so the build dependency is real.
     let schema_url = opentelemetry_semantic_conventions::SCHEMA_URL;
@@ -288,7 +398,10 @@ fn generate_semconv_header(root: &Path) -> String {
             docs.clear();
         }
     }
-    assert!(!macros.is_empty(), "semantic convention constants should exist");
+    assert!(
+        !macros.is_empty(),
+        "semantic convention constants should exist"
+    );
     assert!(!helpers.is_empty(), "typed attribute helpers should exist");
     assert!(!metric_helpers.is_empty(), "metric helpers should exist");
 
@@ -319,7 +432,10 @@ fn generate_semconv_header(root: &Path) -> String {
             "f64" => "double value",
             other => panic!("unexpected attribute builder {other}"),
         };
-        let value_helper = format!("otel_attr_value_{}", helper.trim_start_matches("otel_attr_"));
+        let value_helper = format!(
+            "otel_attr_value_{}",
+            helper.trim_start_matches("otel_attr_")
+        );
         header.push_str(&format!(
             "static inline const otel_attribute_t *{}({}, otel_attribute_t *slot) {{\n    *slot = *otel_attr_{}({}, (value));\n    return slot;\n}}\n\n",
             value_helper, parameter, builder, constant
@@ -329,7 +445,8 @@ fn generate_semconv_header(root: &Path) -> String {
             helper, value_helper
         ));
     }
-    header.push_str("\n/* Metric helpers using the semconv instrument, unit, and description. */\n");
+    header
+        .push_str("\n/* Metric helpers using the semconv instrument, unit, and description. */\n");
     for (helper, constructor, constant, unit, description) in &metric_helpers {
         let handle = match constructor.as_str() {
             "otel_meter_counter_u64" => "otel_counter_u64_t *handle",
