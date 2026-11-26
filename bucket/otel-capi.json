@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "C API for OpenTelemetry",
   "homepage": "https://github.com/daniel-white/otel_capi",
   "license": "Apache-2.0",
@@ -9,11 +9,26 @@
     }
   },
   "extras": [
-    ["*/include/*", "include"],
-    ["*/lib/*", "lib"],
-    ["*/bin/*", "bin"],
-    ["*/LICENSE", "."],
-    ["*/README.md", "."]
+    [
+      "*/include/*",
+      "include"
+    ],
+    [
+      "*/lib/*",
+      "lib"
+    ],
+    [
+      "*/bin/*",
+      "bin"
+    ],
+    [
+      "*/LICENSE",
+      "."
+    ],
+    [
+      "*/README.md",
+      "."
+    ]
   ],
   "checkver": {
     "github": "https://github.com/daniel-white/otel_capi"
