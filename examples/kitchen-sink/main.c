@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-_Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_PANIC,
+_Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_LEAK,
                "result sentinel must follow the last result code");
 
 #define CHECK(call)                                                            \
@@ -58,6 +58,24 @@ static void configure_environment(void) {
   setenv("OTEL_LOGS_EXPORTER", exporter, 1);
   if (getenv("OTEL_SERVICE_NAME") == NULL) {
     setenv("OTEL_SERVICE_NAME", "cotel-kitchen-sink", 1);
+  }
+}
+
+static void observe_temperature(otel_observe_context_t context, void *user_data) {
+  otel_result_t result =
+      otel_observe_f64(context, *(const double *)user_data,
+                       otel_attr_string("source", "callback"), OTEL_ATTR_END);
+  if (result != OTEL_OK) {
+    fprintf(stderr, "observe_f64 failed: %s\n", otel_strerror((int32_t)result));
+  }
+}
+
+static void observe_requests(otel_observe_context_t context, void *user_data) {
+  otel_result_t result =
+      otel_observe_u64(context, *(const uint64_t *)user_data,
+                       otel_attr_string("source", "callback"), OTEL_ATTR_END);
+  if (result != OTEL_OK) {
+    fprintf(stderr, "observe_u64 failed: %s\n", otel_strerror((int32_t)result));
   }
 }
 
@@ -112,6 +130,11 @@ int main(void) {
   otel_updown_counter_i64_t updown = OTEL_UPDOWN_COUNTER_I64_T_INIT;
   otel_histogram_f64_t histogram = OTEL_HISTOGRAM_F64_T_INIT;
   otel_gauge_f64_t gauge = OTEL_GAUGE_F64_T_INIT;
+  otel_observable_gauge_f64_t observable_gauge = OTEL_OBSERVABLE_GAUGE_F64_T_INIT;
+  otel_observable_counter_u64_t observable_counter =
+      OTEL_OBSERVABLE_COUNTER_U64_T_INIT;
+  double observed_temperature = 22.5;
+  uint64_t observed_requests = 4;
   otel_log_record_options_t log_options = OTEL_LOG_RECORD_OPTIONS_INIT;
 
   configure_environment();
@@ -233,6 +256,12 @@ int main(void) {
   CHECK(otel_metric_http_server_request_duration(&meter, &histogram));
   CHECK(otel_meter_gauge_f64(
       &meter, &gauge, "kitchen_sink.temperature", "Cel", "Current temperature"));
+  CHECK(otel_meter_observable_gauge_f64(
+      &meter, &observable_gauge, "kitchen_sink.observed_temperature", "Cel",
+      "Observed temperature", observe_temperature, &observed_temperature));
+  CHECK(otel_meter_observable_counter_u64(
+      &meter, &observable_counter, "kitchen_sink.observed_requests", "1",
+      "Observed requests", observe_requests, &observed_requests));
 
   CHECK(otel_counter_u64_add(
       &counter_u64, 3, otel_attr_http_request_method("GET"), OTEL_ATTR_END));
@@ -278,6 +307,8 @@ int main(void) {
 
 cleanup:
   otel_gauge_f64_release(&gauge);
+  otel_observable_counter_u64_release(&observable_counter);
+  otel_observable_gauge_f64_release(&observable_gauge);
   otel_histogram_f64_release(&histogram);
   otel_updown_counter_i64_release(&updown);
   otel_counter_f64_release(&counter_f64);

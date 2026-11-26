@@ -14,7 +14,9 @@ use std::sync::{Mutex, MutexGuard};
 
 use tokio::runtime::Runtime;
 
-use opentelemetry::metrics::{Counter, Gauge, Histogram, UpDownCounter};
+use opentelemetry::metrics::{
+    Counter, Gauge, Histogram, ObservableCounter, ObservableGauge, UpDownCounter,
+};
 use opentelemetry_sdk::logs::SdkLogger;
 use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider, Span as SdkSpan};
@@ -107,6 +109,8 @@ pub(crate) type CounterF64Inner = Counter<f64>;
 pub(crate) type UpDownCounterI64Inner = UpDownCounter<i64>;
 pub(crate) type HistogramF64Inner = Histogram<f64>;
 pub(crate) type GaugeF64Inner = Gauge<f64>;
+pub(crate) type ObservableGaugeF64Inner = ObservableGauge<f64>;
+pub(crate) type ObservableCounterU64Inner = ObservableCounter<u64>;
 
 /// A resource describing the entity producing telemetry.
 #[repr(C)]
@@ -181,6 +185,20 @@ pub struct otel_logger_t {
 /// A started span. Ending is idempotent across retained handles.
 #[repr(C)]
 pub struct otel_span_t {
+    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    pub inner: *mut c_void,
+}
+
+/// Async gauge that observes independent f64 values from a C callback.
+#[repr(C)]
+pub struct otel_observable_gauge_f64_t {
+    /// Internal pointer. Treat as opaque; do not read or write it directly.
+    pub inner: *mut c_void,
+}
+
+/// Async counter that observes increasing u64 values from a C callback.
+#[repr(C)]
+pub struct otel_observable_counter_u64_t {
     /// Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
@@ -629,6 +647,46 @@ pub unsafe extern "C" fn otel_gauge_f64_retain(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_gauge_f64_release(handle: *mut otel_gauge_f64_t) {
     unsafe { release::<GaugeF64Inner>(slot(handle)) }
+}
+
+/// Retains a `otel_observable_gauge_f64_t` into caller-provided storage.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_gauge_f64_retain(
+    src: *const otel_observable_gauge_f64_t,
+    handle: *mut otel_observable_gauge_f64_t,
+) -> otel_result_t {
+    guard(|| {
+        unsafe { retain::<ObservableGaugeF64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
+}
+
+/// Releases one reference to an `otel_observable_gauge_f64_t` and clears the slot.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_gauge_f64_release(
+    handle: *mut otel_observable_gauge_f64_t,
+) {
+    unsafe { release::<ObservableGaugeF64Inner>(slot(handle)) }
+}
+
+/// Retains a `otel_observable_counter_u64_t` into caller-provided storage.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_counter_u64_retain(
+    src: *const otel_observable_counter_u64_t,
+    handle: *mut otel_observable_counter_u64_t,
+) -> otel_result_t {
+    guard(|| {
+        unsafe { retain::<ObservableCounterU64Inner>(src.cast(), slot(handle)) }?;
+        Ok(())
+    })
+}
+
+/// Releases one reference to an `otel_observable_counter_u64_t` and clears the slot.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_counter_u64_release(
+    handle: *mut otel_observable_counter_u64_t,
+) {
+    unsafe { release::<ObservableCounterU64Inner>(slot(handle)) }
 }
 
 #[cfg(test)]

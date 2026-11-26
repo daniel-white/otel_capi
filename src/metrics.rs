@@ -3,10 +3,11 @@
 #[cfg(test)]
 use std::env;
 
-use std::ffi::c_char;
+use std::ffi::{c_char, c_void};
+use std::marker::PhantomData;
 use std::sync::Arc;
 
-use opentelemetry::metrics::MeterProvider as _;
+use opentelemetry::metrics::{AsyncInstrument, MeterProvider as _};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 
 use crate::attributes::from_varargs;
@@ -20,9 +21,57 @@ use crate::handles::{
     optional_resource, optional_runtime, slot,
 };
 use crate::handles::{
-    otel_counter_f64_t, otel_counter_u64_t, otel_gauge_f64_t, otel_histogram_f64_t, otel_meter_t,
-    otel_meter_provider_t, otel_runtime_t, otel_updown_counter_i64_t,
+    otel_counter_f64_t, otel_counter_u64_t, otel_gauge_f64_t, otel_histogram_f64_t,
+    otel_meter_provider_t, otel_meter_t, otel_observable_counter_u64_t,
+    otel_observable_gauge_f64_t, otel_runtime_t, otel_updown_counter_i64_t,
 };
+
+/// Opaque callback context passed back to `otel_observe_*`. It is valid only
+/// for the duration of the C callback invocation.
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct otel_observe_context_t {
+    pub data: *const c_void,
+    pub vtable: *const c_void,
+}
+
+/// Callback invoked while an observable f64 instrument is collected.
+pub type otel_observable_f64_callback_t =
+    Option<unsafe extern "C" fn(otel_observe_context_t, *mut c_void)>;
+
+/// Callback invoked while an observable u64 instrument is collected.
+pub type otel_observable_u64_callback_t =
+    Option<unsafe extern "C" fn(otel_observe_context_t, *mut c_void)>;
+
+struct CCallback<T> {
+    callback: unsafe extern "C" fn(otel_observe_context_t, *mut c_void),
+    user_data: *mut c_void,
+    _marker: PhantomData<fn() -> T>,
+}
+
+// SAFETY: the caller keeps `user_data` valid and safe for concurrent access
+// until the meter provider is shut down.
+unsafe impl<T> Send for CCallback<T> {}
+// SAFETY: see `Send` above.
+unsafe impl<T> Sync for CCallback<T> {}
+
+impl<T> CCallback<T> {
+    fn invoke(&self, instrument: &dyn AsyncInstrument<T>) {
+        // SAFETY: the layout is the data and vtable pointers of a trait object.
+        let context = unsafe {
+            std::mem::transmute::<&dyn AsyncInstrument<T>, otel_observe_context_t>(instrument)
+        };
+        // SAFETY: the caller supplied a valid callback and user data.
+        unsafe { (self.callback)(context, self.user_data) };
+    }
+}
+
+unsafe fn instrument_from_context<'a, T>(
+    context: otel_observe_context_t,
+) -> &'a dyn AsyncInstrument<T> {
+    // SAFETY: `context` must come from an active `CCallback::invoke` call.
+    unsafe { std::mem::transmute::<otel_observe_context_t, &dyn AsyncInstrument<T>>(context) }
+}
 
 fn build_provider(
     resource: Option<crate::handles::ResourceInner>,
@@ -74,10 +123,11 @@ unsafe fn instrument_options(
     unit: *const c_char,
     description: *const c_char,
 ) -> Result<(Option<String>, Option<String>)> {
-    Ok((
-        unsafe { optional_utf8(unit, "instrument unit")? },
-        unsafe { optional_utf8(description, "instrument description")? },
-    ))
+    Ok(
+        (unsafe { optional_utf8(unit, "instrument unit")? }, unsafe {
+            optional_utf8(description, "instrument description")?
+        }),
+    )
 }
 
 /// Creates a meter provider. `resource` and `runtime` may be NULL when the
@@ -205,7 +255,10 @@ pub unsafe extern "C" fn otel_meter_updown_counter_i64(
 ) -> otel_result_t {
     guard(|| {
         let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
-        let name = utf8(unsafe { c_str(name, "up/down counter name")? }, "up/down counter name")?;
+        let name = utf8(
+            unsafe { c_str(name, "up/down counter name")? },
+            "up/down counter name",
+        )?;
         let (unit, description) = unsafe { instrument_options(unit, description) }?;
         let mut builder = meter.i64_up_down_counter(name);
         if let Some(unit) = unit {
@@ -269,12 +322,126 @@ pub unsafe extern "C" fn otel_meter_gauge_f64(
     })
 }
 
+/// Creates an observable f64 gauge. `user_data` is passed to `callback` on
+/// every collection and must stay valid and thread-safe until the meter
+/// provider is shut down.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_observable_gauge_f64(
+    meter: *const otel_meter_t,
+    handle: *mut otel_observable_gauge_f64_t,
+    name: *const c_char,
+    unit: *const c_char,
+    description: *const c_char,
+    callback: otel_observable_f64_callback_t,
+    user_data: *mut c_void,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = utf8(
+            unsafe { c_str(name, "observable gauge name")? },
+            "observable gauge name",
+        )?;
+        let (unit, description) = unsafe { instrument_options(unit, description)? };
+        let callback = callback.ok_or_else(|| Error::invalid("callback must not be NULL"))?;
+        let wrapper = Arc::new(CCallback::<f64> {
+            callback,
+            user_data,
+            _marker: PhantomData,
+        });
+        let mut builder = meter.f64_observable_gauge(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        let builder = builder.with_callback(move |observer| wrapper.invoke(observer));
+        unsafe { init(slot(handle), builder.build()) }
+    })
+}
+
+/// Creates an observable u64 counter. `user_data` is passed to `callback` on
+/// every collection and must stay valid and thread-safe until the meter
+/// provider is shut down.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_observable_counter_u64(
+    meter: *const otel_meter_t,
+    handle: *mut otel_observable_counter_u64_t,
+    name: *const c_char,
+    unit: *const c_char,
+    description: *const c_char,
+    callback: otel_observable_u64_callback_t,
+    user_data: *mut c_void,
+) -> otel_result_t {
+    guard(|| {
+        let meter = unsafe { arc::<MeterInner>(const_slot(meter)) }?;
+        let name = utf8(
+            unsafe { c_str(name, "observable counter name")? },
+            "observable counter name",
+        )?;
+        let (unit, description) = unsafe { instrument_options(unit, description)? };
+        let callback = callback.ok_or_else(|| Error::invalid("callback must not be NULL"))?;
+        let wrapper = Arc::new(CCallback::<u64> {
+            callback,
+            user_data,
+            _marker: PhantomData,
+        });
+        let mut builder = meter.u64_observable_counter(name);
+        if let Some(unit) = unit {
+            builder = builder.with_unit(unit);
+        }
+        if let Some(description) = description {
+            builder = builder.with_description(description);
+        }
+        let builder = builder.with_callback(move |observer| wrapper.invoke(observer));
+        unsafe { init(slot(handle), builder.build()) }
+    })
+}
+
+/// Records an f64 observation from inside an observable callback. The
+/// context is valid only for the duration of that callback.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observe_f64(
+    context: otel_observe_context_t,
+    value: f64,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        if context.data.is_null() || context.vtable.is_null() {
+            return Err(Error::invalid("observation context is invalid or expired"));
+        }
+        let attributes = unsafe { from_varargs(attributes) }?;
+        let instrument = unsafe { instrument_from_context::<f64>(context) };
+        instrument.observe(value, &attributes);
+        Ok(())
+    })
+}
+
+/// Records a u64 observation from inside an observable callback. The context
+/// is valid only for the duration of that callback.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observe_u64(
+    context: otel_observe_context_t,
+    value: u64,
+    attributes: ...
+) -> otel_result_t {
+    guard(|| {
+        if context.data.is_null() || context.vtable.is_null() {
+            return Err(Error::invalid("observation context is invalid or expired"));
+        }
+        let attributes = unsafe { from_varargs(attributes) }?;
+        let instrument = unsafe { instrument_from_context::<u64>(context) };
+        instrument.observe(value, &attributes);
+        Ok(())
+    })
+}
+
 /// Adds to an unsigned 64-bit counter with optional attributes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_u64_add(
     counter: *const otel_counter_u64_t,
     value: u64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<CounterU64Inner>(const_slot(counter)) }?;
@@ -289,7 +456,7 @@ pub unsafe extern "C" fn otel_counter_u64_add(
 pub unsafe extern "C" fn otel_counter_f64_add(
     counter: *const otel_counter_f64_t,
     value: f64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<CounterF64Inner>(const_slot(counter)) }?;
@@ -304,7 +471,7 @@ pub unsafe extern "C" fn otel_counter_f64_add(
 pub unsafe extern "C" fn otel_updown_counter_i64_add(
     counter: *const otel_updown_counter_i64_t,
     value: i64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let counter = unsafe { arc::<UpDownCounterI64Inner>(const_slot(counter)) }?;
@@ -319,7 +486,7 @@ pub unsafe extern "C" fn otel_updown_counter_i64_add(
 pub unsafe extern "C" fn otel_histogram_f64_record(
     histogram: *const otel_histogram_f64_t,
     value: f64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let histogram = unsafe { arc::<HistogramF64Inner>(const_slot(histogram)) }?;
@@ -334,7 +501,7 @@ pub unsafe extern "C" fn otel_histogram_f64_record(
 pub unsafe extern "C" fn otel_gauge_f64_record(
     gauge: *const otel_gauge_f64_t,
     value: f64,
-    attributes: ...,
+    attributes: ...
 ) -> otel_result_t {
     guard(|| {
         let gauge = unsafe { arc::<GaugeF64Inner>(const_slot(gauge)) }?;
@@ -387,7 +554,11 @@ mod tests {
                 otel_result_t::OTEL_OK
             );
             assert_eq!(
-                otel_counter_u64_add(&counter, 3, std::ptr::null::<crate::attributes::otel_attribute_t>()),
+                otel_counter_u64_add(
+                    &counter,
+                    3,
+                    std::ptr::null::<crate::attributes::otel_attribute_t>()
+                ),
                 otel_result_t::OTEL_OK
             );
             assert_eq!(
@@ -401,7 +572,11 @@ mod tests {
                 otel_result_t::OTEL_OK
             );
             assert_eq!(
-                otel_gauge_f64_record(&gauge, 21.5, std::ptr::null::<crate::attributes::otel_attribute_t>()),
+                otel_gauge_f64_record(
+                    &gauge,
+                    21.5,
+                    std::ptr::null::<crate::attributes::otel_attribute_t>()
+                ),
                 otel_result_t::OTEL_OK
             );
             otel_gauge_f64_release(&mut gauge);

@@ -61,6 +61,9 @@ example-gcc: build | $(BUILD_DIR)
 	grep -q 'Target (Scope): "kitchen-sink.structured"' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'SeverityText: "CRITICAL"' $(BUILD_DIR)/stdout-gcc.log
 	grep -q 'structured warning' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-gcc.log
+	grep -q 'source: callback' $(BUILD_DIR)/stdout-gcc.log
 
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
@@ -80,6 +83,9 @@ example-clang: build | $(BUILD_DIR)
 	grep -q 'Target (Scope): "kitchen-sink.structured"' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'SeverityText: "CRITICAL"' $(BUILD_DIR)/stdout-clang.log
 	grep -q 'structured warning' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'kitchen_sink.observed_temperature' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'kitchen_sink.observed_requests' $(BUILD_DIR)/stdout-clang.log
+	grep -q 'source: callback' $(BUILD_DIR)/stdout-clang.log
 
 compile-checks: | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fsyntax-only checks/compile-pass/*.c

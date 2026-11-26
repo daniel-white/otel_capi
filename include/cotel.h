@@ -296,6 +296,26 @@ typedef struct {
 } otel_gauge_f64_t;
 
 /**
+ * Async gauge that observes independent f64 values from a C callback.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_observable_gauge_f64_t;
+
+/**
+ * Async counter that observes increasing u64 values from a C callback.
+ */
+typedef struct {
+  /**
+   * Internal pointer. Treat as opaque; do not read or write it directly.
+   */
+  void *inner;
+} otel_observable_counter_u64_t;
+
+/**
  * Optional fields for a structured log record. Initialize with
  * `OTEL_LOG_RECORD_OPTIONS_INIT` and set `size` to
  * `sizeof(otel_log_record_options_t)`.
@@ -331,6 +351,25 @@ typedef struct {
    */
   const otel_span_t *span;
 } otel_log_record_options_t;
+
+/**
+ * Opaque callback context passed back to `otel_observe_*`. It is valid only
+ * for the duration of the C callback invocation.
+ */
+typedef struct {
+  const void *data;
+  const void *vtable;
+} otel_observe_context_t;
+
+/**
+ * Callback invoked while an observable f64 instrument is collected.
+ */
+typedef void (*otel_observable_f64_callback_t)(otel_observe_context_t, void*);
+
+/**
+ * Callback invoked while an observable u64 instrument is collected.
+ */
+typedef void (*otel_observable_u64_callback_t)(otel_observe_context_t, void*);
 
 /**
  * Optional span-start configuration. Initialize with
@@ -655,6 +694,28 @@ OTEL_API otel_result_t otel_gauge_f64_retain(const otel_gauge_f64_t *src, otel_g
 OTEL_API void otel_gauge_f64_release(otel_gauge_f64_t *handle);
 
 /**
+ * Retains a `otel_observable_gauge_f64_t` into caller-provided storage.
+ */
+OTEL_API otel_result_t otel_observable_gauge_f64_retain(const otel_observable_gauge_f64_t *src,
+                                               otel_observable_gauge_f64_t *handle);
+
+/**
+ * Releases one reference to an `otel_observable_gauge_f64_t` and clears the slot.
+ */
+OTEL_API void otel_observable_gauge_f64_release(otel_observable_gauge_f64_t *handle);
+
+/**
+ * Retains a `otel_observable_counter_u64_t` into caller-provided storage.
+ */
+OTEL_API otel_result_t otel_observable_counter_u64_retain(const otel_observable_counter_u64_t *src,
+                                                 otel_observable_counter_u64_t *handle);
+
+/**
+ * Releases one reference to an `otel_observable_counter_u64_t` and clears the slot.
+ */
+OTEL_API void otel_observable_counter_u64_release(otel_observable_counter_u64_t *handle);
+
+/**
  * Returns whether the resource handle is usable.
  */
 OTEL_API bool otel_resource_is_valid(const otel_resource_t *handle);
@@ -844,6 +905,44 @@ OTEL_API otel_result_t otel_meter_gauge_f64(const otel_meter_t *meter,
                                    const char *name,
                                    const char *unit,
                                    const char *description);
+
+/**
+ * Creates an observable f64 gauge. `user_data` is passed to `callback` on
+ * every collection and must stay valid and thread-safe until the meter
+ * provider is shut down.
+ */
+OTEL_API otel_result_t otel_meter_observable_gauge_f64(const otel_meter_t *meter,
+                                              otel_observable_gauge_f64_t *handle,
+                                              const char *name,
+                                              const char *unit,
+                                              const char *description,
+                                              otel_observable_f64_callback_t callback,
+                                              void *user_data);
+
+/**
+ * Creates an observable u64 counter. `user_data` is passed to `callback` on
+ * every collection and must stay valid and thread-safe until the meter
+ * provider is shut down.
+ */
+OTEL_API otel_result_t otel_meter_observable_counter_u64(const otel_meter_t *meter,
+                                                otel_observable_counter_u64_t *handle,
+                                                const char *name,
+                                                const char *unit,
+                                                const char *description,
+                                                otel_observable_u64_callback_t callback,
+                                                void *user_data);
+
+/**
+ * Records an f64 observation from inside an observable callback. The
+ * context is valid only for the duration of that callback.
+ */
+OTEL_API otel_result_t otel_observe_f64(otel_observe_context_t context, double value, ...);
+
+/**
+ * Records a u64 observation from inside an observable callback. The context
+ * is valid only for the duration of that callback.
+ */
+OTEL_API otel_result_t otel_observe_u64(otel_observe_context_t context, uint64_t value, ...);
 
 /**
  * Adds to an unsigned 64-bit counter with optional attributes.
@@ -1054,6 +1153,8 @@ OTEL_API otel_result_t otel_span_span_id(const otel_span_t *span, char *buf, siz
 #define OTEL_UPDOWN_COUNTER_I64_T_INIT { NULL }
 #define OTEL_HISTOGRAM_F64_T_INIT { NULL }
 #define OTEL_GAUGE_F64_T_INIT { NULL }
+#define OTEL_OBSERVABLE_GAUGE_F64_T_INIT { NULL }
+#define OTEL_OBSERVABLE_COUNTER_U64_T_INIT { NULL }
 #define OTEL_SPAN_OPTIONS_INIT { sizeof(otel_span_options_t), -1, 0, NULL, 0 }
 #define OTEL_LOG_RECORD_OPTIONS_INIT { sizeof(otel_log_record_options_t), OTEL_SEVERITY_INFO, NULL, NULL, NULL, 0, 0, NULL }
 #define OTEL_ATTR_END ((otel_attribute_t *)0)

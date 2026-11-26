@@ -112,6 +112,14 @@ Metric constants with complete semconv metadata get matching helpers such as
 `otel_metric_http_server_request_duration(&meter, &histogram)`, which uses the
 standard instrument, unit, and description from the semantic conventions.
 
+`otel_meter_observable_gauge_f64` and `otel_meter_observable_counter_u64`
+register C callbacks that are invoked during collection. The callback receives
+an `otel_observe_context_t`, which must be passed back to `otel_observe_f64` or
+`otel_observe_u64` with variadic attributes while the callback is running. The
+context is invalid after the callback returns. `user_data` is borrowed by the
+provider and must remain valid and thread-safe until the meter provider is
+shut down.
+
 ### Structured logs
 
 `otel_logger_log_record` takes an `otel_log_record_options_t` initialized with
@@ -176,8 +184,9 @@ COTEL_EXPORTER=stdout build/artifacts/kitchen-sink-gcc
 
 The example creates a resource, all three providers, a correlated span/log
 pair, a structured log record with event name/target/timestamps, all five
-metric instruments, retains/releases a span, and flushes and shuts down every
-provider. It extracts and injects a remote W3C context, attaches baggage to
+metric instruments plus an observable gauge/counter pair with C callbacks,
+retains/releases a span, and flushes and shuts down every provider. It extracts
+and injects a remote W3C context, attaches baggage to
 the current thread, and starts a child span with an explicit parent, kind,
 link, timestamped event, exception event, and deferred close on release. It
 also starts four pthread workers that create
