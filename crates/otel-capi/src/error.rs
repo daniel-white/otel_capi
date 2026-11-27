@@ -173,4 +173,157 @@ mod tests {
             "bad config"
         );
     }
+
+    #[test]
+    fn strerror_describes_every_status() {
+        for (code, expected) in [
+            (otel_result_t::OTEL_OK, "ok"),
+            (otel_result_t::OTEL_ERR_INVALID_ARGUMENT, "invalid argument"),
+            (otel_result_t::OTEL_ERR_INVALID_UTF8, "invalid UTF-8"),
+            (otel_result_t::OTEL_ERR_CONFIG, "configuration error"),
+            (otel_result_t::OTEL_ERR_EXPORT, "export failed"),
+            (otel_result_t::OTEL_ERR_SHUTDOWN, "shutdown failed"),
+            (otel_result_t::OTEL_ERR_INTERNAL, "internal error"),
+            (otel_result_t::OTEL_ERR_PANIC, "panic"),
+            (otel_result_t::OTEL_ERR_LEAK, "handles still live"),
+        ] {
+            // SAFETY: `otel_strerror` returns a static NUL-terminated literal.
+            let text = unsafe { CStr::from_ptr(otel_strerror(code as i32)) }
+                .to_str()
+                .unwrap();
+            assert_eq!(text, expected);
+        }
+        // SAFETY: `otel_strerror` returns a static NUL-terminated literal.
+        assert_eq!(
+            // SAFETY: `otel_strerror` returns a static NUL-terminated literal.
+            unsafe { CStr::from_ptr(otel_strerror(999)) }
+                .to_str()
+                .unwrap(),
+            "unknown status"
+        );
+    }
+
+    #[test]
+    fn set_error_sanitizes_nuls_and_last_error_tracks_updates() {
+        assert_eq!(
+            set_error(otel_result_t::OTEL_ERR_INTERNAL, "a\0b"),
+            otel_result_t::OTEL_ERR_INTERNAL
+        );
+        // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+        let message = unsafe { CStr::from_ptr(otel_last_error()) }
+            .to_str()
+            .unwrap();
+        assert_eq!(message, "a b");
+        set_error(otel_result_t::OTEL_OK, "second");
+        assert_eq!(
+            // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+            unsafe { CStr::from_ptr(otel_last_error()) }
+                .to_str()
+                .unwrap(),
+            "second"
+        );
+    }
+
+    #[test]
+    fn copy_last_error_reports_required_size() {
+        set_error(otel_result_t::OTEL_ERR_CONFIG, "12345");
+        // SAFETY: a NULL output buffer is explicitly accepted by the function.
+        assert_eq!(unsafe { otel_copy_last_error(std::ptr::null_mut(), 0) }, 6);
+        let mut short = [0i8; 3];
+        assert_eq!(
+            // SAFETY: the local array is writable, but deliberately too small.
+            unsafe { otel_copy_last_error(short.as_mut_ptr(), short.len()) },
+            6
+        );
+        assert_eq!(short, [0; 3]);
+        let mut exact = [0i8; 6];
+        assert_eq!(
+            // SAFETY: the local array has room for the message and its terminator.
+            unsafe { otel_copy_last_error(exact.as_mut_ptr(), exact.len()) },
+            6
+        );
+        assert_eq!(
+            exact.map(|byte| byte as u8).as_slice(),
+            c"12345".to_bytes_with_nul()
+        );
+    }
+
+    #[test]
+    fn guard_reports_ok_errors_and_panics() {
+        assert_eq!(guard(|| Ok(())), ok());
+        assert_eq!(
+            guard(|| Err(Error::invalid("nope"))),
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+            unsafe { CStr::from_ptr(otel_last_error()) }
+                .to_str()
+                .unwrap(),
+            "nope"
+        );
+        assert_eq!(guard(|| panic!("boom")), otel_result_t::OTEL_ERR_PANIC);
+        assert_eq!(
+            // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+            unsafe { CStr::from_ptr(otel_last_error()) }
+                .to_str()
+                .unwrap(),
+            "panic while calling otel-capi"
+        );
+    }
+
+    #[test]
+    fn error_constructors_report_their_status() {
+        let error = Error::new(otel_result_t::OTEL_ERR_EXPORT, "export");
+        assert_eq!(error.status, otel_result_t::OTEL_ERR_EXPORT);
+        assert_eq!(error.report(), otel_result_t::OTEL_ERR_EXPORT);
+        assert_eq!(
+            Error::invalid("x").status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            Error::internal("x").report(),
+            otel_result_t::OTEL_ERR_INTERNAL
+        );
+        assert_eq!(
+            // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+            unsafe { CStr::from_ptr(otel_last_error()) }
+                .to_str()
+                .unwrap(),
+            "x"
+        );
+    }
+
+    #[test]
+    fn c_string_helpers_reject_null_and_bad_utf8() {
+        assert_eq!(
+            // SAFETY: a NULL pointer is intentionally passed to test validation.
+            unsafe { c_str(std::ptr::null(), "value") }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        // SAFETY: the local C string is valid for the duration of the call.
+        let value = unsafe { c_str(c"text".as_ptr(), "value") }.unwrap();
+        assert_eq!(value.to_bytes(), b"text");
+        assert_eq!(utf8(value, "value").unwrap(), "text");
+        let invalid = [0xffu8, 0];
+        // SAFETY: `invalid` is a NUL-terminated byte buffer that lives for the call.
+        let error = unsafe { c_str(invalid.as_ptr().cast(), "value") }.unwrap();
+        assert_eq!(
+            utf8(error, "value").unwrap_err().status,
+            otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+        // SAFETY: NULL is a valid optional C string.
+        assert_eq!(
+            // SAFETY: NULL is a valid optional C string.
+            unsafe { optional_utf8(std::ptr::null(), "value") }.unwrap(),
+            None
+        );
+        assert_eq!(
+            // SAFETY: the local C string is valid for the duration of the call.
+            unsafe { optional_utf8(c"hi".as_ptr(), "value") }.unwrap(),
+            Some("hi".to_owned())
+        );
+    }
 }

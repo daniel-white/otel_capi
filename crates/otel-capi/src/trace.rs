@@ -1562,56 +1562,758 @@ pub unsafe extern "C" fn otel_traceparent_span_id(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::attributes::{otel_attribute_type_t, otel_attribute_value_t};
+    use crate::config::tests::EnvGuard;
+    use crate::context::{otel_context_from_span, otel_context_release};
     use crate::handles::{
         otel_span_release, otel_span_retain, otel_tracer_provider_release, otel_tracer_release,
     };
-    use std::sync::Mutex;
+    use crate::propagation::otel_traceparent_from_str;
+    use std::ffi::CStr;
 
-    static TRACE_ENV_LOCK: Mutex<()> = Mutex::new(());
+    /// Owns a no-exporter provider and tracer, releasing both on drop.
+    struct Fixture {
+        _env: EnvGuard,
+        provider: otel_tracer_provider_t,
+        tracer: otel_tracer_t,
+    }
+
+    impl Fixture {
+        fn new() -> Self {
+            let mut env = EnvGuard::new();
+            env.set("OTEL_TRACES_EXPORTER", "none");
+            let mut provider = otel_tracer_provider_t {
+                inner: std::ptr::null_mut(),
+            };
+            let mut tracer = otel_tracer_t {
+                inner: std::ptr::null_mut(),
+            };
+            // SAFETY: `provider` and `tracer` are writable, aligned handle
+            // slots; the C string is static and NUL-terminated.
+            unsafe {
+                assert_eq!(
+                    otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                    otel_result_t::OTEL_OK
+                );
+                assert_eq!(
+                    otel_tracer_provider_tracer(&provider, &mut tracer, c"test".as_ptr()),
+                    otel_result_t::OTEL_OK
+                );
+            }
+            Self {
+                _env: env,
+                provider,
+                tracer,
+            }
+        }
+
+        fn start(&self, name: &CStr) -> otel_span_t {
+            let mut span = otel_span_t {
+                inner: std::ptr::null_mut(),
+            };
+            // SAFETY: `span` is writable, aligned storage; `name` and the NULL
+            // attribute sentinel are valid for the duration of the call.
+            unsafe {
+                assert_eq!(
+                    otel_tracer_span_start(
+                        &self.tracer,
+                        &mut span,
+                        name.as_ptr(),
+                        std::ptr::null::<otel_attribute_t>()
+                    ),
+                    otel_result_t::OTEL_OK
+                );
+            }
+            span
+        }
+    }
+
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            // SAFETY: both handles were initialized by `new` and have not been
+            // released; release nulls the slots before dropping the Arc.
+            unsafe {
+                otel_tracer_release(&mut self.tracer);
+                otel_tracer_provider_release(&mut self.provider);
+            }
+        }
+    }
+
+    fn str_view(text: &str) -> otel_str_t {
+        otel_str_t {
+            ptr: text.as_ptr().cast(),
+            len: text.len(),
+        }
+    }
+
+    fn string_attribute(key: &CStr, value: &CStr) -> otel_attribute_t {
+        otel_attribute_t {
+            kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
+            key: key.as_ptr(),
+            key_len: key.to_bytes().len(),
+            value: otel_attribute_value_t {
+                string: value.as_ptr(),
+            },
+            value_len: value.to_bytes().len(),
+        }
+    }
 
     #[test]
-    fn end_on_release_ends_retained_span() {
-        let _guard = TRACE_ENV_LOCK
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe { env::set_var("OTEL_TRACES_EXPORTER", "none") };
-        let mut provider = crate::handles::otel_tracer_provider_t {
-            inner: std::ptr::null_mut(),
+    fn span_kind_maps_every_option() {
+        assert_eq!(span_kind(-1).unwrap(), None);
+        assert_eq!(span_kind(0).unwrap(), Some(SpanKind::Internal));
+        assert_eq!(span_kind(1).unwrap(), Some(SpanKind::Server));
+        assert_eq!(span_kind(2).unwrap(), Some(SpanKind::Client));
+        assert_eq!(span_kind(3).unwrap(), Some(SpanKind::Producer));
+        assert_eq!(span_kind(4).unwrap(), Some(SpanKind::Consumer));
+        assert_eq!(
+            span_kind(5).unwrap_err().status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn span_options_validates_size_kind_and_time() {
+        // SAFETY: NULL is a documented optional pointer for span options.
+        let (kind, start, parent, end_on_release) = unsafe { span_options(ptr::null()) }.unwrap();
+        assert!(kind.is_none() && start.is_none() && parent.is_none());
+        assert!(!end_on_release);
+
+        let mut options = otel_span_options_t {
+            size: 1,
+            kind: -1,
+            start_time_unix_nano: 0,
+            parent: ptr::null(),
+            end_on_release: 0,
         };
-        let mut tracer = crate::handles::otel_tracer_t {
-            inner: std::ptr::null_mut(),
-        };
-        let mut span = crate::handles::otel_span_t {
-            inner: std::ptr::null_mut(),
-        };
-        let mut retained = crate::handles::otel_span_t {
-            inner: std::ptr::null_mut(),
-        };
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        assert_eq!(
+            // SAFETY: `options` is an initialized local with an intentionally small size.
+            unsafe { span_options(&options) }.unwrap_err().status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        options.size = std::mem::size_of::<otel_span_options_t>();
+        options.kind = 42;
+        assert_eq!(
+            // SAFETY: `options` is initialized; only its kind discriminator is invalid.
+            unsafe { span_options(&options) }.unwrap_err().status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        options.kind = -1;
+        options.start_time_unix_nano = -1;
+        assert_eq!(
+            // SAFETY: `options` is initialized; only its timestamp is invalid.
+            unsafe { span_options(&options) }.unwrap_err().status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        options.start_time_unix_nano = 0;
+        options.end_on_release = 1;
+        // SAFETY: `options` now contains valid values in a local struct.
+        let (kind, start, parent, end_on_release) = unsafe { span_options(&options) }.unwrap();
+        assert!(kind.is_none() && start.is_none() && parent.is_none());
+        assert!(end_on_release);
+    }
+
+    #[test]
+    fn sampler_from_env_selects_supported_samplers() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_TRACES_SAMPLER");
+        env.remove("OTEL_TRACES_SAMPLER_ARG");
+        assert!(matches!(sampler_from_env().unwrap(), Sampler::AlwaysOn));
+
+        env.set("OTEL_TRACES_SAMPLER", "always_off");
+        assert!(matches!(sampler_from_env().unwrap(), Sampler::AlwaysOff));
+        env.set("OTEL_TRACES_SAMPLER", "parentbased_always_on");
+        assert!(matches!(
+            sampler_from_env().unwrap(),
+            Sampler::ParentBased(_)
+        ));
+        env.set("OTEL_TRACES_SAMPLER", "traceidratio");
+        env.set("OTEL_TRACES_SAMPLER_ARG", "0.25");
+        match sampler_from_env().unwrap() {
+            Sampler::TraceIdRatioBased(value) => assert_eq!(value, 0.25),
+            other => panic!("unexpected sampler: {other:?}"),
+        }
+        env.set("OTEL_TRACES_SAMPLER", "parentbased_traceidratio");
+        assert!(matches!(
+            sampler_from_env().unwrap(),
+            Sampler::ParentBased(_)
+        ));
+        env.set("OTEL_TRACES_SAMPLER_ARG", "nope");
+        assert_eq!(
+            sampler_from_env().unwrap_err().status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        env.set("OTEL_TRACES_SAMPLER_ARG", "0.5");
+        env.set("OTEL_TRACES_SAMPLER", "bogus");
+        assert_eq!(
+            sampler_from_env().unwrap_err().status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+    }
+
+    #[test]
+    fn provider_requires_runtime_for_configured_exporters() {
+        let mut env = EnvGuard::new();
+        for exporter in ["otlp", "stdout", "item"] {
+            env.set("OTEL_TRACES_EXPORTER", exporter);
+            let mut provider = otel_tracer_provider_t {
+                inner: ptr::null_mut(),
+            };
+            // SAFETY: `provider` is writable, aligned storage; NULL resource and
+            // runtime pointers are intentionally invalid configured arguments.
+            unsafe {
+                assert_eq!(
+                    otel_tracer_provider_new(&mut provider, ptr::null(), ptr::null()),
+                    otel_result_t::OTEL_ERR_CONFIG,
+                    "{exporter} should require a runtime"
+                );
+            }
+            assert!(provider.inner.is_null());
+        }
+    }
+
+    #[test]
+    fn span_start_variants_cover_names_attributes_and_parent() {
+        let fixture = Fixture::new();
+        let attribute = string_attribute(c"start.key", c"value");
+        let attributes = [&attribute as *const otel_attribute_t];
+
+        // SAFETY: every handle slot is writable and aligned; attribute and
+        // string pointers reference initialized locals that outlive the calls.
         unsafe {
+            let mut array = otel_span_t {
+                inner: ptr::null_mut(),
+            };
             assert_eq!(
-                otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                otel_tracer_span_start_arr(
+                    &fixture.tracer,
+                    &mut array,
+                    c"array".as_ptr(),
+                    attributes.as_ptr(),
+                    1
+                ),
                 otel_result_t::OTEL_OK
             );
+            otel_span_release(&mut array);
+
+            let mut named = otel_span_t {
+                inner: ptr::null_mut(),
+            };
             assert_eq!(
-                otel_tracer_provider_tracer(&provider, &mut tracer, c"test".as_ptr()),
+                otel_tracer_span_start_n(
+                    &fixture.tracer,
+                    &mut named,
+                    str_view("named"),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut named);
+
+            let mut array_named = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start_arr_n(
+                    &fixture.tracer,
+                    &mut array_named,
+                    str_view("array-n"),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut array_named);
+
+            let mut parent = fixture.start(c"parent");
+            let mut context = otel_context_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_context_from_span(&parent, &mut context),
                 otel_result_t::OTEL_OK
             );
             let options = otel_span_options_t {
                 size: std::mem::size_of::<otel_span_options_t>(),
+                kind: otel_span_kind_t::OTEL_SPAN_KIND_CLIENT as i32,
+                start_time_unix_nano: 1_700_000_000_000_000_000,
+                parent: &context,
+                end_on_release: 0,
+            };
+            let (kind, start, parent_context, end_on_release) = span_options(&options).unwrap();
+            assert_eq!(kind, Some(SpanKind::Client));
+            assert!(start.is_some());
+            assert!(parent_context.is_some());
+            assert!(!end_on_release);
+
+            let mut child = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start_with_options(
+                    &fixture.tracer,
+                    &options,
+                    &mut child,
+                    c"child".as_ptr(),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut child);
+
+            let mut child_array = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start_with_options_arr(
+                    &fixture.tracer,
+                    &options,
+                    &mut child_array,
+                    c"child-array".as_ptr(),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut child_array);
+
+            let mut child_named = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start_with_options_n(
+                    &fixture.tracer,
+                    &options,
+                    &mut child_named,
+                    str_view("child-n"),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut child_named);
+
+            let mut child_array_named = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start_with_options_arr_n(
+                    &fixture.tracer,
+                    &options,
+                    &mut child_array_named,
+                    str_view("child-array-n"),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut child_array_named);
+
+            otel_context_release(&mut context);
+            otel_span_release(&mut parent);
+        }
+    }
+
+    #[test]
+    fn span_updates_events_and_status_are_accepted() {
+        let fixture = Fixture::new();
+        let mut span = fixture.start(c"updates");
+        let attribute = string_attribute(c"event.key", c"value");
+        let attributes = [&attribute as *const otel_attribute_t];
+        let invalid_utf8 = [0xffu8, 0];
+
+        // SAFETY: `span` is initialized; all strings and attributes are valid
+        // or intentionally invalid inputs that are checked before use.
+        unsafe {
+            assert_eq!(
+                otel_span_update_name(&span, c"renamed".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_update_name_n(&span, str_view("length-aware")),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_update_name(&span, invalid_utf8.as_ptr().cast()),
+                otel_result_t::OTEL_ERR_INVALID_UTF8
+            );
+            assert_eq!(
+                otel_span_set_status(&span, 0, ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status(&span, 1, ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status(&span, 2, c"failed".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status_n(&span, 2, str_view("length-aware error")),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status(&span, 3, ptr::null()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_set_attributes(&span, &attribute, ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_attributes_arr(&span, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event(
+                    &span,
+                    c"event".as_ptr(),
+                    &attribute,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_arr(&span, c"event-array".as_ptr(), attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_n(
+                    &span,
+                    str_view("event-n"),
+                    &attribute,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_arr_n(&span, str_view("event-array-n"), attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp(
+                    &span,
+                    c"timed".as_ptr(),
+                    1_700_000_000_000_000_000,
+                    &attribute,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp_arr(
+                    &span,
+                    c"timed-array".as_ptr(),
+                    1_700_000_000_000_000_000,
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp_n(
+                    &span,
+                    str_view("timed-n"),
+                    1_700_000_000_000_000_000,
+                    &attribute,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp_arr_n(
+                    &span,
+                    str_view("timed-array-n"),
+                    1_700_000_000_000_000_000,
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp(
+                    &span,
+                    c"bad".as_ptr(),
+                    0,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_add_event_with_timestamp(
+                    &span,
+                    c"negative".as_ptr(),
+                    -1,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+        }
+        // SAFETY: `span` was initialized by `Fixture::start` with a valid tracer.
+        unsafe { otel_span_release(&mut span) };
+    }
+
+    #[test]
+    fn span_links_and_exceptions_cover_optional_fields() {
+        let fixture = Fixture::new();
+        let mut span = fixture.start(c"linked");
+        let trace_id = otel_trace_id_t::from_hex("4bf92f3577b34da6a3ce929d0e0e4736").unwrap();
+        let span_id = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
+        let attribute = string_attribute(c"link.key", c"value");
+        let attributes = [&attribute as *const otel_attribute_t];
+
+        // SAFETY: `span` is initialized, IDs are non-zero, and all strings and
+        // attribute pointers reference valid initialized storage.
+        unsafe {
+            assert_eq!(
+                otel_span_add_link(&span, trace_id, span_id, ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_link_arr(&span, trace_id, span_id, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_link(
+                    &span,
+                    otel_trace_id_t::default(),
+                    span_id,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_record_exception(
+                    &span,
+                    c"TypeError".as_ptr(),
+                    c"boom".as_ptr(),
+                    c"stack".as_ptr(),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_record_exception_arr(
+                    &span,
+                    c"ValueError".as_ptr(),
+                    ptr::null(),
+                    c"frame".as_ptr(),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_record_exception_n(
+                    &span,
+                    str_view("IoError"),
+                    str_view("disk full"),
+                    str_view("trace"),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_record_exception_arr_n(
+                    &span,
+                    str_view("RuntimeError"),
+                    str_view("oops"),
+                    str_view("frame"),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+        }
+        // SAFETY: `span` was initialized by `Fixture::start` with a valid tracer.
+        unsafe { otel_span_release(&mut span) };
+    }
+
+    #[test]
+    fn traceparent_ids_flow_into_outputs_and_links() {
+        let mut parent = otel_traceparent_t { value: [0; 56] };
+        // SAFETY: `parent` is writable, aligned storage and the C string is a
+        // static, NUL-terminated, valid W3C traceparent header.
+        unsafe {
+            assert_eq!(
+                otel_traceparent_from_str(
+                    c"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01".as_ptr(),
+                    &mut parent
+                ),
+                otel_result_t::OTEL_OK
+            );
+        }
+        let expected_trace = otel_trace_id_t::from_hex("4bf92f3577b34da6a3ce929d0e0e4736").unwrap();
+        let expected_span = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
+        let mut trace_out = otel_trace_id_t::default();
+        let mut span_out = otel_span_id_t::default();
+        let attribute = string_attribute(c"traceparent.key", c"value");
+        let attributes = [&attribute as *const otel_attribute_t];
+        let fixture = Fixture::new();
+        let mut span = fixture.start(c"traceparent");
+
+        // SAFETY: the traceparent buffer is validated, the output slots are
+        // writable, and the span and attribute pointers are initialized.
+        unsafe {
+            assert_eq!(
+                otel_traceparent_trace_id(&parent, &mut trace_out),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(trace_out.to_hex(), expected_trace.to_hex());
+            assert_eq!(
+                otel_traceparent_span_id(&parent, &mut span_out),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(span_out.to_hex(), expected_span.to_hex());
+            assert_eq!(
+                otel_traceparent_trace_id(&parent, ptr::null_mut()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_traceparent_span_id(&parent, ptr::null_mut()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_add_link_from_traceparent(
+                    &span,
+                    &parent,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_add_link_from_traceparent_arr(&span, &parent, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            let invalid = otel_traceparent_t { value: [0; 56] };
+            assert_eq!(
+                otel_span_add_link_from_traceparent(
+                    &span,
+                    &invalid,
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+        }
+        // SAFETY: `span` was initialized by `Fixture::start` with a valid tracer.
+        unsafe { otel_span_release(&mut span) };
+    }
+
+    #[test]
+    fn id_ffi_round_trips_and_rejects_bad_buffers() {
+        let trace = otel_trace_id_t::from_hex("4bf92f3577b34da6a3ce929d0e0e4736").unwrap();
+        let span = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
+        let mut parsed_trace = otel_trace_id_t::default();
+        let mut parsed_span = otel_span_id_t::default();
+        let mut trace_buffer = [0 as c_char; 33];
+        let mut span_buffer = [0 as c_char; 17];
+        let mut short_buffer = [0 as c_char; 32];
+
+        // SAFETY: output slots are writable and large enough for their IDs;
+        // static C strings and the intentionally undersized buffer are checked
+        // by the functions before any out-of-bounds write.
+        unsafe {
+            assert_eq!(
+                otel_trace_id_from_str(
+                    c"4bf92f3577b34da6a3ce929d0e0e4736".as_ptr(),
+                    &mut parsed_trace
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(parsed_trace.to_hex(), trace.to_hex());
+            assert_eq!(
+                otel_span_id_from_str(c"00f067aa0ba902b7".as_ptr(), &mut parsed_span),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(parsed_span.to_hex(), span.to_hex());
+            assert_eq!(
+                otel_trace_id_from_str(
+                    c"4bf92f3577b34da6a3ce929d0e0e4736".as_ptr(),
+                    ptr::null_mut()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_id_from_str(c"00f067aa0ba902b7".as_ptr(), ptr::null_mut()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_trace_id_to_str(&trace, trace_buffer.as_mut_ptr(), trace_buffer.len()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                CStr::from_ptr(trace_buffer.as_ptr()).to_str().unwrap(),
+                trace.to_hex()
+            );
+            assert_eq!(
+                otel_span_id_to_str(&span, span_buffer.as_mut_ptr(), span_buffer.len()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                CStr::from_ptr(span_buffer.as_ptr()).to_str().unwrap(),
+                span.to_hex()
+            );
+            assert_eq!(
+                otel_trace_id_to_str(&trace, short_buffer.as_mut_ptr(), short_buffer.len()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_trace_id_to_str(ptr::null(), trace_buffer.as_mut_ptr(), trace_buffer.len()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_id_to_str(ptr::null(), span_buffer.as_mut_ptr(), span_buffer.len()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert!(!otel_trace_id_is_valid(ptr::null()));
+            assert!(!otel_span_id_is_valid(ptr::null()));
+            assert!(!otel_trace_id_equal(ptr::null(), &trace));
+            assert!(!otel_span_id_equal(&span, ptr::null()));
+        }
+    }
+
+    #[test]
+    fn provider_flush_and_shutdown_are_safe_without_processors() {
+        let fixture = Fixture::new();
+        // SAFETY: the provider handle was initialized by `Fixture::new`.
+        unsafe {
+            assert_eq!(
+                otel_tracer_provider_force_flush(&fixture.provider),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_provider_shutdown(&fixture.provider),
+                otel_result_t::OTEL_OK
+            );
+        }
+    }
+
+    #[test]
+    fn end_on_release_ends_retained_span() {
+        let fixture = Fixture::new();
+        let mut span = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        let mut retained = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        // SAFETY: both handle slots are writable and aligned; the static C
+        // strings and NULL attribute sentinel are valid for the calls.
+        unsafe {
+            let options = otel_span_options_t {
+                size: std::mem::size_of::<otel_span_options_t>(),
                 kind: -1,
                 start_time_unix_nano: 0,
-                parent: std::ptr::null(),
+                parent: ptr::null(),
                 end_on_release: 1,
             };
             assert_eq!(
                 otel_tracer_span_start_with_options(
-                    &tracer,
+                    &fixture.tracer,
                     &options,
                     &mut span,
                     c"deferred".as_ptr(),
-                    std::ptr::null::<crate::attributes::otel_attribute_t>()
+                    ptr::null::<otel_attribute_t>()
                 ),
                 otel_result_t::OTEL_OK
             );
@@ -1625,44 +2327,16 @@ mod tests {
                 otel_result_t::OTEL_OK
             );
             otel_span_release(&mut retained);
-            otel_tracer_release(&mut tracer);
-            otel_tracer_provider_release(&mut provider);
-            env::remove_var("OTEL_TRACES_EXPORTER");
         }
     }
 
     #[test]
     fn no_exporter_provider_creates_tracer_and_span() {
-        // Isolate this test from ambient configuration.
-        let _guard = TRACE_ENV_LOCK
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TRACES_EXPORTER", "none");
-        }
-        let mut provider = crate::handles::otel_tracer_provider_t {
-            inner: std::ptr::null_mut(),
-        };
-        assert_eq!(
-            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()) },
-            otel_result_t::OTEL_OK
-        );
-        let mut tracer = crate::handles::otel_tracer_t {
-            inner: std::ptr::null_mut(),
-        };
-        assert_eq!(
-            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_tracer_provider_tracer(&provider, &mut tracer, c"test".as_ptr()) },
-            otel_result_t::OTEL_OK
-        );
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            otel_tracer_release(&mut tracer);
-            otel_tracer_provider_release(&mut provider);
-            env::remove_var("OTEL_TRACES_EXPORTER");
-        }
+        let fixture = Fixture::new();
+        let mut span = fixture.start(c"created");
+        // SAFETY: `span` was initialized by `Fixture::start` with a valid tracer.
+        unsafe { otel_span_release(&mut span) };
+        assert!(span.inner.is_null());
     }
 
     #[test]

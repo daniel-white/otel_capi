@@ -277,3 +277,344 @@ fn set_error(
     };
     status
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use opentelemetry_proto::tonic::logs::v1::{LogRecord, ResourceLogs, ScopeLogs};
+    use opentelemetry_proto::tonic::metrics::v1::{Metric, ResourceMetrics, ScopeMetrics};
+    use opentelemetry_proto::tonic::trace::v1::{ResourceSpans, ScopeSpans, Span};
+    use std::ffi::CStr;
+    use std::mem::size_of;
+    use std::ptr::NonNull;
+    use std::slice;
+
+    fn cstr(bytes: &[u8]) -> &CStr {
+        CStr::from_bytes_with_nul(bytes).unwrap()
+    }
+
+    fn empty_handle() -> otel_stdout_transport_t {
+        otel_stdout_transport_t {
+            transport: otel_transport_t {
+                size: size_of::<otel_transport_t>(),
+                name: otel_str_t {
+                    ptr: ptr::null(),
+                    len: 0,
+                },
+                send: otel_stdout_transport_send,
+                user_data: ptr::null_mut(),
+            },
+            inner: ptr::null_mut(),
+        }
+    }
+
+    fn new_handle(print_url: bool) -> otel_stdout_transport_t {
+        let mut handle = empty_handle();
+        let options = otel_stdout_transport_options_t {
+            size: size_of::<otel_stdout_transport_options_t>(),
+            print_url,
+        };
+        // SAFETY: `handle` is writable, aligned caller-owned storage and
+        // `options` points to an initialized options struct.
+        let status = unsafe { otel_stdout_transport_new(&mut handle, &options) };
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        handle
+    }
+
+    fn release(handle: &mut otel_stdout_transport_t) {
+        // SAFETY: `handle` was initialized by `otel_stdout_transport_new`.
+        unsafe { otel_stdout_transport_release(handle) };
+    }
+
+    fn request_view(url: &CStr, body: &[u8]) -> otel_transport_request_t {
+        otel_transport_request_t {
+            method: cstr(b"POST\0").as_ptr(),
+            url: url.as_ptr(),
+            headers: ptr::null(),
+            header_count: 0,
+            body: body.as_ptr(),
+            body_len: body.len(),
+            timeout_ms: 0,
+        }
+    }
+
+    fn send(
+        handle: &otel_stdout_transport_t,
+        view: &otel_transport_request_t,
+        response: &mut otel_transport_response_t,
+    ) -> otel_result_t {
+        // SAFETY: `view` and `response` are initialized and all borrowed
+        // buffers stay alive for the call; `user_data` belongs to a live handle.
+        unsafe { otel_stdout_transport_send(view, response, handle.transport.user_data) }
+    }
+
+    fn error_bytes(response: &otel_transport_response_t) -> &[u8] {
+        // SAFETY: the callback filled `error` with a static byte string whose
+        // pointer and length stay valid for the test.
+        unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
+    }
+
+    #[test]
+    fn abi_version_is_one() {
+        assert_eq!(otel_stdout_transport_abi_version(), 1);
+    }
+
+    #[test]
+    fn new_rejects_null_arguments() {
+        let mut handle = empty_handle();
+        let options = otel_stdout_transport_options_t {
+            size: size_of::<otel_stdout_transport_options_t>(),
+            print_url: false,
+        };
+
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_new(ptr::null_mut(), &options) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: null options are rejected before they are dereferenced.
+            unsafe { otel_stdout_transport_new(&mut handle, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_rejects_invalid_options_size() {
+        let mut handle = empty_handle();
+        let options = otel_stdout_transport_options_t {
+            size: 1,
+            print_url: false,
+        };
+
+        // SAFETY: the handle is writable storage and the options struct is initialized.
+        let status = unsafe { otel_stdout_transport_new(&mut handle, &options) };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_initializes_descriptor_and_release_clears_it() {
+        let mut handle = new_handle(false);
+
+        assert_eq!(handle.transport.size, size_of::<otel_transport_t>());
+        // SAFETY: `name` points into the transport's static `stdout\0` byte string.
+        let name = unsafe {
+            slice::from_raw_parts(
+                handle.transport.name.ptr.cast::<u8>(),
+                handle.transport.name.len,
+            )
+        };
+        assert_eq!(name, b"stdout".as_slice());
+        let mut response = otel_transport_response_t::EMPTY;
+        assert_eq!(
+            // SAFETY: a NULL request is rejected by the callback before it is dereferenced.
+            unsafe {
+                (handle.transport.send)(ptr::null(), &mut response, handle.transport.user_data)
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(!handle.inner.is_null());
+        assert_eq!(handle.transport.user_data, handle.inner);
+
+        release(&mut handle);
+        assert!(handle.inner.is_null());
+        release(&mut handle);
+        // SAFETY: null handle is explicitly a no-op.
+        unsafe { otel_stdout_transport_release(ptr::null_mut()) };
+    }
+
+    #[test]
+    fn send_rejects_null_arguments() {
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"http://localhost/v1/traces\0"), b"body");
+        let dangling = NonNull::<u8>::dangling().as_ptr().cast::<c_void>();
+
+        assert_eq!(
+            // SAFETY: a null request is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_send(ptr::null(), &mut response, dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null response is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_send(&view, ptr::null_mut(), dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null user_data is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_send(&view, &mut response, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn send_rejects_null_url_and_body() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let body = ExportTraceServiceRequest::default().encode_to_vec();
+        let mut null_url = request_view(cstr(b"http://localhost/v1/traces\0"), &body);
+        null_url.url = ptr::null();
+        let mut null_body = request_view(cstr(b"http://localhost/v1/traces\0"), &body);
+        null_body.body = ptr::null();
+
+        for view in [&null_url, &null_body] {
+            let status = send(&handle, view, &mut response);
+            assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+            assert_eq!(error_bytes(&response), ERR_INVALID);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_rejects_unknown_url() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"http://localhost/v1/unknown\0"), b"body");
+
+        let status = send(&handle, &view, &mut response);
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert_eq!(error_bytes(&response), ERR_INVALID);
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_rejects_malformed_protobuf() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let urls = [
+            cstr(b"http://localhost/v1/traces\0"),
+            cstr(b"http://localhost/v1/metrics\0"),
+            cstr(b"http://localhost/v1/logs\0"),
+        ];
+
+        for url in urls {
+            let view = request_view(url, b"\xff\xff\xff");
+            let status = send(&handle, &view, &mut response);
+            assert_eq!(status, otel_result_t::OTEL_ERR_EXPORT);
+            assert_eq!(error_bytes(&response), ERR_EXPORT);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_accepts_empty_traces() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let body = ExportTraceServiceRequest::default().encode_to_vec();
+        let view = request_view(cstr(b"http://localhost/v1/traces\0"), &body);
+
+        let status = send(&handle, &view, &mut response);
+
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.error.len, 0);
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_accepts_empty_metrics() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let body = ExportMetricsServiceRequest::default().encode_to_vec();
+        let view = request_view(cstr(b"http://localhost/v1/metrics\0"), &body);
+
+        let status = send(&handle, &view, &mut response);
+
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.error.len, 0);
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_accepts_empty_logs() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let body = ExportLogsServiceRequest::default().encode_to_vec();
+        let view = request_view(cstr(b"http://localhost/v1/logs\0"), &body);
+
+        let status = send(&handle, &view, &mut response);
+
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.error.len, 0);
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_accepts_populated_batches() {
+        let mut handle = new_handle(false);
+        let mut response = otel_transport_response_t::EMPTY;
+        let traces = ExportTraceServiceRequest {
+            resource_spans: vec![ResourceSpans {
+                scope_spans: vec![ScopeSpans {
+                    spans: vec![Span::default()],
+                    ..Default::default()
+                }],
+                ..Default::default()
+            }],
+        }
+        .encode_to_vec();
+        let metrics = ExportMetricsServiceRequest {
+            resource_metrics: vec![ResourceMetrics {
+                scope_metrics: vec![ScopeMetrics {
+                    metrics: vec![Metric::default()],
+                    ..Default::default()
+                }],
+                ..Default::default()
+            }],
+        }
+        .encode_to_vec();
+        let logs = ExportLogsServiceRequest {
+            resource_logs: vec![ResourceLogs {
+                scope_logs: vec![ScopeLogs {
+                    log_records: vec![LogRecord::default()],
+                    ..Default::default()
+                }],
+                ..Default::default()
+            }],
+        }
+        .encode_to_vec();
+
+        for (url, body) in [
+            (cstr(b"http://localhost/v1/traces\0"), traces.as_slice()),
+            (cstr(b"http://localhost/v1/metrics\0"), metrics.as_slice()),
+            (cstr(b"http://localhost/v1/logs\0"), logs.as_slice()),
+        ] {
+            let view = request_view(url, body);
+            assert_eq!(send(&handle, &view, &mut response), otel_result_t::OTEL_OK);
+            assert_eq!(response.status_code, 200);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn register_rejects_null_arguments_and_uninitialized_handle() {
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        let handle = empty_handle();
+
+        assert_eq!(
+            // SAFETY: a null runtime is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_register(ptr::null_mut(), &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_stdout_transport_register(&mut runtime, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: the handle has no inner pointer, so no core symbol is called.
+            unsafe { otel_stdout_transport_register(&mut runtime, &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+}

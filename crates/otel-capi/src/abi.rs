@@ -261,3 +261,75 @@ pub unsafe fn release_handle<T: Send + Sync + 'static>(slot: *mut c_void) {
     unsafe { drop(Arc::from_raw(raw.cast::<T>())) };
     notify_destroyed();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    static DROPS: AtomicUsize = AtomicUsize::new(0);
+
+    struct Tracked;
+
+    impl Drop for Tracked {
+        fn drop(&mut self) {
+            DROPS.fetch_add(1, Ordering::SeqCst);
+        }
+    }
+
+    #[test]
+    fn init_handle_null_slot_is_rejected() {
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { init_handle::<u8>(ptr::null_mut(), 1) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn release_handle_null_or_empty_slot_is_a_no_op() {
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<u8>(ptr::null_mut()) };
+
+        let mut raw: *mut c_void = ptr::null_mut();
+        let slot = (&mut raw as *mut *mut c_void).cast::<c_void>();
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<u8>(slot) };
+        assert!(raw.is_null());
+    }
+
+    #[test]
+    fn init_and_release_handle_round_trip() {
+        DROPS.store(0, Ordering::SeqCst);
+        let before = live_handle_count();
+        let mut raw: *mut c_void = ptr::null_mut();
+        let slot = (&mut raw as *mut *mut c_void).cast::<c_void>();
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { init_handle(slot, Tracked) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!raw.is_null());
+        let during = live_handle_count();
+        let drops_before_release = DROPS.load(Ordering::SeqCst);
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<Tracked>(slot) };
+        assert!(raw.is_null());
+        // Other tests share the global counter, so only require our handle to
+        // have been included while it was live.
+        assert!(during > before);
+        assert_eq!(drops_before_release, 0);
+        assert_eq!(DROPS.load(Ordering::SeqCst), 1);
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<Tracked>(slot) };
+        assert_eq!(DROPS.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn find_core_symbol_returns_none_for_unknown_name() {
+        assert!(find_core_symbol::<usize>(b"otel_capi_no_such_symbol_for_tests\0").is_none());
+    }
+}

@@ -163,71 +163,108 @@ pub(crate) fn build_error<E: Display>(context: &str, err: E) -> Error {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
+    use std::ffi::OsString;
+    use std::sync::{Mutex, MutexGuard, PoisonError};
+
+    pub(crate) static ENV_LOCK: Mutex<()> = Mutex::new(());
+
+    /// Serializes process-wide environment changes made by tests and restores
+    /// every touched variable when dropped.
+    pub(crate) struct EnvGuard {
+        _lock: MutexGuard<'static, ()>,
+        saved: Vec<(&'static str, Option<OsString>)>,
+    }
+
+    impl EnvGuard {
+        pub(crate) fn new() -> Self {
+            Self {
+                _lock: ENV_LOCK.lock().unwrap_or_else(PoisonError::into_inner),
+                saved: Vec::new(),
+            }
+        }
+
+        fn remember(&mut self, name: &'static str) {
+            if !self.saved.iter().any(|(saved, _)| *saved == name) {
+                self.saved.push((name, env::var_os(name)));
+            }
+        }
+
+        pub(crate) fn set(&mut self, name: &'static str, value: &str) {
+            self.remember(name);
+            // SAFETY: the ENV_LOCK guard is held for the lifetime of `self`, so
+            // no other test in this crate observes or mutates the environment.
+            unsafe { env::set_var(name, value) };
+        }
+
+        pub(crate) fn remove(&mut self, name: &'static str) {
+            self.remember(name);
+            // SAFETY: see `set` above; access is serialized by ENV_LOCK.
+            unsafe { env::remove_var(name) };
+        }
+    }
+
+    impl Drop for EnvGuard {
+        fn drop(&mut self) {
+            for (name, previous) in self.saved.iter().rev() {
+                // SAFETY: the ENV_LOCK guard is still held while `self` drops.
+                unsafe {
+                    match previous {
+                        Some(value) => env::set_var(name, value),
+                        None => env::remove_var(name),
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn exporter_kind_accepts_known_values() {
+        let mut env = EnvGuard::new();
         // Tests set variables one at a time; use unique signals per case.
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "stdout");
-        }
+        env.set("OTEL_TEST_EXPORTER", "stdout");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Stdout);
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "CONSOLE");
-        }
+        env.set("OTEL_TEST_EXPORTER", "CONSOLE");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Stdout);
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "item");
-        }
+        env.set("OTEL_TEST_EXPORTER", "item");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Item);
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "MEMORY");
-        }
+        env.set("OTEL_TEST_EXPORTER", "MEMORY");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Item);
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "none");
-        }
+        env.set("OTEL_TEST_EXPORTER", "none");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::None);
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_EXPORTER", "bogus");
-        }
+        env.set("OTEL_TEST_EXPORTER", "bogus");
         assert_eq!(
             exporter_kind("TEST").unwrap_err().status,
             otel_result_t::OTEL_ERR_CONFIG
         );
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::remove_var("OTEL_TEST_EXPORTER");
-        }
+        env.remove("OTEL_TEST_EXPORTER");
         assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Otlp);
     }
 
     #[test]
     fn duration_ms_parses_and_defaults() {
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_DELAY", "250");
-        }
+        let mut env = EnvGuard::new();
+        env.set("OTEL_TEST_DELAY", "250");
         assert_eq!(
             duration_ms("OTEL_TEST_DELAY", 100).unwrap(),
             Duration::from_millis(250)
         );
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_TEST_DELAY", "nope");
-        }
+        env.set("OTEL_TEST_DELAY", "nope");
         assert!(duration_ms("OTEL_TEST_DELAY", 100).is_err());
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::remove_var("OTEL_TEST_DELAY");
-        }
+        env.set("OTEL_TEST_DELAY", "-1");
+        assert_eq!(
+            duration_ms("OTEL_TEST_DELAY", 100).unwrap_err().status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        env.set("OTEL_TEST_DELAY", "  0 ");
+        assert_eq!(duration_ms("OTEL_TEST_DELAY", 100).unwrap(), Duration::ZERO);
+        env.set("OTEL_TEST_DELAY", "  ");
+        assert_eq!(
+            duration_ms("OTEL_TEST_DELAY", 100).unwrap(),
+            Duration::from_millis(100)
+        );
+        env.remove("OTEL_TEST_DELAY");
         assert_eq!(
             duration_ms("OTEL_TEST_DELAY", 100).unwrap(),
             Duration::from_millis(100)
@@ -243,19 +280,92 @@ mod tests {
         );
         assert_eq!(parse_protocol(" http/json "), Some(OtlpProtocol::HttpJson));
         assert_eq!(parse_protocol("bogus"), None);
+        assert_eq!(parse_protocol(""), None);
     }
 
     #[test]
     fn otlp_timeout_prefers_signal_variable() {
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::set_var("OTEL_EXPORTER_OTLP_TEST_TIMEOUT", "250");
-        }
+        let mut env = EnvGuard::new();
+        env.set("OTEL_EXPORTER_OTLP_TEST_TIMEOUT", "250");
+        env.set("OTEL_EXPORTER_OTLP_TIMEOUT", "999");
         assert_eq!(otlp_timeout("TEST").unwrap(), Duration::from_millis(250));
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe {
-            env::remove_var("OTEL_EXPORTER_OTLP_TEST_TIMEOUT");
-        }
+        env.remove("OTEL_EXPORTER_OTLP_TEST_TIMEOUT");
+        assert_eq!(otlp_timeout("TEST").unwrap(), Duration::from_millis(999));
+        env.set("OTEL_EXPORTER_OTLP_TIMEOUT", "bad");
+        assert_eq!(
+            otlp_timeout("TEST").unwrap_err().status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        env.remove("OTEL_EXPORTER_OTLP_TIMEOUT");
         assert_eq!(otlp_timeout("TEST").unwrap(), Duration::from_secs(10));
+    }
+
+    #[test]
+    fn exporter_kind_trims_whitespace_and_reports_bad_values() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_TEST_EXPORTER", "  OTLP  ");
+        assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Otlp);
+        env.set("OTEL_TEST_EXPORTER", " stdout ");
+        assert_eq!(exporter_kind("TEST").unwrap(), ExporterKind::Stdout);
+        env.set("OTEL_TEST_EXPORTER", "BOGUS ");
+        let error = exporter_kind("TEST").unwrap_err();
+        assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
+    }
+
+    #[test]
+    fn otlp_protocol_prefers_signal_variable_and_defaults_to_json() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_EXPORTER_OTLP_TEST_PROTOCOL", "grpc");
+        env.set("OTEL_EXPORTER_OTLP_PROTOCOL", "http/json");
+        assert_eq!(otlp_protocol("TEST").unwrap(), OtlpProtocol::Grpc);
+        env.set("OTEL_EXPORTER_OTLP_TEST_PROTOCOL", "  ");
+        assert_eq!(otlp_protocol("TEST").unwrap(), OtlpProtocol::HttpJson);
+        env.set("OTEL_EXPORTER_OTLP_TEST_PROTOCOL", "http/protobuf");
+        assert_eq!(otlp_protocol("TEST").unwrap(), OtlpProtocol::HttpBinary);
+        env.remove("OTEL_EXPORTER_OTLP_TEST_PROTOCOL");
+        assert_eq!(otlp_protocol("TEST").unwrap(), OtlpProtocol::HttpJson);
+        env.set("OTEL_EXPORTER_OTLP_TEST_PROTOCOL", "bogus");
+        assert_eq!(
+            otlp_protocol("TEST").unwrap_err().status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+    }
+
+    #[test]
+    fn sdk_disabled_recognizes_truthy_values() {
+        let mut env = EnvGuard::new();
+        for value in ["1", "TRUE", " yes ", "On"] {
+            env.set("OTEL_SDK_DISABLED", value);
+            assert!(sdk_disabled(), "{value} should disable the SDK");
+        }
+        for value in ["0", "false", "no", "off", ""] {
+            env.set("OTEL_SDK_DISABLED", value);
+            assert!(!sdk_disabled(), "{value} should not disable the SDK");
+        }
+        env.remove("OTEL_SDK_DISABLED");
+        assert!(!sdk_disabled());
+    }
+
+    #[test]
+    fn resource_from_env_includes_caller_attributes() {
+        let resource = resource_from_env_with(vec![KeyValue::new("caller", "value")]);
+        let attributes: Vec<_> = resource.iter().collect();
+        assert!(
+            attributes
+                .iter()
+                .any(|(key, value)| key.as_str() == "caller" && value.to_string() == "value")
+        );
+    }
+
+    #[test]
+    fn error_helpers_keep_context() {
+        let error = sdk_error("flush", OTelSdkError::InternalFailure("broken".into()));
+        assert_eq!(error.status, otel_result_t::OTEL_ERR_EXPORT);
+        assert!(error.message.starts_with("flush: "));
+        let error = build_error("config", std::fmt::Error);
+        assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
+        assert!(error.message.starts_with("config: "));
+        let error = Error::from(env::VarError::NotPresent);
+        assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
     }
 }

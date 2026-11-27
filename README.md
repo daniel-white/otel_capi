@@ -48,8 +48,8 @@ With direnv and nix-direnv installed, the repo's `.envrc` enters that dev
 shell automatically. Run `direnv allow` once after cloning, then plain
 `make build` / `make check` work in that directory.
 
-`make check` runs the Rust unit tests, checks formatting with `cargo fmt`, runs
-`cargo clippy` with `-D warnings` (including `undocumented_unsafe_blocks`),
+`make check` runs the Rust unit tests for every workspace crate, checks formatting
+with `cargo fmt`, runs `cargo clippy` with `-D warnings` (including `undocumented_unsafe_blocks`),
 compiles the kitchen-sink example with both gcc and clang using
 `-std=c11 -Wall -Wextra -Werror`, runs it with both `OTEL_CAPI_EXPORTER=none`
 and `OTEL_CAPI_EXPORTER=stdout`, and verifies the compile-pass/compile-fail
@@ -62,8 +62,9 @@ shell:
 nix develop --command make miri
 ```
 
-The Miri target disables isolation so the tests can read the real clock and
-process environment.
+Both `make test` and `make miri` run the unit tests in the core crate, the
+shared HTTP client, and all three loadable transports. The Miri target disables
+isolation so the tests can read the real clock and process environment.
 
 Collect coverage for the same tests with:
 
@@ -71,10 +72,12 @@ Collect coverage for the same tests with:
 nix develop --command make coverage
 ```
 
-`make coverage` runs Miri first and then measures the tests with LLVM
-instrumentation. Miri interprets MIR and cannot emit LLVM coverage data itself,
-so the report reflects the test suite that Miri validated. The report is written
-to `build/coverage/html` and `build/coverage/lcov.info`, which are gitignored.
+`make coverage` runs Miri across every crate first and then measures the same
+tests with LLVM instrumentation. Miri interprets MIR and cannot emit LLVM
+coverage data itself, so the report reflects the workspace test suite that Miri
+validated. The target prints a workspace summary, fails below 70% line coverage,
+and writes the report to `build/coverage/html` and `build/coverage/lcov.info`,
+which are gitignored.
 
 Generate HTML API documentation from the generated headers with:
 

@@ -56,7 +56,7 @@ jobs:
           components: rustfmt, clippy
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --locked -- -W clippy::undocumented_unsafe_blocks
-      - run: cargo test --lib --locked
+      - run: cargo test --workspace --lib --locked
       - run: cargo build --release --locked
 
   miri:

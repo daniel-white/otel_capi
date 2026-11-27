@@ -265,3 +265,247 @@ impl fmt::Display for CallbackError {
 }
 
 impl std::error::Error for CallbackError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ffi::c_char;
+    use std::ptr;
+
+    #[derive(Default)]
+    struct Observed {
+        method: String,
+        url: String,
+        headers: Vec<(String, String)>,
+        body: Vec<u8>,
+        timeout_ms: u64,
+    }
+
+    // The core copies response data after the callback returns, so these views
+    // must point to storage that outlives the callback body.
+    #[derive(Copy, Clone)]
+    struct Headers([otel_transport_header_t; 1]);
+
+    // SAFETY: Static test headers are immutable and point only to static bytes.
+    unsafe impl Sync for Headers {}
+
+    static RESPONSE_BODY: &[u8] = b"accepted";
+    static RESPONSE_HEADERS: Headers = Headers([otel_transport_header_t {
+        name: otel_str_t {
+            ptr: b"x-test".as_ptr().cast::<c_char>(),
+            len: b"x-test".len(),
+        },
+        value: otel_str_t {
+            ptr: b"yes".as_ptr().cast::<c_char>(),
+            len: b"yes".len(),
+        },
+    }]);
+    static INVALID_UTF8_HEADERS: Headers = Headers([otel_transport_header_t {
+        name: otel_str_t {
+            ptr: b"\xff".as_ptr().cast::<c_char>(),
+            len: 1,
+        },
+        value: otel_str_t {
+            ptr: b"yes".as_ptr().cast::<c_char>(),
+            len: b"yes".len(),
+        },
+    }]);
+
+    fn request() -> Request<Bytes> {
+        Request::builder()
+            .method("POST")
+            .uri("https://example.com/v1/traces")
+            .header("content-type", "application/x-protobuf")
+            .body(Bytes::from_static(b"payload"))
+            .unwrap()
+    }
+
+    fn client(send: otel_transport_send_fn) -> CallbackTransportClient {
+        CallbackTransportClient::new(
+            "unit".to_owned(),
+            Transport::new(send, ptr::null_mut()),
+            Duration::from_millis(250),
+        )
+    }
+
+    unsafe extern "C" fn record_and_succeed(
+        request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test invokes this callback with valid borrowed request and
+        // response pointers, and `user_data` points to a live `Observed` for this call.
+        unsafe {
+            let view = &*request;
+            let observed = &mut *user_data.cast::<Observed>();
+            observed.method = CStr::from_ptr(view.method).to_string_lossy().into_owned();
+            observed.url = CStr::from_ptr(view.url).to_string_lossy().into_owned();
+            for header in slice::from_raw_parts(view.headers, view.header_count) {
+                let name = str_slice(header.name, "header name").unwrap();
+                let value = str_slice(header.value, "header value").unwrap();
+                observed.headers.push((name.to_owned(), value.to_owned()));
+            }
+            observed.body = slice::from_raw_parts(view.body, view.body_len).to_vec();
+            observed.timeout_ms = view.timeout_ms;
+
+            *response = otel_transport_response_t {
+                status_code: 202,
+                body: RESPONSE_BODY.as_ptr(),
+                body_len: RESPONSE_BODY.len(),
+                headers: RESPONSE_HEADERS.0.as_ptr(),
+                header_count: RESPONSE_HEADERS.0.len(),
+                ..otel_transport_response_t::EMPTY
+            };
+        }
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn fail_with_error(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        let message = b"backend down";
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe {
+            (*response).error = otel_str_t {
+                ptr: message.as_ptr().cast::<c_char>(),
+                len: message.len(),
+            };
+        }
+        otel_result_t::OTEL_ERR_EXPORT
+    }
+
+    unsafe extern "C" fn fail_without_error(
+        _request: *const otel_transport_request_t,
+        _response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        otel_result_t::OTEL_ERR_INTERNAL
+    }
+
+    unsafe extern "C" fn invalid_status(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe { (*response).status_code = 99 };
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn null_headers(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe {
+            (*response).status_code = 200;
+            (*response).header_count = 1;
+        }
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn null_body(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe {
+            (*response).status_code = 200;
+            (*response).body_len = 1;
+        }
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn invalid_utf8_header(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe {
+            *response = otel_transport_response_t {
+                status_code: 200,
+                headers: INVALID_UTF8_HEADERS.0.as_ptr(),
+                header_count: INVALID_UTF8_HEADERS.0.len(),
+                ..otel_transport_response_t::EMPTY
+            };
+        }
+        otel_result_t::OTEL_OK
+    }
+
+    #[test]
+    fn invoke_passes_request_fields_and_copies_response() {
+        let mut observed = Observed::default();
+        let callback = CallbackTransportClient::new(
+            "unit".to_owned(),
+            Transport::new(
+                record_and_succeed,
+                (&mut observed as *mut Observed).cast::<c_void>(),
+            ),
+            Duration::from_millis(250),
+        );
+
+        let response = callback.invoke(request()).unwrap();
+        assert_eq!(response.status(), 202);
+        assert_eq!(response.body().as_ref(), &b"accepted"[..]);
+        assert_eq!(response.headers().get("x-test").unwrap(), "yes");
+
+        assert_eq!(observed.method, "POST");
+        assert_eq!(observed.url, "https://example.com/v1/traces");
+        assert_eq!(
+            observed.headers,
+            vec![(
+                "content-type".to_owned(),
+                "application/x-protobuf".to_owned()
+            )]
+        );
+        assert_eq!(observed.body, b"payload");
+        assert_eq!(observed.timeout_ms, 250);
+    }
+
+    #[test]
+    fn invoke_reports_callback_failure_and_error_view() {
+        let error = client(fail_with_error).invoke(request()).unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "transport callback failed (4): transport \"unit\" failed: backend down"
+        );
+
+        let error = client(fail_without_error).invoke(request()).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("transport \"unit\" failed: internal error")
+        );
+    }
+
+    #[test]
+    fn invoke_rejects_invalid_status_and_null_response_pointers() {
+        let error = client(invalid_status).invoke(request()).unwrap_err();
+        assert!(error.to_string().contains("invalid status code 99"));
+
+        let error = client(null_headers).invoke(request()).unwrap_err();
+        assert!(error.to_string().contains("response headers are NULL"));
+
+        let error = client(null_body).invoke(request()).unwrap_err();
+        assert!(error.to_string().contains("response body is NULL"));
+    }
+
+    #[test]
+    fn invoke_rejects_invalid_utf8_response_headers() {
+        let error = client(invalid_utf8_header).invoke(request()).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("response header name is not valid UTF-8")
+        );
+        assert_eq!(
+            error.downcast_ref::<CallbackError>().unwrap().status,
+            otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+    }
+}

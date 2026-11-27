@@ -372,3 +372,342 @@ fn set_error(
     };
     status
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use otel_capi::abi::otel_transport_header_t;
+    use std::ffi::{CStr, CString};
+    use std::mem::size_of;
+    use std::ptr::NonNull;
+    use std::slice;
+
+    fn cstr(bytes: &[u8]) -> &CStr {
+        CStr::from_bytes_with_nul(bytes).unwrap()
+    }
+
+    fn empty_handle() -> otel_grpc_transport_t {
+        otel_grpc_transport_t {
+            transport: otel_transport_t {
+                size: size_of::<otel_transport_t>(),
+                name: otel_str_t {
+                    ptr: ptr::null(),
+                    len: 0,
+                },
+                send: otel_grpc_transport_send,
+                user_data: ptr::null_mut(),
+            },
+            inner: ptr::null_mut(),
+        }
+    }
+
+    fn new_handle() -> otel_grpc_transport_t {
+        let mut handle = empty_handle();
+        let options = otel_grpc_transport_options_t {
+            size: size_of::<otel_grpc_transport_options_t>(),
+            worker_count: 1,
+        };
+        // SAFETY: `handle` is writable, aligned caller-owned storage and
+        // `options` points to an initialized options struct.
+        let status = unsafe { otel_grpc_transport_new(&mut handle, &options) };
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        handle
+    }
+
+    fn release(handle: &mut otel_grpc_transport_t) {
+        // SAFETY: `handle` was initialized by `otel_grpc_transport_new`.
+        unsafe { otel_grpc_transport_release(handle) };
+    }
+
+    fn request_view(url: &CStr, body: &[u8]) -> otel_transport_request_t {
+        otel_transport_request_t {
+            method: cstr(b"POST\0").as_ptr(),
+            url: url.as_ptr(),
+            headers: ptr::null(),
+            header_count: 0,
+            body: body.as_ptr(),
+            body_len: body.len(),
+            timeout_ms: 0,
+        }
+    }
+
+    fn error_bytes(response: &otel_transport_response_t) -> &[u8] {
+        // SAFETY: the callback filled `error` with a static byte string whose
+        // pointer and length stay valid for the test.
+        unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
+    }
+
+    #[test]
+    fn signal_from_url_detects_each_export_path() {
+        assert!(matches!(
+            Signal::from_url("https://collector:4317/v1/traces"),
+            Some(Signal::Traces)
+        ));
+        assert!(matches!(
+            Signal::from_url("https://collector:4317/v1/metrics"),
+            Some(Signal::Metrics)
+        ));
+        assert!(matches!(
+            Signal::from_url("https://collector:4317/v1/logs"),
+            Some(Signal::Logs)
+        ));
+        assert!(Signal::from_url("https://collector:4317/v1/unknown").is_none());
+        assert!(Signal::from_url("").is_none());
+
+        assert_eq!(
+            Signal::Traces.export_path(),
+            "/opentelemetry.proto.collector.trace.v1.TraceService/Export"
+        );
+        assert_eq!(
+            Signal::Metrics.export_path(),
+            "/opentelemetry.proto.collector.metrics.v1.MetricsService/Export"
+        );
+        assert_eq!(
+            Signal::Logs.export_path(),
+            "/opentelemetry.proto.collector.logs.v1.LogsService/Export"
+        );
+    }
+
+    #[test]
+    fn grpc_status_reads_valid_header_values() {
+        let mut headers = HeaderMap::new();
+        assert_eq!(grpc_status(&headers), None);
+
+        headers.insert("grpc-status", HeaderValue::from_static("0"));
+        assert_eq!(grpc_status(&headers), Some(0));
+        headers.insert("grpc-status", HeaderValue::from_static("7"));
+        assert_eq!(grpc_status(&headers), Some(7));
+        headers.insert("grpc-status", HeaderValue::from_static("not-a-number"));
+        assert_eq!(grpc_status(&headers), None);
+        headers.insert("grpc-status", HeaderValue::from_bytes(b"\xff").unwrap());
+        assert_eq!(grpc_status(&headers), None);
+    }
+
+    #[test]
+    fn grpc_message_parses_frames_and_rejects_bad_ones() {
+        assert_eq!(
+            grpc_message(&[0, 0, 0, 0, 3, b'a', b'b', b'c']).unwrap(),
+            b"abc"
+        );
+        assert_eq!(
+            grpc_message(&[0, 0, 0, 0, 3, b'a', b'b', b'c', b'd']).unwrap(),
+            b"abc"
+        );
+        assert_eq!(grpc_message(&[0, 0, 0, 0, 0]).unwrap(), b"");
+
+        assert!(matches!(
+            grpc_message(&[]),
+            Err(GrpcFrameError::MissingPrefix)
+        ));
+        assert!(matches!(
+            grpc_message(&[1, 0, 0, 0, 0]),
+            Err(GrpcFrameError::InvalidCompression)
+        ));
+        assert!(matches!(
+            grpc_message(&[0, 0, 0]),
+            Err(GrpcFrameError::Truncated)
+        ));
+        assert!(matches!(
+            grpc_message(&[0, 0, 0, 0, 4, b'a']),
+            Err(GrpcFrameError::Truncated)
+        ));
+    }
+
+    #[test]
+    fn abi_version_is_one() {
+        assert_eq!(otel_grpc_transport_abi_version(), 1);
+    }
+
+    #[test]
+    fn new_rejects_null_arguments() {
+        let mut handle = empty_handle();
+        let options = otel_grpc_transport_options_t {
+            size: size_of::<otel_grpc_transport_options_t>(),
+            worker_count: 0,
+        };
+
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_new(ptr::null_mut(), &options) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: null options are rejected before they are dereferenced.
+            unsafe { otel_grpc_transport_new(&mut handle, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_rejects_invalid_options_size() {
+        let mut handle = empty_handle();
+        let options = otel_grpc_transport_options_t {
+            size: 1,
+            worker_count: 0,
+        };
+
+        // SAFETY: the handle is writable storage and the options struct is initialized.
+        let status = unsafe { otel_grpc_transport_new(&mut handle, &options) };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_initializes_descriptor_and_release_clears_it() {
+        let mut handle = new_handle();
+
+        assert_eq!(handle.transport.size, size_of::<otel_transport_t>());
+        // SAFETY: `name` points into the transport's static `grpc\0` byte string.
+        let name = unsafe {
+            slice::from_raw_parts(
+                handle.transport.name.ptr.cast::<u8>(),
+                handle.transport.name.len,
+            )
+        };
+        assert_eq!(name, b"grpc".as_slice());
+        let mut response = otel_transport_response_t::EMPTY;
+        assert_eq!(
+            // SAFETY: a NULL request is rejected by the callback before it is dereferenced.
+            unsafe {
+                (handle.transport.send)(ptr::null(), &mut response, handle.transport.user_data)
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(!handle.inner.is_null());
+        assert_eq!(handle.transport.user_data, handle.inner);
+
+        release(&mut handle);
+        assert!(handle.inner.is_null());
+        release(&mut handle);
+        // SAFETY: null handle is explicitly a no-op.
+        unsafe { otel_grpc_transport_release(ptr::null_mut()) };
+    }
+
+    #[test]
+    fn send_rejects_null_arguments() {
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"https://localhost:4317/v1/traces\0"), b"body");
+        let dangling = NonNull::<u8>::dangling().as_ptr().cast::<c_void>();
+
+        assert_eq!(
+            // SAFETY: a null request is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_send(ptr::null(), &mut response, dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null response is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_send(&view, ptr::null_mut(), dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null user_data is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_send(&view, &mut response, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn send_rejects_invalid_url_and_endpoint() {
+        let mut handle = new_handle();
+        let mut response = otel_transport_response_t::EMPTY;
+        let bad_utf8 = CString::new([0xffu8, 0xfe]).unwrap();
+        let unknown_signal = request_view(cstr(b"https://localhost:4317/v1/unknown\0"), b"body");
+        let mut null_url = request_view(cstr(b"https://localhost:4317/v1/traces\0"), b"body");
+        null_url.url = ptr::null();
+        let empty_endpoint = request_view(cstr(b"/v1/traces\0"), b"body");
+        let invalid_url = request_view(&bad_utf8, b"body");
+
+        for view in [&invalid_url, &unknown_signal, &null_url, &empty_endpoint] {
+            // SAFETY: all views are initialized, `response` is writable, and
+            // `user_data` belongs to the live handle held for this test.
+            let status = unsafe {
+                otel_grpc_transport_send(view, &mut response, handle.transport.user_data)
+            };
+            assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+            assert_eq!(error_bytes(&response), ERR_INVALID);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_rejects_invalid_body() {
+        let mut handle = new_handle();
+        let mut response = otel_transport_response_t::EMPTY;
+        let url = cstr(b"https://localhost:4317/v1/traces\0");
+        let mut null_body = request_view(url, b"body");
+        null_body.body = ptr::null();
+        let mut oversized = request_view(url, b"body");
+        oversized.body_len = u32::MAX as usize + 1;
+
+        for view in [&null_body, &oversized] {
+            // SAFETY: both views are rejected before the body is read;
+            // `user_data` belongs to the live handle held for this test.
+            let status = unsafe {
+                otel_grpc_transport_send(view, &mut response, handle.transport.user_data)
+            };
+            assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+            assert_eq!(error_bytes(&response), ERR_INVALID);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn send_rejects_bad_core_header_with_timeout() {
+        let mut handle = new_handle();
+        let mut response = otel_transport_response_t::EMPTY;
+        let bad_name = CString::new("bad name").unwrap();
+        let value = CString::new("value").unwrap();
+        let headers = [otel_transport_header_t {
+            name: otel_str_t {
+                ptr: bad_name.as_ptr(),
+                len: bad_name.as_bytes().len(),
+            },
+            value: otel_str_t {
+                ptr: value.as_ptr(),
+                len: value.as_bytes().len(),
+            },
+        }];
+        let mut view = request_view(cstr(b"https://localhost:4317/v1/traces\0"), b"body");
+        view.headers = headers.as_ptr();
+        view.header_count = 1;
+        view.timeout_ms = 5000;
+
+        // SAFETY: the request and response are initialized, all borrowed views
+        // stay alive, and `user_data` belongs to the live handle. The bad core
+        // header makes request construction fail before any network I/O.
+        let status =
+            unsafe { otel_grpc_transport_send(&view, &mut response, handle.transport.user_data) };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert_eq!(error_bytes(&response), ERR_INVALID);
+        release(&mut handle);
+    }
+
+    #[test]
+    fn register_rejects_null_arguments_and_uninitialized_handle() {
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        let handle = empty_handle();
+
+        assert_eq!(
+            // SAFETY: a null runtime is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_register(ptr::null_mut(), &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_grpc_transport_register(&mut runtime, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: the handle has no inner pointer, so no core symbol is called.
+            unsafe { otel_grpc_transport_register(&mut runtime, &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+}

@@ -572,3 +572,328 @@ impl PushMetricExporter for ItemMetricExporter {
         Temporality::Cumulative
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::items::otel_encoded_item_t;
+    use opentelemetry::logs::{LogRecord as _, Logger as _, LoggerProvider as _};
+    use opentelemetry::trace::{SpanContext, TraceFlags, TraceId, TraceState};
+    use opentelemetry_sdk::logs::SdkLoggerProvider;
+    use opentelemetry_sdk::trace::{SpanEvents, SpanLinks};
+    use std::cell::{Cell, RefCell};
+    use std::ffi::c_void;
+    use std::time::{Duration, UNIX_EPOCH};
+
+    #[derive(Default)]
+    struct Capture {
+        spans: Cell<usize>,
+        logs: Cell<usize>,
+        metrics: Cell<usize>,
+        encoded: RefCell<Vec<(i32, usize)>>,
+        statuses: RefCell<Vec<(i32, String)>>,
+        bodies: RefCell<Vec<String>>,
+        resource_counts: RefCell<Vec<usize>>,
+        metric_kinds: RefCell<Vec<i32>>,
+        point_kinds: RefCell<Vec<i32>>,
+        point_counts: RefCell<Vec<usize>>,
+        bucket_counts: RefCell<Vec<usize>>,
+    }
+
+    impl Capture {
+        fn transport(&self) -> ItemTransport {
+            ItemTransport {
+                on_span: Some(capture_span),
+                on_log: Some(capture_log),
+                on_metric: Some(capture_metric),
+                on_encoded: Some(capture_encoded),
+                user_data: (self as *const Capture).cast_mut().cast::<c_void>(),
+            }
+        }
+    }
+
+    unsafe fn captured(user_data: *mut c_void) -> &'static Capture {
+        // SAFETY: the test callbacks only read the item for the duration of the
+        // call and `user_data` points to a live `Capture` for that whole call.
+        unsafe { &*user_data.cast::<Capture>() }
+    }
+
+    // SAFETY: `view` is borrowed from a live CString in the captured item.
+    unsafe fn view_text(view: crate::strings::otel_str_t) -> String {
+        // SAFETY: the view points to `view.len` readable bytes for this call.
+        let bytes = unsafe { std::slice::from_raw_parts(view.ptr.cast::<u8>(), view.len) };
+        String::from_utf8_lossy(bytes).into_owned()
+    }
+
+    unsafe extern "C" fn capture_span(item: *const otel_span_item_t, user_data: *mut c_void) {
+        // SAFETY: `item` is borrowed for this call and `user_data` is live.
+        unsafe {
+            let item = &*item;
+            let capture = captured(user_data);
+            capture.spans.set(capture.spans.get() + 1);
+            capture
+                .statuses
+                .borrow_mut()
+                .push((item.status as i32, view_text(item.status_message)));
+            capture
+                .resource_counts
+                .borrow_mut()
+                .push(item.resource_attribute_count);
+        }
+    }
+
+    unsafe extern "C" fn capture_log(item: *const otel_log_item_t, user_data: *mut c_void) {
+        // SAFETY: `item` is borrowed for this call and `user_data` is live.
+        unsafe {
+            let item = &*item;
+            let capture = captured(user_data);
+            capture.logs.set(capture.logs.get() + 1);
+            capture.bodies.borrow_mut().push(view_text(item.body));
+            capture
+                .statuses
+                .borrow_mut()
+                .push((item.severity as i32, String::new()));
+        }
+    }
+
+    unsafe extern "C" fn capture_metric(item: *const otel_metric_item_t, user_data: *mut c_void) {
+        // SAFETY: `item` is borrowed for this call and `user_data` is live.
+        unsafe {
+            let item = &*item;
+            let capture = captured(user_data);
+            capture.metrics.set(capture.metrics.get() + 1);
+            capture.metric_kinds.borrow_mut().push(item.kind as i32);
+            capture.point_counts.borrow_mut().push(item.point_count);
+            capture
+                .resource_counts
+                .borrow_mut()
+                .push(item.resource_attribute_count);
+            if item.point_count > 0 {
+                let point = &*item.points;
+                capture
+                    .point_kinds
+                    .borrow_mut()
+                    .push(point.value_kind as i32);
+            }
+            if item.histogram_count > 0 {
+                let histogram = &*item.histograms;
+                capture
+                    .bucket_counts
+                    .borrow_mut()
+                    .push(histogram.bucket_count);
+            }
+        }
+    }
+
+    unsafe extern "C" fn capture_encoded(item: *const otel_encoded_item_t, user_data: *mut c_void) {
+        // SAFETY: `item` is borrowed for this call and `user_data` is live.
+        unsafe {
+            let item = &*item;
+            captured(user_data)
+                .encoded
+                .borrow_mut()
+                .push((item.signal as i32, item.len));
+        }
+    }
+
+    #[test]
+    fn any_value_string_formats_all_variants() {
+        assert_eq!(
+            any_value_string(&AnyValue::String("hello".into()))
+                .to_str()
+                .unwrap(),
+            "hello"
+        );
+        assert_eq!(any_value_string(&AnyValue::Int(-4)).to_str().unwrap(), "-4");
+        assert_eq!(
+            any_value_string(&AnyValue::Double(1.5)).to_str().unwrap(),
+            "1.5"
+        );
+        assert_eq!(
+            any_value_string(&AnyValue::Boolean(true)).to_str().unwrap(),
+            "true"
+        );
+        assert_eq!(
+            any_value_string(&AnyValue::Bytes(vec![b'a', 0xff].into()))
+                .to_str()
+                .unwrap(),
+            "a\u{fffd}"
+        );
+        assert_eq!(
+            any_value_string(&AnyValue::String("a\0b".into())).as_bytes(),
+            b""
+        );
+        assert!(
+            !any_value_string(&AnyValue::ListAny(Vec::new().into()))
+                .to_str()
+                .unwrap()
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn status_view_reports_code_and_description() {
+        let (status, message) = status_view(&Status::Unset);
+        assert_eq!(status, otel_span_status_t::OTEL_SPAN_STATUS_UNSET);
+        assert!(message.as_bytes().is_empty());
+        let (status, message) = status_view(&Status::Ok);
+        assert_eq!(status, otel_span_status_t::OTEL_SPAN_STATUS_OK);
+        assert!(message.as_bytes().is_empty());
+        let (status, message) = status_view(&Status::Error {
+            description: "a\0b".into(),
+        });
+        assert_eq!(status, otel_span_status_t::OTEL_SPAN_STATUS_ERROR);
+        assert!(message.as_bytes().is_empty());
+        let (_, message) = status_view(&Status::Error {
+            description: "boom".into(),
+        });
+        assert_eq!(message.to_str().unwrap(), "boom");
+    }
+
+    #[test]
+    fn metric_value_views_preserve_kind_and_number() {
+        let (kind, value) = 1.25f64.view();
+        assert_eq!(kind, otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64);
+        // SAFETY: `value_kind` selects the active union member.
+        assert_eq!(unsafe { value.as_f64 }, 1.25);
+        assert_eq!(1.25f64.to_f64(), 1.25);
+        let (kind, value) = 9u64.view();
+        assert_eq!(kind, otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64);
+        // SAFETY: `value_kind` selects the active union member.
+        assert_eq!(unsafe { value.as_u64 }, 9);
+        assert_eq!(9u64.to_f64(), 9.0);
+        let (kind, value) = (-3i64).view();
+        assert_eq!(kind, otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64);
+        // SAFETY: `value_kind` selects the active union member.
+        assert_eq!(unsafe { value.as_i64 }, -3);
+        assert_eq!((-3i64).to_f64(), -3.0);
+    }
+
+    fn sample_span(sampled: bool, status: Status) -> SpanData {
+        let flags = if sampled {
+            TraceFlags::SAMPLED
+        } else {
+            TraceFlags::default()
+        };
+        SpanData {
+            span_context: SpanContext::new(
+                TraceId::from_bytes([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
+                SpanId::from_bytes([1, 2, 3, 4, 5, 6, 7, 8]),
+                flags,
+                false,
+                TraceState::NONE,
+            ),
+            parent_span_id: SpanId::INVALID,
+            parent_span_is_remote: false,
+            span_kind: opentelemetry::trace::SpanKind::Server,
+            name: "operation".into(),
+            start_time: UNIX_EPOCH + Duration::from_secs(1),
+            end_time: UNIX_EPOCH + Duration::from_secs(2),
+            attributes: vec![KeyValue::new("key", "value")],
+            dropped_attributes_count: 0,
+            events: SpanEvents::default(),
+            links: SpanLinks::default(),
+            status,
+            instrumentation_scope: InstrumentationScope::builder("scope").build(),
+        }
+    }
+
+    #[test]
+    fn span_processor_emits_sampled_spans_only() {
+        let capture = Capture::default();
+        let mut processor = ItemSpanProcessor::new(capture.transport());
+        processor.set_resource(
+            &Resource::builder()
+                .with_attributes(vec![KeyValue::new("service.name", "test")])
+                .build(),
+        );
+        assert!(processor.force_flush().is_ok());
+        assert!(processor.shutdown_with_timeout(Duration::ZERO).is_ok());
+        assert!(format!("{processor:?}").contains("ItemSpanProcessor"));
+
+        processor.on_end(sample_span(
+            true,
+            Status::Error {
+                description: "boom".into(),
+            },
+        ));
+        assert_eq!(capture.spans.get(), 1);
+        assert_eq!(capture.statuses.borrow()[0].0, 2);
+        assert_eq!(capture.statuses.borrow()[0].1, "boom");
+        assert!(capture.resource_counts.borrow()[0] > 0);
+        assert_eq!(capture.encoded.borrow().len(), 1);
+        assert_eq!(capture.encoded.borrow()[0].0, 0);
+        assert!(capture.encoded.borrow()[0].1 > 0);
+
+        processor.on_end(sample_span(true, Status::Ok));
+        assert_eq!(capture.spans.get(), 2);
+        assert_eq!(capture.statuses.borrow()[1].0, 1);
+        assert!(capture.statuses.borrow()[1].1.is_empty());
+
+        processor.on_end(sample_span(false, Status::Unset));
+        assert_eq!(capture.spans.get(), 2);
+        assert_eq!(capture.encoded.borrow().len(), 2);
+    }
+
+    #[test]
+    fn log_processor_emits_typed_and_encoded_records() {
+        let capture = Capture::default();
+        let mut processor = ItemLogProcessor::new(capture.transport());
+        processor.set_resource(&Resource::builder_empty().build());
+        assert!(processor.force_flush().is_ok());
+        assert!(processor.shutdown_with_timeout(Duration::ZERO).is_ok());
+        assert!(format!("{processor:?}").contains("ItemLogProcessor"));
+
+        let provider = SdkLoggerProvider::builder().build();
+        let logger = provider.logger("scope");
+        let scope = InstrumentationScope::builder("scope").build();
+        let mut record = logger.create_log_record();
+        record.set_severity_number(opentelemetry::logs::Severity::Warn);
+        record.set_severity_text("WARN");
+        record.set_body(AnyValue::Int(42));
+        record.set_timestamp(UNIX_EPOCH + Duration::from_secs(1));
+        record.set_observed_timestamp(UNIX_EPOCH + Duration::from_secs(2));
+        record.set_trace_context(
+            TraceId::from_bytes([1; 16]),
+            SpanId::from_bytes([2; 8]),
+            Some(TraceFlags::SAMPLED),
+        );
+        record.add_attribute("attr", "value");
+        processor.emit(&mut record, &scope);
+        assert_eq!(capture.logs.get(), 1);
+        assert_eq!(capture.bodies.borrow()[0], "42");
+        assert_eq!(
+            capture.statuses.borrow()[0].0,
+            otel_severity_t::OTEL_SEVERITY_WARN as i32
+        );
+        assert_eq!(capture.encoded.borrow()[0].0, 2);
+        assert!(capture.encoded.borrow()[0].1 > 0);
+
+        let mut empty = logger.create_log_record();
+        empty.set_observed_timestamp(UNIX_EPOCH + Duration::from_secs(3));
+        processor.emit(&mut empty, &scope);
+        assert_eq!(capture.logs.get(), 2);
+        assert!(capture.bodies.borrow()[1].is_empty());
+        assert_eq!(
+            capture.statuses.borrow()[1].0,
+            otel_severity_t::OTEL_SEVERITY_INFO as i32
+        );
+    }
+
+    #[test]
+    fn metric_exporter_exposes_reader_contract_and_handles_empty_metrics() {
+        let capture = Capture::default();
+        let exporter = ItemMetricExporter::new(capture.transport());
+        assert_eq!(exporter.temporality(), Temporality::Cumulative);
+        assert!(exporter.force_flush().is_ok());
+        assert!(format!("{exporter:?}").contains("ItemMetricExporter"));
+
+        exporter.send(&ResourceMetrics::default()).unwrap();
+        assert_eq!(capture.metrics.get(), 0);
+        assert_eq!(capture.encoded.borrow().len(), 1);
+        assert_eq!(capture.encoded.borrow()[0].0, 1);
+        assert!(capture.encoded.borrow()[0].1 > 0);
+
+        assert!(exporter.shutdown_with_timeout(Duration::ZERO).is_ok());
+    }
+}

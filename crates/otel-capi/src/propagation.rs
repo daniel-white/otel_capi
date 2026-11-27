@@ -361,6 +361,7 @@ pub unsafe extern "C" fn otel_baggage_value_view(value: *const otel_baggage_valu
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::ffi::CStr;
 
     #[test]
     fn traceparent_validation_accepts_w3c_format() {
@@ -380,5 +381,208 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn traceparent_validation_requires_exact_layout() {
+        let valid = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+        assert!(otel_traceparent_t::validate_text(valid).is_ok());
+        assert!(otel_traceparent_t::validate_text(&valid[1..]).is_err());
+        assert!(otel_traceparent_t::validate_text(&valid.replace('0', "g")).is_err());
+        assert!(otel_traceparent_t::validate_text(&valid.replace('-', "x")).is_err());
+        assert!(otel_traceparent_t::validate_text(&format!("01{}", &valid[2..])).is_err());
+    }
+
+    #[test]
+    fn fill_traceparent_and_read_it_back() {
+        let source = c"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+        let mut out = otel_traceparent_t { value: [0; 56] };
+        assert_eq!(
+            // SAFETY: `source` is NUL-terminated and `out` is writable typed storage.
+            unsafe { otel_traceparent_from_str(source.as_ptr(), &mut out) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: `out` is initialized and stays alive for these calls.
+            unsafe { CStr::from_ptr(otel_traceparent_str(&out)) }.to_bytes(),
+            source.to_bytes()
+        );
+        // SAFETY: `out` is initialized and stays alive for this call.
+        let view = unsafe { otel_traceparent_view(&out) };
+        assert_eq!(view.len, source.to_bytes().len());
+        assert_eq!(view.ptr, out.value.as_ptr());
+        assert_eq!(
+            // SAFETY: `out` is initialized and stays alive for this call.
+            unsafe { buffer_utf8(&out) }.unwrap(),
+            source.to_str().unwrap()
+        );
+        assert!(out.validate().is_ok());
+    }
+
+    #[test]
+    fn fill_rejects_invalid_and_oversized_values() {
+        let mut parent = otel_traceparent_t { value: [0; 56] };
+        assert_eq!(
+            // SAFETY: the source is NUL-terminated and the output is writable.
+            unsafe { otel_traceparent_from_str(c"bad".as_ptr(), &mut parent) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        let mut state = otel_tracestate_t { value: [0; 513] };
+        let long = std::ffi::CString::new("a".repeat(513)).unwrap();
+        assert_eq!(
+            // SAFETY: the source is NUL-terminated and the output is writable.
+            unsafe { otel_tracestate_from_str(long.as_ptr(), &mut state) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        let mut baggage = otel_baggage_t { value: [0; 1025] };
+        let long = std::ffi::CString::new("b".repeat(1025)).unwrap();
+        assert_eq!(
+            // SAFETY: the source is NUL-terminated and the output is writable.
+            unsafe { otel_baggage_from_str(long.as_ptr(), &mut baggage) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        let mut value = otel_baggage_value_t { value: [0; 257] };
+        let long = std::ffi::CString::new("c".repeat(257)).unwrap();
+        assert_eq!(
+            // SAFETY: the source is NUL-terminated and the output is writable.
+            unsafe { otel_baggage_value_from_str(long.as_ptr(), &mut value) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: NULL is an intentionally invalid output pointer.
+            unsafe { otel_tracestate_from_str(c"x".as_ptr(), std::ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: NULL is an intentionally invalid input pointer.
+            unsafe { otel_baggage_from_str(std::ptr::null(), &mut baggage) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn typed_buffers_copy_and_expose_all_four_kinds() {
+        let mut parent = otel_traceparent_t { value: [0; 56] };
+        let mut state = otel_tracestate_t { value: [0; 513] };
+        let mut baggage = otel_baggage_t { value: [0; 1025] };
+        let mut value = otel_baggage_value_t { value: [0; 257] };
+        // SAFETY: sources are NUL-terminated and outputs are writable typed storage.
+        unsafe {
+            assert_eq!(
+                otel_traceparent_from_str(
+                    c"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01".as_ptr(),
+                    &mut parent
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracestate_from_str(c"vendor=value".as_ptr(), &mut state),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_baggage_from_str(c"key=value".as_ptr(), &mut baggage),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_baggage_value_from_str(c"value".as_ptr(), &mut value),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_tracestate_str(&state)).to_bytes(),
+                b"vendor=value"
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_baggage_str(&baggage)).to_bytes(),
+                b"key=value"
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_baggage_value_str(&value)).to_bytes(),
+                b"value"
+            );
+            assert_eq!(otel_tracestate_view(&state).len, 12);
+            assert_eq!(otel_baggage_view(&baggage).len, 9);
+            assert_eq!(otel_baggage_value_view(&value).len, 5);
+            assert_eq!(buffer_utf8(&state).unwrap(), "vendor=value");
+            assert_eq!(buffer_utf8(&baggage).unwrap(), "key=value");
+            assert_eq!(buffer_utf8(&value).unwrap(), "value");
+            assert_eq!(
+                optional_buffer_utf8(&value).unwrap(),
+                Some("value".to_owned())
+            );
+            assert_eq!(
+                optional_buffer_utf8::<otel_baggage_value_t>(std::ptr::null()).unwrap(),
+                None
+            );
+        }
+    }
+
+    #[test]
+    fn unterminated_and_non_utf8_buffers_are_rejected() {
+        let unterminated = otel_baggage_value_t {
+            value: [b'x' as c_char; 257],
+        };
+        // SAFETY: the buffer stays alive and is read-only for these calls.
+        unsafe {
+            assert_eq!(
+                buffer_utf8(&unterminated).unwrap_err().status,
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert!(otel_baggage_value_str(&unterminated).is_null());
+            assert_eq!(otel_baggage_value_view(&unterminated).len, 0);
+            assert!(otel_baggage_value_view(&unterminated).ptr.is_null());
+            assert!(otel_baggage_value_str(std::ptr::null()).is_null());
+            assert_eq!(otel_baggage_value_view(std::ptr::null()).len, 0);
+        }
+
+        let mut invalid = otel_baggage_value_t { value: [0; 257] };
+        invalid.value[0] = -1;
+        // SAFETY: the buffer stays alive and is read-only for these calls.
+        unsafe {
+            assert_eq!(
+                buffer_utf8(&invalid).unwrap_err().status,
+                otel_result_t::OTEL_ERR_INVALID_UTF8
+            );
+            assert!(otel_baggage_value_str(&invalid).is_null());
+        }
+    }
+
+    #[test]
+    fn embedded_nul_truncates_the_stored_value() {
+        let source = b"first\0second\0"
+            .iter()
+            .map(|byte| *byte as c_char)
+            .collect::<Vec<_>>();
+        let mut out = otel_baggage_value_t { value: [0; 257] };
+        // SAFETY: `source` is NUL-terminated and `out` is writable typed storage.
+        unsafe {
+            assert_eq!(
+                otel_baggage_value_from_str(source.as_ptr(), &mut out),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(buffer_utf8(&out).unwrap(), "first");
+            assert_eq!(otel_baggage_value_view(&out).len, 5);
+        }
+    }
+
+    #[test]
+    fn copy_into_buffer_checks_capacity() {
+        let mut out = otel_tracestate_t { value: [0; 513] };
+        // SAFETY: `out` is writable typed storage and the text is short.
+        unsafe {
+            assert!(copy_into_buffer("a=b", &mut out).is_ok());
+            assert_eq!(buffer_utf8(&out).unwrap(), "a=b");
+            assert_eq!(
+                copy_into_buffer(&"x".repeat(513), &mut out)
+                    .unwrap_err()
+                    .status,
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                copy_into_buffer::<otel_tracestate_t>("x", std::ptr::null_mut())
+                    .unwrap_err()
+                    .status,
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+        }
     }
 }

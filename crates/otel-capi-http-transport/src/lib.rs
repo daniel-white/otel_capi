@@ -247,3 +247,215 @@ fn set_error(
     };
     status
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ffi::{CStr, CString};
+    use std::mem::size_of;
+    use std::ptr::NonNull;
+    use std::slice;
+
+    fn cstr(bytes: &[u8]) -> &CStr {
+        CStr::from_bytes_with_nul(bytes).unwrap()
+    }
+
+    fn empty_handle() -> otel_http_transport_t {
+        otel_http_transport_t {
+            transport: otel_transport_t {
+                size: size_of::<otel_transport_t>(),
+                name: otel_str_t {
+                    ptr: ptr::null(),
+                    len: 0,
+                },
+                send: otel_http_transport_send,
+                user_data: ptr::null_mut(),
+            },
+            inner: ptr::null_mut(),
+        }
+    }
+
+    fn new_handle() -> otel_http_transport_t {
+        let mut handle = empty_handle();
+        let options = otel_http_transport_options_t {
+            size: size_of::<otel_http_transport_options_t>(),
+            follow_redirects: false,
+            connect_timeout_ms: 0,
+        };
+        // SAFETY: `handle` is writable, aligned caller-owned storage and
+        // `options` points to an initialized options struct.
+        let status = unsafe { otel_http_transport_new(&mut handle, &options) };
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        handle
+    }
+
+    fn release(handle: &mut otel_http_transport_t) {
+        // SAFETY: `handle` was initialized by `otel_http_transport_new`.
+        unsafe { otel_http_transport_release(handle) };
+    }
+
+    fn request_view(method: &CStr, url: &CStr) -> otel_transport_request_t {
+        otel_transport_request_t {
+            method: method.as_ptr(),
+            url: url.as_ptr(),
+            headers: ptr::null(),
+            header_count: 0,
+            body: b"body".as_ptr(),
+            body_len: 4,
+            timeout_ms: 1000,
+        }
+    }
+
+    fn error_bytes(response: &otel_transport_response_t) -> &[u8] {
+        // SAFETY: the callback filled `error` with a static byte string whose
+        // pointer and length stay valid for the test.
+        unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
+    }
+
+    #[test]
+    fn abi_version_is_one() {
+        assert_eq!(otel_http_transport_abi_version(), 1);
+    }
+
+    #[test]
+    fn new_rejects_null_arguments() {
+        let mut handle = empty_handle();
+        let options = otel_http_transport_options_t {
+            size: size_of::<otel_http_transport_options_t>(),
+            follow_redirects: false,
+            connect_timeout_ms: 0,
+        };
+
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_http_transport_new(ptr::null_mut(), &options) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: null options are rejected before they are dereferenced.
+            unsafe { otel_http_transport_new(&mut handle, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_rejects_invalid_options_size() {
+        let mut handle = empty_handle();
+        let options = otel_http_transport_options_t {
+            size: 1,
+            follow_redirects: false,
+            connect_timeout_ms: 0,
+        };
+
+        // SAFETY: the handle is writable storage and the options struct is initialized.
+        let status = unsafe { otel_http_transport_new(&mut handle, &options) };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
+    fn new_initializes_descriptor_and_release_clears_it() {
+        let mut handle = new_handle();
+
+        assert_eq!(handle.transport.size, size_of::<otel_transport_t>());
+        // SAFETY: `name` points into the transport's static `http\0` byte string.
+        let name = unsafe {
+            slice::from_raw_parts(
+                handle.transport.name.ptr.cast::<u8>(),
+                handle.transport.name.len,
+            )
+        };
+        assert_eq!(name, b"http".as_slice());
+        let mut response = otel_transport_response_t::EMPTY;
+        assert_eq!(
+            // SAFETY: a NULL request is rejected by the callback before it is dereferenced.
+            unsafe {
+                (handle.transport.send)(ptr::null(), &mut response, handle.transport.user_data)
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(!handle.inner.is_null());
+        assert_eq!(handle.transport.user_data, handle.inner);
+
+        release(&mut handle);
+        assert!(handle.inner.is_null());
+        release(&mut handle);
+        // SAFETY: null handle is explicitly a no-op.
+        unsafe { otel_http_transport_release(ptr::null_mut()) };
+    }
+
+    #[test]
+    fn send_rejects_null_arguments() {
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost/v1/traces\0"));
+        let dangling = NonNull::<u8>::dangling().as_ptr().cast::<c_void>();
+
+        assert_eq!(
+            // SAFETY: a null request is rejected before it is dereferenced.
+            unsafe { otel_http_transport_send(ptr::null(), &mut response, dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null response is rejected before it is dereferenced.
+            unsafe { otel_http_transport_send(&view, ptr::null_mut(), dangling) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null user_data is rejected before it is dereferenced.
+            unsafe { otel_http_transport_send(&view, &mut response, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn send_rejects_invalid_method_and_url() {
+        let mut handle = new_handle();
+        let mut response = otel_transport_response_t::EMPTY;
+        let url = cstr(b"http://localhost/v1/traces\0");
+        let invalid_method = request_view(cstr(b"NOT A METHOD\0"), url);
+        let bad_utf8 = CString::new([0xffu8, 0xfe]).unwrap();
+        let invalid_url = request_view(cstr(b"POST\0"), &bad_utf8);
+        let mut null_method = request_view(cstr(b"POST\0"), url);
+        null_method.method = ptr::null();
+        let mut null_url = request_view(cstr(b"POST\0"), url);
+        null_url.url = ptr::null();
+
+        for view in [&invalid_method, &invalid_url, &null_method, &null_url] {
+            // SAFETY: all views are initialized, `response` is writable, and
+            // `user_data` belongs to the live handle held for this test.
+            let status = unsafe {
+                otel_http_transport_send(view, &mut response, handle.transport.user_data)
+            };
+            assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+            assert_eq!(error_bytes(&response), ERR_INVALID);
+        }
+
+        release(&mut handle);
+    }
+
+    #[test]
+    fn register_rejects_null_arguments_and_uninitialized_handle() {
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        let handle = empty_handle();
+
+        assert_eq!(
+            // SAFETY: a null runtime is rejected before it is dereferenced.
+            unsafe { otel_http_transport_register(ptr::null_mut(), &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_http_transport_register(&mut runtime, ptr::null()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: the handle has no inner pointer, so no core symbol is called.
+            unsafe { otel_http_transport_register(&mut runtime, &handle) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+}

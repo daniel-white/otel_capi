@@ -607,4 +607,325 @@ mod tests {
             otel_severity_t::OTEL_SEVERITY_FATAL
         );
     }
+
+    #[test]
+    fn signal_values_match_abi() {
+        assert_eq!(otel_item_signal_t::OTEL_ITEM_SIGNAL_TRACE as i32, 0);
+        assert_eq!(otel_item_signal_t::OTEL_ITEM_SIGNAL_METRIC as i32, 1);
+        assert_eq!(otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG as i32, 2);
+    }
+
+    #[test]
+    fn transport_validates_size() {
+        let value = otel_item_transport_t {
+            size: size_of::<otel_item_transport_t>(),
+            on_span: None,
+            on_log: None,
+            on_metric: None,
+            on_encoded: None,
+            user_data: ptr::null_mut(),
+        };
+        assert!(value.validate().is_ok());
+        let short = otel_item_transport_t { size: 1, ..value };
+        assert_eq!(
+            short.validate().unwrap_err().status,
+            crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[derive(Copy, Clone, Default, Debug, PartialEq, Eq)]
+    struct Counts {
+        span: usize,
+        log: usize,
+        metric: usize,
+        encoded: usize,
+        signal: i32,
+        len: usize,
+    }
+
+    unsafe extern "C" fn count_span(_item: *const otel_span_item_t, user_data: *mut c_void) {
+        // SAFETY: `user_data` points to a live `Cell<Counts>` for this call.
+        unsafe {
+            let counts = &*user_data.cast::<std::cell::Cell<Counts>>();
+            let mut value = counts.get();
+            value.span += 1;
+            counts.set(value);
+        }
+    }
+
+    unsafe extern "C" fn count_log(_item: *const otel_log_item_t, user_data: *mut c_void) {
+        // SAFETY: `user_data` points to a live `Cell<Counts>` for this call.
+        unsafe {
+            let counts = &*user_data.cast::<std::cell::Cell<Counts>>();
+            let mut value = counts.get();
+            value.log += 1;
+            counts.set(value);
+        }
+    }
+
+    unsafe extern "C" fn count_metric(_item: *const otel_metric_item_t, user_data: *mut c_void) {
+        // SAFETY: `user_data` points to a live `Cell<Counts>` for this call.
+        unsafe {
+            let counts = &*user_data.cast::<std::cell::Cell<Counts>>();
+            let mut value = counts.get();
+            value.metric += 1;
+            counts.set(value);
+        }
+    }
+
+    unsafe extern "C" fn count_encoded(item: *const otel_encoded_item_t, user_data: *mut c_void) {
+        // SAFETY: `item` and `user_data` are live for the duration of the callback.
+        unsafe {
+            let item = &*item;
+            let counts = &*user_data.cast::<std::cell::Cell<Counts>>();
+            let mut value = counts.get();
+            value.encoded += 1;
+            value.signal = item.signal as i32;
+            value.len = item.len;
+            counts.set(value);
+        }
+    }
+
+    fn empty_str() -> otel_str_t {
+        otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
+        }
+    }
+
+    fn sample_span() -> otel_span_item_t {
+        otel_span_item_t {
+            trace_id: otel_trace_id_t::default(),
+            span_id: otel_span_id_t::default(),
+            parent_span_id: otel_span_id_t::default(),
+            name: empty_str(),
+            kind: otel_span_kind_t::OTEL_SPAN_KIND_INTERNAL,
+            status: otel_span_status_t::OTEL_SPAN_STATUS_UNSET,
+            status_message: empty_str(),
+            start_time_unix_nano: 0,
+            end_time_unix_nano: 0,
+            attributes: ptr::null(),
+            attribute_count: 0,
+            events: ptr::null(),
+            event_count: 0,
+            links: ptr::null(),
+            link_count: 0,
+            resource_attributes: ptr::null(),
+            resource_attribute_count: 0,
+        }
+    }
+
+    fn sample_log() -> otel_log_item_t {
+        otel_log_item_t {
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            severity: otel_severity_t::OTEL_SEVERITY_INFO,
+            severity_text: empty_str(),
+            body: empty_str(),
+            trace_id: otel_trace_id_t::default(),
+            span_id: otel_span_id_t::default(),
+            attributes: ptr::null(),
+            attribute_count: 0,
+            resource_attributes: ptr::null(),
+            resource_attribute_count: 0,
+        }
+    }
+
+    fn sample_metric() -> otel_metric_item_t {
+        otel_metric_item_t {
+            name: empty_str(),
+            description: empty_str(),
+            unit: empty_str(),
+            kind: otel_metric_item_type_t::OTEL_METRIC_ITEM_GAUGE,
+            points: ptr::null(),
+            point_count: 0,
+            histograms: ptr::null(),
+            histogram_count: 0,
+            resource_attributes: ptr::null(),
+            resource_attribute_count: 0,
+        }
+    }
+
+    #[test]
+    fn transport_dispatches_callbacks() {
+        let counts = std::cell::Cell::new(Counts::default());
+        let user_data = (&counts as *const std::cell::Cell<Counts>)
+            .cast_mut()
+            .cast::<c_void>();
+        let transport = otel_item_transport_t {
+            size: size_of::<otel_item_transport_t>(),
+            on_span: Some(count_span),
+            on_log: Some(count_log),
+            on_metric: Some(count_metric),
+            on_encoded: Some(count_encoded),
+            user_data,
+        };
+        let transport = ItemTransport::from(transport);
+        let span = sample_span();
+        let log = sample_log();
+        let metric = sample_metric();
+        transport.emit_span(&span);
+        transport.emit_log(&log);
+        transport.emit_metric(&metric);
+        transport.emit_encoded(otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG, &[1, 2, 3]);
+        assert_eq!(
+            counts.get(),
+            Counts {
+                span: 1,
+                log: 1,
+                metric: 1,
+                encoded: 1,
+                signal: 2,
+                len: 3,
+            }
+        );
+
+        counts.set(Counts::default());
+        let empty = ItemTransport::default();
+        empty.emit_span(&span);
+        empty.emit_log(&log);
+        empty.emit_metric(&metric);
+        empty.emit_encoded(otel_item_signal_t::OTEL_ITEM_SIGNAL_TRACE, &[]);
+        assert_eq!(counts.get(), Counts::default());
+    }
+
+    #[test]
+    fn attribute_views_from_any_cover_all_value_kinds() {
+        use opentelemetry::{Key, logs::AnyValue};
+        let values = [
+            (Key::new("bool"), AnyValue::Boolean(true)),
+            (Key::new("int"), AnyValue::Int(-7)),
+            (Key::new("double"), AnyValue::Double(1.5)),
+            (Key::new("string"), AnyValue::String("hello".into())),
+            (
+                Key::new("bytes"),
+                AnyValue::Bytes(Box::new(vec![b'a', b'b'])),
+            ),
+            (Key::new("bad\0key"), AnyValue::String("v".into())),
+        ];
+        let views = AttributeViews::from_any(values.iter());
+        let (ptr, len) = views.as_slice();
+        assert_eq!(len, values.len());
+        // SAFETY: `views` owns the strings backing these pointers and outlives the slice.
+        let attrs = unsafe { std::slice::from_raw_parts(ptr, len) };
+        assert_eq!(
+            attrs[0].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL as i32
+        );
+        // SAFETY: the boolean member is selected by the attribute kind.
+        assert_eq!(unsafe { attrs[0].value.boolean }, 1);
+        // SAFETY: the integer member is selected by the attribute kind.
+        assert_eq!(unsafe { attrs[1].value.integer }, -7);
+        // SAFETY: the double member is selected by the attribute kind.
+        assert_eq!(unsafe { attrs[2].value.double_value }, 1.5);
+        assert_eq!(attrs[3].value_len, 5);
+        // SAFETY: the string member is selected by the attribute kind.
+        let text = unsafe {
+            std::str::from_utf8(std::slice::from_raw_parts(
+                attrs[3].value.string.cast::<u8>(),
+                attrs[3].value_len,
+            ))
+            .unwrap()
+        };
+        assert_eq!(text, "hello");
+        assert_eq!(
+            attrs[4].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32
+        );
+        assert!(attrs[4].value_len > 0);
+        assert_eq!(attrs[5].key_len, 0);
+    }
+
+    #[test]
+    fn string_views_and_timestamp_helpers() {
+        let owned = std::ffi::CString::new("abc").unwrap();
+        let view = c_str_view(&owned);
+        assert_eq!(view.len, 3);
+        // SAFETY: `owned` outlives the view and holds at least `len` bytes.
+        let bytes = unsafe { std::slice::from_raw_parts(view.ptr.cast::<u8>(), view.len) };
+        assert_eq!(bytes, b"abc");
+
+        let epoch = std::time::UNIX_EPOCH;
+        assert_eq!(nanos(epoch), 0);
+        assert_eq!(
+            nanos(epoch + std::time::Duration::new(1, 42)),
+            1_000_000_042
+        );
+        assert_eq!(nanos(epoch - std::time::Duration::from_secs(1)), 0);
+    }
+
+    #[test]
+    fn severity_and_span_kind_cover_every_variant() {
+        use opentelemetry::logs::Severity;
+        for value in [
+            Severity::Trace,
+            Severity::Trace2,
+            Severity::Trace3,
+            Severity::Trace4,
+        ] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_TRACE);
+        }
+        for value in [
+            Severity::Debug,
+            Severity::Debug2,
+            Severity::Debug3,
+            Severity::Debug4,
+        ] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_DEBUG);
+        }
+        for value in [
+            Severity::Warn,
+            Severity::Warn2,
+            Severity::Warn3,
+            Severity::Warn4,
+        ] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_WARN);
+        }
+        for value in [
+            Severity::Error,
+            Severity::Error2,
+            Severity::Error3,
+            Severity::Error4,
+        ] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_ERROR);
+        }
+        for value in [Severity::Fatal, Severity::Fatal2, Severity::Fatal4] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_FATAL);
+        }
+        use opentelemetry::trace::SpanKind;
+        assert_eq!(
+            span_kind(SpanKind::Internal),
+            otel_span_kind_t::OTEL_SPAN_KIND_INTERNAL
+        );
+        assert_eq!(
+            span_kind(SpanKind::Server),
+            otel_span_kind_t::OTEL_SPAN_KIND_SERVER
+        );
+        assert_eq!(
+            span_kind(SpanKind::Client),
+            otel_span_kind_t::OTEL_SPAN_KIND_CLIENT
+        );
+        assert_eq!(
+            span_kind(SpanKind::Producer),
+            otel_span_kind_t::OTEL_SPAN_KIND_PRODUCER
+        );
+        assert_eq!(
+            span_kind(SpanKind::Consumer),
+            otel_span_kind_t::OTEL_SPAN_KIND_CONSUMER
+        );
+    }
+
+    #[test]
+    fn id_helpers_use_big_endian_bytes() {
+        let mut bytes = [0u8; 16];
+        bytes[..8].copy_from_slice(&0x0102_0304_0506_0708u64.to_be_bytes());
+        bytes[8..].copy_from_slice(&0x1112_1314_1516_1718u64.to_be_bytes());
+        let trace = trace_id(bytes);
+        assert_eq!(trace.hi, 0x0102_0304_0506_0708);
+        assert_eq!(trace.lo, 0x1112_1314_1516_1718);
+        assert_eq!(
+            span_id([1, 2, 3, 4, 5, 6, 7, 8]).value,
+            0x0102_0304_0506_0708
+        );
+    }
 }

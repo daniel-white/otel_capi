@@ -136,24 +136,32 @@ impl HttpResponse {
     fn new(reply: ureq::http::Response<Body>) -> Result<Self, RequestError> {
         let status_code = reply.status().as_u16();
         let headers = reply.headers().clone();
-        let mut owned = Vec::new();
-        let mut header_views = Vec::new();
+        let mut owned = Vec::with_capacity(headers.len() * 2);
         for (name, value) in &headers {
-            let name = CString::new(name.as_str()).map_err(|_| RequestError::InvalidHeader)?;
-            let value = CString::new(value.as_bytes()).map_err(|_| RequestError::InvalidHeader)?;
-            header_views.push(otel_transport_header_t {
-                name: otel_str_t {
-                    ptr: name.as_ptr().cast(),
-                    len: name.as_bytes().len(),
-                },
-                value: otel_str_t {
-                    ptr: value.as_ptr(),
-                    len: value.as_bytes().len(),
-                },
-            });
-            owned.push(name);
-            owned.push(value);
+            owned.push(CString::new(name.as_str()).map_err(|_| RequestError::InvalidHeader)?);
+            owned.push(CString::new(value.as_bytes()).map_err(|_| RequestError::InvalidHeader)?);
         }
+        // Take views only after every CString is in its final storage so the
+        // pointers stay valid under Stacked Borrows.
+        let header_views = owned
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .map(|pair| {
+                let name = &pair[0];
+                let value = &pair[1];
+                otel_transport_header_t {
+                    name: otel_str_t {
+                        ptr: name.as_ptr().cast(),
+                        len: name.as_bytes().len(),
+                    },
+                    value: otel_str_t {
+                        ptr: value.as_ptr(),
+                        len: value.as_bytes().len(),
+                    },
+                }
+            })
+            .collect();
         let body = reply
             .into_body()
             .read_to_vec()
@@ -205,4 +213,289 @@ unsafe fn str_slice(view: otel_str_t) -> &'static [u8] {
     }
     // SAFETY: the caller guarantees the view is readable and length-aware.
     unsafe { slice::from_raw_parts(view.ptr.cast::<u8>(), view.len) }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use otel_capi::abi::otel_transport_header_t;
+    use std::ffi::CStr;
+
+    fn header_view(name: &CStr, value: &CStr) -> otel_transport_header_t {
+        otel_transport_header_t {
+            name: otel_str_t {
+                ptr: name.as_ptr(),
+                len: name.to_bytes().len(),
+            },
+            value: otel_str_t {
+                ptr: value.as_ptr(),
+                len: value.to_bytes().len(),
+            },
+        }
+    }
+
+    fn request_view(headers: &[otel_transport_header_t], body: &[u8]) -> otel_transport_request_t {
+        otel_transport_request_t {
+            method: c"POST".as_ptr(),
+            url: c"http://localhost:4318/v1/traces".as_ptr(),
+            headers: headers.as_ptr(),
+            header_count: headers.len(),
+            body: body.as_ptr(),
+            body_len: body.len(),
+            timeout_ms: 1000,
+        }
+    }
+
+    fn response_with(headers: &[(&str, &str)], body: &[u8]) -> HttpResponse {
+        let mut builder = ureq::http::Response::builder().status(201);
+        for (name, value) in headers {
+            builder = builder.header(*name, *value);
+        }
+        let reply = builder.body(Body::builder().data(body.to_vec())).unwrap();
+        HttpResponse::new(reply).unwrap()
+    }
+
+    #[test]
+    fn build_request_copies_headers_and_body() {
+        let name = CString::new("content-type").unwrap();
+        let value = CString::new("application/x-protobuf").unwrap();
+        let headers = [header_view(&name, &value)];
+        let body = b"encoded payload";
+        let view = request_view(&headers, body);
+
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        assert_eq!(request.method(), Method::POST);
+        assert_eq!(request.uri().to_string(), "http://localhost:4318/v1/traces");
+        assert_eq!(
+            request.headers().get("content-type").unwrap(),
+            "application/x-protobuf"
+        );
+        assert_eq!(request.body().as_slice(), body.as_slice());
+    }
+
+    #[test]
+    fn build_request_accepts_empty_view() {
+        let view = request_view(&[], b"");
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        assert!(request.headers().is_empty());
+        assert!(request.body().is_empty());
+    }
+
+    #[test]
+    fn build_request_adds_extra_headers_and_skips_core_headers() {
+        let skipped = CString::new("Content-Type").unwrap();
+        let skipped_value = CString::new("text/plain").unwrap();
+        let kept = CString::new("x-keep").unwrap();
+        let kept_value = CString::new("kept").unwrap();
+        let headers = [
+            header_view(&skipped, &skipped_value),
+            header_view(&kept, &kept_value),
+        ];
+        let view = request_view(&headers, b"body");
+        let extra_headers = [(
+            HeaderName::from_static("content-type"),
+            HeaderValue::from_static("application/grpc"),
+        )];
+        let skip_headers = ["content-type"];
+        let options = RequestOptions {
+            extra_headers: &extra_headers,
+            skip_headers: &skip_headers,
+            body: None,
+        };
+
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &options,
+        )
+        .unwrap();
+
+        assert_eq!(
+            request.headers().get("content-type").unwrap(),
+            "application/grpc"
+        );
+        assert_eq!(request.headers().get("x-keep").unwrap(), "kept");
+        assert_eq!(request.headers().len(), 2);
+    }
+
+    #[test]
+    fn build_request_rejects_null_headers_with_nonzero_count() {
+        let mut view = request_view(&[], b"body");
+        view.headers = ptr::null();
+        view.header_count = 1;
+
+        let result = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+
+        assert!(matches!(result, Err(RequestError::InvalidArgument)));
+    }
+
+    #[test]
+    fn build_request_rejects_null_header_name_and_value() {
+        let name = CString::new("x-test").unwrap();
+        let value = CString::new("value").unwrap();
+        let mut null_name = header_view(&name, &value);
+        null_name.name.ptr = ptr::null();
+        let mut null_value = header_view(&name, &value);
+        null_value.value.ptr = ptr::null();
+        let null_name_headers = [null_name];
+        let null_value_headers = [null_value];
+        let mut null_name_view = request_view(&null_name_headers, b"body");
+        let mut null_value_view = request_view(&null_value_headers, b"body");
+        null_name_view.headers = null_name_headers.as_ptr();
+        null_value_view.headers = null_value_headers.as_ptr();
+
+        let name_result = build_request(
+            &null_name_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+        let value_result = build_request(
+            &null_value_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+
+        assert!(matches!(name_result, Err(RequestError::InvalidArgument)));
+        assert!(matches!(value_result, Err(RequestError::InvalidArgument)));
+    }
+
+    #[test]
+    fn build_request_rejects_invalid_header_name_and_value() {
+        let bad_name = CString::new("bad name").unwrap();
+        let good_value = CString::new("value").unwrap();
+        let good_name = CString::new("x-test").unwrap();
+        let bad_value = CString::new("bad\nvalue").unwrap();
+        let bad_name_headers = [header_view(&bad_name, &good_value)];
+        let bad_value_headers = [header_view(&good_name, &bad_value)];
+        let mut name_view = request_view(&bad_name_headers, b"body");
+        let mut value_view = request_view(&bad_value_headers, b"body");
+        name_view.headers = bad_name_headers.as_ptr();
+        value_view.headers = bad_value_headers.as_ptr();
+
+        let name_result = build_request(
+            &name_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+        let value_result = build_request(
+            &value_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+
+        assert!(matches!(name_result, Err(RequestError::InvalidHeader)));
+        assert!(matches!(value_result, Err(RequestError::InvalidHeader)));
+    }
+
+    #[test]
+    fn build_request_rejects_null_body_with_nonzero_length() {
+        let mut view = request_view(&[], b"body");
+        view.body = ptr::null();
+
+        let result = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
+
+        assert!(matches!(result, Err(RequestError::InvalidArgument)));
+    }
+
+    #[test]
+    fn build_request_body_override_replaces_core_body() {
+        let mut view = request_view(&[], b"core body");
+        view.body = ptr::null();
+        let options = RequestOptions {
+            body: Some(b"override".to_vec()),
+            ..RequestOptions::default()
+        };
+
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &options,
+        )
+        .unwrap();
+
+        assert_eq!(request.body().as_slice(), b"override");
+    }
+
+    #[test]
+    fn http_response_conversion_keeps_views_valid() {
+        let response = response_with(
+            &[
+                ("content-type", "application/x-protobuf"),
+                ("x-test", "value"),
+            ],
+            b"reply bytes",
+        );
+        let mut view = otel_transport_response_t::EMPTY;
+
+        assert_eq!(response.status_code(), 201);
+        assert_eq!(
+            response.headers().get("content-type").unwrap(),
+            "application/x-protobuf"
+        );
+        assert_eq!(response.body(), b"reply bytes");
+
+        response.write_into(&mut view);
+        assert_eq!(view.status_code, 201);
+        assert_eq!(view.header_count, 2);
+        assert_eq!(view.body_len, 11);
+        // SAFETY: `view` was filled by `write_into` from a live `response`, and
+        // `response` stays alive while the borrowed header views are read.
+        let headers = unsafe { slice::from_raw_parts(view.headers, view.header_count) };
+        let mut names = Vec::new();
+        for header in headers {
+            // SAFETY: the header name view points into a C string owned by `response`.
+            let name =
+                unsafe { slice::from_raw_parts(header.name.ptr.cast::<u8>(), header.name.len) };
+            names.push(String::from_utf8_lossy(name).into_owned());
+        }
+        assert!(names.iter().any(|name| name == "content-type"));
+        assert!(names.iter().any(|name| name == "x-test"));
+        // SAFETY: `view.body` points into `response.body()`, which is still alive.
+        let body = unsafe { slice::from_raw_parts(view.body, view.body_len) };
+        assert_eq!(body, b"reply bytes");
+    }
+
+    #[test]
+    fn http_response_empty_views_are_null() {
+        let response = response_with(&[], b"");
+        let mut view = otel_transport_response_t::EMPTY;
+
+        response.write_into(&mut view);
+
+        assert_eq!(view.status_code, 201);
+        assert!(view.headers.is_null());
+        assert_eq!(view.header_count, 0);
+        assert!(view.body.is_null());
+        assert_eq!(view.body_len, 0);
+    }
 }

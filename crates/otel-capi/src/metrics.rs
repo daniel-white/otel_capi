@@ -1,8 +1,5 @@
 //! Meter provider, meter, and metric instrument APIs.
 
-#[cfg(test)]
-use std::env;
-
 use std::ffi::{c_char, c_void};
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -1102,15 +1099,148 @@ pub unsafe extern "C" fn otel_gauge_f64_record_arr(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::attributes::otel_attribute_t;
+    use crate::config::tests::EnvGuard;
     use crate::handles::{
-        otel_counter_u64_release, otel_gauge_f64_release, otel_meter_provider_release,
-        otel_meter_release,
+        otel_counter_f64_release, otel_counter_u64_release, otel_gauge_f64_release,
+        otel_histogram_f64_release, otel_meter_provider_release, otel_meter_release,
+        otel_observable_counter_u64_release, otel_observable_gauge_f64_release,
+        otel_updown_counter_i64_release,
     };
+    use opentelemetry::KeyValue;
+    use std::cell::Cell;
+    use std::ffi::c_void;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    unsafe extern "C" fn noop_observe_f64(_context: otel_observe_context_t, _data: *mut c_void) {}
+    unsafe extern "C" fn noop_observe_u64(_context: otel_observe_context_t, _data: *mut c_void) {}
+
+    #[test]
+    fn instrument_options_handle_nulls_and_bad_utf8() {
+        // SAFETY: NULL pointers are valid optional metadata values.
+        let (unit, description) =
+            unsafe { instrument_options(std::ptr::null(), std::ptr::null()) }.unwrap();
+        assert_eq!((unit.as_deref(), description.as_deref()), (None, None));
+        // SAFETY: the C strings are static literals that outlive the call.
+        let (unit, description) =
+            unsafe { instrument_options(c"ms".as_ptr(), c"latency".as_ptr()) }.unwrap();
+        assert_eq!(unit.as_deref(), Some("ms"));
+        assert_eq!(description.as_deref(), Some("latency"));
+        let invalid = [0xffu8, 0];
+        assert_eq!(
+            // SAFETY: `invalid` is a NUL-terminated buffer that outlives the call.
+            unsafe { instrument_options(invalid.as_ptr().cast(), std::ptr::null()) }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+        let empty = otel_str_t {
+            ptr: std::ptr::null(),
+            len: 0,
+        };
+        assert_eq!(instrument_options_n(empty, empty).unwrap(), (None, None));
+        let view = otel_str_t {
+            ptr: c"1".as_ptr(),
+            len: 1,
+        };
+        assert_eq!(
+            instrument_options_n(view, empty).unwrap(),
+            (Some("1".to_owned()), None)
+        );
+    }
+
+    struct RecordingInstrument {
+        calls: AtomicUsize,
+    }
+
+    impl AsyncInstrument<f64> for RecordingInstrument {
+        fn observe(&self, _value: f64, attributes: &[KeyValue]) {
+            assert!(attributes.is_empty());
+            self.calls.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+
+    struct RecordingU64Instrument {
+        calls: AtomicUsize,
+    }
+
+    impl AsyncInstrument<u64> for RecordingU64Instrument {
+        fn observe(&self, _value: u64, attributes: &[KeyValue]) {
+            assert!(attributes.is_empty());
+            self.calls.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+
+    unsafe extern "C" fn observe_f64_once(context: otel_observe_context_t, user_data: *mut c_void) {
+        // SAFETY: `context` is live for this callback and `user_data` points to
+        // a writable `Cell<bool>` that outlives the call.
+        unsafe {
+            let result = otel_observe_f64(context, 4.5, std::ptr::null::<otel_attribute_t>());
+            let status = &*user_data.cast::<Cell<bool>>();
+            status.set(result == otel_result_t::OTEL_OK);
+        }
+    }
+
+    unsafe extern "C" fn observe_u64_once(context: otel_observe_context_t, user_data: *mut c_void) {
+        // SAFETY: see `observe_f64_once`.
+        unsafe {
+            let result = otel_observe_u64(context, 7, std::ptr::null::<otel_attribute_t>());
+            let status = &*user_data.cast::<Cell<bool>>();
+            status.set(result == otel_result_t::OTEL_OK);
+        }
+    }
+
+    #[test]
+    fn observe_from_callback_uses_the_context() {
+        let instrument = RecordingInstrument {
+            calls: AtomicUsize::new(0),
+        };
+        let dynamic: &dyn AsyncInstrument<f64> = &instrument;
+        let ok = Cell::new(false);
+        let callback = CCallback::<f64> {
+            callback: observe_f64_once,
+            user_data: (&ok as *const Cell<bool>).cast_mut().cast::<c_void>(),
+            _marker: PhantomData,
+        };
+        callback.invoke(dynamic);
+        assert!(ok.get());
+        assert_eq!(instrument.calls.load(Ordering::Relaxed), 1);
+
+        let invalid = otel_observe_context_t {
+            data: std::ptr::null(),
+            vtable: std::ptr::null(),
+        };
+        assert_eq!(
+            // SAFETY: the all-NULL context is intentionally invalid and is checked
+            // before any pointer is dereferenced.
+            unsafe { otel_observe_f64_arr(invalid, 1.0, std::ptr::null(), 0) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: see above.
+            unsafe { otel_observe_u64_arr(invalid, 1, std::ptr::null(), 0) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        let instrument_u64 = RecordingU64Instrument {
+            calls: AtomicUsize::new(0),
+        };
+        let dynamic_u64: &dyn AsyncInstrument<u64> = &instrument_u64;
+        let callback_u64 = CCallback::<u64> {
+            callback: observe_u64_once,
+            user_data: (&ok as *const Cell<bool>).cast_mut().cast::<c_void>(),
+            _marker: PhantomData,
+        };
+        ok.set(false);
+        callback_u64.invoke(dynamic_u64);
+        assert!(ok.get());
+        assert_eq!(instrument_u64.calls.load(Ordering::Relaxed), 1);
+    }
 
     #[test]
     fn no_exporter_metric_instruments() {
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe { env::set_var("OTEL_METRICS_EXPORTER", "none") };
+        let mut env = EnvGuard::new();
+        env.set("OTEL_METRICS_EXPORTER", "none");
         let mut provider = otel_meter_provider_t {
             inner: std::ptr::null_mut(),
         };
@@ -1173,7 +1303,254 @@ mod tests {
             otel_counter_u64_release(&mut counter);
             otel_meter_release(&mut meter);
             otel_meter_provider_release(&mut provider);
-            env::remove_var("OTEL_METRICS_EXPORTER");
+        }
+    }
+
+    #[test]
+    fn every_instrument_constructor_and_recording_path() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_METRICS_EXPORTER", "none");
+        let mut provider = otel_meter_provider_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut meter = otel_meter_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut counter_u64 = otel_counter_u64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut counter_f64 = otel_counter_f64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut updown = otel_updown_counter_i64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut histogram = otel_histogram_f64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut gauge = otel_gauge_f64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut observable_gauge = otel_observable_gauge_f64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut observable_counter = otel_observable_counter_u64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let empty = otel_str_t {
+            ptr: std::ptr::null(),
+            len: 0,
+        };
+        let name = otel_str_t {
+            ptr: c"instrument".as_ptr(),
+            len: 10,
+        };
+        let key = c"k";
+        let value = c"v";
+        let attribute = crate::attributes::otel_attribute_t {
+            kind: crate::attributes::otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
+            key: key.as_ptr(),
+            key_len: 1,
+            value: crate::attributes::otel_attribute_value_t {
+                string: value.as_ptr(),
+            },
+            value_len: 1,
+        };
+        let attributes = [&attribute as *const otel_attribute_t];
+        // SAFETY: all handles are local writable storage; all borrowed strings
+        // and the attribute array outlive the calls.
+        unsafe {
+            assert_eq!(
+                otel_meter_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_meter_n(
+                    &provider,
+                    &mut meter,
+                    otel_str_t {
+                        ptr: c"scope".as_ptr(),
+                        len: 5
+                    }
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_force_flush(&provider),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_shutdown(&provider),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(
+                otel_meter_counter_u64_n(&meter, &mut counter_u64, name, empty, empty),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_counter_f64(
+                    &meter,
+                    &mut counter_f64,
+                    c"f64.counter".as_ptr(),
+                    std::ptr::null(),
+                    c"description".as_ptr()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_updown_counter_i64_n(&meter, &mut updown, name, empty, empty),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_histogram_f64(
+                    &meter,
+                    &mut histogram,
+                    c"histogram".as_ptr(),
+                    c"s".as_ptr(),
+                    std::ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_gauge_f64_n(&meter, &mut gauge, name, empty, empty),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_observable_gauge_f64(
+                    &meter,
+                    &mut observable_gauge,
+                    c"observable.gauge".as_ptr(),
+                    std::ptr::null(),
+                    std::ptr::null(),
+                    Some(noop_observe_f64),
+                    std::ptr::null_mut()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_observable_counter_u64_n(
+                    &meter,
+                    &mut observable_counter,
+                    name,
+                    empty,
+                    empty,
+                    Some(noop_observe_u64),
+                    std::ptr::null_mut()
+                ),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(
+                otel_counter_u64_add_arr(&counter_u64, 2, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_counter_f64_add(&counter_f64, 1.5, std::ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_counter_f64_add_arr(&counter_f64, 2.5, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_updown_counter_i64_add(&updown, -1, std::ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_updown_counter_i64_add_arr(&updown, 1, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_histogram_f64_record(&histogram, 1.0, std::ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_histogram_f64_record_arr(&histogram, 2.0, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_gauge_f64_record_arr(&gauge, 3.0, attributes.as_ptr(), 1),
+                otel_result_t::OTEL_OK
+            );
+
+            otel_observable_counter_u64_release(&mut observable_counter);
+            otel_observable_gauge_f64_release(&mut observable_gauge);
+            otel_gauge_f64_release(&mut gauge);
+            otel_histogram_f64_release(&mut histogram);
+            otel_updown_counter_i64_release(&mut updown);
+            otel_counter_f64_release(&mut counter_f64);
+            otel_counter_u64_release(&mut counter_u64);
+            otel_meter_release(&mut meter);
+            otel_meter_provider_release(&mut provider);
+        }
+    }
+
+    #[test]
+    fn instrument_creation_rejects_invalid_inputs() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_METRICS_EXPORTER", "none");
+        let mut provider = otel_meter_provider_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut meter = otel_meter_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut counter = otel_counter_u64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut observable = otel_observable_gauge_f64_t {
+            inner: std::ptr::null_mut(),
+        };
+        let empty = otel_str_t {
+            ptr: std::ptr::null(),
+            len: 0,
+        };
+        // SAFETY: all handles are local writable storage; NULL names and
+        // callbacks are intentionally invalid inputs.
+        unsafe {
+            assert_eq!(
+                otel_meter_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_meter(&provider, &mut meter, c"scope".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_counter_u64(
+                    &meter,
+                    &mut counter,
+                    std::ptr::null(),
+                    std::ptr::null(),
+                    std::ptr::null()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_meter_counter_u64_n(&meter, &mut counter, empty, empty, empty),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_meter_observable_gauge_f64(
+                    &meter,
+                    &mut observable,
+                    c"observable".as_ptr(),
+                    std::ptr::null(),
+                    std::ptr::null(),
+                    None,
+                    std::ptr::null_mut()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_counter_u64_add(std::ptr::null(), 1, std::ptr::null::<otel_attribute_t>()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert!(counter.inner.is_null());
+            assert!(observable.inner.is_null());
+            otel_meter_release(&mut meter);
+            otel_meter_provider_release(&mut provider);
         }
     }
 }

@@ -344,3 +344,392 @@ pub unsafe extern "C" fn otel_context_scope_release(handle: *mut otel_context_sc
     // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     let _ = unsafe { otel_context_detach(handle) };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::propagation::{
+        otel_baggage_from_str, otel_baggage_str, otel_baggage_value_from_str,
+        otel_baggage_value_str, otel_traceparent_from_str, otel_traceparent_str,
+        otel_tracestate_from_str, otel_tracestate_str,
+    };
+    use std::ffi::{CStr, c_char};
+    use std::ptr;
+
+    fn empty_context() -> otel_context_t {
+        otel_context_t {
+            inner: ptr::null_mut(),
+        }
+    }
+
+    fn empty_scope() -> otel_context_scope_t {
+        otel_context_scope_t {
+            inner: ptr::null_mut(),
+        }
+    }
+
+    fn baggage_value(text: &CStr) -> otel_baggage_value_t {
+        let mut value = otel_baggage_value_t { value: [0; 257] };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_baggage_value_from_str(text.as_ptr(), &mut value) },
+            otel_result_t::OTEL_OK
+        );
+        value
+    }
+
+    fn text(ptr: *const c_char) -> String {
+        assert!(!ptr.is_null());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { CStr::from_ptr(ptr) }.to_str().unwrap().to_owned()
+    }
+
+    #[test]
+    fn new_current_retain_and_release() {
+        let mut source = empty_context();
+        let mut retained = empty_context();
+        let mut current = empty_context();
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_retain(ptr::null(), &mut retained) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut source) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!source.inner.is_null());
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_retain(&source, &mut retained) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(source.inner, retained.inner);
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_retain(&source, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_current(&mut current) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!current.inner.is_null());
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe {
+            otel_context_release(&mut source);
+            otel_context_release(&mut retained);
+            otel_context_release(&mut current);
+        }
+        assert!(source.inner.is_null());
+        assert!(retained.inner.is_null());
+        assert!(current.inner.is_null());
+    }
+
+    #[test]
+    fn baggage_set_get_replace_and_length_aware_variants() {
+        let mut base = empty_context();
+        let one = baggage_value(c"one");
+        let two = baggage_value(c"two");
+        let mut first = empty_context();
+        let mut replaced = empty_context();
+        let mut via_view = empty_context();
+        let mut output = otel_baggage_value_t { value: [0; 257] };
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut base) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage(&base, c"key".as_ptr(), &one, &mut first) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage(&first, c"key".as_ptr(), &mut output) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_value_str(&output) }),
+            "one"
+        );
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage(&first, c"key".as_ptr(), &two, &mut replaced) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage(&replaced, c"key".as_ptr(), &mut output) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_value_str(&output) }),
+            "two"
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage(&replaced, c"absent".as_ptr(), &mut output) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        let key = otel_str_t {
+            ptr: c"n-key".as_ptr(),
+            len: 5,
+        };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage_n(&base, key, &one, &mut via_view) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage_n(&via_view, key, &mut output) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_value_str(&output) }),
+            "one"
+        );
+
+        let null_key = otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
+        };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage_n(&base, null_key, &one, &mut first) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage_n(&via_view, null_key, &mut output) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe {
+            otel_context_release(&mut base);
+            otel_context_release(&mut first);
+            otel_context_release(&mut replaced);
+            otel_context_release(&mut via_view);
+        }
+    }
+
+    #[test]
+    fn attach_and_detach_change_current_context() {
+        let mut base = empty_context();
+        let mut tagged = empty_context();
+        let mut scope = empty_scope();
+        let value = baggage_value(c"attached");
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut base) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage(&base, c"key".as_ptr(), &value, &mut tagged) },
+            otel_result_t::OTEL_OK
+        );
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_attach(ptr::null(), &mut scope) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_attach(&tagged, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_attach(&tagged, &mut scope) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!scope.inner.is_null());
+
+        let mut current = empty_context();
+        let mut output = otel_baggage_value_t { value: [0; 257] };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_current(&mut current) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage(&current, c"key".as_ptr(), &mut output) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_value_str(&output) }),
+            "attached"
+        );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut current) };
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_detach(ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_detach(&mut scope) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(scope.inner.is_null());
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_detach(&mut scope) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        let mut after = empty_context();
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_current(&mut after) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_get_baggage(&after, c"key".as_ptr(), &mut output) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut after) };
+
+        // Scope release detaches an attached scope before releasing the handle.
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_attach(&tagged, &mut scope) },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_scope_release(&mut scope) };
+        assert!(scope.inner.is_null());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_scope_release(&mut scope) };
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe {
+            otel_context_release(&mut base);
+            otel_context_release(&mut tagged);
+        }
+    }
+
+    #[test]
+    fn extract_and_inject_w3c_headers() {
+        const TRACEPARENT: &CStr = c"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+        let mut traceparent = otel_traceparent_t { value: [0; 56] };
+        let mut tracestate = otel_tracestate_t { value: [0; 513] };
+        let mut baggage = otel_baggage_t { value: [0; 1025] };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_traceparent_from_str(TRACEPARENT.as_ptr(), &mut traceparent) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_tracestate_from_str(c"vendor=value".as_ptr(), &mut tracestate) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_baggage_from_str(c"key=value".as_ptr(), &mut baggage) },
+            otel_result_t::OTEL_OK
+        );
+
+        let mut context = empty_context();
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_extract(&traceparent, &tracestate, &baggage, &mut context) },
+            otel_result_t::OTEL_OK
+        );
+
+        let mut tp_out = otel_traceparent_t { value: [0; 56] };
+        let mut ts_out = otel_tracestate_t { value: [0; 513] };
+        let mut bag_out = otel_baggage_t { value: [0; 1025] };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_inject(&context, &mut tp_out, &mut ts_out, &mut bag_out) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_traceparent_str(&tp_out) }),
+            TRACEPARENT.to_str().unwrap()
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_tracestate_str(&ts_out) }),
+            "vendor=value"
+        );
+        assert!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_str(&bag_out) }).contains("key=value")
+        );
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe {
+                otel_context_inject(&context, ptr::null_mut(), ptr::null_mut(), ptr::null_mut())
+            },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe {
+                otel_context_inject(ptr::null(), &mut tp_out, ptr::null_mut(), ptr::null_mut())
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        let mut empty = empty_context();
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_extract(ptr::null(), ptr::null(), ptr::null(), &mut empty) },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut empty) };
+
+        let invalid = otel_traceparent_t { value: [0; 56] };
+        let mut unused = empty_context();
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_extract(&invalid, ptr::null(), ptr::null(), &mut unused) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(unused.inner.is_null());
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe {
+                otel_context_extract(&traceparent, ptr::null(), ptr::null(), ptr::null_mut())
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut context) };
+    }
+}

@@ -66,3 +66,19 @@ pub extern "C" fn otel_version() -> *const c_char {
         .get_or_init(|| CString::new(env!("CARGO_PKG_VERSION")).expect("version has no NUL"))
         .as_ptr()
 }
+
+#[cfg(all(test, feature = "full"))]
+mod tests {
+    use super::*;
+    use std::ffi::CStr;
+
+    #[test]
+    fn otel_version_is_stable_and_nul_terminated() {
+        let first = otel_version();
+        assert_eq!(first, otel_version());
+        assert!(!first.is_null());
+        // SAFETY: `otel_version` returns a pointer to a static NUL-terminated C string.
+        let version = unsafe { CStr::from_ptr(first) };
+        assert_eq!(version.to_str().unwrap(), env!("CARGO_PKG_VERSION"));
+    }
+}

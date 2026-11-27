@@ -66,7 +66,7 @@ build:
 	$(CARGO) build --release -p otel-capi-stdout-transport
 
 test:
-	$(CARGO) test --lib -p otel-capi
+	$(CARGO) test --workspace --lib
 
 fmt:
 	$(CARGO) fmt --all
@@ -81,15 +81,17 @@ lint: fmt-check clippy
 
 miri:
 	$(CARGO_MIRI) setup
-	MIRIFLAGS="$(MIRIFLAGS)" $(CARGO_MIRI) test --lib -p otel-capi
+	MIRIFLAGS="$(MIRIFLAGS)" $(CARGO_MIRI) test --workspace --lib
 
 # Miri interprets MIR and cannot emit LLVM coverage data, so validate the same
-# tests with Miri first, then measure them with the instrumented test binary.
+# tests in every crate with Miri first, then measure them with instrumented
+# test binaries.
 coverage: miri | $(BUILD_DIR)
 	mkdir -p $(COVERAGE_DIR)
-	$(CARGO_LLVM_COV) --locked --lib -p otel-capi --no-report
-	$(CARGO_LLVM_COV) report -p otel-capi --lcov --output-path $(COVERAGE_DIR)/lcov.info
-	$(CARGO_LLVM_COV) report -p otel-capi --html --output-dir $(COVERAGE_DIR)
+	$(CARGO_LLVM_COV) --locked --workspace --lib --no-report
+	$(CARGO_LLVM_COV) report --summary-only
+	$(CARGO_LLVM_COV) report --fail-under-lines 70 --lcov --output-path $(COVERAGE_DIR)/lcov.info
+	$(CARGO_LLVM_COV) report --html --output-dir $(COVERAGE_DIR)
 
 docs: build | $(BUILD_DIR)
 	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)

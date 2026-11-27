@@ -1,8 +1,5 @@
 //! Logger provider, logger, and log record APIs.
 
-#[cfg(test)]
-use std::env;
-
 use std::ffi::{VaList, c_char};
 use std::sync::Arc;
 
@@ -593,7 +590,21 @@ pub unsafe extern "C" fn otel_logger_log_record_arr_n(
 mod tests {
     use super::*;
     use crate::attributes::{otel_attribute_t, otel_attribute_type_t, otel_attribute_value_t};
-    use crate::handles::{otel_logger_provider_release, otel_logger_release};
+    use crate::config::tests::EnvGuard;
+    use crate::handles::{otel_logger_provider_release, otel_logger_release, otel_logger_retain};
+
+    fn options(level: i32) -> otel_log_record_options_t {
+        otel_log_record_options_t {
+            size: std::mem::size_of::<otel_log_record_options_t>(),
+            level,
+            event_name: std::ptr::null(),
+            target: std::ptr::null(),
+            severity_text: std::ptr::null(),
+            timestamp_unix_nano: 0,
+            observed_timestamp_unix_nano: 0,
+            span: std::ptr::null(),
+        }
+    }
 
     #[test]
     fn rejects_invalid_severity() {
@@ -605,9 +616,88 @@ mod tests {
     }
 
     #[test]
+    fn severity_maps_every_level() {
+        for (value, expected) in [
+            (1, Severity::Trace),
+            (5, Severity::Debug),
+            (9, Severity::Info),
+            (13, Severity::Warn),
+            (17, Severity::Error),
+            (21, Severity::Fatal),
+        ] {
+            let (number, text) = severity(value).unwrap();
+            assert_eq!(number, expected);
+            assert!(!text.is_empty());
+        }
+        assert_eq!(severity(9).unwrap().1, "INFO");
+        assert!(severity(0).is_err());
+        assert!(severity(22).is_err());
+    }
+
+    #[test]
+    fn any_value_converts_all_attribute_types() {
+        assert_eq!(any_value(Value::Bool(true)), AnyValue::Boolean(true));
+        assert_eq!(any_value(Value::I64(-2)), AnyValue::Int(-2));
+        assert_eq!(any_value(Value::F64(2.5)), AnyValue::Double(2.5));
+        assert_eq!(
+            any_value(Value::String("text".into())),
+            AnyValue::String("text".into())
+        );
+        assert_eq!(
+            any_value(Value::Array(opentelemetry::Array::Bool(vec![true]))),
+            AnyValue::String("[true]".into())
+        );
+    }
+
+    #[test]
+    fn emit_with_attributes_validates_inputs() {
+        let mut short = options(9);
+        short.size = 1;
+        assert_eq!(
+            // SAFETY: NULL options are an intentionally invalid input.
+            unsafe {
+                emit_log_with_attributes(std::ptr::null(), std::ptr::null(), "x".into(), vec![])
+            }
+            .unwrap_err()
+            .status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: `short` is a valid local struct with an intentionally small size.
+            unsafe { emit_log_with_attributes(std::ptr::null(), &short, "x".into(), vec![]) }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        let valid = options(9);
+        assert_eq!(
+            // SAFETY: NULL logger handle is an intentionally invalid handle input.
+            unsafe { emit_log_with_attributes(std::ptr::null(), &valid, "x".into(), vec![]) }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn provider_requires_runtime_for_otlp_exporter() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_LOGS_EXPORTER", "otlp");
+        let mut provider = otel_logger_provider_t {
+            inner: std::ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: `provider` is writable, aligned storage; NULL arguments are validated.
+            unsafe { otel_logger_provider_new(&mut provider, std::ptr::null(), std::ptr::null()) },
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        assert!(provider.inner.is_null());
+    }
+
+    #[test]
     fn no_exporter_logger_emits() {
-        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-        unsafe { env::set_var("OTEL_LOGS_EXPORTER", "none") };
+        let mut env = EnvGuard::new();
+        env.set("OTEL_LOGS_EXPORTER", "none");
         let mut provider = otel_logger_provider_t {
             inner: std::ptr::null_mut(),
         };
@@ -676,7 +766,176 @@ mod tests {
             );
             otel_logger_release(&mut logger);
             otel_logger_provider_release(&mut provider);
-            env::remove_var("OTEL_LOGS_EXPORTER");
+        }
+    }
+
+    #[test]
+    fn log_variants_and_lifecycle() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_LOGS_EXPORTER", "none");
+        let mut provider = otel_logger_provider_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut logger = otel_logger_t {
+            inner: std::ptr::null_mut(),
+        };
+        let mut retained = otel_logger_t {
+            inner: std::ptr::null_mut(),
+        };
+        // SAFETY: all handles below are local, writable storage; borrowed C
+        // strings are static literals that outlive the calls.
+        unsafe {
+            assert_eq!(
+                otel_logger_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_force_flush(&provider),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_shutdown(&provider),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_logger_n(
+                    &provider,
+                    &mut logger,
+                    otel_str_t {
+                        ptr: c"scoped".as_ptr(),
+                        len: 6,
+                    },
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_retain(&logger, &mut retained),
+                otel_result_t::OTEL_OK
+            );
+
+            let key = c"k";
+            let value = c"v";
+            let attribute = otel_attribute_t {
+                kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
+                key: key.as_ptr(),
+                key_len: 1,
+                value: otel_attribute_value_t {
+                    string: value.as_ptr(),
+                },
+                value_len: 1,
+            };
+            let attributes = [&attribute as *const otel_attribute_t];
+            let level = otel_severity_t::OTEL_SEVERITY_DEBUG as i32;
+            assert_eq!(
+                otel_logger_log_arr(
+                    &logger,
+                    std::ptr::null(),
+                    level,
+                    c"arr".as_ptr(),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log_n(
+                    &logger,
+                    std::ptr::null(),
+                    level,
+                    otel_str_t {
+                        ptr: c"len".as_ptr(),
+                        len: 3
+                    },
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log_arr_n(
+                    &logger,
+                    std::ptr::null(),
+                    level,
+                    otel_str_t {
+                        ptr: c"len-arr".as_ptr(),
+                        len: 7
+                    },
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            let opts = options(otel_severity_t::OTEL_SEVERITY_ERROR as i32);
+            assert_eq!(
+                otel_logger_log_record_arr(
+                    &logger,
+                    &opts,
+                    c"record-arr".as_ptr(),
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log_record_n(
+                    &logger,
+                    &opts,
+                    otel_str_t {
+                        ptr: c"record-n".as_ptr(),
+                        len: 8
+                    },
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log_record_arr_n(
+                    &logger,
+                    &opts,
+                    otel_str_t {
+                        ptr: c"record-arr-n".as_ptr(),
+                        len: 12
+                    },
+                    attributes.as_ptr(),
+                    1
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_log(
+                    &logger,
+                    std::ptr::null(),
+                    42,
+                    c"bad".as_ptr(),
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_logger_log_n(
+                    &logger,
+                    std::ptr::null(),
+                    level,
+                    otel_str_t {
+                        ptr: std::ptr::null(),
+                        len: 3
+                    },
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            otel_logger_release(&mut logger);
+            assert_eq!(
+                otel_logger_log(
+                    &retained,
+                    std::ptr::null(),
+                    level,
+                    c"still".as_ptr(),
+                    std::ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_logger_release(&mut retained);
+            otel_logger_provider_release(&mut provider);
         }
     }
 }
