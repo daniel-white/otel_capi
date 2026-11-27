@@ -23,6 +23,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.100.0"
+      - name: Install native TLS development files
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
       - run: make check
 
   check-musl:
@@ -35,7 +38,7 @@ jobs:
           toolchain: "1.100.0"
           targets: x86_64-unknown-linux-musl
       - run: sudo apt-get update && sudo apt-get install -y musl-tools
-      - run: cargo build --release --locked --target x86_64-unknown-linux-musl
+      - run: cargo build --release --locked --target x86_64-unknown-linux-musl -p otel-capi
       - name: Build and run kitchen sink with musl
         run: |
           docker run --rm -v "${{ github.workspace }}:/work" -w /work alpine:3 \

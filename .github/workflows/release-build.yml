@@ -49,8 +49,23 @@ jobs:
         if: matrix.target == 'x86_64-unknown-linux-musl'
         run: sudo apt-get update && sudo apt-get install -y musl-tools
 
-      - name: Build
-        run: cargo build --release --locked --target ${{ matrix.target }}
+      - name: Install native TLS development files
+        if: runner.os == 'Linux' && matrix.target != 'x86_64-unknown-linux-musl'
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
+
+      - name: Build core library
+        run: cargo build --release --locked --target ${{ matrix.target }} -p otel-capi
+
+      - name: Build optional gRPC transport
+        if: matrix.target != 'x86_64-unknown-linux-musl'
+        run: cargo build --release --locked --target ${{ matrix.target }} -p otel-capi-grpc-transport
+
+      - name: Build optional HTTP transport
+        if: matrix.target != 'x86_64-unknown-linux-musl'
+        run: cargo build --release --locked --target ${{ matrix.target }} -p otel-capi-http-transport
+
+      - name: Build optional stdout transport
+        run: cargo build --release --locked --target ${{ matrix.target }} -p otel-capi-stdout-transport
 
       - name: Test musl kitchen sink
         if: matrix.target == 'x86_64-unknown-linux-musl'
@@ -105,8 +120,8 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
-      - name: Install Doxygen
-        run: sudo apt-get update && sudo apt-get install -y doxygen
+      - name: Install documentation and native TLS dependencies
+        run: sudo apt-get update && sudo apt-get install -y doxygen libssl-dev pkg-config
 
       - name: Generate API documentation
         env:

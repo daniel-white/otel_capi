@@ -32,6 +32,7 @@
             pkgs.doxygen
             pkgs.python3
             pkgs.pkg-config
+            pkgs.openssl
             pkgs.gcc
             pkgs.clang
           ];
