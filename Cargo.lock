@@ -658,7 +658,7 @@ dependencies = [
 
 [[package]]
 name = "otel-capi-grpc-transport"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "cbindgen",
  "otel-capi",
@@ -667,7 +667,7 @@ dependencies = [
 
 [[package]]
 name = "otel-capi-http-client"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "otel-capi",
  "ureq",
@@ -675,7 +675,7 @@ dependencies = [
 
 [[package]]
 name = "otel-capi-http-transport"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "cbindgen",
  "otel-capi",
@@ -684,7 +684,7 @@ dependencies = [
 
 [[package]]
 name = "otel-capi-stdout-transport"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "cbindgen",
  "opentelemetry-proto",
