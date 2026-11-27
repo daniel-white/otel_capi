@@ -22,7 +22,9 @@
         };
 
         # Rust 1.99+ is required to define C-variadic functions in Rust itself.
-        rustToolchain = pkgs.rust-bin.stable."1.100.0".default;
+        rustToolchain = pkgs.rust-bin.stable."1.100.0".default.override {
+          extensions = [ "llvm-tools-preview" ];
+        };
         miriToolchain = pkgs.rust-bin.nightly.latest.default.override {
           extensions = [ "miri" "rust-src" ];
         };
@@ -32,6 +34,7 @@
           packages = [
             rustToolchain
             miriToolchain
+            pkgs.cargo-llvm-cov
             pkgs.cmake
             pkgs.doxygen
             pkgs.python3

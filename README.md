@@ -65,6 +65,17 @@ nix develop --command make miri
 The Miri target disables isolation so the tests can read the real clock and
 process environment.
 
+Collect coverage for the same tests with:
+
+```sh
+nix develop --command make coverage
+```
+
+`make coverage` runs Miri first and then measures the tests with LLVM
+instrumentation. Miri interprets MIR and cannot emit LLVM coverage data itself,
+so the report reflects the test suite that Miri validated. The report is written
+to `build/coverage/html` and `build/coverage/lcov.info`, which are gitignored.
+
 Generate HTML API documentation from the generated headers with:
 
 ```sh

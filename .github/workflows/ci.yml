@@ -69,6 +69,27 @@ jobs:
           components: miri, rust-src
       - run: make miri
 
+  coverage:
+    name: coverage (ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri, rust-src
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.100.0"
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Install native TLS development files
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
+      - run: make coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: build/coverage
+
   conventional-commits:
     name: Conventional PR title
     if: github.event_name == 'pull_request'

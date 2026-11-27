@@ -10,11 +10,13 @@ MUSL_GCC ?= musl-gcc
 CC ?= $(GCC)
 CARGO ?= cargo
 CARGO_MIRI ?= cargo +nightly miri
+CARGO_LLVM_COV ?= cargo llvm-cov
 # The core tests read the real clock and process environment.
 MIRIFLAGS ?= -Zmiri-disable-isolation
 CLIPPY_LINTS := -W clippy::undocumented_unsafe_blocks
 
 BUILD_DIR := build/artifacts
+COVERAGE_DIR := build/coverage
 DOCS_DIR := build/docs
 INCLUDE_DIR := include
 HEADERS = $(wildcard $(INCLUDE_DIR)/otel_capi*.h)
@@ -53,7 +55,7 @@ HTTP_SHARED_LIB := target/release/libotel_capi_http_transport.$(SHARED_EXT)
 STDOUT_SHARED_LIB := target/release/libotel_capi_stdout_transport.$(SHARED_EXT)
 PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
-.PHONY: all build test fmt fmt-check clippy lint miri docs example-gcc example-clang example-musl compile-checks transport-checks pkg-config-file check clean install
+.PHONY: all build test fmt fmt-check clippy lint miri coverage docs example-gcc example-clang example-musl compile-checks transport-checks pkg-config-file check clean install
 
 all: build
 
@@ -80,6 +82,14 @@ lint: fmt-check clippy
 miri:
 	$(CARGO_MIRI) setup
 	MIRIFLAGS="$(MIRIFLAGS)" $(CARGO_MIRI) test --lib -p otel-capi
+
+# Miri interprets MIR and cannot emit LLVM coverage data, so validate the same
+# tests with Miri first, then measure them with the instrumented test binary.
+coverage: miri | $(BUILD_DIR)
+	mkdir -p $(COVERAGE_DIR)
+	$(CARGO_LLVM_COV) --locked --lib -p otel-capi --no-report
+	$(CARGO_LLVM_COV) report -p otel-capi --lcov --output-path $(COVERAGE_DIR)/lcov.info
+	$(CARGO_LLVM_COV) report -p otel-capi --html --output-dir $(COVERAGE_DIR)
 
 docs: build | $(BUILD_DIR)
 	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)
