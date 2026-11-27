@@ -3,22 +3,7 @@ use std::ffi::{CStr, CString, c_char};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::ptr;
 
-/// Status returned by every fallible `otel-capi` function.
-#[non_exhaustive]
-#[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum otel_result_t {
-    OTEL_OK = 0,
-    OTEL_ERR_INVALID_ARGUMENT = 1,
-    OTEL_ERR_INVALID_UTF8 = 2,
-    OTEL_ERR_CONFIG = 3,
-    OTEL_ERR_EXPORT = 4,
-    OTEL_ERR_SHUTDOWN = 5,
-    OTEL_ERR_INTERNAL = 6,
-    OTEL_ERR_PANIC = 7,
-    /// Handles are still live at an explicit cleanup check.
-    OTEL_ERR_LEAK = 8,
-}
+pub use crate::abi::otel_result_t;
 
 thread_local! {
     static LAST_ERROR: RefCell<Option<CString>> = const { RefCell::new(None) };

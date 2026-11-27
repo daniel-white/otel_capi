@@ -1,0 +1,52 @@
+[package]
+name = "otel-capi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "C API for OpenTelemetry"
+
+[lib]
+name = "otel_capi"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[features]
+default = ["full"]
+# Full C SDK. Enable this for the core shared/static library.
+full = [
+  "dep:async-trait",
+  "dep:opentelemetry",
+  "dep:opentelemetry-http",
+  "dep:opentelemetry-otlp",
+  "dep:opentelemetry-proto",
+  "dep:opentelemetry_sdk",
+  "dep:prost",
+]
+# Shared C ABI types only. Transport crates depend on this to avoid
+# duplicating the core request/response contract or re-exporting core symbols.
+abi = []
+
+[build-dependencies]
+cbindgen = "0.29.4"
+opentelemetry-semantic-conventions = "0.33.1"
+serde_json = "1"
+
+[dependencies]
+libc = "0.2"
+async-trait = { version = "0.1", optional = true }
+opentelemetry = { version = "0.33.1", features = ["trace", "metrics", "logs"], optional = true }
+opentelemetry_sdk = { version = "0.33.1", features = ["trace", "metrics", "logs"], optional = true }
+opentelemetry-http = { version = "0.33.1", default-features = false, optional = true }
+opentelemetry-proto = { version = "0.33.1", default-features = false, features = [
+  "gen-tonic-messages",
+  "trace",
+  "metrics",
+  "logs",
+], optional = true }
+opentelemetry-otlp = { version = "0.33.1", default-features = false, features = [
+  "http-proto",
+  "http-json",
+  "trace",
+  "metrics",
+  "logs",
+], optional = true }
+prost = { version = "0.14", optional = true }

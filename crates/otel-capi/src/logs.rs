@@ -9,13 +9,16 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
 use opentelemetry::{KeyValue, Value};
+use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::logs::{
-    BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider, SimpleLogProcessor,
+    BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider,
 };
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
+use crate::config;
 use crate::config::{
-    build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
+    OtlpProtocol, build_error, duration_ms, exporter_kind, otlp_protocol, resource_from_env,
+    sdk_disabled, sdk_error,
 };
 use crate::error::{Error, Result, c_str, guard, otel_result_t, utf8};
 use crate::handles::{
@@ -23,7 +26,9 @@ use crate::handles::{
     optional_runtime, slot,
 };
 use crate::handles::{otel_logger_provider_t, otel_logger_t, otel_runtime_t, otel_span_t};
+use crate::item_export::ItemLogProcessor;
 use crate::strings::{otel_str_t, str_slice};
+use crate::transport::callback_client;
 use crate::util::system_time;
 
 /// Log severity exported to C. Values match the OpenTelemetry severity scale.
@@ -181,6 +186,45 @@ fn any_value(value: Value) -> AnyValue {
     }
 }
 
+fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::LogExporter> {
+    let protocol = otlp_protocol("LOGS")?;
+    let builder = opentelemetry_otlp::LogExporter::builder();
+    let exporter = match protocol {
+        OtlpProtocol::Grpc => builder
+            .with_http()
+            .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_GRPC_TRANSPORT,
+                "LOGS",
+            )?)
+            .build(),
+        OtlpProtocol::HttpBinary | OtlpProtocol::HttpJson => builder
+            .with_http()
+            .with_protocol(protocol.into())
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_HTTP_TRANSPORT,
+                "LOGS",
+            )?)
+            .build(),
+    };
+    exporter.map_err(|err| build_error("failed to build OTLP log exporter", err))
+}
+
+fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::LogExporter> {
+    let exporter = opentelemetry_otlp::LogExporter::builder()
+        .with_http()
+        .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+        .with_http_client(callback_client(
+            runtime,
+            config::STDOUT_TRANSPORT,
+            "LOGS",
+        )?)
+        .build();
+    exporter.map_err(|err| build_error("failed to build stdout log exporter", err))
+}
+
 fn build_provider(
     resource: Option<crate::handles::ResourceInner>,
     runtime: Option<Arc<RuntimeInner>>,
@@ -192,22 +236,13 @@ fn build_provider(
         match exporter_kind("LOGS")? {
             crate::config::ExporterKind::None => {}
             crate::config::ExporterKind::Stdout => {
-                builder = builder.with_log_processor(SimpleLogProcessor::new(
-                    opentelemetry_stdout::LogExporter::default(),
-                ));
-            }
-            crate::config::ExporterKind::Otlp => {
                 let runtime = runtime.as_ref().ok_or_else(|| {
                     Error::new(
                         otel_result_t::OTEL_ERR_CONFIG,
-                        "OTLP requires an otel_runtime_t; pass one to otel_logger_provider_new",
+                        "stdout requires an otel_runtime_t; pass one to otel_logger_provider_new",
                     )
                 })?;
-                let exporter = {
-                    let _guard = runtime.enter();
-                    opentelemetry_otlp::LogExporter::builder().build()
-                }
-                .map_err(|err| build_error("failed to build OTLP log exporter", err))?;
+                let exporter = build_stdout_exporter(runtime)?;
                 let delay = duration_ms("OTEL_BLRP_SCHEDULE_DELAY", 1_000)?;
                 let config = BatchConfigBuilder::default()
                     .with_scheduled_delay(delay)
@@ -217,6 +252,39 @@ fn build_provider(
                         .with_batch_config(config)
                         .build(),
                 );
+            }
+            crate::config::ExporterKind::Otlp => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "OTLP requires an otel_runtime_t; pass one to otel_logger_provider_new",
+                    )
+                })?;
+                let exporter = build_otlp_exporter(runtime)?;
+                let delay = duration_ms("OTEL_BLRP_SCHEDULE_DELAY", 1_000)?;
+                let config = BatchConfigBuilder::default()
+                    .with_scheduled_delay(delay)
+                    .build();
+                builder = builder.with_log_processor(
+                    BatchLogProcessor::builder(exporter)
+                        .with_batch_config(config)
+                        .build(),
+                );
+            }
+            crate::config::ExporterKind::Item => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires an otel_runtime_t; pass one to otel_logger_provider_new",
+                    )
+                })?;
+                let transport = runtime.item_transport()?.ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires otel_runtime_set_item_transport",
+                    )
+                })?;
+                builder = builder.with_log_processor(ItemLogProcessor::new(transport));
             }
         }
     }

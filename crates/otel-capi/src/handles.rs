@@ -9,10 +9,7 @@ use std::ffi::c_void;
 use std::ops::{Deref, DerefMut};
 use std::ptr;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Mutex, MutexGuard};
-
-use tokio::runtime::Runtime;
+use std::sync::{Mutex, MutexGuard, RwLock};
 
 use opentelemetry::metrics::{
     Counter, Gauge, Histogram, ObservableCounter, ObservableGauge, UpDownCounter,
@@ -21,10 +18,68 @@ use opentelemetry_sdk::logs::SdkLogger;
 use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider, Span as SdkSpan};
 
+use crate::abi::{handle_created, handle_destroyed, live_handle_count};
+pub use crate::abi::otel_runtime_t;
 use crate::error::{Error, Result, guard, otel_result_t};
+use crate::items::ItemTransport;
+use crate::transport::Transport;
 
 pub(crate) type ResourceInner = opentelemetry_sdk::Resource;
-pub(crate) type RuntimeInner = Runtime;
+
+/// Named transports and the in-memory item transport registered by the caller.
+pub(crate) struct RuntimeInner {
+    transports: RwLock<Vec<(String, Transport)>>,
+    item_transport: RwLock<Option<ItemTransport>>,
+}
+
+impl RuntimeInner {
+    pub(crate) fn new() -> Self {
+        Self {
+            transports: RwLock::new(Vec::new()),
+            item_transport: RwLock::new(None),
+        }
+    }
+
+    pub(crate) fn set_transport(&self, name: String, transport: Transport) -> Result<()> {
+        let mut slots = self
+            .transports
+            .write()
+            .map_err(|_| Error::internal("transport registry lock was poisoned"))?;
+        if let Some(slot) = slots.iter_mut().find(|(key, _)| key == &name) {
+            slot.1 = transport;
+        } else {
+            slots.push((name, transport));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn transport(&self, name: &str) -> Result<Option<Transport>> {
+        let slots = self
+            .transports
+            .read()
+            .map_err(|_| Error::internal("transport registry lock was poisoned"))?;
+        Ok(slots
+            .iter()
+            .find(|(key, _)| key == name)
+            .map(|(_, transport)| *transport))
+    }
+
+    pub(crate) fn set_item_transport(&self, transport: ItemTransport) -> Result<()> {
+        let mut slot = self.item_transport.write().map_err(|_| {
+            Error::internal("item transport lock was poisoned")
+        })?;
+        *slot = Some(transport);
+        Ok(())
+    }
+
+    pub(crate) fn item_transport(&self) -> Result<Option<ItemTransport>> {
+        let slot = self.item_transport.read().map_err(|_| {
+            Error::internal("item transport lock was poisoned")
+        })?;
+        Ok(*slot)
+    }
+}
+
 pub(crate) type ContextInner = opentelemetry::Context;
 /// Thread-local scope token; the guard itself lives in `context.rs`.
 pub(crate) type ContextScopeInner = u64;
@@ -32,19 +87,19 @@ pub(crate) type ContextScopeInner = u64;
 pub(crate) struct TracerProviderInner {
     pub(crate) provider: SdkTracerProvider,
     #[allow(dead_code)] // Retained to keep the async runtime alive.
-    pub(crate) runtime: Option<Arc<Runtime>>,
+    pub(crate) runtime: Option<Arc<RuntimeInner>>,
 }
 
 pub(crate) struct MeterProviderInner {
     pub(crate) provider: SdkMeterProvider,
     #[allow(dead_code)] // Retained to keep the async runtime alive.
-    pub(crate) runtime: Option<Arc<Runtime>>,
+    pub(crate) runtime: Option<Arc<RuntimeInner>>,
 }
 
 pub(crate) struct LoggerProviderInner {
     pub(crate) provider: opentelemetry_sdk::logs::SdkLoggerProvider,
     #[allow(dead_code)] // Retained to keep the async runtime alive.
-    pub(crate) runtime: Option<Arc<Runtime>>,
+    pub(crate) runtime: Option<Arc<RuntimeInner>>,
 }
 pub(crate) type TracerInner = SdkTracer;
 pub(crate) type MeterInner = opentelemetry::metrics::Meter;
@@ -91,19 +146,6 @@ impl DerefMut for SpanGuard<'_> {
     }
 }
 
-static LIVE_HANDLES: AtomicUsize = AtomicUsize::new(0);
-
-fn handle_created() {
-    LIVE_HANDLES.fetch_add(1, Ordering::SeqCst);
-}
-
-fn handle_destroyed() {
-    LIVE_HANDLES.fetch_sub(1, Ordering::SeqCst);
-}
-
-pub(crate) fn live_handle_count() -> usize {
-    LIVE_HANDLES.load(Ordering::SeqCst)
-}
 pub(crate) type CounterU64Inner = Counter<u64>;
 pub(crate) type CounterF64Inner = Counter<f64>;
 pub(crate) type UpDownCounterI64Inner = UpDownCounter<i64>;
@@ -129,13 +171,6 @@ pub struct otel_context_t {
 /// Scope token for a context attached to the current thread.
 #[repr(C)]
 pub struct otel_context_scope_t {
-    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
-    pub inner: *mut c_void,
-}
-
-/// Explicit async runtime used by OTLP exporters.
-#[repr(C)]
-pub struct otel_runtime_t {
     /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
@@ -352,7 +387,7 @@ pub(crate) fn optional_resource(handle: *const otel_resource_t) -> Result<Option
 }
 
 /// Clones the runtime behind an optional handle, or returns `None` for NULL.
-pub(crate) fn optional_runtime(handle: *const otel_runtime_t) -> Result<Option<Arc<Runtime>>> {
+pub(crate) fn optional_runtime(handle: *const otel_runtime_t) -> Result<Option<Arc<RuntimeInner>>> {
     if handle.is_null() {
         return Ok(None);
     }

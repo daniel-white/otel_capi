@@ -12,14 +12,17 @@ use opentelemetry::trace::{
     Span as _, SpanContext, SpanId, SpanKind, Status, TraceFlags, TraceId, TraceState, Tracer as _,
     TracerProvider as _,
 };
+use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::trace::{
-    BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider, SimpleSpanProcessor,
+    BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider,
     Span as SdkSpan,
 };
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
+use crate::config;
 use crate::config::{
-    build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
+    OtlpProtocol, build_error, duration_ms, exporter_kind, otlp_protocol, resource_from_env,
+    sdk_disabled, sdk_error,
 };
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
 use crate::handles::ContextInner;
@@ -30,8 +33,10 @@ use crate::handles::{
 use crate::handles::{
     otel_context_t, otel_runtime_t, otel_span_t, otel_tracer_provider_t, otel_tracer_t,
 };
+use crate::item_export::ItemSpanProcessor;
 use crate::propagation::{buffer_utf8, otel_traceparent_t};
 use crate::strings::{optional_str_slice, otel_str_t, str_slice};
+use crate::transport::callback_client;
 use crate::util::{copy_to_buffer, system_time};
 
 /// A 16-byte OpenTelemetry trace ID, stored as two big-endian 64-bit words.
@@ -298,6 +303,45 @@ fn sampler_from_env() -> Result<Sampler> {
     }
 }
 
+fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::SpanExporter> {
+    let protocol = otlp_protocol("TRACES")?;
+    let builder = opentelemetry_otlp::SpanExporter::builder();
+    let exporter = match protocol {
+        OtlpProtocol::Grpc => builder
+            .with_http()
+            .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_GRPC_TRANSPORT,
+                "TRACES",
+            )?)
+            .build(),
+        OtlpProtocol::HttpBinary | OtlpProtocol::HttpJson => builder
+            .with_http()
+            .with_protocol(protocol.into())
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_HTTP_TRANSPORT,
+                "TRACES",
+            )?)
+            .build(),
+    };
+    exporter.map_err(|err| build_error("failed to build OTLP span exporter", err))
+}
+
+fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::SpanExporter> {
+    let exporter = opentelemetry_otlp::SpanExporter::builder()
+        .with_http()
+        .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+        .with_http_client(callback_client(
+            runtime,
+            config::STDOUT_TRANSPORT,
+            "TRACES",
+        )?)
+        .build();
+    exporter.map_err(|err| build_error("failed to build stdout span exporter", err))
+}
+
 fn build_provider(
     resource: Option<crate::handles::ResourceInner>,
     runtime: Option<Arc<RuntimeInner>>,
@@ -311,22 +355,13 @@ fn build_provider(
         match exporter_kind("TRACES")? {
             crate::config::ExporterKind::None => {}
             crate::config::ExporterKind::Stdout => {
-                builder = builder.with_span_processor(SimpleSpanProcessor::new(
-                    opentelemetry_stdout::SpanExporter::default(),
-                ));
-            }
-            crate::config::ExporterKind::Otlp => {
                 let runtime = runtime.as_ref().ok_or_else(|| {
                     Error::new(
                         otel_result_t::OTEL_ERR_CONFIG,
-                        "OTLP requires an otel_runtime_t; pass one to otel_tracer_provider_new",
+                        "stdout requires an otel_runtime_t; pass one to otel_tracer_provider_new",
                     )
                 })?;
-                let exporter = {
-                    let _guard = runtime.enter();
-                    opentelemetry_otlp::SpanExporter::builder().build()
-                }
-                .map_err(|err| build_error("failed to build OTLP span exporter", err))?;
+                let exporter = build_stdout_exporter(runtime)?;
                 let delay = duration_ms("OTEL_BSP_SCHEDULE_DELAY", 5_000)?;
                 let config = BatchConfigBuilder::default()
                     .with_scheduled_delay(delay)
@@ -336,6 +371,39 @@ fn build_provider(
                         .with_batch_config(config)
                         .build(),
                 );
+            }
+            crate::config::ExporterKind::Otlp => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "OTLP requires an otel_runtime_t; pass one to otel_tracer_provider_new",
+                    )
+                })?;
+                let exporter = build_otlp_exporter(runtime)?;
+                let delay = duration_ms("OTEL_BSP_SCHEDULE_DELAY", 5_000)?;
+                let config = BatchConfigBuilder::default()
+                    .with_scheduled_delay(delay)
+                    .build();
+                builder = builder.with_span_processor(
+                    BatchSpanProcessor::builder(exporter)
+                        .with_batch_config(config)
+                        .build(),
+                );
+            }
+            crate::config::ExporterKind::Item => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires an otel_runtime_t; pass one to otel_tracer_provider_new",
+                    )
+                })?;
+                let transport = runtime.item_transport()?.ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires otel_runtime_set_item_transport",
+                    )
+                })?;
+                builder = builder.with_span_processor(ItemSpanProcessor::new(transport));
             }
         }
     }

@@ -1,30 +1,8 @@
-[package]
-name = "otel-capi"
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
 version = "0.2.1"
 edition = "2024"
 license = "Apache-2.0"
-description = "C API for OpenTelemetry"
-
-[lib]
-name = "otel_capi"
-crate-type = ["cdylib", "staticlib", "rlib"]
-
-[build-dependencies]
-cbindgen = "0.29.4"
-opentelemetry-semantic-conventions = "0.33.1"
-serde_json = "1"
-
-[dependencies]
-opentelemetry = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
-opentelemetry_sdk = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
-opentelemetry-otlp = { version = "0.33.1", features = [
-  "grpc-tonic",
-  "http-proto",
-  "http-json",
-  "trace",
-  "metrics",
-  "logs",
-  "tls-webpki-roots",
-] }
-opentelemetry-stdout = { version = "0.33.1", features = ["trace", "metrics", "logs"] }
-tokio = { version = "1", features = ["rt-multi-thread", "time", "sync"] }

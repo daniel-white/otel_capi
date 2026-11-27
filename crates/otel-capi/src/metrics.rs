@@ -8,11 +8,14 @@ use std::marker::PhantomData;
 use std::sync::Arc;
 
 use opentelemetry::metrics::{AsyncInstrument, MeterProvider as _};
+use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
+use crate::config;
 use crate::config::{
-    build_error, duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error,
+    OtlpProtocol, build_error, duration_ms, exporter_kind, otlp_protocol, resource_from_env,
+    sdk_disabled, sdk_error,
 };
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
 use crate::handles::{
@@ -25,7 +28,9 @@ use crate::handles::{
     otel_meter_provider_t, otel_meter_t, otel_observable_counter_u64_t,
     otel_observable_gauge_f64_t, otel_runtime_t, otel_updown_counter_i64_t,
 };
+use crate::item_export::ItemMetricExporter;
 use crate::strings::{optional_str_slice, otel_str_t, str_slice};
+use crate::transport::callback_client;
 
 /// Opaque callback context passed back to `otel_observe_*`. It is valid only
 /// for the duration of the C callback invocation.
@@ -74,6 +79,45 @@ unsafe fn instrument_from_context<'a, T>(
     unsafe { std::mem::transmute::<otel_observe_context_t, &dyn AsyncInstrument<T>>(context) }
 }
 
+fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::MetricExporter> {
+    let protocol = otlp_protocol("METRICS")?;
+    let builder = opentelemetry_otlp::MetricExporter::builder();
+    let exporter = match protocol {
+        OtlpProtocol::Grpc => builder
+            .with_http()
+            .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_GRPC_TRANSPORT,
+                "METRICS",
+            )?)
+            .build(),
+        OtlpProtocol::HttpBinary | OtlpProtocol::HttpJson => builder
+            .with_http()
+            .with_protocol(protocol.into())
+            .with_http_client(callback_client(
+                runtime,
+                config::OTLP_HTTP_TRANSPORT,
+                "METRICS",
+            )?)
+            .build(),
+    };
+    exporter.map_err(|err| build_error("failed to build OTLP metric exporter", err))
+}
+
+fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::MetricExporter> {
+    let exporter = opentelemetry_otlp::MetricExporter::builder()
+        .with_http()
+        .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
+        .with_http_client(callback_client(
+            runtime,
+            config::STDOUT_TRANSPORT,
+            "METRICS",
+        )?)
+        .build();
+    exporter.map_err(|err| build_error("failed to build stdout metric exporter", err))
+}
+
 fn build_provider(
     resource: Option<crate::handles::ResourceInner>,
     runtime: Option<Arc<RuntimeInner>>,
@@ -86,8 +130,15 @@ fn build_provider(
         match exporter_kind("METRICS")? {
             crate::config::ExporterKind::None => {}
             crate::config::ExporterKind::Stdout => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "stdout requires an otel_runtime_t; pass one to otel_meter_provider_new",
+                    )
+                })?;
+                let exporter = build_stdout_exporter(runtime)?;
                 builder = builder.with_reader(
-                    PeriodicReader::builder(opentelemetry_stdout::MetricExporter::default())
+                    PeriodicReader::builder(exporter)
                         .with_interval(interval)
                         .build(),
                 );
@@ -99,13 +150,28 @@ fn build_provider(
                         "OTLP requires an otel_runtime_t; pass one to otel_meter_provider_new",
                     )
                 })?;
-                let exporter = {
-                    let _guard = runtime.enter();
-                    opentelemetry_otlp::MetricExporter::builder().build()
-                }
-                .map_err(|err| build_error("failed to build OTLP metric exporter", err))?;
+                let exporter = build_otlp_exporter(runtime)?;
                 builder = builder.with_reader(
                     PeriodicReader::builder(exporter)
+                        .with_interval(interval)
+                        .build(),
+                );
+            }
+            crate::config::ExporterKind::Item => {
+                let runtime = runtime.as_ref().ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires an otel_runtime_t; pass one to otel_meter_provider_new",
+                    )
+                })?;
+                let transport = runtime.item_transport()?.ok_or_else(|| {
+                    Error::new(
+                        otel_result_t::OTEL_ERR_CONFIG,
+                        "item exporter requires otel_runtime_set_item_transport",
+                    )
+                })?;
+                builder = builder.with_reader(
+                    PeriodicReader::builder(ItemMetricExporter::new(transport))
                         .with_interval(interval)
                         .build(),
                 );

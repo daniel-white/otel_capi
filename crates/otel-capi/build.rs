@@ -232,12 +232,17 @@ static inline otel_log_record_options_t *otel_log_options_with_level(
 const SEMCONV_MODULES: [&str; 4] = ["attribute", "metric", "resource", "trace"];
 
 fn main() {
+    let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is set"));
+    let workspace = root
+        .parent()
+        .and_then(Path::parent)
+        .unwrap_or(&root)
+        .to_path_buf();
     println!("cargo:rerun-if-changed=cbindgen.toml");
     println!("cargo:rerun-if-changed=src");
     println!("cargo:rerun-if-changed=Cargo.toml");
-    println!("cargo:rerun-if-changed=Cargo.lock");
+    println!("cargo:rerun-if-changed={}", workspace.join("Cargo.lock").display());
 
-    let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is set"));
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR is set"));
 
     let semconv = generate_semconv_header(&root);
@@ -258,7 +263,7 @@ fn main() {
     // Split the generated declarations into area headers and compose the
     // umbrella header from them. All files remain build outputs.
     let headers = compose_headers(&header, &semconv);
-    let include = root.join("include");
+    let include = workspace.join("include");
     fs::create_dir_all(&include).expect("should create include/");
     for (name, contents) in headers {
         fs::write(out_dir.join(&name), &contents)
@@ -283,6 +288,28 @@ const TYPED_BUFFER_MACROS: &str = r#"
 #define OTEL_TRACESTATE_INIT_STR(s) { .value = s }
 #define OTEL_BAGGAGE_INIT_STR(s) { .value = s }
 #define OTEL_BAGGAGE_VALUE_INIT_STR(s) { .value = s }
+"#;
+
+const TRANSPORT_MACROS: &str = r#"
+/* Initializers for transport descriptors and application views. */
+#define OTEL_TRANSPORT_INIT { .size = sizeof(otel_transport_t), .name = { NULL, 0 }, .send = NULL, .user_data = NULL }
+#define OTEL_TRANSPORT_HEADER_INIT { .name = { NULL, 0 }, .value = { NULL, 0 } }
+#define OTEL_TRANSPORT_REQUEST_INIT { .method = NULL, .url = NULL, .headers = NULL, .header_count = 0, .body = NULL, .body_len = 0, .timeout_ms = 0 }
+#define OTEL_TRANSPORT_RESPONSE_INIT { .status_code = 0, .body = NULL, .body_len = 0, .headers = NULL, .header_count = 0, .error = { NULL, 0 } }
+"#;
+
+const ITEM_MACROS: &str = r#"
+/* Initializers for in-memory item transport views. All data pointers are
+ * borrowed and valid only for the duration of the callback. */
+#define OTEL_ENCODED_ITEM_INIT { .signal = OTEL_ITEM_SIGNAL_TRACE, .data = NULL, .len = 0 }
+#define OTEL_SPAN_EVENT_ITEM_INIT { .name = { NULL, 0 }, .timestamp_unix_nano = 0, .attributes = NULL, .attribute_count = 0 }
+#define OTEL_SPAN_LINK_ITEM_INIT { .trace_id = OTEL_TRACE_ID_INIT, .span_id = OTEL_SPAN_ID_INIT, .attributes = NULL, .attribute_count = 0 }
+#define OTEL_SPAN_ITEM_INIT { .trace_id = OTEL_TRACE_ID_INIT, .span_id = OTEL_SPAN_ID_INIT, .parent_span_id = OTEL_SPAN_ID_INIT, .name = { NULL, 0 }, .kind = OTEL_SPAN_KIND_INTERNAL, .status = OTEL_SPAN_STATUS_UNSET, .status_message = { NULL, 0 }, .start_time_unix_nano = 0, .end_time_unix_nano = 0, .attributes = NULL, .attribute_count = 0, .events = NULL, .event_count = 0, .links = NULL, .link_count = 0, .resource_attributes = NULL, .resource_attribute_count = 0 }
+#define OTEL_LOG_ITEM_INIT { .timestamp_unix_nano = 0, .observed_timestamp_unix_nano = 0, .severity = OTEL_SEVERITY_INFO, .severity_text = { NULL, 0 }, .body = { NULL, 0 }, .trace_id = OTEL_TRACE_ID_INIT, .span_id = OTEL_SPAN_ID_INIT, .attributes = NULL, .attribute_count = 0, .resource_attributes = NULL, .resource_attribute_count = 0 }
+#define OTEL_METRIC_POINT_INIT { .attributes = NULL, .attribute_count = 0, .value_kind = OTEL_METRIC_VALUE_U64, .value = { .as_u64 = 0 } }
+#define OTEL_HISTOGRAM_POINT_INIT { .attributes = NULL, .attribute_count = 0, .count = 0, .sum = 0, .has_min = false, .min = 0, .has_max = false, .max = 0, .bucket_boundaries = NULL, .bucket_counts = NULL, .bucket_count = 0 }
+#define OTEL_METRIC_ITEM_INIT { .name = { NULL, 0 }, .description = { NULL, 0 }, .unit = { NULL, 0 }, .kind = OTEL_METRIC_ITEM_GAUGE, .points = NULL, .point_count = 0, .histograms = NULL, .histogram_count = 0, .resource_attributes = NULL, .resource_attribute_count = 0 }
+#define OTEL_ITEM_TRANSPORT_INIT { .size = sizeof(otel_item_transport_t), .on_span = NULL, .on_log = NULL, .on_metric = NULL, .on_encoded = NULL, .user_data = NULL }
 "#;
 
 const OWNERSHIP_DOC: &str = r#"/* Ownership convention
@@ -332,6 +359,8 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     common_body.push('\n');
     common_body.push_str(types);
     common_body.push_str(ATTRIBUTE_MACROS);
+    common_body.push_str(TRANSPORT_MACROS);
+    common_body.push_str(ITEM_MACROS);
     common_body.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     common_body.push_str(&sentinel_macros(header));
     common_body.push_str(&handle_init_macros());
@@ -416,7 +445,10 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
         "#include \"otel_capi_context.h\"\n",
         "#include \"otel_capi_trace.h\"\n",
         "#include \"otel_capi_metrics.h\"\n",
-        "#include \"otel_capi_logs.h\"\n\n",
+        "#include \"otel_capi_logs.h\"\n",
+        "#include \"otel_capi_grpc_transport.h\"\n",
+        "#include \"otel_capi_http_transport.h\"\n",
+        "#include \"otel_capi_stdout_transport.h\"\n\n",
         "#endif /* OTEL_CAPI_H */\n"
     );
     headers.push(("otel_capi.h".to_string(), umbrella.to_string()));
@@ -503,15 +535,17 @@ fn area_for_block(block: &str) -> &'static str {
     if name.ends_with("_retain") || name.ends_with("_release") || name.ends_with("_is_valid") {
         return "otel_capi_handles.h";
     }
-    if matches!(
-        name.as_str(),
-        "otel_version"
-            | "otel_last_error"
-            | "otel_strerror"
-            | "otel_copy_last_error"
-            | "otel_live_handle_count"
-            | "otel_ensure_all_released"
-    ) {
+    if name.starts_with("otel_handle_")
+        || matches!(
+            name.as_str(),
+            "otel_version"
+                | "otel_last_error"
+                | "otel_strerror"
+                | "otel_copy_last_error"
+                | "otel_live_handle_count"
+                | "otel_ensure_all_released"
+        )
+    {
         return "otel_capi_error.h";
     }
     if name.starts_with("otel_context_")
@@ -581,6 +615,9 @@ fn sentinel_macros(header: &str) -> String {
         "otel_span_status_t",
         "otel_span_kind_t",
         "otel_attribute_type_t",
+        "otel_item_signal_t",
+        "otel_metric_item_type_t",
+        "otel_metric_value_kind_t",
     ] {
         let marker = format!("}} {ty};");
         let Some(end) = header.find(&marker) else {

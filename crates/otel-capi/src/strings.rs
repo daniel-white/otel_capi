@@ -1,19 +1,11 @@
 //! Length-aware string views for the C ABI.
 
-use std::ffi::{CString, c_char};
+use std::ffi::CString;
 use std::slice;
 use std::str;
 
+pub use crate::abi::otel_str_t;
 use crate::error::{Error, otel_result_t};
-
-/// A borrowed UTF-8 byte range. Unlike `const char *`, this does not require a
-/// NUL terminator and can therefore represent embedded bytes safely.
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct otel_str_t {
-    pub ptr: *const c_char,
-    pub len: usize,
-}
 
 /// Borrows a required string view. The pointer must be non-NULL for `len` bytes.
 pub(crate) unsafe fn str_slice<'a>(value: otel_str_t, name: &str) -> crate::error::Result<&'a str> {
