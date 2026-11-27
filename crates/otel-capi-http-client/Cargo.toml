@@ -1,0 +1,14 @@
+[package]
+name = "otel-capi-http-client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Shared HTTP client for otel-capi loadable transports"
+
+[lib]
+name = "otel_capi_http_client"
+crate-type = ["rlib"]
+
+[dependencies]
+otel-capi = { path = "../otel-capi", default-features = false, features = ["abi"] }
+ureq = { version = "3.5.2", default-features = false, features = ["native-tls-no-default"] }
