@@ -8,13 +8,29 @@ use std::ptr;
 use std::slice;
 use std::time::Duration;
 
-use otel_capi::abi::{otel_str_t, otel_transport_header_t, otel_transport_request_t, otel_transport_response_t};
+use otel_capi::abi::{
+    otel_str_t, otel_transport_header_t, otel_transport_request_t, otel_transport_response_t,
+};
 pub use ureq::http::header::{HeaderMap, HeaderName, HeaderValue};
 pub use ureq::http::{Method, Request};
-pub use ureq::{Agent, Body};
 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
+pub use ureq::{Agent, Body};
+
+/// Failure converting or sending a core transport request.
+#[derive(Debug, Clone, Copy)]
+pub enum RequestError {
+    /// A required pointer was NULL or a view had an invalid length.
+    InvalidArgument,
+    /// A header name or value could not be represented.
+    InvalidHeader,
+    /// The request body could not be represented.
+    InvalidBody,
+    /// The HTTP client could not complete the request.
+    Transport,
+}
 
 /// Per-request overrides used when converting a core transport request.
+#[derive(Default)]
 pub struct RequestOptions<'a> {
     /// Headers appended before headers supplied by the core.
     pub extra_headers: &'a [(HeaderName, HeaderValue)],
@@ -22,16 +38,6 @@ pub struct RequestOptions<'a> {
     pub skip_headers: &'a [&'a str],
     /// Replaces the body supplied by the core, used for gRPC framing.
     pub body: Option<Vec<u8>>,
-}
-
-impl Default for RequestOptions<'_> {
-    fn default() -> Self {
-        Self {
-            extra_headers: &[],
-            skip_headers: &[],
-            body: None,
-        }
-    }
 }
 
 /// Creates the shared blocking client using the host TLS stack and trust store.
@@ -60,25 +66,26 @@ pub fn build_request(
     method: Method,
     url: &str,
     options: &RequestOptions<'_>,
-) -> Result<Request<Vec<u8>>, ()> {
+) -> Result<Request<Vec<u8>>, RequestError> {
     let mut builder = Request::builder().method(method).uri(url);
     for (name, value) in options.extra_headers {
         builder = builder.header(name.clone(), value.clone());
     }
     if view.header_count > 0 {
         if view.headers.is_null() {
-            return Err(());
+            return Err(RequestError::InvalidArgument);
         }
         // SAFETY: the core library supplies `header_count` readable headers.
         let headers = unsafe { slice::from_raw_parts(view.headers, view.header_count) };
         for header in headers {
             if header.name.ptr.is_null() || header.value.ptr.is_null() {
-                return Err(());
+                return Err(RequestError::InvalidArgument);
             }
             // SAFETY: the core library supplies borrowed views for this call.
             let name = unsafe { str_slice(header.name) };
+            // SAFETY: The caller guarantees the pointer and length describe readable, initialized bytes for this call.
             let value = unsafe { str_slice(header.value) };
-            let name = HeaderName::from_bytes(name).map_err(|_| ())?;
+            let name = HeaderName::from_bytes(name).map_err(|_| RequestError::InvalidHeader)?;
             if options
                 .skip_headers
                 .iter()
@@ -86,7 +93,7 @@ pub fn build_request(
             {
                 continue;
             }
-            let value = HeaderValue::from_bytes(value).map_err(|_| ())?;
+            let value = HeaderValue::from_bytes(value).map_err(|_| RequestError::InvalidHeader)?;
             builder = builder.header(name, value);
         }
     }
@@ -95,21 +102,25 @@ pub fn build_request(
     } else if view.body_len == 0 {
         Vec::new()
     } else if view.body.is_null() {
-        return Err(());
+        return Err(RequestError::InvalidArgument);
     } else {
         // SAFETY: the core library guarantees `body_len` readable bytes.
         unsafe { slice::from_raw_parts(view.body, view.body_len) }.to_vec()
     };
-    builder.body(body).map_err(|_| ())
+    builder.body(body).map_err(|_| RequestError::InvalidBody)
 }
 
 /// Sends a request with the core-provided timeout.
-pub fn send(agent: &Agent, request: Request<Vec<u8>>, timeout_ms: u64) -> Result<HttpResponse, ()> {
+pub fn send(
+    agent: &Agent,
+    request: Request<Vec<u8>>,
+    timeout_ms: u64,
+) -> Result<HttpResponse, RequestError> {
     let request = agent
         .configure_request(request)
         .timeout_global(Some(Duration::from_millis(timeout_ms)))
         .build();
-    HttpResponse::new(agent.run(request).map_err(|_| ())?)
+    HttpResponse::new(agent.run(request).map_err(|_| RequestError::Transport)?)
 }
 
 /// A response whose C-string backing memory stays alive for the ABI callback.
@@ -122,14 +133,14 @@ pub struct HttpResponse {
 }
 
 impl HttpResponse {
-    fn new(reply: ureq::http::Response<Body>) -> Result<Self, ()> {
+    fn new(reply: ureq::http::Response<Body>) -> Result<Self, RequestError> {
         let status_code = reply.status().as_u16();
         let headers = reply.headers().clone();
         let mut owned = Vec::new();
         let mut header_views = Vec::new();
         for (name, value) in &headers {
-            let name = CString::new(name.as_str()).map_err(|_| ())?;
-            let value = CString::new(value.as_bytes()).map_err(|_| ())?;
+            let name = CString::new(name.as_str()).map_err(|_| RequestError::InvalidHeader)?;
+            let value = CString::new(value.as_bytes()).map_err(|_| RequestError::InvalidHeader)?;
             header_views.push(otel_transport_header_t {
                 name: otel_str_t {
                     ptr: name.as_ptr().cast(),
@@ -143,7 +154,10 @@ impl HttpResponse {
             owned.push(name);
             owned.push(value);
         }
-        let body = reply.into_body().read_to_vec().map_err(|_| ())?;
+        let body = reply
+            .into_body()
+            .read_to_vec()
+            .map_err(|_| RequestError::Transport)?;
         Ok(Self {
             status_code,
             headers,

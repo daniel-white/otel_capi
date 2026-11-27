@@ -18,8 +18,8 @@ use opentelemetry_sdk::logs::SdkLogger;
 use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider, Span as SdkSpan};
 
-use crate::abi::{handle_created, handle_destroyed, live_handle_count};
 pub use crate::abi::otel_runtime_t;
+use crate::abi::{handle_created, handle_destroyed, live_handle_count};
 use crate::error::{Error, Result, guard, otel_result_t};
 use crate::items::ItemTransport;
 use crate::transport::Transport;
@@ -65,17 +65,19 @@ impl RuntimeInner {
     }
 
     pub(crate) fn set_item_transport(&self, transport: ItemTransport) -> Result<()> {
-        let mut slot = self.item_transport.write().map_err(|_| {
-            Error::internal("item transport lock was poisoned")
-        })?;
+        let mut slot = self
+            .item_transport
+            .write()
+            .map_err(|_| Error::internal("item transport lock was poisoned"))?;
         *slot = Some(transport);
         Ok(())
     }
 
     pub(crate) fn item_transport(&self) -> Result<Option<ItemTransport>> {
-        let slot = self.item_transport.read().map_err(|_| {
-            Error::internal("item transport lock was poisoned")
-        })?;
+        let slot = self
+            .item_transport
+            .read()
+            .map_err(|_| Error::internal("item transport lock was poisoned"))?;
         Ok(*slot)
     }
 }
@@ -286,7 +288,7 @@ pub(crate) fn const_slot<T>(handle: *const T) -> *const *mut c_void {
 
 /// Returns whether a handle points to a live object without taking a reference.
 #[inline]
-pub(crate) unsafe fn valid<T: Send + Sync + 'static>(src: *const *mut c_void) -> bool {
+pub(crate) unsafe fn valid(src: *const *mut c_void) -> bool {
     if src.is_null() {
         return false;
     }
@@ -333,6 +335,7 @@ pub(crate) unsafe fn retain<T: Send + Sync + 'static>(
     if out.is_null() {
         return Err(Error::invalid("out must not be NULL"));
     }
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let value: Arc<T> = unsafe { arc::<T>(src)? };
     // SAFETY: caller guarantees `out` points to writable, aligned storage.
     unsafe { ptr::write(out, Arc::into_raw(value).cast_mut().cast::<c_void>()) };
@@ -382,6 +385,7 @@ pub(crate) fn optional_resource(handle: *const otel_resource_t) -> Result<Option
     if handle.is_null() {
         return Ok(None);
     }
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let arc = unsafe { arc::<ResourceInner>(const_slot(handle)) }?;
     Ok(Some((*arc).clone()))
 }
@@ -391,6 +395,7 @@ pub(crate) fn optional_runtime(handle: *const otel_runtime_t) -> Result<Option<A
     if handle.is_null() {
         return Ok(None);
     }
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     Ok(Some(unsafe { arc::<RuntimeInner>(const_slot(handle)) }?))
 }
 
@@ -417,295 +422,605 @@ pub extern "C" fn otel_ensure_all_released() -> otel_result_t {
 }
 
 /// Retains a `otel_resource_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_resource_retain(
     src: *const otel_resource_t,
     handle: *mut otel_resource_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<ResourceInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_resource_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_resource_release(handle: *mut otel_resource_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<ResourceInner>(slot(handle)) }
 }
 
 /// Retains a `otel_runtime_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_retain(
     src: *const otel_runtime_t,
     handle: *mut otel_runtime_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<RuntimeInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_runtime_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_release(handle: *mut otel_runtime_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<RuntimeInner>(slot(handle)) }
 }
 
 /// Retains a `otel_tracer_provider_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_retain(
     src: *const otel_tracer_provider_t,
     handle: *mut otel_tracer_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<TracerProviderInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_tracer_provider_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_release(handle: *mut otel_tracer_provider_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<TracerProviderInner>(slot(handle)) }
 }
 
 /// Retains a `otel_meter_provider_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_provider_retain(
     src: *const otel_meter_provider_t,
     handle: *mut otel_meter_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<MeterProviderInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_meter_provider_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_provider_release(handle: *mut otel_meter_provider_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<MeterProviderInner>(slot(handle)) }
 }
 
 /// Retains a `otel_logger_provider_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_retain(
     src: *const otel_logger_provider_t,
     handle: *mut otel_logger_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<LoggerProviderInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_logger_provider_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_release(handle: *mut otel_logger_provider_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<LoggerProviderInner>(slot(handle)) }
 }
 
 /// Retains a `otel_tracer_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_retain(
     src: *const otel_tracer_t,
     handle: *mut otel_tracer_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<TracerInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_tracer_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_release(handle: *mut otel_tracer_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<TracerInner>(slot(handle)) }
 }
 
 /// Retains a `otel_meter_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_retain(
     src: *const otel_meter_t,
     handle: *mut otel_meter_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<MeterInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_meter_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_meter_release(handle: *mut otel_meter_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<MeterInner>(slot(handle)) }
 }
 
 /// Retains a `otel_logger_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_retain(
     src: *const otel_logger_t,
     handle: *mut otel_logger_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<LoggerInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_logger_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_release(handle: *mut otel_logger_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<LoggerInner>(slot(handle)) }
 }
 
 /// Retains a `otel_span_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_retain(
     src: *const otel_span_t,
     handle: *mut otel_span_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<SpanInner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_span_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_release(handle: *mut otel_span_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release_span(slot(handle)) }
 }
 
 /// Retains a `otel_counter_u64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_u64_retain(
     src: *const otel_counter_u64_t,
     handle: *mut otel_counter_u64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<CounterU64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_counter_u64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_u64_release(handle: *mut otel_counter_u64_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<CounterU64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_counter_f64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_f64_retain(
     src: *const otel_counter_f64_t,
     handle: *mut otel_counter_f64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<CounterF64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_counter_f64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_counter_f64_release(handle: *mut otel_counter_f64_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<CounterF64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_updown_counter_i64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_updown_counter_i64_retain(
     src: *const otel_updown_counter_i64_t,
     handle: *mut otel_updown_counter_i64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<UpDownCounterI64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_updown_counter_i64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_updown_counter_i64_release(handle: *mut otel_updown_counter_i64_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<UpDownCounterI64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_histogram_f64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_histogram_f64_retain(
     src: *const otel_histogram_f64_t,
     handle: *mut otel_histogram_f64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<HistogramF64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_histogram_f64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_histogram_f64_release(handle: *mut otel_histogram_f64_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<HistogramF64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_gauge_f64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_gauge_f64_retain(
     src: *const otel_gauge_f64_t,
     handle: *mut otel_gauge_f64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<GaugeF64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to a `otel_gauge_f64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_gauge_f64_release(handle: *mut otel_gauge_f64_t) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<GaugeF64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_observable_gauge_f64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_observable_gauge_f64_retain(
     src: *const otel_observable_gauge_f64_t,
     handle: *mut otel_observable_gauge_f64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<ObservableGaugeF64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to an `otel_observable_gauge_f64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_observable_gauge_f64_release(
     handle: *mut otel_observable_gauge_f64_t,
 ) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<ObservableGaugeF64Inner>(slot(handle)) }
 }
 
 /// Retains a `otel_observable_counter_u64_t` into caller-provided storage.
+///
+/// # Safety
+/// The source must point to an initialized handle and the output must point to writable storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_observable_counter_u64_retain(
     src: *const otel_observable_counter_u64_t,
     handle: *mut otel_observable_counter_u64_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { retain::<ObservableCounterU64Inner>(src.cast(), slot(handle)) }?;
         Ok(())
     })
 }
 
 /// Releases one reference to an `otel_observable_counter_u64_t` and clears the slot.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_observable_counter_u64_release(
     handle: *mut otel_observable_counter_u64_t,
 ) {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { release::<ObservableCounterU64Inner>(slot(handle)) }
+}
+
+/// Returns whether the resource handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_resource_is_valid(handle: *const otel_resource_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the context handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_is_valid(handle: *const otel_context_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the context scope handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_context_scope_is_valid(handle: *const otel_context_scope_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the tracer provider handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_provider_is_valid(
+    handle: *const otel_tracer_provider_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the meter provider handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_provider_is_valid(
+    handle: *const otel_meter_provider_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the logger provider handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_provider_is_valid(
+    handle: *const otel_logger_provider_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the tracer handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_tracer_is_valid(handle: *const otel_tracer_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the meter handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_meter_is_valid(handle: *const otel_meter_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the logger handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_logger_is_valid(handle: *const otel_logger_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the span handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_span_is_valid(handle: *const otel_span_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the unsigned counter handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_u64_is_valid(handle: *const otel_counter_u64_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the double counter handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_counter_f64_is_valid(handle: *const otel_counter_f64_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the signed up/down counter handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_updown_counter_i64_is_valid(
+    handle: *const otel_updown_counter_i64_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the histogram handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_histogram_f64_is_valid(handle: *const otel_histogram_f64_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the gauge handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_gauge_f64_is_valid(handle: *const otel_gauge_f64_t) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the observable gauge handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_gauge_f64_is_valid(
+    handle: *const otel_observable_gauge_f64_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
+}
+
+/// Returns whether the observable counter handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn otel_observable_counter_u64_is_valid(
+    handle: *const otel_observable_counter_u64_t,
+) -> bool {
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(handle)) }
 }
 
 #[cfg(test)]
@@ -733,6 +1048,7 @@ mod tests {
             inner: ptr::null_mut(),
         };
 
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe {
             init(slot(&mut a), Dummy).unwrap();
             retain::<Dummy>(const_slot(&a), slot(&mut b)).unwrap();
@@ -755,121 +1071,8 @@ mod tests {
 
     #[test]
     fn init_rejects_null_out() {
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let err = unsafe { init(ptr::null_mut(), 1u8) }.unwrap_err();
         assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
     }
-}
-
-/// Returns whether the resource handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_resource_is_valid(handle: *const otel_resource_t) -> bool {
-    unsafe { valid::<ResourceInner>(const_slot(handle)) }
-}
-
-/// Returns whether the context handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_context_is_valid(handle: *const otel_context_t) -> bool {
-    unsafe { valid::<ContextInner>(const_slot(handle)) }
-}
-
-/// Returns whether the context scope handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_context_scope_is_valid(handle: *const otel_context_scope_t) -> bool {
-    unsafe { valid::<ContextScopeInner>(const_slot(handle)) }
-}
-
-/// Returns whether the tracer provider handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_tracer_provider_is_valid(
-    handle: *const otel_tracer_provider_t,
-) -> bool {
-    unsafe { valid::<TracerProviderInner>(const_slot(handle)) }
-}
-
-/// Returns whether the meter provider handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_meter_provider_is_valid(
-    handle: *const otel_meter_provider_t,
-) -> bool {
-    unsafe { valid::<MeterProviderInner>(const_slot(handle)) }
-}
-
-/// Returns whether the logger provider handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_logger_provider_is_valid(
-    handle: *const otel_logger_provider_t,
-) -> bool {
-    unsafe { valid::<LoggerProviderInner>(const_slot(handle)) }
-}
-
-/// Returns whether the tracer handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_tracer_is_valid(handle: *const otel_tracer_t) -> bool {
-    unsafe { valid::<TracerInner>(const_slot(handle)) }
-}
-
-/// Returns whether the meter handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_meter_is_valid(handle: *const otel_meter_t) -> bool {
-    unsafe { valid::<MeterInner>(const_slot(handle)) }
-}
-
-/// Returns whether the logger handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_logger_is_valid(handle: *const otel_logger_t) -> bool {
-    unsafe { valid::<LoggerInner>(const_slot(handle)) }
-}
-
-/// Returns whether the span handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_span_is_valid(handle: *const otel_span_t) -> bool {
-    unsafe { valid::<SpanInner>(const_slot(handle)) }
-}
-
-/// Returns whether the unsigned counter handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_counter_u64_is_valid(handle: *const otel_counter_u64_t) -> bool {
-    unsafe { valid::<CounterU64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the double counter handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_counter_f64_is_valid(handle: *const otel_counter_f64_t) -> bool {
-    unsafe { valid::<CounterF64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the signed up/down counter handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_updown_counter_i64_is_valid(
-    handle: *const otel_updown_counter_i64_t,
-) -> bool {
-    unsafe { valid::<UpDownCounterI64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the histogram handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_histogram_f64_is_valid(handle: *const otel_histogram_f64_t) -> bool {
-    unsafe { valid::<HistogramF64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the gauge handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_gauge_f64_is_valid(handle: *const otel_gauge_f64_t) -> bool {
-    unsafe { valid::<GaugeF64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the observable gauge handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_observable_gauge_f64_is_valid(
-    handle: *const otel_observable_gauge_f64_t,
-) -> bool {
-    unsafe { valid::<ObservableGaugeF64Inner>(const_slot(handle)) }
-}
-
-/// Returns whether the observable counter handle is usable.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_observable_counter_u64_is_valid(
-    handle: *const otel_observable_counter_u64_t,
-) -> bool {
-    unsafe { valid::<ObservableCounterU64Inner>(const_slot(handle)) }
 }

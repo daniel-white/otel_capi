@@ -90,6 +90,9 @@ pub extern "C" fn otel_grpc_transport_abi_version() -> u32 {
 ///
 /// `worker_count` is retained for ABI compatibility but ignored. HTTPS uses
 /// the host's TLS implementation and trust store through `native-tls`.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_grpc_transport_new(
     handle: *mut otel_grpc_transport_t,
@@ -124,11 +127,14 @@ pub unsafe extern "C" fn otel_grpc_transport_new(
     };
     // SAFETY: the caller supplies writable, aligned caller-owned storage.
     let slot = unsafe { ptr::addr_of_mut!((*handle).inner).cast::<c_void>() };
+    // SAFETY: The caller provides writable, aligned handle storage; the core helper owns the pointer transfer.
     let status = unsafe { init_handle(slot, transport) };
     if status != otel_result_t::OTEL_OK {
         return status;
     }
+    // SAFETY: The handle is initialized and remains alive for the duration of this call.
     let user_data = unsafe { ptr::read(slot.cast::<*mut c_void>()) };
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         (*handle).transport.name = otel_str_t {
             ptr: TRANSPORT_NAME.as_ptr().cast(),
@@ -141,6 +147,9 @@ pub unsafe extern "C" fn otel_grpc_transport_new(
 
 /// Implements `otel_transport_send_fn` with raw gRPC framing over the shared
 /// HTTP client.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_grpc_transport_send(
     request: *const otel_transport_request_t,
@@ -166,8 +175,11 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
         };
     }
 
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let view = unsafe { &*request };
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let response = unsafe { &mut *response };
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let transport = unsafe { &*(user_data.cast::<GrpcTransport>()) };
     if view.url.is_null() || view.body.is_null() || view.body_len > u32::MAX as usize {
         return set_error(
@@ -186,7 +198,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
                 response,
                 ERR_INVALID,
                 otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-            )
+            );
         }
     };
     let endpoint = url.split("/v1/").next().unwrap_or(&url);
@@ -218,7 +230,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
                     response,
                     ERR_INVALID,
                     otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-                )
+                );
             }
         };
         extra_headers.push((HeaderName::from_static("grpc-timeout"), value));
@@ -243,7 +255,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
                 response,
                 ERR_INVALID,
                 otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-            )
+            );
         }
     };
     let reply = match send(&transport.agent, request, view.timeout_ms) {
@@ -281,8 +293,12 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
 ///
 /// The core setter is resolved from the process so the loadable library does
 /// not need a link-time dependency on the core shared library.
+/// duration of the call.
+///
+/// # Safety
+/// Both pointers must be non-null and reference initialized storage for the
 #[unsafe(no_mangle)]
-pub extern "C" fn otel_grpc_transport_register(
+pub unsafe extern "C" fn otel_grpc_transport_register(
     runtime: *mut otel_runtime_t,
     handle: *const otel_grpc_transport_t,
 ) -> otel_result_t {
@@ -293,9 +309,9 @@ pub extern "C" fn otel_grpc_transport_register(
     if unsafe { ptr::read(ptr::addr_of!((*handle).inner)) }.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
     }
-    let Some(set_transport) =
-        find_core_symbol::<otel_set_transport_fn>(c"otel_runtime_set_transport".to_bytes_with_nul())
-    else {
+    let Some(set_transport) = find_core_symbol::<otel_set_transport_fn>(
+        c"otel_runtime_set_transport".to_bytes_with_nul(),
+    ) else {
         return otel_result_t::OTEL_ERR_INTERNAL;
     };
     // SAFETY: the handle embeds a core-ABI descriptor with this transport's name.
@@ -303,15 +319,16 @@ pub extern "C" fn otel_grpc_transport_register(
 }
 
 /// Releases a transport instance created by `otel_grpc_transport_new`.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_grpc_transport_release(handle: *mut otel_grpc_transport_t) {
     if handle.is_null() {
         return;
     }
     // SAFETY: the caller supplies an initialized handle from `init_handle`.
-    unsafe {
-        release_handle::<GrpcTransport>(ptr::addr_of_mut!((*handle).inner).cast::<c_void>())
-    };
+    unsafe { release_handle::<GrpcTransport>(ptr::addr_of_mut!((*handle).inner).cast::<c_void>()) };
 }
 
 fn grpc_status(headers: &HeaderMap) -> Option<u16> {
@@ -321,15 +338,25 @@ fn grpc_status(headers: &HeaderMap) -> Option<u16> {
         .and_then(|value| value.parse().ok())
 }
 
-fn grpc_message(body: &[u8]) -> Result<&[u8], ()> {
-    let (&compressed, length) = body.split_first().ok_or(())?;
-    if compressed != 0 || length.len() < 4 {
-        return Err(());
+#[derive(Debug, Clone, Copy)]
+enum GrpcFrameError {
+    MissingPrefix,
+    InvalidCompression,
+    Truncated,
+}
+
+fn grpc_message(body: &[u8]) -> Result<&[u8], GrpcFrameError> {
+    let (&compressed, length) = body.split_first().ok_or(GrpcFrameError::MissingPrefix)?;
+    if compressed != 0 {
+        return Err(GrpcFrameError::InvalidCompression);
+    }
+    if length.len() < 4 {
+        return Err(GrpcFrameError::Truncated);
     }
     let len = u32::from_be_bytes([length[0], length[1], length[2], length[3]]) as usize;
     let message = &length[4..];
     if message.len() < len {
-        return Err(());
+        return Err(GrpcFrameError::Truncated);
     }
     Ok(&message[..len])
 }

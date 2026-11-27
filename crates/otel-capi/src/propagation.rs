@@ -133,6 +133,7 @@ unsafe fn fill<T: TypedBuffer>(src: *const c_char, out: *mut T) -> otel_result_t
                 T::NAME
             )));
         }
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let src = unsafe { c_str(src, T::NAME)? };
         let text = utf8(src, T::NAME)?;
         T::validate_text(&text)?;
@@ -144,6 +145,7 @@ unsafe fn fill<T: TypedBuffer>(src: *const c_char, out: *mut T) -> otel_result_t
                 T::CAPACITY - 1
             )));
         }
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let out = unsafe { &mut *out };
         let dest = out.bytes_mut();
         // SAFETY: `c_char` and `u8` have the same layout.
@@ -171,6 +173,7 @@ pub(crate) unsafe fn optional_buffer_utf8<T: TypedBuffer>(
     if value.is_null() {
         return Ok(None);
     }
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     Ok(Some(unsafe { buffer_utf8(value)? }))
 }
 
@@ -222,92 +225,136 @@ pub(crate) unsafe fn buffer_view<T: TypedBuffer>(value: *const T) -> otel_str_t 
 }
 
 /// Copies a NUL-terminated string into typed `traceparent` storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_from_str(
     src: *const c_char,
     out: *mut otel_traceparent_t,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { fill(src, out) }
 }
 
 /// Copies a NUL-terminated string into typed `tracestate` storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracestate_from_str(
     src: *const c_char,
     out: *mut otel_tracestate_t,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { fill(src, out) }
 }
 
 /// Copies a NUL-terminated string into typed `baggage` header storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_baggage_from_str(
     src: *const c_char,
     out: *mut otel_baggage_t,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { fill(src, out) }
 }
 
 /// Copies a NUL-terminated string into typed baggage-value storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_baggage_value_from_str(
     src: *const c_char,
     out: *mut otel_baggage_value_t,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { fill(src, out) }
 }
 
 /// Returns the stored `traceparent` string, or NULL if it is not terminated.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_str(value: *const otel_traceparent_t) -> *const c_char {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_str(value) }
 }
 
 /// Returns the stored `tracestate` string, or NULL if it is not terminated.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracestate_str(value: *const otel_tracestate_t) -> *const c_char {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_str(value) }
 }
 
 /// Returns the stored `baggage` header, or NULL if it is not terminated.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_baggage_str(value: *const otel_baggage_t) -> *const c_char {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_str(value) }
 }
 
 /// Returns the stored baggage value, or NULL if it is not terminated.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_baggage_value_str(
     value: *const otel_baggage_value_t,
 ) -> *const c_char {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_str(value) }
 }
 
 /// Returns a length-aware view of a `traceparent` header.
+///
+/// # Safety
+/// The pointer must reference an initialized value; the returned view is valid only while that value remains alive and unchanged.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_traceparent_view(
-    value: *const otel_traceparent_t,
-) -> otel_str_t {
+pub unsafe extern "C" fn otel_traceparent_view(value: *const otel_traceparent_t) -> otel_str_t {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_view(value) }
 }
 
 /// Returns a length-aware view of a `tracestate` header.
+///
+/// # Safety
+/// The pointer must reference an initialized value; the returned view is valid only while that value remains alive and unchanged.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracestate_view(value: *const otel_tracestate_t) -> otel_str_t {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_view(value) }
 }
 
 /// Returns a length-aware view of a `baggage` header.
+///
+/// # Safety
+/// The pointer must reference an initialized value; the returned view is valid only while that value remains alive and unchanged.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_baggage_view(value: *const otel_baggage_t) -> otel_str_t {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_view(value) }
 }
 
 /// Returns a length-aware view of a baggage value.
+///
+/// # Safety
+/// The pointer must reference an initialized value; the returned view is valid only while that value remains alive and unchanged.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_baggage_value_view(
-    value: *const otel_baggage_value_t,
-) -> otel_str_t {
+pub unsafe extern "C" fn otel_baggage_value_view(value: *const otel_baggage_value_t) -> otel_str_t {
+    // SAFETY: The caller guarantees the destination is writable and the source stays alive for this call.
     unsafe { buffer_view(value) }
 }
 

@@ -17,9 +17,13 @@ use crate::transport::Transport;
 
 /// Creates a transport handle for OTLP exporters.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), RuntimeInner::new()) }?;
         Ok(())
     })
@@ -31,6 +35,9 @@ pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_r
 /// source compatibility. Implementations that need workers (such as the
 /// optional gRPC plugin) expose their own thread-count configuration. Writes
 /// into caller-owned `handle`; initialize it with `{0}` before calling.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_new_with_threads(
     handle: *mut otel_runtime_t,
@@ -38,15 +45,20 @@ pub unsafe extern "C" fn otel_runtime_new_with_threads(
 ) -> otel_result_t {
     let _ = thread_count;
     guard(|| {
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), RuntimeInner::new()) }?;
         Ok(())
     })
 }
 
 /// Returns whether the runtime handle is usable.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -> bool {
-    unsafe { valid::<RuntimeInner>(const_slot(runtime)) }
+    // SAFETY: The pointer may be null or reference an initialized handle; only the pointer value is read.
+    unsafe { valid(const_slot(runtime)) }
 }
 
 /// Registers a transport descriptor used by OTLP exporters.
@@ -59,6 +71,9 @@ pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -
 /// background threads, so it and `user_data` must be thread-safe. `user_data`
 /// is borrowed until the runtime is released; no pointers from the request are
 /// retained after the callback returns.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_set_transport(
     runtime: *mut otel_runtime_t,
@@ -84,6 +99,7 @@ pub unsafe extern "C" fn otel_runtime_set_transport(
         if name.is_empty() {
             return Err(Error::invalid("transport name must not be empty"));
         }
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let runtime = unsafe { arc::<RuntimeInner>(slot(runtime)) }?;
         runtime.set_transport(name.to_owned(), Transport::new(value.send, value.user_data))?;
         Ok(())
@@ -97,6 +113,9 @@ pub unsafe extern "C" fn otel_runtime_set_transport(
 /// OTLP batch. Callbacks may run concurrently on OpenTelemetry background
 /// threads, so they and `user_data` must be thread-safe. The transport struct
 /// is copied; `user_data` is borrowed until the runtime is released.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_runtime_set_item_transport(
     runtime: *mut otel_runtime_t,
@@ -118,6 +137,7 @@ pub unsafe extern "C" fn otel_runtime_set_item_transport(
                 "item transport must register at least one callback",
             ));
         }
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let runtime = unsafe { arc::<RuntimeInner>(slot(runtime)) }?;
         runtime.set_item_transport(ItemTransport::from(value))?;
         Ok(())

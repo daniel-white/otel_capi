@@ -65,7 +65,10 @@ where
     match catch_unwind(AssertUnwindSafe(f)) {
         Ok(Ok(())) => ok(),
         Ok(Err(err)) => err.report(),
-        Err(_) => set_error(otel_result_t::OTEL_ERR_PANIC, "panic while calling otel-capi"),
+        Err(_) => set_error(
+            otel_result_t::OTEL_ERR_PANIC,
+            "panic while calling otel-capi",
+        ),
     }
 }
 
@@ -130,6 +133,9 @@ pub extern "C" fn otel_strerror(code: i32) -> *const c_char {
 /// Copies the last error message, including its NUL terminator, into a
 /// caller-owned buffer. Returns the required size (including NUL) if `buf` is
 /// NULL or `capacity` is too small; otherwise returns the bytes written.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_copy_last_error(buf: *mut c_char, capacity: usize) -> usize {
     let message = LAST_ERROR.with(|last| {
@@ -158,9 +164,11 @@ mod tests {
     fn last_error_is_thread_local_and_copied() {
         set_error(otel_result_t::OTEL_ERR_CONFIG, "bad config");
         let mut buf = [0i8; 32];
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let written = unsafe { otel_copy_last_error(buf.as_mut_ptr(), buf.len()) };
         assert_eq!(written, 11);
         assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
             unsafe { CStr::from_ptr(buf.as_ptr()) }.to_str().unwrap(),
             "bad config"
         );

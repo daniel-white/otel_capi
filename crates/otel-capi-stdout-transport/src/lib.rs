@@ -59,6 +59,9 @@ pub extern "C" fn otel_stdout_transport_abi_version() -> u32 {
 /// Creates a transport instance from caller-owned options.
 ///
 /// Writes into `handle`; initialize it with `OTEL_STDOUT_TRANSPORT_T_INIT`.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_stdout_transport_new(
     handle: *mut otel_stdout_transport_t,
@@ -89,6 +92,7 @@ pub unsafe extern "C" fn otel_stdout_transport_new(
     }
     // SAFETY: the caller supplies writable, aligned caller-owned storage.
     let slot = unsafe { ptr::addr_of_mut!((*handle).inner).cast::<c_void>() };
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     let status = unsafe {
         init_handle(
             slot,
@@ -100,7 +104,9 @@ pub unsafe extern "C" fn otel_stdout_transport_new(
     if status != otel_result_t::OTEL_OK {
         return status;
     }
+    // SAFETY: The caller guarantees the pointer targets valid, aligned storage for this operation.
     let user_data = unsafe { ptr::read(slot.cast::<*mut c_void>()) };
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         (*handle).transport.name = otel_str_t {
             ptr: TRANSPORT_NAME.as_ptr().cast(),
@@ -112,6 +118,9 @@ pub unsafe extern "C" fn otel_stdout_transport_new(
 }
 
 /// Implements `otel_transport_send_fn` by decoding and summarizing one OTLP batch.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_stdout_transport_send(
     request: *const otel_transport_request_t,
@@ -137,8 +146,11 @@ pub unsafe extern "C" fn otel_stdout_transport_send(
         };
     }
 
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let view = unsafe { &*request };
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let response = unsafe { &mut *response };
+    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let transport = unsafe { &*(user_data.cast::<StdoutTransport>()) };
     if view.url.is_null() || view.body.is_null() {
         return set_error(
@@ -149,6 +161,7 @@ pub unsafe extern "C" fn otel_stdout_transport_send(
     }
     // SAFETY: the core library passes a NUL-terminated URL and `body_len` bytes.
     let url = unsafe { CStr::from_ptr(view.url) }.to_string_lossy();
+    // SAFETY: The caller guarantees the pointer and length describe readable, initialized bytes for this call.
     let body = unsafe { slice::from_raw_parts(view.body, view.body_len) };
 
     let summary = if url.contains("/v1/traces") {
@@ -210,8 +223,15 @@ pub unsafe extern "C" fn otel_stdout_transport_send(
 }
 
 /// Registers this transport instance on a core runtime using the name `stdout`.
+///
+/// The core setter is resolved from the process so the loadable library does
+/// not need a link-time dependency on the core shared library.
+/// duration of the call.
+///
+/// # Safety
+/// Both pointers must be non-null and reference initialized storage for the
 #[unsafe(no_mangle)]
-pub extern "C" fn otel_stdout_transport_register(
+pub unsafe extern "C" fn otel_stdout_transport_register(
     runtime: *mut otel_runtime_t,
     handle: *const otel_stdout_transport_t,
 ) -> otel_result_t {
@@ -222,9 +242,9 @@ pub extern "C" fn otel_stdout_transport_register(
     if unsafe { ptr::read(ptr::addr_of!((*handle).inner)) }.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
     }
-    let Some(set_transport) =
-        find_core_symbol::<otel_set_transport_fn>(c"otel_runtime_set_transport".to_bytes_with_nul())
-    else {
+    let Some(set_transport) = find_core_symbol::<otel_set_transport_fn>(
+        c"otel_runtime_set_transport".to_bytes_with_nul(),
+    ) else {
         return otel_result_t::OTEL_ERR_INTERNAL;
     };
     // SAFETY: the handle embeds a core-ABI descriptor with this transport's name.
@@ -232,6 +252,9 @@ pub extern "C" fn otel_stdout_transport_register(
 }
 
 /// Releases a transport instance created by `otel_stdout_transport_new`.
+///
+/// # Safety
+/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_stdout_transport_release(handle: *mut otel_stdout_transport_t) {
     if handle.is_null() {

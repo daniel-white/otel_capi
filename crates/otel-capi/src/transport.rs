@@ -34,6 +34,8 @@ pub(crate) struct Transport {
 // safe for concurrent access until the runtime is released. The transport is
 // only invoked from OpenTelemetry exporter threads.
 unsafe impl Send for Transport {}
+// SAFETY: the callback and `user_data` are safe for concurrent access for as
+// long as the runtime holds the transport.
 unsafe impl Sync for Transport {}
 
 impl Transport {
@@ -102,10 +104,7 @@ impl HttpClient for CallbackTransportClient {
 }
 
 impl CallbackTransportClient {
-    fn invoke(
-        &self,
-        request: Request<Bytes>,
-    ) -> std::result::Result<Response<Bytes>, HttpError> {
+    fn invoke(&self, request: Request<Bytes>) -> std::result::Result<Response<Bytes>, HttpError> {
         let mut owned = Vec::with_capacity(2 + request.headers().len() * 2);
         owned.push(c_string(request.method().as_str().as_bytes(), "method")?);
         owned.push(c_string(request.uri().to_string().as_bytes(), "URL")?);
@@ -115,7 +114,9 @@ impl CallbackTransportClient {
         }
 
         let headers: Vec<otel_transport_header_t> = owned[2..]
-            .chunks_exact(2)
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|pair| otel_transport_header_t {
                 name: otel_str_t {
                     ptr: pair[0].as_ptr(),
@@ -142,13 +143,10 @@ impl CallbackTransportClient {
         // SAFETY: the callback is registered with a live runtime and `owned`
         // keeps every borrowed string alive for the call.
         let status = unsafe {
-            (self.transport.send)(
-                &request_view,
-                &mut response_view,
-                self.transport.user_data,
-            )
+            (self.transport.send)(&request_view, &mut response_view, self.transport.user_data)
         };
         if status != otel_result_t::OTEL_OK {
+            // SAFETY: The caller guarantees the preconditions of this unsafe operation.
             let detail = unsafe { response_error(&response_view) };
             let message = match detail {
                 Some(detail) => format!("transport \"{}\" failed: {detail}", self.name),
@@ -180,12 +178,13 @@ impl CallbackTransportClient {
                 ));
             }
             // SAFETY: the callback guarantees this array for `header_count`.
-            let headers = unsafe {
-                slice::from_raw_parts(response_view.headers, response_view.header_count)
-            };
+            let headers =
+                unsafe { slice::from_raw_parts(response_view.headers, response_view.header_count) };
             for header in headers {
+                // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
                 let name = unsafe { str_slice(header.name, "response header name") }
                     .map_err(convert_error)?;
+                // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
                 let value = unsafe { str_slice(header.value, "response header value") }
                     .map_err(convert_error)?;
                 builder = builder.header(name, value);
@@ -202,9 +201,8 @@ impl CallbackTransportClient {
                 ));
             }
             // SAFETY: the callback guarantees `body_len` readable bytes.
-            let bytes = unsafe {
-                slice::from_raw_parts(response_view.body, response_view.body_len)
-            };
+            let bytes =
+                unsafe { slice::from_raw_parts(response_view.body, response_view.body_len) };
             Bytes::copy_from_slice(bytes)
         };
 

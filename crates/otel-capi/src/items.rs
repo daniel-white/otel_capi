@@ -13,9 +13,9 @@ use opentelemetry::{Key, KeyValue};
 
 use crate::attributes::{otel_attribute_t, otel_attribute_type_t, otel_attribute_value_t};
 use crate::error::Error;
+use crate::logs::otel_severity_t;
 use crate::strings::otel_str_t;
 use crate::trace::{otel_span_id_t, otel_span_kind_t, otel_span_status_t, otel_trace_id_t};
-use crate::logs::otel_severity_t;
 
 /// Signal carried by an encoded item.
 #[non_exhaustive]
@@ -178,7 +178,8 @@ pub type otel_log_item_fn = Option<unsafe extern "C" fn(*const otel_log_item_t, 
 /// Receives one aggregated metric stream. Borrowed for the duration of the callback.
 pub type otel_metric_item_fn = Option<unsafe extern "C" fn(*const otel_metric_item_t, *mut c_void)>;
 /// Receives an OTLP-encoded batch for one signal.
-pub type otel_encoded_item_fn = Option<unsafe extern "C" fn(*const otel_encoded_item_t, *mut c_void)>;
+pub type otel_encoded_item_fn =
+    Option<unsafe extern "C" fn(*const otel_encoded_item_t, *mut c_void)>;
 
 /// Callbacks registered by the application for in-memory export.
 ///
@@ -234,6 +235,8 @@ impl From<otel_item_transport_t> for ItemTransport {
 // SAFETY: the C caller keeps `user_data` valid and thread-safe until the
 // runtime is released. The transport is invoked from exporter threads.
 unsafe impl Send for ItemTransport {}
+// SAFETY: callbacks and `user_data` are safe to invoke concurrently; the C
+// caller keeps them valid until the runtime is released.
 unsafe impl Sync for ItemTransport {}
 
 impl ItemTransport {
@@ -276,9 +279,8 @@ impl ItemTransport {
 }
 
 /// Owns C strings and builds borrowed `otel_attribute_t` views.
-// The owned vectors keep the pointers in `views` alive; they are intentionally
-// never read directly.
-#[allow(dead_code)]
+/// Owned storage backing the borrowed pointers in `views`.
+#[derive(Default)]
 pub(crate) struct AttributeViews {
     keys: Vec<CString>,
     strings: Vec<Option<CString>>,
@@ -325,7 +327,9 @@ impl AttributeViews {
                 opentelemetry::Value::F64(value) => otel_attribute_value_t {
                     double_value: *value,
                 },
-                _ => otel_attribute_value_t { string: ptr::null() },
+                _ => otel_attribute_value_t {
+                    string: ptr::null(),
+                },
             };
             kinds.push((kind, value, string_index));
         }
@@ -394,12 +398,16 @@ impl AttributeViews {
                 AnyValue::String(value) => (
                     otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING,
                     Some(CString::new(value.as_str()).unwrap_or_default()),
-                    otel_attribute_value_t { string: ptr::null() },
+                    otel_attribute_value_t {
+                        string: ptr::null(),
+                    },
                 ),
                 other => (
                     otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING,
                     Some(CString::new(format!("{other:?}")).unwrap_or_default()),
-                    otel_attribute_value_t { string: ptr::null() },
+                    otel_attribute_value_t {
+                        string: ptr::null(),
+                    },
                 ),
             };
             let string_index = string.map(|owned| {
@@ -445,17 +453,9 @@ impl AttributeViews {
     }
 
     pub(crate) fn as_slice(&self) -> (*const otel_attribute_t, usize) {
+        debug_assert_eq!(self.keys.len(), self.views.len());
+        debug_assert!(self.strings.len() <= self.views.len());
         (self.views.as_ptr(), self.views.len())
-    }
-}
-
-impl Default for AttributeViews {
-    fn default() -> Self {
-        Self {
-            keys: Vec::new(),
-            strings: Vec::new(),
-            views: Vec::new(),
-        }
     }
 }
 
@@ -554,7 +554,10 @@ mod tests {
         assert_eq!(count, 3);
         // SAFETY: the views stay alive until `view` is dropped.
         let attrs = unsafe { std::slice::from_raw_parts(ptr, count) };
-        assert_eq!(attrs[0].kind, otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32);
+        assert_eq!(
+            attrs[0].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32
+        );
         assert_eq!(attrs[0].key_len, 4);
         assert_eq!(attrs[0].value_len, 5);
         // SAFETY: kind selects the string member.
@@ -566,10 +569,16 @@ mod tests {
             .unwrap()
         };
         assert_eq!(text, "value");
-        assert_eq!(attrs[1].kind, otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL as i32);
+        assert_eq!(
+            attrs[1].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL as i32
+        );
         // SAFETY: kind selects the boolean member.
         assert_eq!(unsafe { attrs[1].value.boolean }, 1);
-        assert_eq!(attrs[2].kind, otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64 as i32);
+        assert_eq!(
+            attrs[2].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64 as i32
+        );
         // SAFETY: kind selects the integer member.
         assert_eq!(unsafe { attrs[2].value.integer }, 7);
     }

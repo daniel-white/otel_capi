@@ -12,29 +12,29 @@ use opentelemetry::InstrumentationScope;
 use opentelemetry::KeyValue;
 use opentelemetry::logs::AnyValue;
 use opentelemetry::trace::{SpanId, Status};
-use opentelemetry_proto::tonic::logs::v1::ResourceLogs;
-use opentelemetry_proto::tonic::trace::v1::ResourceSpans;
 use opentelemetry_proto::tonic::collector::logs::v1::ExportLogsServiceRequest;
 use opentelemetry_proto::tonic::collector::metrics::v1::ExportMetricsServiceRequest;
 use opentelemetry_proto::tonic::collector::trace::v1::ExportTraceServiceRequest;
+use opentelemetry_proto::tonic::logs::v1::ResourceLogs;
+use opentelemetry_proto::tonic::trace::v1::ResourceSpans;
 use opentelemetry_proto::transform::common::tonic::ResourceAttributesWithSchema;
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::error::OTelSdkResult;
 use opentelemetry_sdk::logs::{LogProcessor, SdkLogRecord};
+use opentelemetry_sdk::metrics::Temporality;
 use opentelemetry_sdk::metrics::data::{
     AggregatedMetrics, GaugeDataPoint, HistogramDataPoint, Metric, MetricData, ResourceMetrics,
     SumDataPoint,
 };
 use opentelemetry_sdk::metrics::exporter::PushMetricExporter;
-use opentelemetry_sdk::metrics::Temporality;
 use opentelemetry_sdk::trace::{Span, SpanData, SpanProcessor};
 use prost::Message;
 
 use crate::items::{
-    AttributeViews, ItemTransport, c_str_view, nanos, otel_histogram_point_t,
-    otel_item_signal_t, otel_log_item_t, otel_metric_item_type_t, otel_metric_item_t,
-    otel_metric_point_t, otel_metric_value_kind_t, otel_metric_value_t, otel_span_event_item_t,
-    otel_span_item_t, otel_span_link_item_t, severity, span_id, span_kind, trace_id,
+    AttributeViews, ItemTransport, c_str_view, nanos, otel_histogram_point_t, otel_item_signal_t,
+    otel_log_item_t, otel_metric_item_t, otel_metric_item_type_t, otel_metric_point_t,
+    otel_metric_value_kind_t, otel_metric_value_t, otel_span_event_item_t, otel_span_item_t,
+    otel_span_link_item_t, severity, span_id, span_kind, trace_id,
 };
 use crate::logs::otel_severity_t;
 use crate::trace::otel_span_status_t;
@@ -195,11 +195,7 @@ impl SpanProcessor for ItemSpanProcessor {
     }
 }
 
-fn emit_typed_log(
-    transport: &ItemTransport,
-    record: &SdkLogRecord,
-    resource: &Resource,
-) {
+fn emit_typed_log(transport: &ItemTransport, record: &SdkLogRecord, resource: &Resource) {
     let severity_text = CString::new(record.severity_text().unwrap_or("")).unwrap_or_default();
     let empty_body = CString::new("").unwrap();
     let body = record.body().map(any_value_string).unwrap_or(empty_body);
@@ -288,7 +284,7 @@ impl LogProcessor for ItemLogProcessor {
 
 trait MetricValue {
     fn view(self) -> (otel_metric_value_kind_t, otel_metric_value_t);
-    fn as_f64(self) -> f64;
+    fn to_f64(self) -> f64;
 }
 
 impl MetricValue for f64 {
@@ -299,7 +295,7 @@ impl MetricValue for f64 {
         )
     }
 
-    fn as_f64(self) -> f64 {
+    fn to_f64(self) -> f64 {
         self
     }
 }
@@ -312,7 +308,7 @@ impl MetricValue for u64 {
         )
     }
 
-    fn as_f64(self) -> f64 {
+    fn to_f64(self) -> f64 {
         self as f64
     }
 }
@@ -325,7 +321,7 @@ impl MetricValue for i64 {
         )
     }
 
-    fn as_f64(self) -> f64 {
+    fn to_f64(self) -> f64 {
         self as f64
     }
 }
@@ -412,11 +408,11 @@ fn histogram_points<'a, T: Copy + MetricValue + 'a>(
             attributes: ptr,
             attribute_count: len,
             count: point.count(),
-            sum: HistogramDataPoint::sum(point).as_f64(),
+            sum: HistogramDataPoint::sum(point).to_f64(),
             has_min: point.min().is_some(),
-            min: point.min().map(MetricValue::as_f64).unwrap_or(0.0),
+            min: point.min().map(MetricValue::to_f64).unwrap_or(0.0),
             has_max: point.max().is_some(),
-            max: point.max().map(MetricValue::as_f64).unwrap_or(0.0),
+            max: point.max().map(MetricValue::to_f64).unwrap_or(0.0),
             bucket_boundaries: boundaries,
             bucket_counts,
             bucket_count,

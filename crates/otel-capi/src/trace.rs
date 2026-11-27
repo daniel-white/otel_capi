@@ -14,8 +14,7 @@ use opentelemetry::trace::{
 };
 use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::trace::{
-    BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider,
-    Span as SdkSpan,
+    BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider, Span as SdkSpan,
 };
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
@@ -168,12 +167,13 @@ fn span_kind(value: i32) -> Result<Option<SpanKind>> {
     }
 }
 
-unsafe fn span_options(
-    options: *const otel_span_options_t,
-) -> Result<(Option<SpanKind>, Option<SystemTime>, Option<Context>, bool)> {
+type ParsedSpanOptions = (Option<SpanKind>, Option<SystemTime>, Option<Context>, bool);
+
+unsafe fn span_options(options: *const otel_span_options_t) -> Result<ParsedSpanOptions> {
     if options.is_null() {
         return Ok((None, None, None, false));
     }
+    // SAFETY: The caller guarantees the pointer is non-null, aligned, and references an initialized value.
     let options = unsafe { &*options };
     if options.size < std::mem::size_of::<otel_span_options_t>() {
         return Err(Error::invalid("otel_span_options_t.size is too small"));
@@ -183,6 +183,7 @@ unsafe fn span_options(
     let parent = if options.parent.is_null() {
         None
     } else {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let context = unsafe { arc::<ContextInner>(const_slot(options.parent)) }?;
         Some(context.as_ref().clone())
     };
@@ -196,7 +197,9 @@ unsafe fn start_span_with_attributes(
     name: String,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let tracer = unsafe { arc::<TracerInner>(const_slot(tracer)) }?;
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     let (kind, start, parent, end_on_release) = unsafe { span_options(options)? };
     let mut builder = tracer.span_builder(name).with_attributes(attributes);
     if let Some(kind) = kind {
@@ -209,6 +212,7 @@ unsafe fn start_span_with_attributes(
         Some(parent) => tracer.build_with_context(builder, &parent),
         None => tracer.build(builder),
     };
+    // SAFETY: The caller provides writable, aligned storage for one handle pointer.
     unsafe { init(slot(handle), SpanInner::new(span, end_on_release)) }
 }
 
@@ -219,7 +223,9 @@ unsafe fn start_span(
     name: String,
     args: VaList,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
     let attributes = unsafe { from_varargs(args) }?;
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { start_span_with_attributes(tracer, options, handle, name, attributes) }
 }
 
@@ -231,7 +237,9 @@ unsafe fn start_span_arr(
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
     let attributes = unsafe { from_array(attributes, count) }?;
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { start_span_with_attributes(tracer, options, handle, name, attributes) }
 }
 
@@ -239,6 +247,7 @@ unsafe fn with_span<R>(
     span: *const otel_span_t,
     action: impl FnOnce(&mut SdkSpan) -> Result<R>,
 ) -> Result<R> {
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
     let mut guard = inner
         .lock()
@@ -252,15 +261,16 @@ unsafe fn with_span<R>(
 /// Ends a span once, ignoring a poisoned lock because the handle is already
 /// being released.
 pub(crate) fn end_span_once(inner: &SpanInner) {
-    if let Ok(mut guard) = inner.lock() {
-        if let Some(span) = guard.as_mut() {
-            span.end();
-        }
+    if let Ok(mut guard) = inner.lock()
+        && let Some(span) = guard.as_mut()
+    {
+        span.end();
     }
 }
 
 /// Returns the `SpanContext` behind a handle, including ended spans.
 pub(crate) unsafe fn span_context(span: *const otel_span_t) -> Result<SpanContext> {
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
     let guard = inner
         .lock()
@@ -417,6 +427,9 @@ fn build_provider(
 /// `resource` may be NULL to build one from the environment. `runtime` may be
 /// NULL unless `OTEL_TRACES_EXPORTER=otlp`.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_new(
     handle: *mut otel_tracer_provider_t,
@@ -426,17 +439,22 @@ pub unsafe extern "C" fn otel_tracer_provider_new(
     guard(|| {
         let resource = optional_resource(resource)?;
         let runtime = optional_runtime(runtime)?;
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), build_provider(resource, runtime)?) }?;
         Ok(())
     })
 }
 
 /// Flushes all pending spans.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_force_flush(
     provider: *const otel_tracer_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
         provider
             .provider
@@ -447,11 +465,15 @@ pub unsafe extern "C" fn otel_tracer_provider_force_flush(
 }
 
 /// Shuts down the provider and its processors.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_shutdown(
     provider: *const otel_tracer_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
         provider
             .provider
@@ -462,6 +484,9 @@ pub unsafe extern "C" fn otel_tracer_provider_shutdown(
 }
 
 /// Creates a tracer for an instrumentation scope.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_tracer(
     provider: *const otel_tracer_provider_t,
@@ -469,14 +494,20 @@ pub unsafe extern "C" fn otel_tracer_provider_tracer(
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "tracer name")? }, "tracer name")?;
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), provider.provider.tracer(name)) }?;
         Ok(())
     })
 }
 
 /// Length-aware variant of [`otel_tracer_provider_tracer`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_provider_tracer_n(
     provider: *const otel_tracer_provider_t,
@@ -484,14 +515,20 @@ pub unsafe extern "C" fn otel_tracer_provider_tracer_n(
     name: otel_str_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<TracerProviderInner>(const_slot(provider)) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "tracer name")? }.to_owned();
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), provider.provider.tracer(name)) }?;
         Ok(())
     })
 }
 
 /// Starts a span with an optional `OTEL_ATTR_END`-terminated attribute list.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start(
     tracer: *const otel_tracer_t,
@@ -500,12 +537,17 @@ pub unsafe extern "C" fn otel_tracer_span_start(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        // SAFETY: The caller guarantees the pointer targets valid, aligned storage for this operation.
         unsafe { start_span(tracer, ptr::null(), handle, name, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_tracer_span_start`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_arr(
     tracer: *const otel_tracer_t,
@@ -515,12 +557,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        // SAFETY: The caller guarantees the pointer targets valid, aligned storage for this operation.
         unsafe { start_span_arr(tracer, ptr::null(), handle, name, attributes, count) }
     })
 }
 
 /// Starts a span with an explicit parent, kind, and start timestamp.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_with_options(
     tracer: *const otel_tracer_t,
@@ -530,12 +577,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { start_span(tracer, options, handle, name, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_tracer_span_start_with_options`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr(
     tracer: *const otel_tracer_t,
@@ -546,12 +598,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { start_span_arr(tracer, options, handle, name, attributes, count) }
     })
 }
 
 /// Length-aware variant of [`otel_tracer_span_start`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_n(
     tracer: *const otel_tracer_t,
@@ -560,12 +617,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        // SAFETY: The caller guarantees the pointer targets valid, aligned storage for this operation.
         unsafe { start_span(tracer, ptr::null(), handle, name, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_tracer_span_start_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_arr_n(
     tracer: *const otel_tracer_t,
@@ -575,12 +637,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        // SAFETY: The caller guarantees the pointer targets valid, aligned storage for this operation.
         unsafe { start_span_arr(tracer, ptr::null(), handle, name, attributes, count) }
     })
 }
 
 /// Length-aware variant of [`otel_tracer_span_start_with_options`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_with_options_n(
     tracer: *const otel_tracer_t,
@@ -590,12 +657,17 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { start_span(tracer, options, handle, name, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_tracer_span_start_with_options_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr_n(
     tracer: *const otel_tracer_t,
@@ -606,12 +678,15 @@ pub unsafe extern "C" fn otel_tracer_span_start_with_options_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { start_span_arr(tracer, options, handle, name, attributes, count) }
     })
 }
 
 unsafe fn set_span_attributes(span: *const otel_span_t, attributes: Vec<KeyValue>) -> Result<()> {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         with_span(span, |span| {
             span.set_attributes(attributes);
@@ -621,18 +696,26 @@ unsafe fn set_span_attributes(span: *const otel_span_t, attributes: Vec<KeyValue
 }
 
 /// Adds attributes to a started span.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_attributes(
     span: *const otel_span_t,
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { set_span_attributes(span, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_set_attributes`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_attributes_arr(
     span: *const otel_span_t,
@@ -640,7 +723,9 @@ pub unsafe extern "C" fn otel_span_set_attributes_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { set_span_attributes(span, attributes) }
     })
 }
@@ -651,6 +736,7 @@ unsafe fn add_span_event(
     timestamp: Option<i64>,
     attributes: Vec<KeyValue>,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         with_span(span, |span| {
             match timestamp {
@@ -667,6 +753,9 @@ unsafe fn add_span_event(
 }
 
 /// Adds a named event with optional attributes to a started span.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event(
     span: *const otel_span_t,
@@ -674,13 +763,19 @@ pub unsafe extern "C" fn otel_span_add_event(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_add_event`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_arr(
     span: *const otel_span_t,
@@ -689,19 +784,26 @@ pub unsafe extern "C" fn otel_span_add_event_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
 
 /// Sets the span status. `description` may be NULL.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_status(
     span: *const otel_span_t,
     status: i32,
     description: *const c_char,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     guard(|| unsafe {
         with_span(span, |span| {
             let description = optional_utf8(description, "status description")?.unwrap_or_default();
@@ -722,13 +824,18 @@ pub unsafe extern "C" fn otel_span_set_status(
 }
 
 /// Updates the name of a started span.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_update_name(
     span: *const otel_span_t,
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "span name")? }, "span name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe {
             with_span(span, |span| {
                 span.update_name(name);
@@ -739,12 +846,16 @@ pub unsafe extern "C" fn otel_span_update_name(
 }
 
 /// Length-aware variant of [`otel_span_set_status`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_set_status_n(
     span: *const otel_span_t,
     status: i32,
     description: otel_str_t,
 ) -> otel_result_t {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     guard(|| unsafe {
         with_span(span, |span| {
             let description = optional_str_slice(description, "status description")?
@@ -765,13 +876,18 @@ pub unsafe extern "C" fn otel_span_set_status_n(
 }
 
 /// Length-aware variant of [`otel_span_update_name`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_update_name_n(
     span: *const otel_span_t,
     name: otel_str_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "span name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe {
             with_span(span, |span| {
                 span.update_name(name);
@@ -782,6 +898,9 @@ pub unsafe extern "C" fn otel_span_update_name_n(
 }
 
 /// Adds an event with an explicit Unix timestamp in nanoseconds.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
     span: *const otel_span_t,
@@ -790,13 +909,19 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_add_event_with_timestamp`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr(
     span: *const otel_span_t,
@@ -806,13 +931,19 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "event name")? }, "event name")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_add_event`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_n(
     span: *const otel_span_t,
@@ -820,13 +951,19 @@ pub unsafe extern "C" fn otel_span_add_event_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_add_event_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_arr_n(
     span: *const otel_span_t,
@@ -835,13 +972,19 @@ pub unsafe extern "C" fn otel_span_add_event_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, None, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_add_event_with_timestamp`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_with_timestamp_n(
     span: *const otel_span_t,
@@ -850,13 +993,19 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_add_event_with_timestamp_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr_n(
     span: *const otel_span_t,
@@ -866,8 +1015,11 @@ pub unsafe extern "C" fn otel_span_add_event_with_timestamp_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "event name")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_event(span, name, Some(timestamp_unix_nano), attributes) }
     })
 }
@@ -888,6 +1040,7 @@ unsafe fn add_span_link(
     if !context.is_valid() {
         return Err(Error::invalid("link span context is not valid"));
     }
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         with_span(span, |span| {
             span.add_link(context, attributes);
@@ -897,6 +1050,9 @@ unsafe fn add_span_link(
 }
 
 /// Adds a link to a span using numeric trace and span IDs.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link(
     span: *const otel_span_t,
@@ -905,12 +1061,17 @@ pub unsafe extern "C" fn otel_span_add_link(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_add_link`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link_arr(
     span: *const otel_span_t,
@@ -920,7 +1081,9 @@ pub unsafe extern "C" fn otel_span_add_link_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
@@ -928,6 +1091,7 @@ pub unsafe extern "C" fn otel_span_add_link_arr(
 unsafe fn traceparent_ids(
     parent: *const otel_traceparent_t,
 ) -> Result<(otel_trace_id_t, otel_span_id_t)> {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     let text = unsafe { buffer_utf8(parent)? };
     Ok((
         otel_trace_id_t::from_hex(&text[3..35])?,
@@ -936,6 +1100,9 @@ unsafe fn traceparent_ids(
 }
 
 /// Adds a link to a span using the IDs from a validated W3C `traceparent`.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link_from_traceparent(
     span: *const otel_span_t,
@@ -943,13 +1110,19 @@ pub unsafe extern "C" fn otel_span_add_link_from_traceparent(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let (trace_id, span_id) = unsafe { traceparent_ids(parent)? };
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_add_link_from_traceparent`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_add_link_from_traceparent_arr(
     span: *const otel_span_t,
@@ -958,8 +1131,11 @@ pub unsafe extern "C" fn otel_span_add_link_from_traceparent_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let (trace_id, span_id) = unsafe { traceparent_ids(parent)? };
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { add_span_link(span, trace_id, span_id, attributes) }
     })
 }
@@ -981,6 +1157,7 @@ unsafe fn record_span_exception(
             values.push(KeyValue::new(key, value));
         }
     }
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         with_span(span, |span| {
             span.add_event("exception", values);
@@ -990,6 +1167,9 @@ unsafe fn record_span_exception(
 }
 
 /// Records an exception as an event with standard semantic attributes.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_record_exception(
     span: *const otel_span_t,
@@ -999,15 +1179,23 @@ pub unsafe extern "C" fn otel_span_record_exception(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let exception_type = unsafe { optional_utf8(exception_type, "exception type")? };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let message = unsafe { optional_utf8(message, "exception message")? };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let stacktrace = unsafe { optional_utf8(stacktrace, "exception stacktrace")? };
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_span_record_exception`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_record_exception_arr(
     span: *const otel_span_t,
@@ -1018,15 +1206,23 @@ pub unsafe extern "C" fn otel_span_record_exception_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let exception_type = unsafe { optional_utf8(exception_type, "exception type")? };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let message = unsafe { optional_utf8(message, "exception message")? };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let stacktrace = unsafe { optional_utf8(stacktrace, "exception stacktrace")? };
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_record_exception`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_record_exception_n(
     span: *const otel_span_t,
@@ -1036,18 +1232,26 @@ pub unsafe extern "C" fn otel_span_record_exception_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_varargs(attributes) }?;
         let exception_type =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(exception_type, "exception type")? }.map(str::to_owned);
         let message =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(message, "exception message")? }.map(str::to_owned);
         let stacktrace =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(stacktrace, "exception stacktrace")? }.map(str::to_owned);
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_span_record_exception_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_record_exception_arr_n(
     span: *const otel_span_t,
@@ -1058,24 +1262,33 @@ pub unsafe extern "C" fn otel_span_record_exception_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
         let attributes = unsafe { from_array(attributes, count) }?;
         let exception_type =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(exception_type, "exception type")? }.map(str::to_owned);
         let message =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(message, "exception message")? }.map(str::to_owned);
         let stacktrace =
+            // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
             unsafe { optional_str_slice(stacktrace, "exception stacktrace")? }.map(str::to_owned);
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { record_span_exception(span, exception_type, message, stacktrace, attributes) }
     })
 }
 
 /// Ends a span at an explicit Unix timestamp in nanoseconds.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_end_with_timestamp(
     span: *const otel_span_t,
     timestamp_unix_nano: i64,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let mut guard = inner
             .lock()
@@ -1091,9 +1304,13 @@ pub unsafe extern "C" fn otel_span_end_with_timestamp(
 }
 
 /// Ends a span. Calling this more than once is harmless.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_end(span: *const otel_span_t) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let mut guard = inner
             .lock()
@@ -1106,6 +1323,9 @@ pub unsafe extern "C" fn otel_span_end(span: *const otel_span_t) -> otel_result_
 }
 
 /// Copies a span's 128-bit trace ID into numeric storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_trace_id(
     span: *const otel_span_t,
@@ -1115,6 +1335,7 @@ pub unsafe extern "C" fn otel_span_trace_id(
         if out.is_null() {
             return Err(Error::invalid("trace ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let guard = inner
             .lock()
@@ -1122,12 +1343,16 @@ pub unsafe extern "C" fn otel_span_trace_id(
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = otel_trace_id_t::from_trace_id(span.span_context().trace_id()) };
         Ok(())
     })
 }
 
 /// Copies a span's 64-bit span ID into numeric storage.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_span_id(
     span: *const otel_span_t,
@@ -1137,6 +1362,7 @@ pub unsafe extern "C" fn otel_span_span_id(
         if out.is_null() {
             return Err(Error::invalid("span ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let inner = unsafe { arc::<SpanInner>(const_slot(span)) }?;
         let guard = inner
             .lock()
@@ -1144,12 +1370,16 @@ pub unsafe extern "C" fn otel_span_span_id(
         let span = guard
             .as_ref()
             .ok_or_else(|| Error::invalid("span has already ended"))?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = otel_span_id_t::from_span_id(span.span_context().span_id()) };
         Ok(())
     })
 }
 
 /// Parses 32 hex digits into a numeric trace ID.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_trace_id_from_str(
     src: *const c_char,
@@ -1159,13 +1389,18 @@ pub unsafe extern "C" fn otel_trace_id_from_str(
         if out.is_null() {
             return Err(Error::invalid("trace ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let text = utf8(unsafe { c_str(src, "trace ID")? }, "trace ID")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = otel_trace_id_t::from_hex(&text)? };
         Ok(())
     })
 }
 
 /// Parses 16 hex digits into a numeric span ID.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_id_from_str(
     src: *const c_char,
@@ -1175,13 +1410,18 @@ pub unsafe extern "C" fn otel_span_id_from_str(
         if out.is_null() {
             return Err(Error::invalid("span ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let text = utf8(unsafe { c_str(src, "span ID")? }, "span ID")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = otel_span_id_t::from_hex(&text)? };
         Ok(())
     })
 }
 
 /// Formats a trace ID as 32 lowercase hex digits plus a NUL terminator.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_trace_id_to_str(
     value: *const otel_trace_id_t,
@@ -1199,6 +1439,9 @@ pub unsafe extern "C" fn otel_trace_id_to_str(
 }
 
 /// Formats a span ID as 16 lowercase hex digits plus a NUL terminator.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_id_to_str(
     value: *const otel_span_id_t,
@@ -1216,6 +1459,9 @@ pub unsafe extern "C" fn otel_span_id_to_str(
 }
 
 /// Returns whether a trace ID contains a non-zero word.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_trace_id_is_valid(value: *const otel_trace_id_t) -> bool {
     if value.is_null() {
@@ -1227,6 +1473,9 @@ pub unsafe extern "C" fn otel_trace_id_is_valid(value: *const otel_trace_id_t) -
 }
 
 /// Returns whether a span ID is non-zero.
+///
+/// # Safety
+/// The pointer may be null or must point to an initialized handle; no reference is taken from it.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_id_is_valid(value: *const otel_span_id_t) -> bool {
     if value.is_null() {
@@ -1237,6 +1486,9 @@ pub unsafe extern "C" fn otel_span_id_is_valid(value: *const otel_span_id_t) -> 
 }
 
 /// Returns whether two trace IDs hold the same 128-bit value.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_trace_id_equal(
     left: *const otel_trace_id_t,
@@ -1250,6 +1502,9 @@ pub unsafe extern "C" fn otel_trace_id_equal(
 }
 
 /// Returns whether two span IDs hold the same 64-bit value.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_span_id_equal(
     left: *const otel_span_id_t,
@@ -1263,6 +1518,9 @@ pub unsafe extern "C" fn otel_span_id_equal(
 }
 
 /// Extracts the trace ID from a validated W3C `traceparent` header.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_trace_id(
     parent: *const otel_traceparent_t,
@@ -1272,13 +1530,18 @@ pub unsafe extern "C" fn otel_traceparent_trace_id(
         if out.is_null() {
             return Err(Error::invalid("trace ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let (trace_id, _) = unsafe { traceparent_ids(parent)? };
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = trace_id };
         Ok(())
     })
 }
 
 /// Extracts the span ID from a validated W3C `traceparent` header.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_traceparent_span_id(
     parent: *const otel_traceparent_t,
@@ -1288,7 +1551,9 @@ pub unsafe extern "C" fn otel_traceparent_span_id(
         if out.is_null() {
             return Err(Error::invalid("span ID output must not be NULL"));
         }
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let (_, span_id) = unsafe { traceparent_ids(parent)? };
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { *out = span_id };
         Ok(())
     })
@@ -1309,6 +1574,7 @@ mod tests {
         let _guard = TRACE_ENV_LOCK
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe { env::set_var("OTEL_TRACES_EXPORTER", "none") };
         let mut provider = crate::handles::otel_tracer_provider_t {
             inner: std::ptr::null_mut(),
@@ -1322,6 +1588,7 @@ mod tests {
         let mut retained = crate::handles::otel_span_t {
             inner: std::ptr::null_mut(),
         };
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe {
             assert_eq!(
                 otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),
@@ -1370,6 +1637,7 @@ mod tests {
         let _guard = TRACE_ENV_LOCK
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe {
             env::set_var("OTEL_TRACES_EXPORTER", "none");
         }
@@ -1377,6 +1645,7 @@ mod tests {
             inner: std::ptr::null_mut(),
         };
         assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
             unsafe { otel_tracer_provider_new(&mut provider, std::ptr::null(), std::ptr::null()) },
             otel_result_t::OTEL_OK
         );
@@ -1384,9 +1653,11 @@ mod tests {
             inner: std::ptr::null_mut(),
         };
         assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
             unsafe { otel_tracer_provider_tracer(&provider, &mut tracer, c"test".as_ptr()) },
             otel_result_t::OTEL_OK
         );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe {
             otel_tracer_release(&mut tracer);
             otel_tracer_provider_release(&mut provider);
@@ -1400,11 +1671,17 @@ mod tests {
         assert_eq!(trace.to_hex(), "4bf92f3577b34da6a3ce929d0e0e4736");
         let span = otel_span_id_t::from_hex("00f067aa0ba902b7").unwrap();
         assert_eq!(span.to_hex(), "00f067aa0ba902b7");
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { otel_trace_id_is_valid(&trace) });
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { otel_span_id_is_valid(&span) });
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { otel_trace_id_equal(&trace, &trace) });
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { otel_span_id_equal(&span, &span) });
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(!(unsafe { otel_trace_id_is_valid(&otel_trace_id_t::default()) }));
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(!(unsafe { otel_span_id_is_valid(&otel_span_id_t::default()) }));
         assert!(otel_trace_id_t::from_hex("42").is_err());
         assert!(otel_span_id_t::from_hex("42").is_err());

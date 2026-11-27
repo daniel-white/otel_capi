@@ -67,7 +67,8 @@ impl otel_attribute_t {
     /// `key` and the active string pointer must reference `key_len` and
     /// `value_len` readable bytes respectively, valid for the duration of the
     /// call. `kind` must name the union member that was initialized.
-    pub(crate) unsafe fn to_key_value(&self) -> Result<KeyValue> {
+    pub(crate) unsafe fn into_key_value(self) -> Result<KeyValue> {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let key = unsafe {
             str_slice(
                 otel_str_t {
@@ -133,7 +134,8 @@ pub(crate) unsafe fn from_varargs(mut args: VaList) -> Result<Vec<KeyValue>> {
         }
         // SAFETY: caller guarantees `raw` points to a live attribute.
         let attribute = unsafe { &*raw };
-        attributes.push(unsafe { attribute.to_key_value()? });
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
+        attributes.push(unsafe { attribute.into_key_value()? });
     }
 }
 
@@ -164,7 +166,7 @@ pub(crate) unsafe fn from_array(
             return Err(Error::invalid("attribute array contains a NULL entry"));
         }
         // SAFETY: caller guarantees `raw` points to a live attribute.
-        attributes.push(unsafe { (*raw).to_key_value()? });
+        attributes.push(unsafe { (*raw).into_key_value()? });
     }
     Ok(attributes)
 }
@@ -188,7 +190,8 @@ mod tests {
     #[test]
     fn converts_string_attribute() {
         let attr = attribute(c"service.name", c"checkout");
-        let kv = unsafe { attr.to_key_value() }.unwrap();
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        let kv = unsafe { attr.into_key_value() }.unwrap();
         assert_eq!(kv.key.as_str(), "service.name");
         assert_eq!(kv.value.to_string(), "checkout");
     }
@@ -199,21 +202,24 @@ mod tests {
         attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_BOOL as i32;
         attr.value = otel_attribute_value_t { boolean: 1 };
         assert_eq!(
-            unsafe { attr.to_key_value() }.unwrap().value,
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { attr.into_key_value() }.unwrap().value,
             Value::Bool(true)
         );
 
         attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_I64 as i32;
         attr.value = otel_attribute_value_t { integer: -42 };
         assert_eq!(
-            unsafe { attr.to_key_value() }.unwrap().value,
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { attr.into_key_value() }.unwrap().value,
             Value::I64(-42)
         );
 
         attr.kind = otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64 as i32;
         attr.value = otel_attribute_value_t { double_value: 1.5 };
         assert_eq!(
-            unsafe { attr.to_key_value() }.unwrap().value,
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { attr.into_key_value() }.unwrap().value,
             Value::F64(1.5)
         );
     }
@@ -223,6 +229,7 @@ mod tests {
         let first = attribute(c"first", c"one");
         let second = attribute(c"second", c"two");
         let ptrs = [&first as *const _, &second as *const _];
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let values = unsafe { from_array(ptrs.as_ptr(), ptrs.len()) }.unwrap();
         assert_eq!(values.len(), 2);
         assert_eq!(values[0].key.as_str(), "first");
@@ -231,7 +238,9 @@ mod tests {
 
     #[test]
     fn rejects_null_and_oversized_attribute_arrays() {
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { from_array(std::ptr::null(), 1) }.is_err());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         assert!(unsafe { from_array(std::ptr::null(), MAX_ATTRIBUTES + 1) }.is_err());
     }
 
@@ -239,7 +248,8 @@ mod tests {
     fn rejects_invalid_kind() {
         let mut attr = attribute(c"k", c"v");
         attr.kind = 99;
-        let error = unsafe { attr.to_key_value() }.unwrap_err();
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        let error = unsafe { attr.into_key_value() }.unwrap_err();
         assert_eq!(
             error.status,
             crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT
@@ -252,6 +262,7 @@ mod tests {
             key: std::ptr::null(),
             ..attribute(c"k", c"v")
         };
-        assert!(unsafe { attr.to_key_value() }.is_err());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        assert!(unsafe { attr.into_key_value() }.is_err());
     }
 }

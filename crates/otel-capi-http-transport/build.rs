@@ -46,13 +46,9 @@ fn annotate_exports(header: &str) -> String {
     let mut result = String::with_capacity(header.len());
     for line in header.split_inclusive('\n') {
         let trimmed = line.trim_start();
-        let exported = [
-            "otel_result_t otel_",
-            "uint32_t otel_",
-            "void otel_",
-        ]
-        .iter()
-        .any(|prefix| trimmed.starts_with(prefix));
+        let exported = ["otel_result_t otel_", "uint32_t otel_", "void otel_"]
+            .iter()
+            .any(|prefix| trimmed.starts_with(prefix));
         if exported {
             let indent = &line[..line.len() - trimmed.len()];
             result.push_str(indent);
@@ -69,5 +65,10 @@ fn with_handle_init(header: String, declaration: &str) -> String {
     let Some(marker) = header.rfind("#endif") else {
         return format!("{header}\n{declaration}");
     };
-    format!("{}\n{}\n{}", &header[..marker], declaration, &header[marker..])
+    format!(
+        "{}\n{}\n{}",
+        &header[..marker],
+        declaration,
+        &header[marker..]
+    )
 }

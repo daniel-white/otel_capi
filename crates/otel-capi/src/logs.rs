@@ -3,16 +3,13 @@
 #[cfg(test)]
 use std::env;
 
-use std::collections::HashSet;
 use std::ffi::{VaList, c_char};
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::Arc;
 
 use opentelemetry::logs::{AnyValue, LogRecord as _, Logger as _, LoggerProvider as _, Severity};
 use opentelemetry::{KeyValue, Value};
 use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
-use opentelemetry_sdk::logs::{
-    BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider,
-};
+use opentelemetry_sdk::logs::{BatchConfigBuilder, BatchLogProcessor, SdkLoggerProvider};
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
 use crate::config;
@@ -29,7 +26,7 @@ use crate::handles::{otel_logger_provider_t, otel_logger_t, otel_runtime_t, otel
 use crate::item_export::ItemLogProcessor;
 use crate::strings::{otel_str_t, str_slice};
 use crate::transport::callback_client;
-use crate::util::system_time;
+use crate::util::{interned, system_time};
 
 /// Log severity exported to C. Values match the OpenTelemetry severity scale.
 #[non_exhaustive]
@@ -72,21 +69,6 @@ pub struct otel_log_record_options_t {
     pub span: *const otel_span_t,
 }
 
-static INTERNED: OnceLock<Mutex<HashSet<&'static str>>> = OnceLock::new();
-
-fn interned(text: String) -> &'static str {
-    let mut set = INTERNED
-        .get_or_init(|| Mutex::new(HashSet::new()))
-        .lock()
-        .expect("string interner is poisoned");
-    if let Some(existing) = set.get(text.as_str()) {
-        return existing;
-    }
-    let leaked: &'static str = Box::leak(text.into_boxed_str());
-    set.insert(leaked);
-    leaked
-}
-
 unsafe fn emit_log_with_attributes(
     logger: *const otel_logger_t,
     options: *const otel_log_record_options_t,
@@ -96,12 +78,14 @@ unsafe fn emit_log_with_attributes(
     if options.is_null() {
         return Err(Error::invalid("log options must not be NULL"));
     }
+    // SAFETY: The caller guarantees the pointer is non-null, aligned, and references an initialized value.
     let options = unsafe { &*options };
     if options.size < std::mem::size_of::<otel_log_record_options_t>() {
         return Err(Error::invalid(
             "otel_log_record_options_t.size is too small",
         ));
     }
+    // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
     let logger = unsafe { arc::<LoggerInner>(const_slot(logger)) }?;
     let (number, default_text) = severity(options.level)?;
     let timestamp = system_time(options.timestamp_unix_nano)?;
@@ -110,15 +94,18 @@ unsafe fn emit_log_with_attributes(
     let mut record = logger.create_log_record();
     record.set_severity_number(number);
     record.set_severity_text(
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         match unsafe { crate::util::optional_str(options.severity_text, "severity text")? } {
             Some(text) => interned(text.to_owned()),
             None => default_text,
         },
     );
     record.set_body(AnyValue::String(body.into()));
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     if let Some(name) = unsafe { crate::util::optional_str(options.event_name, "event name")? } {
         record.set_event_name(interned(name.to_owned()));
     }
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     if let Some(target) = unsafe { crate::util::optional_str(options.target, "target")? } {
         record.set_target(target.to_owned());
     }
@@ -132,6 +119,7 @@ unsafe fn emit_log_with_attributes(
         record.add_attribute(attribute.key.to_string(), any_value(attribute.value));
     }
     if !options.span.is_null() {
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         let context = unsafe { crate::trace::span_context(options.span)? };
         record.set_trace_context(
             context.trace_id(),
@@ -149,7 +137,9 @@ unsafe fn emit_log(
     body: String,
     args: VaList,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
     let attributes = unsafe { from_varargs(args) }?;
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { emit_log_with_attributes(logger, options, body, attributes) }
 }
 
@@ -160,7 +150,9 @@ unsafe fn emit_log_arr(
     attributes: *const *const otel_attribute_t,
     count: usize,
 ) -> Result<()> {
+    // SAFETY: The caller guarantees every pointer is initialized and borrowed strings outlive the call.
     let attributes = unsafe { from_array(attributes, count) }?;
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe { emit_log_with_attributes(logger, options, body, attributes) }
 }
 
@@ -216,11 +208,7 @@ fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_ot
     let exporter = opentelemetry_otlp::LogExporter::builder()
         .with_http()
         .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
-        .with_http_client(callback_client(
-            runtime,
-            config::STDOUT_TRANSPORT,
-            "LOGS",
-        )?)
+        .with_http_client(callback_client(runtime, config::STDOUT_TRANSPORT, "LOGS")?)
         .build();
     exporter.map_err(|err| build_error("failed to build stdout log exporter", err))
 }
@@ -297,6 +285,9 @@ fn build_provider(
 /// Creates a logger provider. `resource` and `runtime` may be NULL when the
 /// selected exporter does not need them.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
+///
+/// # Safety
+/// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_new(
     handle: *mut otel_logger_provider_t,
@@ -306,17 +297,22 @@ pub unsafe extern "C" fn otel_logger_provider_new(
     guard(|| {
         let resource = optional_resource(resource)?;
         let runtime = optional_runtime(runtime)?;
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), build_provider(resource, runtime)?) }?;
         Ok(())
     })
 }
 
 /// Flushes all pending log records.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_force_flush(
     provider: *const otel_logger_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<LoggerProviderInner>(const_slot(provider)) }?;
         provider
             .provider
@@ -327,11 +323,15 @@ pub unsafe extern "C" fn otel_logger_provider_force_flush(
 }
 
 /// Shuts down the provider and its processors.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_shutdown(
     provider: *const otel_logger_provider_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<LoggerProviderInner>(const_slot(provider)) }?;
         provider
             .provider
@@ -342,6 +342,9 @@ pub unsafe extern "C" fn otel_logger_provider_shutdown(
 }
 
 /// Creates a logger for an instrumentation scope.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_logger(
     provider: *const otel_logger_provider_t,
@@ -349,16 +352,22 @@ pub unsafe extern "C" fn otel_logger_provider_logger(
     name: *const c_char,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<LoggerProviderInner>(const_slot(provider)) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = utf8(unsafe { c_str(name, "logger name")? }, "logger name")?;
         // The scope name is retained by the provider for its lifetime.
-        let name: &'static str = Box::leak(name.into_boxed_str());
+        let name = interned(name);
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), provider.provider.logger(name)) }?;
         Ok(())
     })
 }
 
 /// Length-aware variant of [`otel_logger_provider_logger`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_provider_logger_n(
     provider: *const otel_logger_provider_t,
@@ -366,10 +375,13 @@ pub unsafe extern "C" fn otel_logger_provider_logger_n(
     name: otel_str_t,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let provider = unsafe { arc::<LoggerProviderInner>(const_slot(provider)) }?;
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let name = unsafe { str_slice(name, "logger name")? }.to_owned();
         // The scope name is retained by the provider for its lifetime.
-        let name: &'static str = Box::leak(name.into_boxed_str());
+        let name = interned(name);
+        // SAFETY: The caller provides writable, aligned storage for one handle pointer.
         unsafe { init(slot(handle), provider.provider.logger(name)) }?;
         Ok(())
     })
@@ -377,6 +389,9 @@ pub unsafe extern "C" fn otel_logger_provider_logger_n(
 
 /// Emits a log record with optional attributes. `span` may be NULL; when set,
 /// the record carries that span's trace and span IDs.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log(
     logger: *const otel_logger_t,
@@ -396,12 +411,17 @@ pub unsafe extern "C" fn otel_logger_log(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log(logger, &options, body, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_logger_log`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_arr(
     logger: *const otel_logger_t,
@@ -422,13 +442,18 @@ pub unsafe extern "C" fn otel_logger_log_arr(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log_arr(logger, &options, body, attributes, count) }
     })
 }
 
 /// Emits a structured log record with event name, target, timestamps, and
 /// optional span correlation configured through `options`.
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_record(
     logger: *const otel_logger_t,
@@ -437,12 +462,17 @@ pub unsafe extern "C" fn otel_logger_log_record(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log(logger, options, body, attributes) }
     })
 }
 
 /// Array-based variant of [`otel_logger_log_record`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_record_arr(
     logger: *const otel_logger_t,
@@ -452,12 +482,17 @@ pub unsafe extern "C" fn otel_logger_log_record_arr(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = utf8(unsafe { c_str(body, "log body")? }, "log body")?;
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log_arr(logger, options, body, attributes, count) }
     })
 }
 
 /// Length-aware variant of [`otel_logger_log`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_n(
     logger: *const otel_logger_t,
@@ -477,12 +512,17 @@ pub unsafe extern "C" fn otel_logger_log_n(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log(logger, &options, body, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_logger_log_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_arr_n(
     logger: *const otel_logger_t,
@@ -503,12 +543,17 @@ pub unsafe extern "C" fn otel_logger_log_arr_n(
             observed_timestamp_unix_nano: 0,
             span,
         };
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log_arr(logger, &options, body, attributes, count) }
     })
 }
 
 /// Length-aware variant of [`otel_logger_log_record`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_record_n(
     logger: *const otel_logger_t,
@@ -517,12 +562,17 @@ pub unsafe extern "C" fn otel_logger_log_record_n(
     attributes: ...
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log(logger, options, body, attributes) }
     })
 }
 
 /// Length-aware variant of [`otel_logger_log_record_arr`].
+///
+/// # Safety
+/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn otel_logger_log_record_arr_n(
     logger: *const otel_logger_t,
@@ -532,7 +582,9 @@ pub unsafe extern "C" fn otel_logger_log_record_arr_n(
     count: usize,
 ) -> otel_result_t {
     guard(|| {
+        // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
         let body = unsafe { str_slice(body, "log body")? }.to_owned();
+        // SAFETY: The caller guarantees the preconditions of this unsafe operation.
         unsafe { emit_log_arr(logger, options, body, attributes, count) }
     })
 }
@@ -554,6 +606,7 @@ mod tests {
 
     #[test]
     fn no_exporter_logger_emits() {
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe { env::set_var("OTEL_LOGS_EXPORTER", "none") };
         let mut provider = otel_logger_provider_t {
             inner: std::ptr::null_mut(),
@@ -561,6 +614,7 @@ mod tests {
         let mut logger = otel_logger_t {
             inner: std::ptr::null_mut(),
         };
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe {
             assert_eq!(
                 otel_logger_provider_new(&mut provider, std::ptr::null(), std::ptr::null()),

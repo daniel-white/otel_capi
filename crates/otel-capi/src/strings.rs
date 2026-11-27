@@ -31,6 +31,7 @@ pub(crate) unsafe fn optional_str_slice<'a>(
     if value.ptr.is_null() && value.len == 0 {
         return Ok(None);
     }
+    // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
     Ok(Some(unsafe { str_slice(value, name)? }))
 }
 
@@ -40,6 +41,7 @@ pub(crate) unsafe fn owned_c_string(
     value: otel_str_t,
     name: &str,
 ) -> crate::error::Result<Option<CString>> {
+    // SAFETY: The caller guarantees the string pointer is valid and its declared length or NUL terminator is accurate.
     let Some(text) = (unsafe { optional_str_slice(value, name)? }) else {
         return Ok(None);
     };

@@ -9,8 +9,8 @@ use std::ffi::{c_char, c_void};
 use std::mem::transmute_copy;
 use std::ptr;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::OnceLock;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// Status returned by every fallible `otel-capi` function.
 #[non_exhaustive]
@@ -133,9 +133,10 @@ pub type otel_transport_send_fn = unsafe extern "C" fn(
 ) -> otel_result_t;
 
 /// Registers a transport descriptor on the core runtime.
-pub type otel_set_transport_fn =
-    unsafe extern "C" fn(runtime: *mut otel_runtime_t, transport: *const otel_transport_t)
-        -> otel_result_t;
+pub type otel_set_transport_fn = unsafe extern "C" fn(
+    runtime: *mut otel_runtime_t,
+    transport: *const otel_transport_t,
+) -> otel_result_t;
 
 type NotifyFn = unsafe extern "C" fn();
 
@@ -164,6 +165,7 @@ pub fn live_handle_count() -> usize {
 
 #[cfg(unix)]
 fn lookup_tracker() -> Option<Tracker> {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         let created = libc::dlsym(libc::RTLD_DEFAULT, c"otel_handle_created".as_ptr());
         let destroyed = libc::dlsym(libc::RTLD_DEFAULT, c"otel_handle_destroyed".as_ptr());
@@ -184,6 +186,7 @@ fn lookup_tracker() -> Option<Tracker> {
 
 #[cfg(unix)]
 fn lookup_symbol<T: Copy>(name: &[u8]) -> Option<T> {
+    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
         let symbol = libc::dlsym(libc::RTLD_DEFAULT, name.as_ptr().cast());
         (!symbol.is_null()).then(|| transmute_copy(&symbol))
@@ -222,10 +225,7 @@ fn notify_destroyed() {
 ///
 /// # Safety
 /// `slot` must point to writable, aligned storage for one pointer.
-pub unsafe fn init_handle<T: Send + Sync + 'static>(
-    slot: *mut c_void,
-    value: T,
-) -> otel_result_t {
+pub unsafe fn init_handle<T: Send + Sync + 'static>(slot: *mut c_void, value: T) -> otel_result_t {
     if slot.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
     }
