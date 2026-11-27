@@ -23,11 +23,15 @@
 
         # Rust 1.99+ is required to define C-variadic functions in Rust itself.
         rustToolchain = pkgs.rust-bin.stable."1.100.0".default;
+        miriToolchain = pkgs.rust-bin.nightly.latest.default.override {
+          extensions = [ "miri" "rust-src" ];
+        };
       in
       {
         devShells.default = pkgs.mkShell {
           packages = [
             rustToolchain
+            miriToolchain
             pkgs.cmake
             pkgs.doxygen
             pkgs.python3
@@ -38,6 +42,9 @@
           ];
 
           env.RUST_BACKTRACE = "1";
+          env.CARGO_MIRI = "${miriToolchain}/bin/cargo miri";
+          # cargo-miri uses MIRI to locate the driver binary, not a command line.
+          env.MIRI = "${miriToolchain}/bin/miri";
         };
       });
 }

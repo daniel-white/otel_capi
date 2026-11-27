@@ -9,6 +9,10 @@ CLANG ?= clang
 MUSL_GCC ?= musl-gcc
 CC ?= $(GCC)
 CARGO ?= cargo
+CARGO_MIRI ?= cargo +nightly miri
+# The core tests read the real clock and process environment.
+MIRIFLAGS ?= -Zmiri-disable-isolation
+CLIPPY_LINTS := -W clippy::undocumented_unsafe_blocks
 
 BUILD_DIR := build/artifacts
 DOCS_DIR := build/docs
@@ -49,7 +53,7 @@ HTTP_SHARED_LIB := target/release/libotel_capi_http_transport.$(SHARED_EXT)
 STDOUT_SHARED_LIB := target/release/libotel_capi_stdout_transport.$(SHARED_EXT)
 PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
-.PHONY: all build test docs example-gcc example-clang example-musl compile-checks transport-checks pkg-config-file check clean install
+.PHONY: all build test fmt fmt-check clippy lint miri docs example-gcc example-clang example-musl compile-checks transport-checks pkg-config-file check clean install
 
 all: build
 
@@ -61,6 +65,21 @@ build:
 
 test:
 	$(CARGO) test --lib -p otel-capi
+
+fmt:
+	$(CARGO) fmt --all
+
+fmt-check:
+	$(CARGO) fmt --all -- --check
+
+clippy:
+	$(CARGO) clippy --workspace --all-targets --locked -- $(CLIPPY_LINTS)
+
+lint: fmt-check clippy
+
+miri:
+	$(CARGO_MIRI) setup
+	MIRIFLAGS="$(MIRIFLAGS)" $(CARGO_MIRI) test --lib -p otel-capi
 
 docs: build | $(BUILD_DIR)
 	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)
@@ -122,7 +141,7 @@ transport-checks: build | $(BUILD_DIR)
 	done
 	@echo "loadable transport exports verified"
 
-check: test example-gcc example-clang compile-checks transport-checks
+check: test lint example-gcc example-clang compile-checks transport-checks
 
 install: build pkg-config-file
 	install -d $(DESTDIR)$(PREFIX)/include $(DESTDIR)$(PREFIX)/lib $(DESTDIR)$(PREFIX)/lib/pkgconfig

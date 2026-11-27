@@ -48,10 +48,22 @@ With direnv and nix-direnv installed, the repo's `.envrc` enters that dev
 shell automatically. Run `direnv allow` once after cloning, then plain
 `make build` / `make check` work in that directory.
 
-`make check` runs the Rust unit tests, compiles the kitchen-sink example with
-both gcc and clang using `-std=c11 -Wall -Wextra -Werror`, runs it with both
-`OTEL_CAPI_EXPORTER=none` and `OTEL_CAPI_EXPORTER=stdout`, and verifies the
-compile-pass/compile-fail checks in `checks/`.
+`make check` runs the Rust unit tests, checks formatting with `cargo fmt`, runs
+`cargo clippy` with `-D warnings` (including `undocumented_unsafe_blocks`),
+compiles the kitchen-sink example with both gcc and clang using
+`-std=c11 -Wall -Wextra -Werror`, runs it with both `OTEL_CAPI_EXPORTER=none`
+and `OTEL_CAPI_EXPORTER=stdout`, and verifies the compile-pass/compile-fail
+checks in `checks/`. The warning policy lives in `.cargo/config.toml`.
+
+Run Miri to validate the unsafe code with the nightly toolchain from the dev
+shell:
+
+```sh
+nix develop --command make miri
+```
+
+The Miri target disables isolation so the tests can read the real clock and
+process environment.
 
 Generate HTML API documentation from the generated headers with:
 
