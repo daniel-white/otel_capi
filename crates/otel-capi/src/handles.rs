@@ -1026,6 +1026,21 @@ pub unsafe extern "C" fn otel_observable_counter_u64_is_valid(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::tests::EnvGuard;
+    use crate::logs::{otel_logger_provider_logger, otel_logger_provider_new};
+    use crate::metrics::{
+        otel_meter_counter_f64, otel_meter_counter_u64, otel_meter_gauge_f64,
+        otel_meter_histogram_f64, otel_meter_observable_counter_u64,
+        otel_meter_observable_gauge_f64, otel_meter_provider_meter, otel_meter_provider_new,
+        otel_meter_updown_counter_i64, otel_observe_context_t,
+    };
+    use crate::resource::otel_resource_new;
+    use crate::runtime::otel_runtime_new;
+    use crate::trace::{
+        otel_span_options_t, otel_tracer_provider_new, otel_tracer_provider_tracer,
+        otel_tracer_span_start_with_options_arr,
+    };
+    use std::mem::size_of;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     static DROPS: AtomicUsize = AtomicUsize::new(0);
@@ -1036,6 +1051,30 @@ mod tests {
         fn drop(&mut self) {
             DROPS.fetch_add(1, Ordering::SeqCst);
         }
+    }
+
+    struct HandleProbe;
+
+    unsafe extern "C" fn noop_retain_observe_f64(
+        _context: otel_observe_context_t,
+        _data: *mut c_void,
+    ) {
+    }
+
+    unsafe extern "C" fn noop_retain_observe_u64(
+        _context: otel_observe_context_t,
+        _data: *mut c_void,
+    ) {
+    }
+
+    fn no_exporters() -> EnvGuard {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_TRACES_EXPORTER", "none");
+        env.set("OTEL_METRICS_EXPORTER", "none");
+        env.set("OTEL_LOGS_EXPORTER", "none");
+        env.set("OTEL_SDK_DISABLED", "false");
+        env.set("OTEL_TRACES_SAMPLER", "always_on");
+        env
     }
 
     #[test]
@@ -1074,5 +1113,641 @@ mod tests {
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let err = unsafe { init(ptr::null_mut(), 1u8) }.unwrap_err();
         assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+    }
+
+    #[test]
+    fn retain_release_helpers_reject_invalid_slots() {
+        let mut empty = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let mut empty_span = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+
+        // SAFETY: `empty` and `empty_span` are initialized empty slots; all
+        // pointers are either local storage or null and are validated before use.
+        unsafe {
+            let err = retain::<HandleProbe>(const_slot(&empty), ptr::null_mut()).unwrap_err();
+            assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+
+            let err = retain::<HandleProbe>(ptr::null(), slot(&mut empty)).unwrap_err();
+            assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+
+            let mut empty_out = otel_resource_t {
+                inner: ptr::null_mut(),
+            };
+            let err = retain::<HandleProbe>(const_slot(&empty), slot(&mut empty_out)).unwrap_err();
+            assert_eq!(err.status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+
+            release::<HandleProbe>(ptr::null_mut());
+            release::<HandleProbe>(slot(&mut empty));
+
+            release_span(ptr::null_mut());
+            release_span(slot(&mut empty_span));
+        }
+
+        assert!(empty.inner.is_null());
+        assert!(empty_span.inner.is_null());
+    }
+
+    #[test]
+    fn optional_handles_clone_resource_and_runtime() {
+        let _env = no_exporters();
+        let mut resource = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+
+        // SAFETY: both handles are local writable storage, are initialized by
+        // their constructors, and are released before the test ends.
+        unsafe {
+            assert_eq!(otel_resource_new(&mut resource), otel_result_t::OTEL_OK);
+            assert_eq!(otel_runtime_new(&mut runtime), otel_result_t::OTEL_OK);
+
+            assert!(optional_resource(ptr::null()).unwrap().is_none());
+            assert!(optional_runtime(ptr::null()).unwrap().is_none());
+            assert!(optional_resource(&resource).unwrap().is_some());
+            assert!(optional_runtime(&runtime).unwrap().is_some());
+
+            otel_runtime_release(&mut runtime);
+            otel_resource_release(&mut resource);
+        }
+
+        assert!(resource.inner.is_null());
+        assert!(runtime.inner.is_null());
+    }
+
+    #[test]
+    fn ensure_all_released_reports_leak_and_ok() {
+        let mut handle = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+
+        // SAFETY: `handle` is local writable storage and is released below.
+        unsafe { init(slot(&mut handle), HandleProbe).unwrap() };
+
+        let status = otel_ensure_all_released();
+        assert_eq!(status, otel_result_t::OTEL_ERR_LEAK);
+
+        // SAFETY: `handle` was initialized with `HandleProbe` above.
+        unsafe { release::<HandleProbe>(slot(&mut handle)) };
+        assert!(handle.inner.is_null());
+
+        let status = otel_ensure_all_released();
+        assert!(matches!(
+            status,
+            otel_result_t::OTEL_OK | otel_result_t::OTEL_ERR_LEAK
+        ));
+    }
+
+    #[test]
+    fn is_valid_wrappers_accept_live_and_reject_empty_handles() {
+        let mut resource = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let mut context = otel_context_t {
+            inner: ptr::null_mut(),
+        };
+        let mut context_scope = otel_context_scope_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer_provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter_provider = otel_meter_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger_provider = otel_logger_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer = otel_tracer_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter = otel_meter_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger = otel_logger_t {
+            inner: ptr::null_mut(),
+        };
+        let mut span = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_u64 = otel_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_f64 = otel_counter_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut updown = otel_updown_counter_i64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut histogram = otel_histogram_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut gauge = otel_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_gauge = otel_observable_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_counter = otel_observable_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+
+        // SAFETY: every handle is local writable storage initialized with
+        // `HandleProbe`; `valid` only reads the stored pointer. Each handle is
+        // released before the test ends.
+        unsafe {
+            init(slot(&mut resource), HandleProbe).unwrap();
+            assert!(otel_resource_is_valid(&resource));
+            assert!(!otel_resource_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut resource));
+            assert!(!otel_resource_is_valid(&resource));
+
+            init(slot(&mut context), HandleProbe).unwrap();
+            assert!(otel_context_is_valid(&context));
+            assert!(!otel_context_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut context));
+            assert!(!otel_context_is_valid(&context));
+
+            init(slot(&mut context_scope), HandleProbe).unwrap();
+            assert!(otel_context_scope_is_valid(&context_scope));
+            assert!(!otel_context_scope_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut context_scope));
+            assert!(!otel_context_scope_is_valid(&context_scope));
+
+            init(slot(&mut tracer_provider), HandleProbe).unwrap();
+            assert!(otel_tracer_provider_is_valid(&tracer_provider));
+            assert!(!otel_tracer_provider_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut tracer_provider));
+            assert!(!otel_tracer_provider_is_valid(&tracer_provider));
+
+            init(slot(&mut meter_provider), HandleProbe).unwrap();
+            assert!(otel_meter_provider_is_valid(&meter_provider));
+            assert!(!otel_meter_provider_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut meter_provider));
+            assert!(!otel_meter_provider_is_valid(&meter_provider));
+
+            init(slot(&mut logger_provider), HandleProbe).unwrap();
+            assert!(otel_logger_provider_is_valid(&logger_provider));
+            assert!(!otel_logger_provider_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut logger_provider));
+            assert!(!otel_logger_provider_is_valid(&logger_provider));
+
+            init(slot(&mut tracer), HandleProbe).unwrap();
+            assert!(otel_tracer_is_valid(&tracer));
+            assert!(!otel_tracer_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut tracer));
+            assert!(!otel_tracer_is_valid(&tracer));
+
+            init(slot(&mut meter), HandleProbe).unwrap();
+            assert!(otel_meter_is_valid(&meter));
+            assert!(!otel_meter_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut meter));
+            assert!(!otel_meter_is_valid(&meter));
+
+            init(slot(&mut logger), HandleProbe).unwrap();
+            assert!(otel_logger_is_valid(&logger));
+            assert!(!otel_logger_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut logger));
+            assert!(!otel_logger_is_valid(&logger));
+
+            init(slot(&mut span), HandleProbe).unwrap();
+            assert!(otel_span_is_valid(&span));
+            assert!(!otel_span_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut span));
+            assert!(!otel_span_is_valid(&span));
+
+            init(slot(&mut counter_u64), HandleProbe).unwrap();
+            assert!(otel_counter_u64_is_valid(&counter_u64));
+            assert!(!otel_counter_u64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut counter_u64));
+            assert!(!otel_counter_u64_is_valid(&counter_u64));
+
+            init(slot(&mut counter_f64), HandleProbe).unwrap();
+            assert!(otel_counter_f64_is_valid(&counter_f64));
+            assert!(!otel_counter_f64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut counter_f64));
+            assert!(!otel_counter_f64_is_valid(&counter_f64));
+
+            init(slot(&mut updown), HandleProbe).unwrap();
+            assert!(otel_updown_counter_i64_is_valid(&updown));
+            assert!(!otel_updown_counter_i64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut updown));
+            assert!(!otel_updown_counter_i64_is_valid(&updown));
+
+            init(slot(&mut histogram), HandleProbe).unwrap();
+            assert!(otel_histogram_f64_is_valid(&histogram));
+            assert!(!otel_histogram_f64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut histogram));
+            assert!(!otel_histogram_f64_is_valid(&histogram));
+
+            init(slot(&mut gauge), HandleProbe).unwrap();
+            assert!(otel_gauge_f64_is_valid(&gauge));
+            assert!(!otel_gauge_f64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut gauge));
+            assert!(!otel_gauge_f64_is_valid(&gauge));
+
+            init(slot(&mut observable_gauge), HandleProbe).unwrap();
+            assert!(otel_observable_gauge_f64_is_valid(&observable_gauge));
+            assert!(!otel_observable_gauge_f64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut observable_gauge));
+            assert!(!otel_observable_gauge_f64_is_valid(&observable_gauge));
+
+            init(slot(&mut observable_counter), HandleProbe).unwrap();
+            assert!(otel_observable_counter_u64_is_valid(&observable_counter));
+            assert!(!otel_observable_counter_u64_is_valid(ptr::null()));
+            release::<HandleProbe>(slot(&mut observable_counter));
+            assert!(!otel_observable_counter_u64_is_valid(&observable_counter));
+        }
+    }
+
+    #[test]
+    fn retain_release_wrappers_round_trip_core_handles() {
+        let _env = no_exporters();
+        let mut resource = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer_provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter_provider = otel_meter_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger_provider = otel_logger_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer = otel_tracer_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter = otel_meter_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger = otel_logger_t {
+            inner: ptr::null_mut(),
+        };
+        let mut span = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        let mut resource_copy = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let mut runtime_copy = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer_provider_copy = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter_provider_copy = otel_meter_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger_provider_copy = otel_logger_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut tracer_copy = otel_tracer_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter_copy = otel_meter_t {
+            inner: ptr::null_mut(),
+        };
+        let mut logger_copy = otel_logger_t {
+            inner: ptr::null_mut(),
+        };
+        let mut span_copy = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        let options = otel_span_options_t {
+            size: size_of::<otel_span_options_t>(),
+            kind: -1,
+            start_time_unix_nano: 0,
+            parent: ptr::null(),
+            end_on_release: 1,
+        };
+
+        // SAFETY: all handles are local writable storage; the constructors
+        // produce initialized handles and every handle is released below. The
+        // span uses `end_on_release` to exercise the last-release path.
+        unsafe {
+            assert_eq!(otel_resource_new(&mut resource), otel_result_t::OTEL_OK);
+            assert_eq!(otel_runtime_new(&mut runtime), otel_result_t::OTEL_OK);
+            assert_eq!(
+                otel_tracer_provider_new(&mut tracer_provider, &resource, &runtime),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_new(&mut meter_provider, &resource, &runtime),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_new(&mut logger_provider, &resource, &runtime),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_provider_tracer(&tracer_provider, &mut tracer, c"scope".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_meter(&meter_provider, &mut meter, c"scope".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_logger(&logger_provider, &mut logger, c"scope".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_span_start_with_options_arr(
+                    &tracer,
+                    &options,
+                    &mut span,
+                    c"span".as_ptr(),
+                    ptr::null(),
+                    0
+                ),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(
+                otel_resource_retain(&resource, &mut resource_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_runtime_retain(&runtime, &mut runtime_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_provider_retain(&tracer_provider, &mut tracer_provider_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_retain(&meter_provider, &mut meter_provider_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_provider_retain(&logger_provider, &mut logger_provider_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracer_retain(&tracer, &mut tracer_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_retain(&meter, &mut meter_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_logger_retain(&logger, &mut logger_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_retain(&span, &mut span_copy),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(resource_copy.inner, resource.inner);
+            assert_eq!(runtime_copy.inner, runtime.inner);
+            assert_eq!(tracer_provider_copy.inner, tracer_provider.inner);
+            assert_eq!(meter_provider_copy.inner, meter_provider.inner);
+            assert_eq!(logger_provider_copy.inner, logger_provider.inner);
+            assert_eq!(tracer_copy.inner, tracer.inner);
+            assert_eq!(meter_copy.inner, meter.inner);
+            assert_eq!(logger_copy.inner, logger.inner);
+            assert_eq!(span_copy.inner, span.inner);
+
+            otel_span_release(&mut span);
+            otel_span_release(&mut span_copy);
+            otel_logger_release(&mut logger);
+            otel_logger_release(&mut logger_copy);
+            otel_meter_release(&mut meter);
+            otel_meter_release(&mut meter_copy);
+            otel_tracer_release(&mut tracer);
+            otel_tracer_release(&mut tracer_copy);
+            otel_logger_provider_release(&mut logger_provider);
+            otel_logger_provider_release(&mut logger_provider_copy);
+            otel_meter_provider_release(&mut meter_provider);
+            otel_meter_provider_release(&mut meter_provider_copy);
+            otel_tracer_provider_release(&mut tracer_provider);
+            otel_tracer_provider_release(&mut tracer_provider_copy);
+            otel_runtime_release(&mut runtime);
+            otel_runtime_release(&mut runtime_copy);
+            otel_resource_release(&mut resource);
+            otel_resource_release(&mut resource_copy);
+        }
+
+        assert!(resource.inner.is_null());
+        assert!(resource_copy.inner.is_null());
+        assert!(runtime.inner.is_null());
+        assert!(runtime_copy.inner.is_null());
+        assert!(span.inner.is_null());
+        assert!(span_copy.inner.is_null());
+    }
+
+    #[test]
+    fn retain_release_wrappers_round_trip_metric_instruments() {
+        let _env = no_exporters();
+        let mut provider = otel_meter_provider_t {
+            inner: ptr::null_mut(),
+        };
+        let mut meter = otel_meter_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_u64 = otel_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_f64 = otel_counter_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut updown = otel_updown_counter_i64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut histogram = otel_histogram_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut gauge = otel_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_gauge = otel_observable_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_counter = otel_observable_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_u64_copy = otel_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut counter_f64_copy = otel_counter_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut updown_copy = otel_updown_counter_i64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut histogram_copy = otel_histogram_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut gauge_copy = otel_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_gauge_copy = otel_observable_gauge_f64_t {
+            inner: ptr::null_mut(),
+        };
+        let mut observable_counter_copy = otel_observable_counter_u64_t {
+            inner: ptr::null_mut(),
+        };
+
+        // SAFETY: all handles are local writable storage; the constructors
+        // produce initialized handles and every handle is released below. The
+        // observable callbacks are no-ops and no collection runs in this test.
+        unsafe {
+            assert_eq!(
+                otel_meter_provider_new(&mut provider, ptr::null(), ptr::null()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_provider_meter(&provider, &mut meter, c"scope".as_ptr()),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_counter_u64(
+                    &meter,
+                    &mut counter_u64,
+                    c"counter.u64".as_ptr(),
+                    ptr::null(),
+                    ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_counter_f64(
+                    &meter,
+                    &mut counter_f64,
+                    c"counter.f64".as_ptr(),
+                    ptr::null(),
+                    ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_updown_counter_i64(
+                    &meter,
+                    &mut updown,
+                    c"updown.i64".as_ptr(),
+                    ptr::null(),
+                    ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_histogram_f64(
+                    &meter,
+                    &mut histogram,
+                    c"histogram.f64".as_ptr(),
+                    ptr::null(),
+                    ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_gauge_f64(
+                    &meter,
+                    &mut gauge,
+                    c"gauge.f64".as_ptr(),
+                    ptr::null(),
+                    ptr::null()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_observable_gauge_f64(
+                    &meter,
+                    &mut observable_gauge,
+                    c"observable.gauge".as_ptr(),
+                    ptr::null(),
+                    ptr::null(),
+                    Some(noop_retain_observe_f64),
+                    ptr::null_mut()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_meter_observable_counter_u64(
+                    &meter,
+                    &mut observable_counter,
+                    c"observable.counter".as_ptr(),
+                    ptr::null(),
+                    ptr::null(),
+                    Some(noop_retain_observe_u64),
+                    ptr::null_mut()
+                ),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(
+                otel_counter_u64_retain(&counter_u64, &mut counter_u64_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_counter_f64_retain(&counter_f64, &mut counter_f64_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_updown_counter_i64_retain(&updown, &mut updown_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_histogram_f64_retain(&histogram, &mut histogram_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_gauge_f64_retain(&gauge, &mut gauge_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_observable_gauge_f64_retain(&observable_gauge, &mut observable_gauge_copy),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_observable_counter_u64_retain(
+                    &observable_counter,
+                    &mut observable_counter_copy
+                ),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(counter_u64_copy.inner, counter_u64.inner);
+            assert_eq!(counter_f64_copy.inner, counter_f64.inner);
+            assert_eq!(updown_copy.inner, updown.inner);
+            assert_eq!(histogram_copy.inner, histogram.inner);
+            assert_eq!(gauge_copy.inner, gauge.inner);
+            assert_eq!(observable_gauge_copy.inner, observable_gauge.inner);
+            assert_eq!(observable_counter_copy.inner, observable_counter.inner);
+
+            otel_counter_u64_release(&mut counter_u64);
+            otel_counter_u64_release(&mut counter_u64_copy);
+            otel_counter_f64_release(&mut counter_f64);
+            otel_counter_f64_release(&mut counter_f64_copy);
+            otel_updown_counter_i64_release(&mut updown);
+            otel_updown_counter_i64_release(&mut updown_copy);
+            otel_histogram_f64_release(&mut histogram);
+            otel_histogram_f64_release(&mut histogram_copy);
+            otel_gauge_f64_release(&mut gauge);
+            otel_gauge_f64_release(&mut gauge_copy);
+            otel_observable_gauge_f64_release(&mut observable_gauge);
+            otel_observable_gauge_f64_release(&mut observable_gauge_copy);
+            otel_observable_counter_u64_release(&mut observable_counter);
+            otel_observable_counter_u64_release(&mut observable_counter_copy);
+            otel_meter_release(&mut meter);
+            otel_meter_provider_release(&mut provider);
+        }
+
+        assert!(counter_u64.inner.is_null());
+        assert!(counter_u64_copy.inner.is_null());
+        assert!(observable_gauge.inner.is_null());
+        assert!(observable_gauge_copy.inner.is_null());
+        assert!(observable_counter.inner.is_null());
+        assert!(observable_counter_copy.inner.is_null());
     }
 }

@@ -138,6 +138,64 @@ mod tests {
     }
 
     #[test]
+    fn resource_new_with_attributes_varargs_adds_custom_attribute() {
+        let mut handle = otel_resource_t {
+            inner: ptr::null_mut(),
+        };
+        let key = c"custom.vararg";
+        let value = c"vararg-value";
+        let attribute = otel_attribute_t {
+            kind: otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32,
+            key: key.as_ptr(),
+            key_len: key.to_bytes().len(),
+            value: otel_attribute_value_t {
+                string: value.as_ptr().cast::<c_char>(),
+            },
+            value_len: value.to_bytes().len(),
+        };
+        assert_eq!(
+            // SAFETY: the variadic list holds one initialized attribute and ends
+            // with the required NULL sentinel; the handle is writable storage.
+            unsafe {
+                otel_resource_new_with_attributes(
+                    &mut handle,
+                    &raw const attribute,
+                    ptr::null::<otel_attribute_t>(),
+                )
+            },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        let resource = unsafe { arc::<ResourceInner>(const_slot(&handle)) }.unwrap();
+        assert_eq!(
+            resource.get(&Key::new("custom.vararg")),
+            Some(Value::String("vararg-value".to_owned().into()))
+        );
+        drop(resource);
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_resource_release(&mut handle) };
+        assert!(handle.inner.is_null());
+
+        let bad = otel_attribute_t {
+            kind: 99,
+            ..attribute
+        };
+        assert_eq!(
+            // SAFETY: the invalid attribute is rejected before it is converted;
+            // the handle stays untouched.
+            unsafe {
+                otel_resource_new_with_attributes(
+                    &mut handle,
+                    &raw const bad,
+                    ptr::null::<otel_attribute_t>(),
+                )
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(handle.inner.is_null());
+    }
+
+    #[test]
     fn resource_constructors_reject_invalid_inputs() {
         let mut handle = otel_resource_t {
             inner: ptr::null_mut(),

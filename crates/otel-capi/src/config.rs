@@ -313,6 +313,35 @@ pub(crate) mod tests {
     }
 
     #[test]
+    fn otlp_protocol_converts_to_sdk_protocol() {
+        assert_eq!(Protocol::from(OtlpProtocol::Grpc), Protocol::HttpBinary);
+        assert_eq!(
+            Protocol::from(OtlpProtocol::HttpBinary),
+            Protocol::HttpBinary
+        );
+        assert_eq!(Protocol::from(OtlpProtocol::HttpJson), Protocol::HttpJson);
+    }
+
+    #[test]
+    fn otlp_protocol_defaults_when_no_variables_are_set() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_EXPORTER_OTLP_UNSET_PROTOCOL");
+        env.remove("OTEL_EXPORTER_OTLP_PROTOCOL");
+        assert_eq!(otlp_protocol("UNSET").unwrap(), OtlpProtocol::HttpJson);
+    }
+
+    #[test]
+    fn env_guard_restores_preexisting_values() {
+        let Ok(original) = env::var("PATH") else {
+            return;
+        };
+        let mut env = EnvGuard::new();
+        env.set("PATH", &original);
+        drop(env);
+        assert_eq!(env::var("PATH").unwrap(), original);
+    }
+
+    #[test]
     fn otlp_protocol_prefers_signal_variable_and_defaults_to_json() {
         let mut env = EnvGuard::new();
         env.set("OTEL_EXPORTER_OTLP_TEST_PROTOCOL", "grpc");

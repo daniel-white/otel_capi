@@ -584,6 +584,46 @@ mod tests {
     }
 
     #[test]
+    fn attribute_views_cover_float_and_fallback_values() {
+        let values = [
+            KeyValue::new("float", 2.5f64),
+            KeyValue::new(
+                "array",
+                opentelemetry::Value::Array(opentelemetry::Array::Bool(vec![true])),
+            ),
+        ];
+        let view = AttributeViews::new(values.iter());
+        let (ptr, count) = view.as_slice();
+        assert_eq!(count, 2);
+        // SAFETY: the views stay alive until `view` is dropped.
+        let attrs = unsafe { std::slice::from_raw_parts(ptr, count) };
+        assert_eq!(
+            attrs[0].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_F64 as i32
+        );
+        assert_eq!(
+            // SAFETY: kind selects the double member.
+            unsafe { attrs[0].value.double_value },
+            2.5
+        );
+        assert_eq!(attrs[0].value_len, 0);
+        assert_eq!(
+            attrs[1].kind,
+            otel_attribute_type_t::OTEL_ATTRIBUTE_TYPE_STRING as i32
+        );
+        assert!(attrs[1].value_len > 0);
+        // SAFETY: kind selects the string member holding the fallback text.
+        let text = unsafe {
+            std::str::from_utf8(std::slice::from_raw_parts(
+                attrs[1].value.string.cast::<u8>(),
+                attrs[1].value_len,
+            ))
+            .unwrap()
+        };
+        assert_eq!(text, values[1].value.to_string());
+    }
+
+    #[test]
     fn item_transport_rejects_short_struct() {
         let value = otel_item_transport_t {
             size: 1,
@@ -874,6 +914,14 @@ mod tests {
             assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_DEBUG);
         }
         for value in [
+            Severity::Info,
+            Severity::Info2,
+            Severity::Info3,
+            Severity::Info4,
+        ] {
+            assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_INFO);
+        }
+        for value in [
             Severity::Warn,
             Severity::Warn2,
             Severity::Warn3,
@@ -889,7 +937,12 @@ mod tests {
         ] {
             assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_ERROR);
         }
-        for value in [Severity::Fatal, Severity::Fatal2, Severity::Fatal4] {
+        for value in [
+            Severity::Fatal,
+            Severity::Fatal2,
+            Severity::Fatal3,
+            Severity::Fatal4,
+        ] {
             assert_eq!(severity(value), otel_severity_t::OTEL_SEVERITY_FATAL);
         }
         use opentelemetry::trace::SpanKind;

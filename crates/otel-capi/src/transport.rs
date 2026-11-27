@@ -269,8 +269,14 @@ impl std::error::Error for CallbackError {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::tests::EnvGuard;
+    use crate::handles::RuntimeInner;
+    use opentelemetry_http::HttpClient;
     use std::ffi::c_char;
+    use std::future::Future;
+    use std::pin::pin;
     use std::ptr;
+    use std::task::{Context as TaskContext, Poll, Waker};
 
     #[derive(Default)]
     struct Observed {
@@ -310,6 +316,25 @@ mod tests {
             len: b"yes".len(),
         },
     }]);
+    static INVALID_VALUE_HEADERS: Headers = Headers([otel_transport_header_t {
+        name: otel_str_t {
+            ptr: b"x-test".as_ptr().cast::<c_char>(),
+            len: b"x-test".len(),
+        },
+        value: otel_str_t {
+            ptr: b"bad\nvalue".as_ptr().cast::<c_char>(),
+            len: b"bad\nvalue".len(),
+        },
+    }]);
+
+    fn block_on_ready<F: Future>(future: F) -> F::Output {
+        let mut task = TaskContext::from_waker(Waker::noop());
+        let mut future = pin!(future);
+        match future.as_mut().poll(&mut task) {
+            Poll::Ready(output) => output,
+            Poll::Pending => panic!("callback transport should be ready immediately"),
+        }
+    }
 
     fn request() -> Request<Bytes> {
         Request::builder()
@@ -437,6 +462,33 @@ mod tests {
         otel_result_t::OTEL_OK
     }
 
+    unsafe extern "C" fn invalid_header_value(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe {
+            *response = otel_transport_response_t {
+                status_code: 200,
+                headers: INVALID_VALUE_HEADERS.0.as_ptr(),
+                header_count: INVALID_VALUE_HEADERS.0.len(),
+                ..otel_transport_response_t::EMPTY
+            };
+        }
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn empty_response(
+        _request: *const otel_transport_request_t,
+        response: *mut otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe { (*response).status_code = 200 };
+        otel_result_t::OTEL_OK
+    }
+
     #[test]
     fn invoke_passes_request_fields_and_copies_response() {
         let mut observed = Observed::default();
@@ -506,6 +558,177 @@ mod tests {
         assert_eq!(
             error.downcast_ref::<CallbackError>().unwrap().status,
             otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+    }
+
+    #[test]
+    fn transport_new_and_client_new_carry_callback_and_configuration() {
+        let mut observed = Observed::default();
+        let observed_ptr = (&mut observed as *mut Observed).cast::<c_void>();
+        let transport = Transport::new(record_and_succeed, observed_ptr);
+        assert_eq!(transport.user_data, observed_ptr);
+        let callback = CallbackTransportClient::new(
+            "named".to_owned(),
+            transport,
+            Duration::from_millis(1500),
+        );
+        assert_eq!(callback.name, "named");
+        assert_eq!(callback.timeout_ms, 1500);
+
+        let debug = format!("{callback:?}");
+        assert!(debug.contains("CallbackTransportClient"));
+        assert!(debug.contains("named"));
+        assert!(debug.contains("1500"));
+
+        let response = callback.invoke(request()).unwrap();
+        assert_eq!(response.status(), 202);
+        assert_eq!(observed.method, "POST");
+        assert_eq!(observed.timeout_ms, 1500);
+    }
+
+    #[test]
+    fn callback_client_reads_registered_transport_and_timeout() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_EXPORTER_OTLP_TRACES_TIMEOUT", "1234");
+        let runtime = RuntimeInner::new();
+        let mut observed = Observed::default();
+        runtime
+            .set_transport(
+                "unit".to_owned(),
+                Transport::new(
+                    record_and_succeed,
+                    (&mut observed as *mut Observed).cast::<c_void>(),
+                ),
+            )
+            .unwrap();
+
+        let callback = callback_client(&runtime, "unit", "TRACES").unwrap();
+        assert_eq!(callback.name, "unit");
+        assert_eq!(callback.timeout_ms, 1234);
+        assert_eq!(callback.invoke(request()).unwrap().status(), 202);
+        assert_eq!(observed.timeout_ms, 1234);
+    }
+
+    #[test]
+    fn callback_client_reports_missing_transport_and_bad_timeout() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_EXPORTER_OTLP_TEST_TIMEOUT", "bad");
+        let runtime = RuntimeInner::new();
+
+        assert_eq!(
+            callback_client(&runtime, "missing", "TEST")
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        runtime
+            .set_transport(
+                "unit".to_owned(),
+                Transport::new(fail_without_error, ptr::null_mut()),
+            )
+            .unwrap();
+        assert_eq!(
+            callback_client(&runtime, "unit", "TEST")
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+    }
+
+    #[test]
+    fn http_client_send_bytes_invokes_registered_callback() {
+        let mut observed = Observed::default();
+        let callback = CallbackTransportClient::new(
+            "unit".to_owned(),
+            Transport::new(
+                record_and_succeed,
+                (&mut observed as *mut Observed).cast::<c_void>(),
+            ),
+            Duration::from_millis(250),
+        );
+
+        let response = block_on_ready(callback.send_bytes(request())).unwrap();
+        assert_eq!(response.status(), 202);
+        assert_eq!(response.body().as_ref(), &b"accepted"[..]);
+        assert_eq!(observed.method, "POST");
+    }
+
+    #[test]
+    fn c_string_rejects_embedded_nul_bytes() {
+        assert_eq!(c_string(b"POST", "method").unwrap().to_bytes(), b"POST");
+        assert_eq!(
+            c_string(b"a\0b", "URL").unwrap_err().to_string(),
+            "transport callback failed (1): URL contains a NUL byte"
+        );
+    }
+
+    #[test]
+    fn response_error_reads_only_valid_error_views() {
+        let empty = otel_transport_response_t::EMPTY;
+        assert_eq!(
+            // SAFETY: the response is initialized and its error view is empty.
+            unsafe { response_error(&empty) },
+            None
+        );
+
+        let message = b"backend down";
+        let mut with_error = otel_transport_response_t::EMPTY;
+        with_error.error = otel_str_t {
+            ptr: message.as_ptr().cast::<c_char>(),
+            len: message.len(),
+        };
+        assert_eq!(
+            // SAFETY: the error view points to readable static bytes for this call.
+            unsafe { response_error(&with_error) }.as_deref(),
+            Some("backend down")
+        );
+
+        let invalid = [0xffu8];
+        with_error.error = otel_str_t {
+            ptr: invalid.as_ptr().cast::<c_char>(),
+            len: invalid.len(),
+        };
+        assert_eq!(
+            // SAFETY: the error view points to readable but invalid UTF-8 bytes.
+            unsafe { response_error(&with_error) },
+            None
+        );
+
+        with_error.error = otel_str_t {
+            ptr: ptr::null(),
+            len: message.len(),
+        };
+        assert_eq!(
+            // SAFETY: a NULL error pointer is rejected before it is dereferenced.
+            unsafe { response_error(&with_error) },
+            None
+        );
+    }
+
+    #[test]
+    fn status_text_describes_result_codes() {
+        assert_eq!(status_text(otel_result_t::OTEL_OK), "ok");
+        assert_eq!(
+            status_text(otel_result_t::OTEL_ERR_INVALID_ARGUMENT),
+            "invalid argument"
+        );
+        assert_eq!(
+            status_text(otel_result_t::OTEL_ERR_CONFIG),
+            "configuration error"
+        );
+        assert_eq!(status_text(otel_result_t::OTEL_ERR_EXPORT), "export failed");
+    }
+
+    #[test]
+    fn invoke_accepts_empty_body_and_rejects_invalid_header_values() {
+        let response = client(empty_response).invoke(request()).unwrap();
+        assert_eq!(response.status(), 200);
+        assert!(response.body().is_empty());
+
+        let error = client(invalid_header_value).invoke(request()).unwrap_err();
+        assert_eq!(
+            error.downcast_ref::<CallbackError>().unwrap().status,
+            otel_result_t::OTEL_ERR_EXPORT
         );
     }
 }

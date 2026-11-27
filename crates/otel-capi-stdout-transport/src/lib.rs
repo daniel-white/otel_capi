@@ -284,6 +284,10 @@ mod tests {
     use opentelemetry_proto::tonic::logs::v1::{LogRecord, ResourceLogs, ScopeLogs};
     use opentelemetry_proto::tonic::metrics::v1::{Metric, ResourceMetrics, ScopeMetrics};
     use opentelemetry_proto::tonic::trace::v1::{ResourceSpans, ScopeSpans, Span};
+    #[cfg(all(not(miri), unix))]
+    use otel_capi::handles::otel_runtime_release;
+    #[cfg(all(not(miri), unix))]
+    use otel_capi::runtime::otel_runtime_new;
     use std::ffi::CStr;
     use std::mem::size_of;
     use std::ptr::NonNull;
@@ -353,6 +357,19 @@ mod tests {
         // pointer and length stay valid for the test.
         unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
     }
+
+    #[cfg(all(not(miri), unix))]
+    #[unsafe(no_mangle)]
+    pub unsafe extern "C" fn otel_runtime_set_transport(
+        _runtime: *mut otel_runtime_t,
+        _transport: *const otel_transport_t,
+    ) -> otel_result_t {
+        otel_result_t::OTEL_OK
+    }
+
+    #[cfg(all(not(miri), unix))]
+    #[used]
+    static KEEP_TEST_SETTER: otel_set_transport_fn = otel_runtime_set_transport;
 
     #[test]
     fn abi_version_is_one() {
@@ -616,5 +633,45 @@ mod tests {
             unsafe { otel_stdout_transport_register(&mut runtime, &handle) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
+    }
+
+    #[test]
+    fn send_prints_url_when_enabled() {
+        let mut handle = new_handle(true);
+        let mut response = otel_transport_response_t::EMPTY;
+        let body = ExportTraceServiceRequest::default().encode_to_vec();
+        let view = request_view(cstr(b"http://localhost/v1/traces\0"), &body);
+
+        let status = send(&handle, &view, &mut response);
+
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.error.len, 0);
+        release(&mut handle);
+    }
+
+    #[cfg(all(not(miri), unix))]
+    #[test]
+    fn register_uses_core_setter_for_initialized_handle() {
+        let mut handle = new_handle(false);
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+
+        assert_eq!(
+            // SAFETY: `runtime` is writable, aligned storage for this handle type.
+            unsafe { otel_runtime_new(&mut runtime) },
+            otel_result_t::OTEL_OK
+        );
+
+        assert_eq!(
+            // SAFETY: both handles are initialized and stay alive for this call.
+            unsafe { otel_stdout_transport_register(&mut runtime, &handle) },
+            otel_result_t::OTEL_OK
+        );
+
+        // SAFETY: `runtime` is initialized and this drops our reference exactly once.
+        unsafe { otel_runtime_release(&mut runtime) };
+        release(&mut handle);
     }
 }

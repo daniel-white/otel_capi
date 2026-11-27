@@ -89,9 +89,9 @@ miri:
 coverage: miri | $(BUILD_DIR)
 	mkdir -p $(COVERAGE_DIR)
 	$(CARGO_LLVM_COV) --locked --workspace --lib --no-report
-	$(CARGO_LLVM_COV) report --summary-only
-	$(CARGO_LLVM_COV) report --fail-under-lines 70 --lcov --output-path $(COVERAGE_DIR)/lcov.info
-	$(CARGO_LLVM_COV) report --html --output-dir $(COVERAGE_DIR)
+	$(CARGO_LLVM_COV) report --summary-only --ignore-filename-regex 'build\.rs'
+	$(CARGO_LLVM_COV) report --fail-under-lines 90 --lcov --ignore-filename-regex 'build\.rs' --output-path $(COVERAGE_DIR)/lcov.info
+	$(CARGO_LLVM_COV) report --html --ignore-filename-regex 'build\.rs' --output-dir $(COVERAGE_DIR)
 
 docs: build | $(BUILD_DIR)
 	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)

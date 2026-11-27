@@ -99,6 +99,12 @@ mod tests {
     }
 
     #[test]
+    fn system_time_accepts_the_largest_positive_timestamp() {
+        let time = system_time(i64::MAX).unwrap().unwrap();
+        assert!(time > UNIX_EPOCH + Duration::from_secs(i64::MAX as u64 / 1_000_000_000));
+    }
+
+    #[test]
     fn copy_to_buffer_writes_terminator_and_checks_capacity() {
         let mut buf = [0i8; 4];
         assert!(copy_to_buffer("abc", buf.as_mut_ptr(), buf.len()).is_ok());

@@ -329,7 +329,42 @@ mod tests {
     }
 
     #[test]
+    fn init_handle_can_reuse_a_released_slot() {
+        let mut raw: *mut c_void = ptr::null_mut();
+        let slot = (&mut raw as *mut *mut c_void).cast::<c_void>();
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { init_handle::<u8>(slot, 1) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!raw.is_null());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<u8>(slot) };
+        assert!(raw.is_null());
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { init_handle::<u8>(slot, 2) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!raw.is_null());
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { release_handle::<u8>(slot) };
+        assert!(raw.is_null());
+    }
+
+    #[test]
     fn find_core_symbol_returns_none_for_unknown_name() {
         assert!(find_core_symbol::<usize>(b"otel_capi_no_such_symbol_for_tests\0").is_none());
+    }
+
+    #[test]
+    fn find_core_symbol_resolves_exported_core_function() {
+        let Some(last_error) =
+            find_core_symbol::<extern "C" fn() -> *const c_char>(b"otel_last_error\0")
+        else {
+            // Dynamic symbol lookup is unavailable in some harnesses.
+            return;
+        };
+        assert!(!last_error().is_null());
     }
 }

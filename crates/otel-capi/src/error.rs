@@ -225,6 +225,28 @@ mod tests {
     }
 
     #[test]
+    fn unset_last_error_is_empty_and_copies_one_terminator() {
+        LAST_ERROR.with(|last| *last.borrow_mut() = None);
+        // SAFETY: `otel_last_error` returns a pointer to a live thread-local C string.
+        let empty = unsafe { CStr::from_ptr(otel_last_error()) }
+            .to_str()
+            .unwrap();
+        assert_eq!(empty, "");
+        assert_eq!(
+            // SAFETY: a NULL output buffer is explicitly accepted by the function.
+            unsafe { otel_copy_last_error(std::ptr::null_mut(), 0) },
+            1
+        );
+        let mut buf = [1i8; 2];
+        assert_eq!(
+            // SAFETY: the local array has room for the terminator.
+            unsafe { otel_copy_last_error(buf.as_mut_ptr(), buf.len()) },
+            1
+        );
+        assert_eq!(buf, [0, 1]);
+    }
+
+    #[test]
     fn copy_last_error_reports_required_size() {
         set_error(otel_result_t::OTEL_ERR_CONFIG, "12345");
         // SAFETY: a NULL output buffer is explicitly accepted by the function.
@@ -324,6 +346,13 @@ mod tests {
             // SAFETY: the local C string is valid for the duration of the call.
             unsafe { optional_utf8(c"hi".as_ptr(), "value") }.unwrap(),
             Some("hi".to_owned())
+        );
+        assert_eq!(
+            // SAFETY: `invalid` is a NUL-terminated byte buffer that lives for the call.
+            unsafe { optional_utf8(invalid.as_ptr().cast(), "value") }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_UTF8
         );
     }
 }

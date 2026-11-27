@@ -75,9 +75,9 @@ nix develop --command make coverage
 `make coverage` runs Miri across every crate first and then measures the same
 tests with LLVM instrumentation. Miri interprets MIR and cannot emit LLVM
 coverage data itself, so the report reflects the workspace test suite that Miri
-validated. The target prints a workspace summary, fails below 70% line coverage,
-and writes the report to `build/coverage/html` and `build/coverage/lcov.info`,
-which are gitignored.
+validated. The target prints a workspace summary, excludes `build.rs` from the
+report, fails below 90% line coverage, and writes the report to
+`build/coverage/html` and `build/coverage/lcov.info`, which are gitignored.
 
 Generate HTML API documentation from the generated headers with:
 

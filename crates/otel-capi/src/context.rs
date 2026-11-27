@@ -348,11 +348,14 @@ pub unsafe extern "C" fn otel_context_scope_release(handle: *mut otel_context_sc
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::handles::{SpanInner, otel_span_release};
     use crate::propagation::{
         otel_baggage_from_str, otel_baggage_str, otel_baggage_value_from_str,
         otel_baggage_value_str, otel_traceparent_from_str, otel_traceparent_str,
         otel_tracestate_from_str, otel_tracestate_str,
     };
+    use opentelemetry::trace::{Span as _, Tracer as _, TracerProvider as _};
+    use opentelemetry_sdk::trace::{SdkTracerProvider, Span as SdkSpan};
     use std::ffi::{CStr, c_char};
     use std::ptr;
 
@@ -731,5 +734,212 @@ mod tests {
 
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         unsafe { otel_context_release(&mut context) };
+    }
+
+    #[test]
+    fn current_rejects_null_output() {
+        assert_eq!(
+            // SAFETY: NULL output is rejected before it is dereferenced.
+            unsafe { otel_context_current(ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn from_span_copies_span_context_and_validates_arguments() {
+        let provider = SdkTracerProvider::builder().build();
+        let tracer = provider.tracer("context-tests");
+        let sdk_span: SdkSpan = tracer.start("parent");
+        let expected = sdk_span.span_context().clone();
+        let mut span = otel_span_t {
+            inner: ptr::null_mut(),
+        };
+        let mut context = empty_context();
+        let mut traceparent = otel_traceparent_t { value: [0; 56] };
+
+        assert!(
+            // SAFETY: `span` is writable handle storage and the SDK span owns its state.
+            unsafe { init(slot(&mut span), SpanInner::new(sdk_span, false)) }.is_ok()
+        );
+        assert_eq!(
+            // SAFETY: a NULL span is rejected before it is dereferenced.
+            unsafe { otel_context_from_span(ptr::null(), &mut context) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: `span` is initialized, while NULL output is rejected by `init`.
+            unsafe { otel_context_from_span(&span, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: `span` and `context` are initialized handle slots.
+            unsafe { otel_context_from_span(&span, &mut context) },
+            otel_result_t::OTEL_OK
+        );
+        assert!(!context.inner.is_null());
+
+        assert_eq!(
+            // SAFETY: `context` is initialized and `traceparent` is writable typed storage.
+            unsafe {
+                otel_context_inject(&context, &mut traceparent, ptr::null_mut(), ptr::null_mut())
+            },
+            otel_result_t::OTEL_OK
+        );
+        let injected = text(
+            // SAFETY: `traceparent` was filled above and stays alive for this call.
+            unsafe { otel_traceparent_str(&traceparent) },
+        );
+        assert!(injected.contains(&expected.trace_id().to_string()));
+        assert!(injected.contains(&expected.span_id().to_string()));
+
+        assert_eq!(
+            // SAFETY: `span` is initialized, while NULL output is rejected by `init`.
+            unsafe { otel_context_from_span(&span, ptr::null_mut()) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        // SAFETY: both handles were initialized above and are released exactly once.
+        unsafe {
+            otel_span_release(&mut span);
+            otel_context_release(&mut context);
+        }
+    }
+
+    #[test]
+    fn inject_baggage_only_context_and_reject_null_source() {
+        let mut base = empty_context();
+        let mut tagged = empty_context();
+        let value = baggage_value(c"injected");
+        let mut traceparent = otel_traceparent_t { value: [0; 56] };
+        let mut baggage = otel_baggage_t { value: [0; 1025] };
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut base) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_set_baggage(&base, c"key".as_ptr(), &value, &mut tagged) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: `tagged` is initialized and both destinations stay alive for the call.
+            unsafe {
+                otel_context_inject(&tagged, &mut traceparent, ptr::null_mut(), &mut baggage)
+            },
+            otel_result_t::OTEL_OK
+        );
+        assert!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_baggage_str(&baggage) }).contains("key=injected")
+        );
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            text(unsafe { otel_traceparent_str(&traceparent) }),
+            ""
+        );
+        assert_eq!(
+            // SAFETY: a NULL source handle is rejected before it is dereferenced.
+            unsafe {
+                otel_context_inject(ptr::null(), &mut traceparent, ptr::null_mut(), &mut baggage)
+            },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe {
+            otel_context_release(&mut base);
+            otel_context_release(&mut tagged);
+        }
+    }
+
+    #[test]
+    fn baggage_length_aware_variants_report_invalid_key_and_null_value() {
+        let invalid_bytes = [0xffu8];
+        let invalid_key = otel_str_t {
+            ptr: invalid_bytes.as_ptr().cast(),
+            len: invalid_bytes.len(),
+        };
+        let valid_key = otel_str_t {
+            ptr: c"key".as_ptr(),
+            len: 3,
+        };
+        let nul_bytes = b"a\0b";
+        let nul_key = otel_str_t {
+            ptr: nul_bytes.as_ptr().cast(),
+            len: nul_bytes.len(),
+        };
+        let value = baggage_value(c"v");
+        let mut base = empty_context();
+        let mut out = empty_context();
+        let mut baggage_out = otel_baggage_value_t { value: [0; 257] };
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut base) },
+            otel_result_t::OTEL_OK
+        );
+        assert_eq!(
+            // SAFETY: the view describes one readable invalid UTF-8 byte.
+            unsafe { otel_context_set_baggage_n(&base, invalid_key, &value, &mut out) },
+            otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+        assert_eq!(
+            // SAFETY: the view describes one readable invalid UTF-8 byte.
+            unsafe { otel_context_get_baggage_n(&base, invalid_key, &mut baggage_out) },
+            otel_result_t::OTEL_ERR_INVALID_UTF8
+        );
+        assert_eq!(
+            // SAFETY: the view describes readable UTF-8 bytes containing an embedded NUL.
+            unsafe { otel_context_set_baggage_n(&base, nul_key, &value, &mut out) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert_eq!(
+            // SAFETY: the view describes readable UTF-8 bytes containing an embedded NUL.
+            unsafe { otel_context_get_baggage_n(&base, nul_key, &mut baggage_out) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        assert!(out.inner.is_null());
+        assert_eq!(
+            // SAFETY: NULL baggage value is rejected before it is dereferenced.
+            unsafe { otel_context_set_baggage_n(&base, valid_key, ptr::null(), &mut out) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut base) };
+    }
+
+    #[test]
+    fn scope_release_accepts_null_and_prevents_double_detach() {
+        let mut base = empty_context();
+        let mut scope = empty_scope();
+
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_new(&mut base) },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: a NULL scope handle is documented as a no-op.
+        unsafe { otel_context_scope_release(ptr::null_mut()) };
+        assert_eq!(
+            // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+            unsafe { otel_context_attach(&base, &mut scope) },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: the scope is initialized and attached on this thread.
+        unsafe { otel_context_scope_release(&mut scope) };
+        assert!(scope.inner.is_null());
+        assert_eq!(
+            // SAFETY: the scope was released and the empty handle is rejected.
+            unsafe { otel_context_detach(&mut scope) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+        // SAFETY: releasing an already empty scope is a no-op.
+        unsafe { otel_context_scope_release(&mut scope) };
+
+        // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
+        unsafe { otel_context_release(&mut base) };
     }
 }

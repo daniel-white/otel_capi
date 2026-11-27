@@ -1562,14 +1562,20 @@ pub unsafe extern "C" fn otel_traceparent_span_id(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::abi::otel_transport_t;
     use crate::attributes::{otel_attribute_type_t, otel_attribute_value_t};
     use crate::config::tests::EnvGuard;
     use crate::context::{otel_context_from_span, otel_context_release};
     use crate::handles::{
-        otel_span_release, otel_span_retain, otel_tracer_provider_release, otel_tracer_release,
+        otel_runtime_release, otel_span_release, otel_span_retain, otel_tracer_provider_release,
+        otel_tracer_release,
     };
+    use crate::items::otel_item_transport_t;
     use crate::propagation::otel_traceparent_from_str;
-    use std::ffi::CStr;
+    use crate::runtime::{
+        otel_runtime_new, otel_runtime_set_item_transport, otel_runtime_set_transport,
+    };
+    use std::ffi::{CStr, c_void};
 
     /// Owns a no-exporter provider and tracer, releasing both on drop.
     struct Fixture {
@@ -1656,6 +1662,32 @@ mod tests {
             },
             value_len: value.to_bytes().len(),
         }
+    }
+
+    fn new_runtime() -> otel_runtime_t {
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: `runtime` is writable, aligned storage for one handle pointer.
+            unsafe { otel_runtime_new(&mut runtime) },
+            otel_result_t::OTEL_OK
+        );
+        runtime
+    }
+
+    unsafe extern "C" fn noop_transport_send(
+        _request: *const crate::abi::otel_transport_request_t,
+        _response: *mut crate::abi::otel_transport_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        otel_result_t::OTEL_OK
+    }
+
+    unsafe extern "C" fn noop_encoded_item(
+        _item: *const crate::items::otel_encoded_item_t,
+        _user_data: *mut c_void,
+    ) {
     }
 
     #[test]
@@ -2359,5 +2391,334 @@ mod tests {
         assert!(!(unsafe { otel_span_id_is_valid(&otel_span_id_t::default()) }));
         assert!(otel_trace_id_t::from_hex("42").is_err());
         assert!(otel_span_id_t::from_hex("42").is_err());
+    }
+
+    #[test]
+    fn sampler_defaults_ratio_and_supports_parentbased_always_off() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_TRACES_SAMPLER");
+        env.remove("OTEL_TRACES_SAMPLER_ARG");
+        env.set("OTEL_TRACES_SAMPLER", "traceidratio");
+        env.set("OTEL_TRACES_SAMPLER_ARG", "   ");
+        match sampler_from_env().unwrap() {
+            Sampler::TraceIdRatioBased(value) => assert_eq!(value, 1.0),
+            other => panic!("unexpected sampler: {other:?}"),
+        }
+        env.set("OTEL_TRACES_SAMPLER", "parentbased_always_off");
+        assert!(matches!(
+            sampler_from_env().unwrap(),
+            Sampler::ParentBased(_)
+        ));
+    }
+
+    #[test]
+    fn id_parsing_rejects_non_hex_digits() {
+        let mut trace = otel_trace_id_t::default();
+        let mut span = otel_span_id_t::default();
+        // SAFETY: both output slots are writable; the static strings have the
+        // required lengths but contain non-hex digits, so they are rejected.
+        unsafe {
+            assert_eq!(
+                otel_trace_id_from_str(c"4bf92f3577b34da6a3ce929d0e0e473z".as_ptr(), &mut trace),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_id_from_str(c"00f067aa0ba902bz".as_ptr(), &mut span),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+        }
+        assert!(otel_trace_id_t::from_hex("4bf92f3577b34da6a3ce929d0e0e473z").is_err());
+        assert!(otel_span_id_t::from_hex("00f067aa0ba902bz").is_err());
+    }
+
+    #[test]
+    fn tracer_n_creates_a_tracer_that_starts_spans() {
+        let fixture = Fixture::new();
+        let mut tracer = otel_tracer_t {
+            inner: ptr::null_mut(),
+        };
+        // SAFETY: all handle slots are writable and aligned; the name views and
+        // NULL attribute sentinel stay valid for the duration of each call.
+        unsafe {
+            assert_eq!(
+                otel_tracer_provider_tracer_n(
+                    &fixture.provider,
+                    &mut tracer,
+                    str_view("length-aware-scope")
+                ),
+                otel_result_t::OTEL_OK
+            );
+            let mut span = otel_span_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                otel_tracer_span_start(
+                    &tracer,
+                    &mut span,
+                    c"from-tracer-n".as_ptr(),
+                    ptr::null::<otel_attribute_t>()
+                ),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut span);
+            otel_tracer_release(&mut tracer);
+        }
+    }
+
+    #[test]
+    fn span_status_n_sets_unset_ok_and_rejects_invalid() {
+        let fixture = Fixture::new();
+        let mut span = fixture.start(c"status-n");
+        // SAFETY: `span` is initialized; both descriptions are static views
+        // with accurate lengths and the invalid status is rejected before use.
+        unsafe {
+            assert_eq!(
+                otel_span_set_status_n(&span, 0, str_view("")),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status_n(&span, 1, str_view("")),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_set_status_n(&span, 3, str_view("bad")),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+        }
+        // SAFETY: `span` was initialized by `Fixture::start`.
+        unsafe { otel_span_release(&mut span) };
+    }
+
+    #[test]
+    fn span_end_timestamp_and_id_outputs_cover_all_paths() {
+        let fixture = Fixture::new();
+        let mut timestamped = fixture.start(c"timestamped");
+        let mut plain = fixture.start(c"plain");
+        let mut trace_id = otel_trace_id_t::default();
+        let mut span_id = otel_span_id_t::default();
+        // SAFETY: both spans are initialized; ID outputs are writable; the
+        // negative timestamp is rejected and zero means "end now" to the SDK.
+        unsafe {
+            assert_eq!(
+                otel_span_trace_id(&timestamped, ptr::null_mut()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_span_id(&timestamped, ptr::null_mut()),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_trace_id(&timestamped, &mut trace_id),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_span_id(&timestamped, &mut span_id),
+                otel_result_t::OTEL_OK
+            );
+            assert!(otel_trace_id_is_valid(&trace_id));
+            assert!(otel_span_id_is_valid(&span_id));
+            assert_eq!(
+                otel_span_end_with_timestamp(&timestamped, -1),
+                otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            );
+            assert_eq!(
+                otel_span_end_with_timestamp(&timestamped, 1_700_000_000_000_000_000),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_end_with_timestamp(&timestamped, 0),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(otel_span_end(&plain), otel_result_t::OTEL_OK);
+            assert_eq!(otel_span_end(&plain), otel_result_t::OTEL_OK);
+            // A span context remains readable after the span has ended.
+            assert_eq!(
+                otel_span_trace_id(&timestamped, &mut trace_id),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_span_span_id(&timestamped, &mut span_id),
+                otel_result_t::OTEL_OK
+            );
+            otel_span_release(&mut timestamped);
+            otel_span_release(&mut plain);
+        }
+    }
+
+    #[test]
+    fn provider_builds_batch_processors_with_valid_delay() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_SDK_DISABLED");
+        env.remove("OTEL_TRACES_SAMPLER");
+        env.remove("OTEL_TRACES_SAMPLER_ARG");
+        env.remove("OTEL_EXPORTER_OTLP_PROTOCOL");
+        env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
+        env.set("OTEL_BSP_SCHEDULE_DELAY", "60000");
+        let mut runtime = new_runtime();
+        for name in [config::STDOUT_TRANSPORT, config::OTLP_HTTP_TRANSPORT] {
+            let descriptor = otel_transport_t {
+                size: std::mem::size_of::<otel_transport_t>(),
+                name: str_view(name),
+                send: noop_transport_send,
+                user_data: ptr::null_mut(),
+            };
+            assert_eq!(
+                // SAFETY: `runtime` is initialized and `descriptor` has a valid
+                // size, a static name view, and a no-op callback.
+                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                otel_result_t::OTEL_OK
+            );
+        }
+        for exporter in ["stdout", "otlp"] {
+            env.set("OTEL_TRACES_EXPORTER", exporter);
+            let mut provider = otel_tracer_provider_t {
+                inner: ptr::null_mut(),
+            };
+            assert_eq!(
+                // SAFETY: both handles are writable and aligned; the runtime is
+                // initialized and carries the callback transports registered above.
+                unsafe { otel_tracer_provider_new(&mut provider, ptr::null(), &runtime) },
+                otel_result_t::OTEL_OK
+            );
+            // SAFETY: `provider` was initialized by the successful call above.
+            unsafe { otel_tracer_provider_release(&mut provider) };
+        }
+
+        env.set("OTEL_TRACES_EXPORTER", "item");
+        let mut provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: both handles are writable and aligned; no item transport
+            // was registered, so the configuration is rejected.
+            unsafe { otel_tracer_provider_new(&mut provider, ptr::null(), &runtime) },
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        assert!(provider.inner.is_null());
+        // SAFETY: `runtime` was initialized by `new_runtime` and is released once.
+        unsafe { otel_runtime_release(&mut runtime) };
+    }
+
+    #[test]
+    fn exporter_builders_use_registered_callback_transports() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_EXPORTER_OTLP_PROTOCOL");
+        env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
+        let mut runtime = new_runtime();
+        for name in [
+            config::STDOUT_TRANSPORT,
+            config::OTLP_HTTP_TRANSPORT,
+            config::OTLP_GRPC_TRANSPORT,
+        ] {
+            let descriptor = otel_transport_t {
+                size: std::mem::size_of::<otel_transport_t>(),
+                name: str_view(name),
+                send: noop_transport_send,
+                user_data: ptr::null_mut(),
+            };
+            assert_eq!(
+                // SAFETY: `runtime` is initialized and `descriptor` has a valid
+                // size, a static name view, and a no-op callback.
+                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                otel_result_t::OTEL_OK
+            );
+        }
+
+        // SAFETY: `runtime` was initialized by `new_runtime`; `arc` increments
+        // its strong count and the returned Arc keeps it alive for these calls.
+        let registry = unsafe { arc::<RuntimeInner>(const_slot(&runtime)) }.unwrap();
+        assert!(build_stdout_exporter(&registry).is_ok());
+        env.set("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL", "grpc");
+        assert!(build_otlp_exporter(&registry).is_ok());
+        env.set("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL", "http/protobuf");
+        assert!(build_otlp_exporter(&registry).is_ok());
+        env.set("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL", "http/json");
+        assert!(build_otlp_exporter(&registry).is_ok());
+        drop(registry);
+        // SAFETY: `runtime` was initialized by `new_runtime` and is released once.
+        unsafe { otel_runtime_release(&mut runtime) };
+    }
+
+    #[test]
+    fn provider_exporter_paths_cover_item_and_reject_invalid_delay() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_SDK_DISABLED");
+        env.remove("OTEL_BSP_SCHEDULE_DELAY");
+        env.remove("OTEL_TRACES_SAMPLER");
+        env.remove("OTEL_TRACES_SAMPLER_ARG");
+        env.remove("OTEL_EXPORTER_OTLP_PROTOCOL");
+        env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
+        let mut runtime = new_runtime();
+
+        let item_transport = otel_item_transport_t {
+            size: std::mem::size_of::<otel_item_transport_t>(),
+            on_span: None,
+            on_log: None,
+            on_metric: None,
+            on_encoded: Some(noop_encoded_item),
+            user_data: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: `runtime` is initialized and `item_transport` is a fully
+            // initialized descriptor with a no-op encoded callback.
+            unsafe { otel_runtime_set_item_transport(&mut runtime, &item_transport) },
+            otel_result_t::OTEL_OK
+        );
+        for name in [config::STDOUT_TRANSPORT, config::OTLP_HTTP_TRANSPORT] {
+            let descriptor = otel_transport_t {
+                size: std::mem::size_of::<otel_transport_t>(),
+                name: str_view(name),
+                send: noop_transport_send,
+                user_data: ptr::null_mut(),
+            };
+            assert_eq!(
+                // SAFETY: `runtime` is initialized and `descriptor` has a valid
+                // size, a static name view, and a no-op callback.
+                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                otel_result_t::OTEL_OK
+            );
+        }
+
+        env.set("OTEL_TRACES_EXPORTER", "item");
+        let mut item_provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: both handles are writable and aligned; the runtime is
+            // initialized and carries the item transport registered above.
+            unsafe { otel_tracer_provider_new(&mut item_provider, ptr::null(), &runtime) },
+            otel_result_t::OTEL_OK
+        );
+        // SAFETY: `item_provider` was initialized by the successful call above.
+        unsafe { otel_tracer_provider_release(&mut item_provider) };
+
+        env.set("OTEL_TRACES_EXPORTER", "stdout");
+        env.set("OTEL_BSP_SCHEDULE_DELAY", "not-a-number");
+        let mut stdout_provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: the handle is writable and aligned; the invalid delay is
+            // rejected before a batch processor is built.
+            unsafe { otel_tracer_provider_new(&mut stdout_provider, ptr::null(), &runtime) },
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        assert!(stdout_provider.inner.is_null());
+
+        env.set("OTEL_TRACES_EXPORTER", "otlp");
+        env.set("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL", "http/json");
+        let mut otlp_provider = otel_tracer_provider_t {
+            inner: ptr::null_mut(),
+        };
+        assert_eq!(
+            // SAFETY: the handle is writable and aligned; the invalid delay is
+            // rejected before a batch processor is built.
+            unsafe { otel_tracer_provider_new(&mut otlp_provider, ptr::null(), &runtime) },
+            otel_result_t::OTEL_ERR_CONFIG
+        );
+        assert!(otlp_provider.inner.is_null());
+
+        // SAFETY: `runtime` was initialized by `new_runtime` and is released once.
+        unsafe { otel_runtime_release(&mut runtime) };
     }
 }

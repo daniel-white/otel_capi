@@ -585,4 +585,71 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn buffer_utf8_rejects_null_typed_buffer() {
+        assert_eq!(
+            // SAFETY: NULL is intentionally invalid input and is checked before dereferencing.
+            unsafe { buffer_utf8::<otel_baggage_value_t>(ptr::null()) }
+                .unwrap_err()
+                .status,
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+    }
+
+    #[test]
+    fn public_wrappers_cover_every_typed_buffer_kind() {
+        const TRACEPARENT: &CStr = c"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
+        let mut parent = otel_traceparent_t { value: [0; 56] };
+        let mut state = otel_tracestate_t { value: [0; 513] };
+        let mut baggage = otel_baggage_t { value: [0; 1025] };
+        let mut value = otel_baggage_value_t { value: [0; 257] };
+
+        // SAFETY: every source is NUL-terminated and every output stays alive for these calls.
+        unsafe {
+            assert_eq!(
+                otel_traceparent_from_str(TRACEPARENT.as_ptr(), &mut parent),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_tracestate_from_str(c"vendor=value".as_ptr(), &mut state),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_baggage_from_str(c"key=value".as_ptr(), &mut baggage),
+                otel_result_t::OTEL_OK
+            );
+            assert_eq!(
+                otel_baggage_value_from_str(c"member".as_ptr(), &mut value),
+                otel_result_t::OTEL_OK
+            );
+
+            assert_eq!(
+                CStr::from_ptr(otel_traceparent_str(&parent)).to_bytes(),
+                TRACEPARENT.to_bytes()
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_tracestate_str(&state)).to_bytes(),
+                b"vendor=value"
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_baggage_str(&baggage)).to_bytes(),
+                b"key=value"
+            );
+            assert_eq!(
+                CStr::from_ptr(otel_baggage_value_str(&value)).to_bytes(),
+                b"member"
+            );
+
+            assert_eq!(
+                otel_traceparent_view(&parent).len,
+                TRACEPARENT.to_bytes().len()
+            );
+            assert_eq!(otel_tracestate_view(&state).len, 12);
+            assert_eq!(otel_baggage_view(&baggage).len, 9);
+            let view = otel_baggage_value_view(&value);
+            assert_eq!(view.len, 6);
+            assert_eq!(view.ptr, value.value.as_ptr());
+        }
+    }
 }

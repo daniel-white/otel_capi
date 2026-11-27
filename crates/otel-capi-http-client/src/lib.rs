@@ -14,7 +14,7 @@ use otel_capi::abi::{
 pub use ureq::http::header::{HeaderMap, HeaderName, HeaderValue};
 pub use ureq::http::{Method, Request};
 use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
-pub use ureq::{Agent, Body};
+pub use ureq::{self, Agent, Body};
 
 /// Failure converting or sending a core transport request.
 #[derive(Debug, Clone, Copy)]
@@ -220,6 +220,13 @@ mod tests {
     use super::*;
     use otel_capi::abi::otel_transport_header_t;
     use std::ffi::CStr;
+    use std::io;
+    use ureq::config::Config;
+    use ureq::http::Uri;
+    use ureq::unversioned::resolver::{ResolvedSocketAddrs, Resolver};
+    use ureq::unversioned::transport::{
+        Buffers, ConnectionDetails, Connector, LazyBuffers, NextTimeout, Transport,
+    };
 
     fn header_view(name: &CStr, value: &CStr) -> otel_transport_header_t {
         otel_transport_header_t {
@@ -253,6 +260,116 @@ mod tests {
         }
         let reply = builder.body(Body::builder().data(body.to_vec())).unwrap();
         HttpResponse::new(reply).unwrap()
+    }
+
+    #[derive(Debug)]
+    struct MockConnector {
+        reply: Vec<u8>,
+        fail: bool,
+    }
+
+    impl Connector<()> for MockConnector {
+        type Out = MockTransport;
+
+        fn connect(
+            &self,
+            _details: &ConnectionDetails,
+            _chained: Option<()>,
+        ) -> Result<Option<Self::Out>, ureq::Error> {
+            if self.fail {
+                return Err(ureq::Error::ConnectionFailed);
+            }
+            Ok(Some(MockTransport {
+                buffers: LazyBuffers::new(1024, 1024),
+                reply: self.reply.clone(),
+                offset: 0,
+            }))
+        }
+    }
+
+    #[derive(Debug)]
+    struct MockTransport {
+        buffers: LazyBuffers,
+        reply: Vec<u8>,
+        offset: usize,
+    }
+
+    impl Transport for MockTransport {
+        fn buffers(&mut self) -> &mut dyn Buffers {
+            &mut self.buffers
+        }
+
+        fn transmit_output(
+            &mut self,
+            amount: usize,
+            _timeout: NextTimeout,
+        ) -> Result<(), ureq::Error> {
+            let _ = &self.buffers.output()[..amount];
+            Ok(())
+        }
+
+        fn await_input(&mut self, _timeout: NextTimeout) -> Result<bool, ureq::Error> {
+            if self.offset >= self.reply.len() {
+                return Err(ureq::Error::Io(io::Error::new(
+                    io::ErrorKind::UnexpectedEof,
+                    "mock response consumed",
+                )));
+            }
+            let appended = {
+                let input = self.buffers.input_append_buf();
+                let chunk = &self.reply[self.offset..];
+                let count = input.len().min(chunk.len());
+                input[..count].copy_from_slice(&chunk[..count]);
+                count
+            };
+            self.offset += appended;
+            self.buffers.input_appended(appended);
+            Ok(appended > 0)
+        }
+
+        fn is_open(&mut self) -> bool {
+            self.offset < self.reply.len()
+        }
+    }
+
+    #[derive(Debug)]
+    struct MockResolver;
+
+    impl Resolver for MockResolver {
+        fn resolve(
+            &self,
+            _uri: &Uri,
+            _config: &Config,
+            _timeout: NextTimeout,
+        ) -> Result<ResolvedSocketAddrs, ureq::Error> {
+            let mut addrs = self.empty();
+            addrs.push("127.0.0.1:80".parse().unwrap());
+            Ok(addrs)
+        }
+    }
+
+    fn mock_agent(reply: Vec<u8>, fail: bool) -> Agent {
+        let config = Agent::config_builder()
+            .http_status_as_error(false)
+            .max_redirects(0)
+            .build();
+        Agent::with_parts(config, MockConnector { reply, fail }, MockResolver)
+    }
+
+    fn http_reply(headers: &[(&str, &str)], body: &[u8]) -> Vec<u8> {
+        let mut reply = b"HTTP/1.1 200 OK\r\n".to_vec();
+        for (name, value) in headers {
+            reply.extend_from_slice(format!("{name}: {value}\r\n").as_bytes());
+        }
+        reply.extend_from_slice(
+            format!(
+                "Content-Length: {}\r\nConnection: close\r\n\r\n",
+                body.len()
+            )
+            .as_bytes(),
+        );
+        reply.extend_from_slice(body);
+        reply
     }
 
     #[test]
@@ -497,5 +614,78 @@ mod tests {
         assert_eq!(view.header_count, 0);
         assert!(view.body.is_null());
         assert_eq!(view.body_len, 0);
+    }
+
+    #[test]
+    fn new_agent_applies_optional_connect_timeout() {
+        let _ = new_agent(true, 25);
+        let _ = new_agent(false, 0);
+    }
+
+    #[test]
+    fn send_uses_configured_agent_and_returns_response() {
+        let reply = http_reply(&[("content-type", "application/x-protobuf")], b"reply");
+        let agent = mock_agent(reply, false);
+        let view = request_view(&[], b"payload");
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        let response = send(&agent, request, 1000).unwrap();
+
+        assert_eq!(response.status_code(), 200);
+        assert_eq!(response.body(), b"reply");
+        assert_eq!(
+            response.headers().get("content-type").unwrap(),
+            "application/x-protobuf"
+        );
+    }
+
+    #[test]
+    fn send_reports_transport_and_body_read_errors() {
+        let view = request_view(&[], b"payload");
+
+        let failed = mock_agent(Vec::new(), true);
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+        assert!(matches!(
+            send(&failed, request, 1000),
+            Err(RequestError::Transport)
+        ));
+
+        let truncated =
+            b"HTTP/1.1 200 OK\r\nContent-Length: 8\r\nConnection: close\r\n\r\nshort".to_vec();
+        let agent = mock_agent(truncated, false);
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+        assert!(matches!(
+            send(&agent, request, 1000),
+            Err(RequestError::Transport)
+        ));
+    }
+
+    #[test]
+    fn str_slice_accepts_null_view() {
+        let view = otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
+        };
+        // SAFETY: a NULL pointer with zero length returns an empty slice without
+        // dereferencing the pointer.
+        assert!(unsafe { str_slice(view) }.is_empty());
     }
 }

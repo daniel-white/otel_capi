@@ -578,12 +578,29 @@ mod tests {
     use super::*;
     use crate::items::otel_encoded_item_t;
     use opentelemetry::logs::{LogRecord as _, Logger as _, LoggerProvider as _};
-    use opentelemetry::trace::{SpanContext, TraceFlags, TraceId, TraceState};
+    use opentelemetry::trace::{
+        Event, Link, SpanContext, TraceFlags, TraceId, TraceState, Tracer as _, TracerProvider as _,
+    };
     use opentelemetry_sdk::logs::SdkLoggerProvider;
-    use opentelemetry_sdk::trace::{SpanEvents, SpanLinks};
+    use opentelemetry_sdk::metrics::data::{Exemplar, ExponentialHistogramDataPoint, ScopeMetrics};
+    use opentelemetry_sdk::trace::{SdkTracerProvider, SpanEvents, SpanLinks};
+    use std::borrow::Cow;
     use std::cell::{Cell, RefCell};
     use std::ffi::c_void;
-    use std::time::{Duration, UNIX_EPOCH};
+    use std::future::Future;
+    use std::mem::{ManuallyDrop, align_of, size_of};
+    use std::task::{Context as TaskContext, Poll, Waker};
+    use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+    #[derive(Debug, PartialEq)]
+    struct HistogramView {
+        count: u64,
+        sum: f64,
+        has_min: bool,
+        min: f64,
+        has_max: bool,
+        max: f64,
+    }
 
     #[derive(Default)]
     struct Capture {
@@ -594,10 +611,19 @@ mod tests {
         statuses: RefCell<Vec<(i32, String)>>,
         bodies: RefCell<Vec<String>>,
         resource_counts: RefCell<Vec<usize>>,
+        span_names: RefCell<Vec<String>>,
+        event_names: RefCell<Vec<String>>,
+        link_counts: RefCell<Vec<usize>>,
+        parent_span_ids: RefCell<Vec<u64>>,
+        metric_names: RefCell<Vec<String>>,
         metric_kinds: RefCell<Vec<i32>>,
         point_kinds: RefCell<Vec<i32>>,
+        point_values: RefCell<Vec<(i32, f64)>>,
         point_counts: RefCell<Vec<usize>>,
         bucket_counts: RefCell<Vec<usize>>,
+        boundaries: RefCell<Vec<Vec<f64>>>,
+        bucket_values: RefCell<Vec<Vec<u64>>>,
+        histogram_values: RefCell<Vec<HistogramView>>,
     }
 
     impl Capture {
@@ -639,6 +665,23 @@ mod tests {
                 .resource_counts
                 .borrow_mut()
                 .push(item.resource_attribute_count);
+            capture.span_names.borrow_mut().push(view_text(item.name));
+            capture
+                .parent_span_ids
+                .borrow_mut()
+                .push(item.parent_span_id.value);
+            if item.event_count > 0 {
+                // SAFETY: `events` points to `event_count` initialized views.
+                let events = std::slice::from_raw_parts(item.events, item.event_count);
+                for event in events {
+                    capture.event_names.borrow_mut().push(view_text(event.name));
+                }
+            }
+            if item.link_count > 0 {
+                // SAFETY: `links` points to `link_count` initialized views.
+                let links = std::slice::from_raw_parts(item.links, item.link_count);
+                capture.link_counts.borrow_mut().push(links.len());
+            }
         }
     }
 
@@ -662,6 +705,7 @@ mod tests {
             let item = &*item;
             let capture = captured(user_data);
             capture.metrics.set(capture.metrics.get() + 1);
+            capture.metric_names.borrow_mut().push(view_text(item.name));
             capture.metric_kinds.borrow_mut().push(item.kind as i32);
             capture.point_counts.borrow_mut().push(item.point_count);
             capture
@@ -669,18 +713,46 @@ mod tests {
                 .borrow_mut()
                 .push(item.resource_attribute_count);
             if item.point_count > 0 {
+                // SAFETY: `points` points to `point_count` initialized views.
                 let point = &*item.points;
                 capture
                     .point_kinds
                     .borrow_mut()
                     .push(point.value_kind as i32);
+                // SAFETY: `value_kind` selects the active union member.
+                let value = match point.value_kind {
+                    otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64 => point.value.as_u64 as f64,
+                    otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64 => point.value.as_f64,
+                    otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64 => point.value.as_i64 as f64,
+                };
+                capture
+                    .point_values
+                    .borrow_mut()
+                    .push((point.value_kind as i32, value));
             }
             if item.histogram_count > 0 {
+                // SAFETY: `histograms` points to `histogram_count` initialized views.
                 let histogram = &*item.histograms;
                 capture
                     .bucket_counts
                     .borrow_mut()
                     .push(histogram.bucket_count);
+                // SAFETY: `bucket_counts` has `bucket_count + 1` readable entries.
+                let counts =
+                    std::slice::from_raw_parts(histogram.bucket_counts, histogram.bucket_count + 1);
+                capture.bucket_values.borrow_mut().push(counts.to_vec());
+                // SAFETY: `bucket_boundaries` has `bucket_count` readable entries.
+                let bounds =
+                    std::slice::from_raw_parts(histogram.bucket_boundaries, histogram.bucket_count);
+                capture.boundaries.borrow_mut().push(bounds.to_vec());
+                capture.histogram_values.borrow_mut().push(HistogramView {
+                    count: histogram.count,
+                    sum: histogram.sum,
+                    has_min: histogram.has_min,
+                    min: histogram.min,
+                    has_max: histogram.has_max,
+                    max: histogram.max,
+                });
             }
         }
     }
@@ -693,6 +765,356 @@ mod tests {
                 .encoded
                 .borrow_mut()
                 .push((item.signal as i32, item.len));
+        }
+    }
+
+    // The SDK's aggregated metric types have private fields and no public
+    // constructors. These mirrors duplicate their layouts so tests can fabricate
+    // data without starting a periodic reader or an exporter thread.
+    struct MirrorGaugeDataPoint<T> {
+        attributes: Vec<KeyValue>,
+        value: T,
+        exemplars: Vec<Exemplar<T>>,
+    }
+
+    struct MirrorGauge<T> {
+        data_points: Vec<GaugeDataPoint<T>>,
+        start_time: Option<SystemTime>,
+        time: SystemTime,
+    }
+
+    struct MirrorSumDataPoint<T> {
+        attributes: Vec<KeyValue>,
+        value: T,
+        exemplars: Vec<Exemplar<T>>,
+    }
+
+    struct MirrorSum<T> {
+        data_points: Vec<SumDataPoint<T>>,
+        start_time: SystemTime,
+        time: SystemTime,
+        temporality: Temporality,
+        is_monotonic: bool,
+    }
+
+    struct MirrorHistogramDataPoint<T> {
+        attributes: Vec<KeyValue>,
+        count: u64,
+        bounds: Vec<f64>,
+        bucket_counts: Vec<u64>,
+        min: Option<T>,
+        max: Option<T>,
+        sum: T,
+        exemplars: Vec<Exemplar<T>>,
+    }
+
+    struct MirrorHistogram<T> {
+        data_points: Vec<HistogramDataPoint<T>>,
+        start_time: SystemTime,
+        time: SystemTime,
+        temporality: Temporality,
+    }
+
+    struct MirrorExponentialHistogram<T> {
+        data_points: Vec<ExponentialHistogramDataPoint<T>>,
+        start_time: SystemTime,
+        time: SystemTime,
+        temporality: Temporality,
+    }
+
+    enum MirrorMetricData<T> {
+        Gauge(MirrorGauge<T>),
+        Sum(MirrorSum<T>),
+        Histogram(MirrorHistogram<T>),
+        ExponentialHistogram(MirrorExponentialHistogram<T>),
+    }
+
+    enum MirrorAggregatedMetrics {
+        F64(MetricData<f64>),
+        U64(MetricData<u64>),
+        I64(MetricData<i64>),
+    }
+
+    struct MirrorMetric {
+        name: Cow<'static, str>,
+        description: Cow<'static, str>,
+        unit: Cow<'static, str>,
+        data: AggregatedMetrics,
+    }
+
+    struct MirrorScopeMetrics {
+        scope: InstrumentationScope,
+        metrics: Vec<Metric>,
+    }
+
+    struct MirrorResourceMetrics {
+        resource: Resource,
+        scope_metrics: Vec<ScopeMetrics>,
+    }
+
+    fn with_same_layout<A, B>(value: A) -> B {
+        assert_eq!(size_of::<A>(), size_of::<B>());
+        assert_eq!(align_of::<A>(), align_of::<B>());
+        let value = ManuallyDrop::new(value);
+        // SAFETY: each mirror type is declared with the same fields, field order,
+        // variants, and payloads as the SDK type it stands in for; the assertions
+        // verify size and alignment, and `ManuallyDrop` transfers ownership to `B`.
+        unsafe { std::mem::transmute_copy(&value) }
+    }
+
+    fn gauge_data_point<T: Copy>(value: T) -> GaugeDataPoint<T> {
+        let mirror = MirrorGaugeDataPoint {
+            attributes: vec![KeyValue::new("gauge", 1i64)],
+            value,
+            exemplars: Vec::new(),
+        };
+        let _ = (&mirror.attributes, mirror.value, &mirror.exemplars);
+        with_same_layout(mirror)
+    }
+
+    fn sum_data_point<T: Copy>(value: T) -> SumDataPoint<T> {
+        let mirror = MirrorSumDataPoint {
+            attributes: vec![KeyValue::new("sum", true)],
+            value,
+            exemplars: Vec::new(),
+        };
+        let _ = (&mirror.attributes, mirror.value, &mirror.exemplars);
+        with_same_layout(mirror)
+    }
+
+    fn histogram_data_point<T: Copy>(
+        sum: T,
+        min: Option<T>,
+        max: Option<T>,
+    ) -> HistogramDataPoint<T> {
+        let mirror = MirrorHistogramDataPoint {
+            attributes: vec![KeyValue::new("histogram", "one")],
+            count: 3,
+            bounds: vec![1.0, 2.5],
+            bucket_counts: vec![1, 1, 1],
+            min,
+            max,
+            sum,
+            exemplars: Vec::new(),
+        };
+        let _ = (
+            &mirror.attributes,
+            mirror.count,
+            &mirror.bounds,
+            &mirror.bucket_counts,
+            mirror.min,
+            mirror.max,
+            mirror.sum,
+            &mirror.exemplars,
+        );
+        with_same_layout(mirror)
+    }
+
+    fn gauge_metric_data<T: Copy>(value: T) -> MetricData<T> {
+        let gauge = MirrorGauge {
+            data_points: vec![gauge_data_point(value)],
+            start_time: Some(UNIX_EPOCH),
+            time: UNIX_EPOCH + Duration::from_secs(1),
+        };
+        let _ = (&gauge.data_points, gauge.start_time, gauge.time);
+        let mirror = MirrorMetricData::Gauge(gauge);
+        match &mirror {
+            MirrorMetricData::Gauge(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Sum(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Histogram(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::ExponentialHistogram(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn sum_metric_data<T: Copy>(value: T, is_monotonic: bool) -> MetricData<T> {
+        let sum = MirrorSum {
+            data_points: vec![sum_data_point(value)],
+            start_time: UNIX_EPOCH,
+            time: UNIX_EPOCH + Duration::from_secs(1),
+            temporality: Temporality::Cumulative,
+            is_monotonic,
+        };
+        let _ = (
+            &sum.data_points,
+            sum.start_time,
+            sum.time,
+            sum.temporality,
+            sum.is_monotonic,
+        );
+        let mirror = MirrorMetricData::Sum(sum);
+        match &mirror {
+            MirrorMetricData::Gauge(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Sum(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Histogram(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::ExponentialHistogram(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn histogram_metric_data<T: Copy>(sum: T, min: Option<T>, max: Option<T>) -> MetricData<T> {
+        let histogram = MirrorHistogram {
+            data_points: vec![histogram_data_point(sum, min, max)],
+            start_time: UNIX_EPOCH,
+            time: UNIX_EPOCH + Duration::from_secs(1),
+            temporality: Temporality::Cumulative,
+        };
+        let _ = (
+            &histogram.data_points,
+            histogram.start_time,
+            histogram.time,
+            histogram.temporality,
+        );
+        let mirror = MirrorMetricData::Histogram(histogram);
+        match &mirror {
+            MirrorMetricData::Gauge(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Sum(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Histogram(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::ExponentialHistogram(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn exponential_histogram_metric_data<T: Copy>() -> MetricData<T> {
+        let exponential: MirrorExponentialHistogram<T> = MirrorExponentialHistogram {
+            data_points: Vec::new(),
+            start_time: UNIX_EPOCH,
+            time: UNIX_EPOCH + Duration::from_secs(1),
+            temporality: Temporality::Cumulative,
+        };
+        let _ = (
+            &exponential.data_points,
+            exponential.start_time,
+            exponential.time,
+            exponential.temporality,
+        );
+        let mirror = MirrorMetricData::ExponentialHistogram(exponential);
+        match &mirror {
+            MirrorMetricData::Gauge(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Sum(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::Histogram(data) => {
+                let _ = data;
+            }
+            MirrorMetricData::ExponentialHistogram(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn aggregated_f64(data: MetricData<f64>) -> AggregatedMetrics {
+        let mirror = MirrorAggregatedMetrics::F64(data);
+        match &mirror {
+            MirrorAggregatedMetrics::F64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::U64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::I64(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn aggregated_u64(data: MetricData<u64>) -> AggregatedMetrics {
+        let mirror = MirrorAggregatedMetrics::U64(data);
+        match &mirror {
+            MirrorAggregatedMetrics::F64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::U64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::I64(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn aggregated_i64(data: MetricData<i64>) -> AggregatedMetrics {
+        let mirror = MirrorAggregatedMetrics::I64(data);
+        match &mirror {
+            MirrorAggregatedMetrics::F64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::U64(data) => {
+                let _ = data;
+            }
+            MirrorAggregatedMetrics::I64(data) => {
+                let _ = data;
+            }
+        }
+        with_same_layout(mirror)
+    }
+
+    fn fabricated_metric(name: &str, data: AggregatedMetrics) -> Metric {
+        let mirror = MirrorMetric {
+            name: Cow::Owned(name.to_owned()),
+            description: Cow::Borrowed("description"),
+            unit: Cow::Borrowed("unit"),
+            data,
+        };
+        let _ = (
+            &mirror.name,
+            &mirror.description,
+            &mirror.unit,
+            &mirror.data,
+        );
+        with_same_layout(mirror)
+    }
+
+    fn fabricated_resource_metrics(metrics: Vec<Metric>) -> ResourceMetrics {
+        let scope_mirror = MirrorScopeMetrics {
+            scope: InstrumentationScope::builder("scope").build(),
+            metrics,
+        };
+        let _ = (&scope_mirror.scope, &scope_mirror.metrics);
+        let scope: ScopeMetrics = with_same_layout(scope_mirror);
+        let mirror = MirrorResourceMetrics {
+            resource: Resource::builder_empty().build(),
+            scope_metrics: vec![scope],
+        };
+        let _ = (&mirror.resource, &mirror.scope_metrics);
+        with_same_layout(mirror)
+    }
+
+    fn ready_result<F: Future>(future: F) -> F::Output {
+        let mut context = TaskContext::from_waker(Waker::noop());
+        let mut future = Box::pin(future);
+        match future.as_mut().poll(&mut context) {
+            Poll::Ready(value) => value,
+            Poll::Pending => panic!("future unexpectedly pending"),
         }
     }
 
@@ -895,5 +1317,159 @@ mod tests {
         assert!(capture.encoded.borrow()[0].1 > 0);
 
         assert!(exporter.shutdown_with_timeout(Duration::ZERO).is_ok());
+    }
+
+    #[test]
+    fn span_processor_emits_events_links_and_parent_span() {
+        let capture = Capture::default();
+        let processor = ItemSpanProcessor::new(capture.transport());
+
+        let tracer_provider = SdkTracerProvider::builder().build();
+        let tracer = tracer_provider.tracer("test");
+        let suppressed = Context::new().with_telemetry_suppressed();
+        let mut started = tracer.start_with_context("started", &suppressed);
+        processor.on_start(&mut started, &Context::new());
+
+        let mut span = sample_span(true, Status::Unset);
+        span.parent_span_id = SpanId::from_bytes([9, 8, 7, 6, 5, 4, 3, 2]);
+        let mut events = SpanEvents::default();
+        events.events.push(Event::new(
+            "event",
+            UNIX_EPOCH + Duration::from_secs(1),
+            vec![KeyValue::new("event-key", true)],
+            0,
+        ));
+        span.events = events;
+        let mut links = SpanLinks::default();
+        links.links.push(Link::new(
+            SpanContext::new(
+                TraceId::from_bytes([3; 16]),
+                SpanId::from_bytes([4; 8]),
+                TraceFlags::SAMPLED,
+                false,
+                TraceState::NONE,
+            ),
+            vec![KeyValue::new("link-key", 5i64)],
+            0,
+        ));
+        span.links = links;
+        processor.on_end(span);
+
+        assert_eq!(capture.spans.get(), 1);
+        assert_eq!(capture.span_names.borrow()[0], "operation");
+        assert_eq!(capture.event_names.borrow().as_slice(), &["event"]);
+        assert_eq!(capture.link_counts.borrow()[0], 1);
+        assert_eq!(
+            capture.parent_span_ids.borrow()[0],
+            u64::from_be_bytes([9, 8, 7, 6, 5, 4, 3, 2])
+        );
+        assert_eq!(capture.encoded.borrow().len(), 1);
+    }
+
+    #[test]
+    fn metric_exporter_emits_all_metric_data_variants() {
+        let capture = Capture::default();
+        let exporter = ItemMetricExporter::new(capture.transport());
+        let metrics = fabricated_resource_metrics(vec![
+            fabricated_metric("f64-gauge", aggregated_f64(gauge_metric_data(1.5))),
+            fabricated_metric("u64-gauge", aggregated_u64(gauge_metric_data(2u64))),
+            fabricated_metric("i64-gauge", aggregated_i64(gauge_metric_data(-3i64))),
+            fabricated_metric("f64-sum", aggregated_f64(sum_metric_data(4.5, true))),
+            fabricated_metric("u64-sum", aggregated_u64(sum_metric_data(5u64, true))),
+            fabricated_metric("i64-updown", aggregated_i64(sum_metric_data(-6i64, false))),
+            fabricated_metric(
+                "f64-histogram",
+                aggregated_f64(histogram_metric_data(7.5, Some(1.0), Some(2.0))),
+            ),
+            fabricated_metric(
+                "u64-histogram",
+                aggregated_u64(histogram_metric_data(8u64, None, None)),
+            ),
+            fabricated_metric(
+                "exponential-histogram",
+                aggregated_f64(exponential_histogram_metric_data()),
+            ),
+        ]);
+
+        exporter.send(&metrics).unwrap();
+        assert!(ready_result(exporter.export(&metrics)).is_ok());
+
+        assert_eq!(capture.metrics.get(), 18);
+        assert_eq!(capture.encoded.borrow().len(), 2);
+        assert_eq!(capture.metric_names.borrow()[0], "f64-gauge");
+        assert_eq!(
+            capture.metric_kinds.borrow()[..3],
+            [
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_GAUGE as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_GAUGE as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_GAUGE as i32,
+            ]
+        );
+        assert_eq!(
+            capture.metric_kinds.borrow()[3..6],
+            [
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_COUNTER as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_COUNTER as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_UPDOWN_COUNTER as i32,
+            ]
+        );
+        assert_eq!(
+            capture.metric_kinds.borrow()[6..9],
+            [
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_HISTOGRAM as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_HISTOGRAM as i32,
+                otel_metric_item_type_t::OTEL_METRIC_ITEM_HISTOGRAM as i32,
+            ]
+        );
+        assert_eq!(capture.point_kinds.borrow().len(), 12);
+        assert_eq!(
+            capture.point_kinds.borrow()[..6],
+            [
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64 as i32,
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64 as i32,
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64 as i32,
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64 as i32,
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64 as i32,
+                otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64 as i32,
+            ]
+        );
+        assert_eq!(capture.point_values.borrow().len(), 12);
+        assert_eq!(
+            capture.point_values.borrow()[..6],
+            [
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64 as i32, 1.5),
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64 as i32, 2.0),
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64 as i32, -3.0),
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_F64 as i32, 4.5),
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_U64 as i32, 5.0),
+                (otel_metric_value_kind_t::OTEL_METRIC_VALUE_I64 as i32, -6.0),
+            ]
+        );
+        assert_eq!(capture.point_counts.borrow()[8], 0);
+        assert_eq!(capture.bucket_counts.borrow()[0], 2);
+        assert_eq!(capture.boundaries.borrow()[0], vec![1.0, 2.5]);
+        assert_eq!(capture.bucket_values.borrow()[0], vec![1, 1, 1]);
+        assert_eq!(
+            capture.histogram_values.borrow()[0],
+            HistogramView {
+                count: 3,
+                sum: 7.5,
+                has_min: true,
+                min: 1.0,
+                has_max: true,
+                max: 2.0,
+            }
+        );
+        assert_eq!(
+            capture.histogram_values.borrow()[1],
+            HistogramView {
+                count: 3,
+                sum: 8.0,
+                has_min: false,
+                min: 0.0,
+                has_max: false,
+                max: 0.0,
+            }
+        );
     }
 }

@@ -251,10 +251,21 @@ fn set_error(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(all(not(miri), unix))]
+    use otel_capi::handles::otel_runtime_release;
+    #[cfg(all(not(miri), unix))]
+    use otel_capi::runtime::otel_runtime_new;
+    use otel_capi_http_client::ureq;
     use std::ffi::{CStr, CString};
     use std::mem::size_of;
     use std::ptr::NonNull;
     use std::slice;
+    use ureq::config::Config;
+    use ureq::http::Uri;
+    use ureq::unversioned::resolver::{ResolvedSocketAddrs, Resolver};
+    use ureq::unversioned::transport::{
+        Buffers, ConnectionDetails, Connector, LazyBuffers, NextTimeout, Transport,
+    };
 
     fn cstr(bytes: &[u8]) -> &CStr {
         CStr::from_bytes_with_nul(bytes).unwrap()
@@ -311,6 +322,130 @@ mod tests {
         // pointer and length stay valid for the test.
         unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
     }
+
+    #[derive(Debug)]
+    struct MockConnector {
+        reply: Vec<u8>,
+        fail: bool,
+    }
+
+    impl Connector<()> for MockConnector {
+        type Out = MockTransport;
+
+        fn connect(
+            &self,
+            _details: &ConnectionDetails,
+            _chained: Option<()>,
+        ) -> Result<Option<Self::Out>, ureq::Error> {
+            if self.fail {
+                return Err(ureq::Error::ConnectionFailed);
+            }
+            Ok(Some(MockTransport {
+                buffers: LazyBuffers::new(1024, 1024),
+                reply: self.reply.clone(),
+                offset: 0,
+            }))
+        }
+    }
+
+    #[derive(Debug)]
+    struct MockTransport {
+        buffers: LazyBuffers,
+        reply: Vec<u8>,
+        offset: usize,
+    }
+
+    impl Transport for MockTransport {
+        fn buffers(&mut self) -> &mut dyn Buffers {
+            &mut self.buffers
+        }
+
+        fn transmit_output(
+            &mut self,
+            amount: usize,
+            _timeout: NextTimeout,
+        ) -> Result<(), ureq::Error> {
+            let _ = &self.buffers.output()[..amount];
+            Ok(())
+        }
+
+        fn await_input(&mut self, _timeout: NextTimeout) -> Result<bool, ureq::Error> {
+            if self.offset >= self.reply.len() {
+                return Ok(false);
+            }
+            let appended = {
+                let input = self.buffers.input_append_buf();
+                let chunk = &self.reply[self.offset..];
+                let count = input.len().min(chunk.len());
+                input[..count].copy_from_slice(&chunk[..count]);
+                count
+            };
+            self.offset += appended;
+            self.buffers.input_appended(appended);
+            Ok(appended > 0)
+        }
+
+        fn is_open(&mut self) -> bool {
+            self.offset < self.reply.len()
+        }
+    }
+
+    #[derive(Debug)]
+    struct MockResolver;
+
+    impl Resolver for MockResolver {
+        fn resolve(
+            &self,
+            _uri: &Uri,
+            _config: &Config,
+            _timeout: NextTimeout,
+        ) -> Result<ResolvedSocketAddrs, ureq::Error> {
+            let mut addrs = self.empty();
+            addrs.push("127.0.0.1:80".parse().unwrap());
+            Ok(addrs)
+        }
+    }
+
+    fn mock_agent(reply: Vec<u8>, fail: bool) -> otel_capi_http_client::Agent {
+        let config = otel_capi_http_client::Agent::config_builder()
+            .http_status_as_error(false)
+            .max_redirects(0)
+            .build();
+        otel_capi_http_client::Agent::with_parts(
+            config,
+            MockConnector { reply, fail },
+            MockResolver,
+        )
+    }
+
+    fn http_reply(headers: &[(&str, &str)], body: &[u8]) -> Vec<u8> {
+        let mut reply = b"HTTP/1.1 200 OK\r\n".to_vec();
+        for (name, value) in headers {
+            reply.extend_from_slice(format!("{name}: {value}\r\n").as_bytes());
+        }
+        reply.extend_from_slice(
+            format!(
+                "Content-Length: {}\r\nConnection: close\r\n\r\n",
+                body.len()
+            )
+            .as_bytes(),
+        );
+        reply.extend_from_slice(body);
+        reply
+    }
+
+    #[cfg(all(not(miri), unix))]
+    #[unsafe(no_mangle)]
+    pub unsafe extern "C" fn otel_runtime_set_transport(
+        _runtime: *mut otel_runtime_t,
+        _transport: *const otel_transport_t,
+    ) -> otel_result_t {
+        otel_result_t::OTEL_OK
+    }
+
+    #[cfg(all(not(miri), unix))]
+    #[used]
+    static KEEP_TEST_SETTER: otel_set_transport_fn = otel_runtime_set_transport;
 
     #[test]
     fn abi_version_is_one() {
@@ -457,5 +592,109 @@ mod tests {
             unsafe { otel_http_transport_register(&mut runtime, &handle) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
+    }
+
+    #[test]
+    fn send_returns_http_response() {
+        let transport = HttpTransport {
+            agent: mock_agent(
+                http_reply(&[("content-type", "application/x-protobuf")], b"reply"),
+                false,
+            ),
+        };
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost:4318/v1/traces\0"));
+
+        // SAFETY: `view` and `response` are initialized and stay alive for this
+        // call; `user_data` points to a live `HttpTransport`.
+        let status = unsafe {
+            otel_http_transport_send(
+                &view,
+                &mut response,
+                (&transport as *const HttpTransport)
+                    .cast::<c_void>()
+                    .cast_mut(),
+            )
+        };
+
+        assert_eq!(status, otel_result_t::OTEL_OK);
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.body_len, 5);
+        assert_eq!(response.error.len, 0);
+    }
+
+    #[test]
+    fn send_reports_build_request_failure() {
+        let transport = HttpTransport {
+            agent: mock_agent(Vec::new(), false),
+        };
+        let mut response = otel_transport_response_t::EMPTY;
+        let url = cstr(b"http://localhost:4318/v1/traces\0");
+        let mut view = request_view(cstr(b"POST\0"), url);
+        view.body = ptr::null();
+
+        // SAFETY: `view` and `response` are initialized and stay alive for this
+        // call; `user_data` points to a live `HttpTransport`.
+        let status = unsafe {
+            otel_http_transport_send(
+                &view,
+                &mut response,
+                (&transport as *const HttpTransport)
+                    .cast::<c_void>()
+                    .cast_mut(),
+            )
+        };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
+        assert_eq!(error_bytes(&response), ERR_INVALID);
+    }
+
+    #[test]
+    fn send_reports_transport_failure() {
+        let transport = HttpTransport {
+            agent: mock_agent(Vec::new(), true),
+        };
+        let mut response = otel_transport_response_t::EMPTY;
+        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost:4318/v1/traces\0"));
+
+        // SAFETY: `view` and `response` are initialized and stay alive for this
+        // call; `user_data` points to a live `HttpTransport`.
+        let status = unsafe {
+            otel_http_transport_send(
+                &view,
+                &mut response,
+                (&transport as *const HttpTransport)
+                    .cast::<c_void>()
+                    .cast_mut(),
+            )
+        };
+
+        assert_eq!(status, otel_result_t::OTEL_ERR_EXPORT);
+        assert_eq!(error_bytes(&response), ERR_EXPORT);
+    }
+
+    #[cfg(all(not(miri), unix))]
+    #[test]
+    fn register_uses_core_setter_for_initialized_handle() {
+        let mut handle = new_handle();
+        let mut runtime = otel_runtime_t {
+            inner: ptr::null_mut(),
+        };
+
+        assert_eq!(
+            // SAFETY: `runtime` is writable, aligned storage for this handle type.
+            unsafe { otel_runtime_new(&mut runtime) },
+            otel_result_t::OTEL_OK
+        );
+
+        assert_eq!(
+            // SAFETY: both handles are initialized and stay alive for this call.
+            unsafe { otel_http_transport_register(&mut runtime, &handle) },
+            otel_result_t::OTEL_OK
+        );
+
+        // SAFETY: `runtime` is initialized and this drops our reference exactly once.
+        unsafe { otel_runtime_release(&mut runtime) };
+        release(&mut handle);
     }
 }

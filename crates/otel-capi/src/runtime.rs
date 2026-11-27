@@ -149,7 +149,7 @@ mod tests {
     use super::*;
     use crate::abi::{otel_transport_request_t, otel_transport_response_t, otel_transport_send_fn};
     use crate::handles::otel_runtime_release;
-    use crate::items::otel_encoded_item_t;
+    use crate::items::{otel_encoded_item_t, otel_item_signal_t};
     use crate::strings::otel_str_t;
     use std::ffi::{c_char, c_void};
 
@@ -220,6 +220,12 @@ mod tests {
 
     #[test]
     fn runtime_new_with_threads_still_creates_a_handle_without_workers() {
+        assert_eq!(
+            // SAFETY: a null handle is rejected before it is dereferenced.
+            unsafe { otel_runtime_new_with_threads(ptr::null_mut(), 1) },
+            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        );
+
         let mut runtime = empty_runtime();
         // The thread count argument is retained for source compatibility only;
         // this implementation never starts a worker thread.
@@ -427,6 +433,14 @@ mod tests {
         let found = registered.item_transport().unwrap().unwrap();
         assert!(found.on_encoded.is_some());
         assert!(found.on_span.is_none());
+        let payload = [1u8, 2, 3];
+        let item = otel_encoded_item_t {
+            signal: otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG,
+            data: payload.as_ptr(),
+            len: payload.len(),
+        };
+        // SAFETY: the item and user data are local and live for this call.
+        unsafe { found.on_encoded.unwrap()(&item, found.user_data) };
         drop(registered);
 
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
