@@ -5,15 +5,11 @@ use std::marker::PhantomData;
 use std::sync::Arc;
 
 use opentelemetry::metrics::{AsyncInstrument, MeterProvider as _};
-use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
-use crate::config;
-use crate::config::{
-    OtlpProtocol, build_error, duration_ms, exporter_kind, otlp_protocol, resource_from_env,
-    sdk_disabled, sdk_error,
-};
+use crate::callback_exporter::{CallbackMetricExporter, metric_exporter, stdout_metric_exporter};
+use crate::config::{duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error};
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
 use crate::handles::{
     CounterF64Inner, CounterU64Inner, GaugeF64Inner, HistogramF64Inner, MeterInner,
@@ -27,7 +23,6 @@ use crate::handles::{
 };
 use crate::item_export::ItemMetricExporter;
 use crate::strings::{optional_str_slice, otel_str_t, str_slice};
-use crate::transport::callback_client;
 use crate::util::interned;
 
 /// Opaque callback context passed back to `otel_observe_*`. It is valid only
@@ -77,45 +72,12 @@ unsafe fn instrument_from_context<'a, T>(
     unsafe { std::mem::transmute::<otel_observe_context_t, &dyn AsyncInstrument<T>>(context) }
 }
 
-fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::MetricExporter> {
-    let protocol = otlp_protocol("METRICS")?;
-    let builder = opentelemetry_otlp::MetricExporter::builder();
-    let exporter = match protocol {
-        OtlpProtocol::Grpc => builder
-            .with_http()
-            .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
-            .with_http_client(callback_client(
-                runtime,
-                config::OTLP_GRPC_TRANSPORT,
-                "METRICS",
-            )?)
-            .build(),
-        OtlpProtocol::HttpBinary | OtlpProtocol::HttpJson => builder
-            .with_http()
-            .with_protocol(protocol.into())
-            .with_http_client(callback_client(
-                runtime,
-                config::OTLP_HTTP_TRANSPORT,
-                "METRICS",
-            )?)
-            .build(),
-    };
-    exporter.map_err(|err| build_error("failed to build OTLP metric exporter", err))
+fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<CallbackMetricExporter> {
+    metric_exporter(runtime)
 }
 
-fn build_stdout_exporter(
-    runtime: &Arc<RuntimeInner>,
-) -> Result<opentelemetry_otlp::MetricExporter> {
-    let exporter = opentelemetry_otlp::MetricExporter::builder()
-        .with_http()
-        .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
-        .with_http_client(callback_client(
-            runtime,
-            config::STDOUT_TRANSPORT,
-            "METRICS",
-        )?)
-        .build();
-    exporter.map_err(|err| build_error("failed to build stdout metric exporter", err))
+fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<CallbackMetricExporter> {
+    stdout_metric_exporter(runtime)
 }
 
 fn build_provider(
@@ -164,14 +126,14 @@ fn build_provider(
                         "item exporter requires an otel_runtime_t; pass one to otel_meter_provider_new",
                     )
                 })?;
-                let transport = runtime.item_transport()?.ok_or_else(|| {
+                let exporter = runtime.item_exporter()?.ok_or_else(|| {
                     Error::new(
                         otel_result_t::OTEL_ERR_CONFIG,
-                        "item exporter requires otel_runtime_set_item_transport",
+                        "item exporter requires otel_runtime_set_item_exporter",
                     )
                 })?;
                 builder = builder.with_reader(
-                    PeriodicReader::builder(ItemMetricExporter::new(transport))
+                    PeriodicReader::builder(ItemMetricExporter::new(exporter))
                         .with_interval(interval)
                         .build(),
                 );
@@ -1099,7 +1061,7 @@ pub unsafe extern "C" fn otel_gauge_f64_record_arr(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::{otel_transport_request_t, otel_transport_response_t, otel_transport_t};
+    use crate::abi::{otel_exporter_request_t, otel_exporter_response_t, otel_exporter_t};
     use crate::attributes::{otel_attribute_t, otel_attribute_type_t, otel_attribute_value_t};
     use crate::config::tests::EnvGuard;
     use crate::handles::{
@@ -1108,9 +1070,9 @@ mod tests {
         otel_observable_counter_u64_release, otel_observable_gauge_f64_release,
         otel_runtime_release, otel_updown_counter_i64_release,
     };
-    use crate::items::{otel_item_transport_t, otel_metric_item_t};
+    use crate::items::{otel_item_exporter_t, otel_metric_item_t};
     use crate::runtime::{
-        otel_runtime_new, otel_runtime_set_item_transport, otel_runtime_set_transport,
+        otel_runtime_new, otel_runtime_set_exporter, otel_runtime_set_item_exporter,
     };
     use opentelemetry::KeyValue;
     use std::cell::Cell;
@@ -1598,9 +1560,9 @@ mod tests {
         }
     }
 
-    unsafe extern "C" fn noop_transport_send(
-        _request: *const otel_transport_request_t,
-        _response: *mut otel_transport_response_t,
+    unsafe extern "C" fn noop_exporter_send(
+        _request: *const otel_exporter_request_t,
+        _response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         otel_result_t::OTEL_OK
@@ -1624,18 +1586,18 @@ mod tests {
         runtime
     }
 
-    fn register_transports(runtime: &mut otel_runtime_t) {
+    fn register_exporters(runtime: &mut otel_runtime_t) {
         for name in [c"stdout", c"http", c"grpc"] {
-            let descriptor = otel_transport_t {
-                size: std::mem::size_of::<otel_transport_t>(),
+            let descriptor = otel_exporter_t {
+                size: std::mem::size_of::<otel_exporter_t>(),
                 name: view(name),
-                send: noop_transport_send,
+                send: noop_exporter_send,
                 user_data: std::ptr::null_mut(),
             };
             assert_eq!(
                 // SAFETY: `runtime` is initialized and `descriptor` has a valid
                 // size, a static name view, and a no-op callback.
-                unsafe { otel_runtime_set_transport(runtime, &descriptor) },
+                unsafe { otel_runtime_set_exporter(runtime, &descriptor) },
                 otel_result_t::OTEL_OK
             );
         }
@@ -1655,11 +1617,11 @@ mod tests {
     }
 
     #[test]
-    fn exporter_builders_use_registered_callback_transports() {
+    fn exporter_builders_use_registered_callback_exporters() {
         let mut env = EnvGuard::new();
         clear_exporter_env(&mut env);
         let mut runtime = new_runtime_handle();
-        register_transports(&mut runtime);
+        register_exporters(&mut runtime);
 
         // SAFETY: `runtime` was initialized by `new_runtime_handle`; `arc`
         // increments its strong count and the returned Arc keeps it alive until
@@ -1701,11 +1663,11 @@ mod tests {
     }
 
     #[test]
-    fn provider_builds_each_exporter_with_callback_transports() {
+    fn provider_builds_each_exporter_with_callback_exporters() {
         let mut env = EnvGuard::new();
         clear_exporter_env(&mut env);
         let mut runtime = new_runtime_handle();
-        register_transports(&mut runtime);
+        register_exporters(&mut runtime);
 
         for exporter in ["stdout", "otlp"] {
             env.set("OTEL_METRICS_EXPORTER", exporter);
@@ -1714,7 +1676,7 @@ mod tests {
             };
             assert_eq!(
                 // SAFETY: both handles are writable and aligned; the runtime is
-                // initialized and carries the callback transports registered above.
+                // initialized and carries the callback exporters registered above.
                 unsafe { otel_meter_provider_new(&mut provider, std::ptr::null(), &runtime) },
                 otel_result_t::OTEL_OK
             );
@@ -1727,15 +1689,15 @@ mod tests {
             inner: std::ptr::null_mut(),
         };
         assert_eq!(
-            // SAFETY: both handles are writable and aligned; no item transport
+            // SAFETY: both handles are writable and aligned; no item exporter
             // has been registered on this runtime yet.
             unsafe { otel_meter_provider_new(&mut provider, std::ptr::null(), &runtime) },
             otel_result_t::OTEL_ERR_CONFIG
         );
         assert!(provider.inner.is_null());
 
-        let item_transport = otel_item_transport_t {
-            size: std::mem::size_of::<otel_item_transport_t>(),
+        let item_exporter = otel_item_exporter_t {
+            size: std::mem::size_of::<otel_item_exporter_t>(),
             on_span: None,
             on_log: None,
             on_metric: Some(noop_metric_item),
@@ -1743,9 +1705,9 @@ mod tests {
             user_data: std::ptr::null_mut(),
         };
         assert_eq!(
-            // SAFETY: `runtime` is initialized and `item_transport` is fully
+            // SAFETY: `runtime` is initialized and `item_exporter` is fully
             // initialized with a no-op metric callback.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, &item_transport) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, &item_exporter) },
             otel_result_t::OTEL_OK
         );
         let mut provider = otel_meter_provider_t {
@@ -1753,7 +1715,7 @@ mod tests {
         };
         assert_eq!(
             // SAFETY: both handles are writable and aligned; the runtime now
-            // carries the item transport registered above.
+            // carries the item exporter registered above.
             unsafe { otel_meter_provider_new(&mut provider, std::ptr::null(), &runtime) },
             otel_result_t::OTEL_OK
         );
@@ -2263,7 +2225,7 @@ mod tests {
             inner: std::ptr::null_mut(),
         };
         // SAFETY: `disabled` is local writable storage; no reader is created
-        // while the SDK is disabled, so no transport is needed.
+        // while the SDK is disabled, so no exporter is needed.
         unsafe {
             assert_eq!(
                 otel_meter_provider_new(&mut disabled, std::ptr::null(), std::ptr::null()),

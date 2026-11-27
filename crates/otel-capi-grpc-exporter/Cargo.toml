@@ -1,0 +1,17 @@
+[package]
+name = "otel-capi-grpc-exporter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Optional loadable gRPC exporter for otel-capi"
+
+[lib]
+name = "otel_capi_grpc_exporter"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+cbindgen = "0.29.4"
+
+[dependencies]
+otel-capi = { path = "../otel-capi", default-features = false, features = ["abi"] }
+otel-capi-http-transport = { path = "../otel-capi-http-transport" }

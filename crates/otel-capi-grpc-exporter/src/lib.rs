@@ -1,7 +1,7 @@
-//! Optional loadable gRPC transport implementation for `otel-capi`.
+//! Optional loadable gRPC exporter implementation for `otel-capi`.
 //!
 //! The core library encodes OTLP protobuf bytes and calls the registered
-//! callback. This transport wraps those bytes in gRPC frames and sends them
+//! callback. This exporter wraps those bytes in gRPC frames and sends them
 //! with the shared `ureq` HTTP client, backed by the host TLS stack. It does
 //! not embed Tokio, tonic, or protobuf decoding.
 
@@ -11,45 +11,45 @@ use std::ptr;
 use std::slice;
 
 use otel_capi::abi::{
-    find_core_symbol, init_handle, otel_result_t, otel_runtime_t, otel_set_transport_fn,
-    otel_str_t, otel_transport_request_t, otel_transport_response_t, otel_transport_send_fn,
-    otel_transport_t, release_handle,
+    find_core_symbol, init_handle, otel_exporter_request_t, otel_exporter_response_t,
+    otel_exporter_send_fn, otel_exporter_t, otel_result_t, otel_runtime_t, otel_set_exporter_fn,
+    otel_str_t, release_handle,
 };
-use otel_capi_http_client::{
+use otel_capi_http_transport::{
     Agent, HeaderMap, HeaderName, HeaderValue, Method, RequestOptions, build_request, new_agent,
     send,
 };
 
-static ERR_INVALID: &[u8] = b"gRPC transport received invalid arguments";
-static ERR_EXPORT: &[u8] = b"gRPC transport export failed";
-const TRANSPORT_NAME: &[u8] = b"grpc\0";
+static ERR_INVALID: &[u8] = b"gRPC exporter received invalid arguments";
+static ERR_EXPORT: &[u8] = b"gRPC exporter export failed";
+const EXPORTER_NAME: &[u8] = b"grpc\0";
 
-/// Caller-owned handle for a gRPC transport instance. Initialize with
-/// `OTEL_GRPC_TRANSPORT_T_INIT` and release with `otel_grpc_transport_release`.
+/// Caller-owned handle for a gRPC exporter instance. Initialize with
+/// `OTEL_GRPC_EXPORTER_T_INIT` and release with `otel_grpc_exporter_release`.
 #[repr(C)]
-pub struct otel_grpc_transport_t {
-    /// Descriptor read by the core runtime. The transport owns its name.
-    pub transport: otel_transport_t,
+pub struct otel_grpc_exporter_t {
+    /// Descriptor read by the core runtime. The exporter owns its name.
+    pub exporter: otel_exporter_t,
     /// @private Internal pointer. Treat as opaque; do not read or write it directly.
     pub inner: *mut c_void,
 }
 
-/// Options accepted by `otel_grpc_transport_new`.
+/// Options accepted by `otel_grpc_exporter_new`.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_grpc_transport_options_t {
-    /// Set to `sizeof(otel_grpc_transport_options_t)`.
+pub struct otel_grpc_exporter_options_t {
+    /// Set to `sizeof(otel_grpc_exporter_options_t)`.
     pub size: usize,
     /// Reserved for ABI compatibility; ignored because export is blocking.
     pub worker_count: u32,
 }
 
-struct GrpcTransport {
+struct GrpcExporter {
     agent: Agent,
 }
 
 // Compile-time proof that the exported callback matches the core ABI.
-const _: otel_transport_send_fn = otel_grpc_transport_send;
+const _: otel_exporter_send_fn = otel_grpc_exporter_send;
 
 #[derive(Copy, Clone)]
 enum Signal {
@@ -80,13 +80,13 @@ impl Signal {
     }
 }
 
-/// Returns the ABI version implemented by this transport.
+/// Returns the ABI version implemented by this exporter.
 #[unsafe(no_mangle)]
-pub extern "C" fn otel_grpc_transport_abi_version() -> u32 {
+pub extern "C" fn otel_grpc_exporter_abi_version() -> u32 {
     1
 }
 
-/// Creates a transport instance from caller-owned options.
+/// Creates an exporter instance from caller-owned options.
 ///
 /// `worker_count` is retained for ABI compatibility but ignored. HTTPS uses
 /// the host's TLS implementation and trust store through `native-tls`.
@@ -94,9 +94,9 @@ pub extern "C" fn otel_grpc_transport_abi_version() -> u32 {
 /// # Safety
 /// The output pointer must reference writable, aligned storage for this handle type.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_grpc_transport_new(
-    handle: *mut otel_grpc_transport_t,
-    options: *const otel_grpc_transport_options_t,
+pub unsafe extern "C" fn otel_grpc_exporter_new(
+    handle: *mut otel_grpc_exporter_t,
+    options: *const otel_grpc_exporter_options_t,
 ) -> otel_result_t {
     if handle.is_null() || options.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
@@ -104,31 +104,31 @@ pub unsafe extern "C" fn otel_grpc_transport_new(
     // SAFETY: the caller supplies writable, aligned caller-owned storage.
     unsafe {
         ptr::write(
-            ptr::addr_of_mut!((*handle).transport),
-            otel_transport_t {
-                size: size_of::<otel_transport_t>(),
+            ptr::addr_of_mut!((*handle).exporter),
+            otel_exporter_t {
+                size: size_of::<otel_exporter_t>(),
                 name: otel_str_t {
                     ptr: ptr::null(),
                     len: 0,
                 },
-                send: otel_grpc_transport_send,
+                send: otel_grpc_exporter_send,
                 user_data: ptr::null_mut(),
             },
         );
     }
     // SAFETY: the caller supplies an initialized options struct for this call.
     let options = unsafe { *options };
-    if options.size != size_of::<otel_grpc_transport_options_t>() {
+    if options.size != size_of::<otel_grpc_exporter_options_t>() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
     }
 
-    let transport = GrpcTransport {
+    let exporter = GrpcExporter {
         agent: new_agent(false, 0),
     };
     // SAFETY: the caller supplies writable, aligned caller-owned storage.
     let slot = unsafe { ptr::addr_of_mut!((*handle).inner).cast::<c_void>() };
     // SAFETY: The caller provides writable, aligned handle storage; the core helper owns the pointer transfer.
-    let status = unsafe { init_handle(slot, transport) };
+    let status = unsafe { init_handle(slot, exporter) };
     if status != otel_result_t::OTEL_OK {
         return status;
     }
@@ -136,24 +136,24 @@ pub unsafe extern "C" fn otel_grpc_transport_new(
     let user_data = unsafe { ptr::read(slot.cast::<*mut c_void>()) };
     // SAFETY: The caller guarantees the preconditions of this unsafe operation.
     unsafe {
-        (*handle).transport.name = otel_str_t {
-            ptr: TRANSPORT_NAME.as_ptr().cast(),
-            len: TRANSPORT_NAME.len() - 1,
+        (*handle).exporter.name = otel_str_t {
+            ptr: EXPORTER_NAME.as_ptr().cast(),
+            len: EXPORTER_NAME.len() - 1,
         };
-        (*handle).transport.user_data = user_data;
+        (*handle).exporter.user_data = user_data;
     }
     otel_result_t::OTEL_OK
 }
 
-/// Implements `otel_transport_send_fn` with raw gRPC framing over the shared
+/// Implements `otel_exporter_send_fn` with raw gRPC framing over the shared
 /// HTTP client.
 ///
 /// # Safety
 /// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_grpc_transport_send(
-    request: *const otel_transport_request_t,
-    response: *mut otel_transport_response_t,
+pub unsafe extern "C" fn otel_grpc_exporter_send(
+    request: *const otel_exporter_request_t,
+    response: *mut otel_exporter_response_t,
     user_data: *mut c_void,
 ) -> otel_result_t {
     if request.is_null() || response.is_null() || user_data.is_null() {
@@ -162,7 +162,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
 
     // SAFETY: the caller supplies valid views for the duration of this call.
     unsafe {
-        *response = otel_transport_response_t {
+        *response = otel_exporter_response_t {
             status_code: 0,
             body: ptr::null(),
             body_len: 0,
@@ -180,7 +180,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
     // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
     let response = unsafe { &mut *response };
     // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
-    let transport = unsafe { &*(user_data.cast::<GrpcTransport>()) };
+    let exporter = unsafe { &*(user_data.cast::<GrpcExporter>()) };
     if view.url.is_null() || view.body.is_null() || view.body_len > u32::MAX as usize {
         return set_error(
             response,
@@ -258,7 +258,7 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
             );
         }
     };
-    let reply = match send(&transport.agent, request, view.timeout_ms) {
+    let reply = match send(&exporter.agent, request, view.timeout_ms) {
         Ok(reply) => reply,
         Err(_) => return set_error(response, ERR_EXPORT, otel_result_t::OTEL_ERR_EXPORT),
     };
@@ -272,24 +272,18 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
     } else {
         Vec::new()
     };
-    reply.write_into(response);
-    // The core expects a protobuf response body, not the gRPC frame.
-    if message.is_empty() {
-        response.body = ptr::null();
-        response.body_len = 0;
-    } else {
-        response.body = message.as_ptr();
-        response.body_len = message.len();
-    }
+    // The core expects a protobuf response body, not the gRPC frame. The
+    // transport copies the body into thread-local storage so the view stays
+    // valid after this callback returns.
+    reply.write_into_with_body(&message, response);
     if grpc_status.is_some_and(|status| status != 0) {
         return set_error(response, ERR_EXPORT, otel_result_t::OTEL_ERR_EXPORT);
     }
 
-    // `reply` remains alive until the core library copies the response.
     otel_result_t::OTEL_OK
 }
 
-/// Registers this transport instance on a core runtime using the name `grpc`.
+/// Registers this exporter instance on a core runtime using the name `grpc`.
 ///
 /// The core setter is resolved from the process so the loadable library does
 /// not need a link-time dependency on the core shared library.
@@ -298,9 +292,9 @@ pub unsafe extern "C" fn otel_grpc_transport_send(
 /// # Safety
 /// Both pointers must be non-null and reference initialized storage for the
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_grpc_transport_register(
+pub unsafe extern "C" fn otel_grpc_exporter_register(
     runtime: *mut otel_runtime_t,
-    handle: *const otel_grpc_transport_t,
+    handle: *const otel_grpc_exporter_t,
 ) -> otel_result_t {
     if runtime.is_null() || handle.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
@@ -309,26 +303,26 @@ pub unsafe extern "C" fn otel_grpc_transport_register(
     if unsafe { ptr::read(ptr::addr_of!((*handle).inner)) }.is_null() {
         return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
     }
-    let Some(set_transport) = find_core_symbol::<otel_set_transport_fn>(
-        c"otel_runtime_set_transport".to_bytes_with_nul(),
-    ) else {
+    let Some(set_exporter) =
+        find_core_symbol::<otel_set_exporter_fn>(c"otel_runtime_set_exporter".to_bytes_with_nul())
+    else {
         return otel_result_t::OTEL_ERR_INTERNAL;
     };
-    // SAFETY: the handle embeds a core-ABI descriptor with this transport's name.
-    unsafe { set_transport(runtime, ptr::addr_of!((*handle).transport)) }
+    // SAFETY: the handle embeds a core-ABI descriptor with this exporter's name.
+    unsafe { set_exporter(runtime, ptr::addr_of!((*handle).exporter)) }
 }
 
-/// Releases a transport instance created by `otel_grpc_transport_new`.
+/// Releases an exporter instance created by `otel_grpc_exporter_new`.
 ///
 /// # Safety
 /// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_grpc_transport_release(handle: *mut otel_grpc_transport_t) {
+pub unsafe extern "C" fn otel_grpc_exporter_release(handle: *mut otel_grpc_exporter_t) {
     if handle.is_null() {
         return;
     }
     // SAFETY: the caller supplies an initialized handle from `init_handle`.
-    unsafe { release_handle::<GrpcTransport>(ptr::addr_of_mut!((*handle).inner).cast::<c_void>()) };
+    unsafe { release_handle::<GrpcExporter>(ptr::addr_of_mut!((*handle).inner).cast::<c_void>()) };
 }
 
 fn grpc_status(headers: &HeaderMap) -> Option<u16> {
@@ -362,7 +356,7 @@ fn grpc_message(body: &[u8]) -> Result<&[u8], GrpcFrameError> {
 }
 
 fn set_error(
-    response: &mut otel_transport_response_t,
+    response: &mut otel_exporter_response_t,
     message: &'static [u8],
     status: otel_result_t,
 ) -> otel_result_t {
@@ -376,12 +370,8 @@ fn set_error(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use otel_capi::abi::otel_transport_header_t;
-    #[cfg(all(not(miri), unix))]
-    use otel_capi::handles::otel_runtime_release;
-    #[cfg(all(not(miri), unix))]
-    use otel_capi::runtime::otel_runtime_new;
-    use otel_capi_http_client::ureq;
+    use otel_capi::abi::otel_exporter_header_t;
+    use otel_capi_http_transport::ureq;
     use std::ffi::{CStr, CString};
     use std::mem::size_of;
     use std::ptr::NonNull;
@@ -397,41 +387,41 @@ mod tests {
         CStr::from_bytes_with_nul(bytes).unwrap()
     }
 
-    fn empty_handle() -> otel_grpc_transport_t {
-        otel_grpc_transport_t {
-            transport: otel_transport_t {
-                size: size_of::<otel_transport_t>(),
+    fn empty_handle() -> otel_grpc_exporter_t {
+        otel_grpc_exporter_t {
+            exporter: otel_exporter_t {
+                size: size_of::<otel_exporter_t>(),
                 name: otel_str_t {
                     ptr: ptr::null(),
                     len: 0,
                 },
-                send: otel_grpc_transport_send,
+                send: otel_grpc_exporter_send,
                 user_data: ptr::null_mut(),
             },
             inner: ptr::null_mut(),
         }
     }
 
-    fn new_handle() -> otel_grpc_transport_t {
+    fn new_handle() -> otel_grpc_exporter_t {
         let mut handle = empty_handle();
-        let options = otel_grpc_transport_options_t {
-            size: size_of::<otel_grpc_transport_options_t>(),
+        let options = otel_grpc_exporter_options_t {
+            size: size_of::<otel_grpc_exporter_options_t>(),
             worker_count: 1,
         };
         // SAFETY: `handle` is writable, aligned caller-owned storage and
         // `options` points to an initialized options struct.
-        let status = unsafe { otel_grpc_transport_new(&mut handle, &options) };
+        let status = unsafe { otel_grpc_exporter_new(&mut handle, &options) };
         assert_eq!(status, otel_result_t::OTEL_OK);
         handle
     }
 
-    fn release(handle: &mut otel_grpc_transport_t) {
-        // SAFETY: `handle` was initialized by `otel_grpc_transport_new`.
-        unsafe { otel_grpc_transport_release(handle) };
+    fn release(handle: &mut otel_grpc_exporter_t) {
+        // SAFETY: `handle` was initialized by `otel_grpc_exporter_new`.
+        unsafe { otel_grpc_exporter_release(handle) };
     }
 
-    fn request_view(url: &CStr, body: &[u8]) -> otel_transport_request_t {
-        otel_transport_request_t {
+    fn request_view(url: &CStr, body: &[u8]) -> otel_exporter_request_t {
+        otel_exporter_request_t {
             method: cstr(b"POST\0").as_ptr(),
             url: url.as_ptr(),
             headers: ptr::null(),
@@ -442,7 +432,7 @@ mod tests {
         }
     }
 
-    fn error_bytes(response: &otel_transport_response_t) -> &[u8] {
+    fn error_bytes(response: &otel_exporter_response_t) -> &[u8] {
         // SAFETY: the callback filled `error` with a static byte string whose
         // pointer and length stay valid for the test.
         unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
@@ -563,17 +553,23 @@ mod tests {
     }
 
     #[cfg(all(not(miri), unix))]
+    unsafe extern "C" {
+        fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_result_t;
+        fn otel_runtime_release(handle: *mut otel_runtime_t);
+    }
+
+    #[cfg(all(not(miri), unix))]
     #[unsafe(no_mangle)]
-    pub unsafe extern "C" fn otel_runtime_set_transport(
+    pub unsafe extern "C" fn otel_runtime_set_exporter(
         _runtime: *mut otel_runtime_t,
-        _transport: *const otel_transport_t,
+        _exporter: *const otel_exporter_t,
     ) -> otel_result_t {
         otel_result_t::OTEL_OK
     }
 
     #[cfg(all(not(miri), unix))]
     #[used]
-    static KEEP_TEST_SETTER: otel_set_transport_fn = otel_runtime_set_transport;
+    static KEEP_TEST_SETTER: otel_set_exporter_fn = otel_runtime_set_exporter;
 
     #[test]
     fn signal_from_url_detects_each_export_path() {
@@ -653,25 +649,25 @@ mod tests {
 
     #[test]
     fn abi_version_is_one() {
-        assert_eq!(otel_grpc_transport_abi_version(), 1);
+        assert_eq!(otel_grpc_exporter_abi_version(), 1);
     }
 
     #[test]
     fn new_rejects_null_arguments() {
         let mut handle = empty_handle();
-        let options = otel_grpc_transport_options_t {
-            size: size_of::<otel_grpc_transport_options_t>(),
+        let options = otel_grpc_exporter_options_t {
+            size: size_of::<otel_grpc_exporter_options_t>(),
             worker_count: 0,
         };
 
         assert_eq!(
             // SAFETY: a null handle is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_new(ptr::null_mut(), &options) },
+            unsafe { otel_grpc_exporter_new(ptr::null_mut(), &options) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: null options are rejected before they are dereferenced.
-            unsafe { otel_grpc_transport_new(&mut handle, ptr::null()) },
+            unsafe { otel_grpc_exporter_new(&mut handle, ptr::null()) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert!(handle.inner.is_null());
@@ -680,13 +676,13 @@ mod tests {
     #[test]
     fn new_rejects_invalid_options_size() {
         let mut handle = empty_handle();
-        let options = otel_grpc_transport_options_t {
+        let options = otel_grpc_exporter_options_t {
             size: 1,
             worker_count: 0,
         };
 
         // SAFETY: the handle is writable storage and the options struct is initialized.
-        let status = unsafe { otel_grpc_transport_new(&mut handle, &options) };
+        let status = unsafe { otel_grpc_exporter_new(&mut handle, &options) };
 
         assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
         assert!(handle.inner.is_null());
@@ -696,52 +692,52 @@ mod tests {
     fn new_initializes_descriptor_and_release_clears_it() {
         let mut handle = new_handle();
 
-        assert_eq!(handle.transport.size, size_of::<otel_transport_t>());
-        // SAFETY: `name` points into the transport's static `grpc\0` byte string.
+        assert_eq!(handle.exporter.size, size_of::<otel_exporter_t>());
+        // SAFETY: `name` points into the exporter's static `grpc\0` byte string.
         let name = unsafe {
             slice::from_raw_parts(
-                handle.transport.name.ptr.cast::<u8>(),
-                handle.transport.name.len,
+                handle.exporter.name.ptr.cast::<u8>(),
+                handle.exporter.name.len,
             )
         };
         assert_eq!(name, b"grpc".as_slice());
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         assert_eq!(
             // SAFETY: a NULL request is rejected by the callback before it is dereferenced.
             unsafe {
-                (handle.transport.send)(ptr::null(), &mut response, handle.transport.user_data)
+                (handle.exporter.send)(ptr::null(), &mut response, handle.exporter.user_data)
             },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert!(!handle.inner.is_null());
-        assert_eq!(handle.transport.user_data, handle.inner);
+        assert_eq!(handle.exporter.user_data, handle.inner);
 
         release(&mut handle);
         assert!(handle.inner.is_null());
         release(&mut handle);
         // SAFETY: null handle is explicitly a no-op.
-        unsafe { otel_grpc_transport_release(ptr::null_mut()) };
+        unsafe { otel_grpc_exporter_release(ptr::null_mut()) };
     }
 
     #[test]
     fn send_rejects_null_arguments() {
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let view = request_view(cstr(b"https://localhost:4317/v1/traces\0"), b"body");
         let dangling = NonNull::<u8>::dangling().as_ptr().cast::<c_void>();
 
         assert_eq!(
             // SAFETY: a null request is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_send(ptr::null(), &mut response, dangling) },
+            unsafe { otel_grpc_exporter_send(ptr::null(), &mut response, dangling) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: a null response is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_send(&view, ptr::null_mut(), dangling) },
+            unsafe { otel_grpc_exporter_send(&view, ptr::null_mut(), dangling) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: a null user_data is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_send(&view, &mut response, ptr::null_mut()) },
+            unsafe { otel_grpc_exporter_send(&view, &mut response, ptr::null_mut()) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
     }
@@ -749,7 +745,7 @@ mod tests {
     #[test]
     fn send_rejects_invalid_url_and_endpoint() {
         let mut handle = new_handle();
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let bad_utf8 = CString::new([0xffu8, 0xfe]).unwrap();
         let unknown_signal = request_view(cstr(b"https://localhost:4317/v1/unknown\0"), b"body");
         let mut null_url = request_view(cstr(b"https://localhost:4317/v1/traces\0"), b"body");
@@ -760,9 +756,8 @@ mod tests {
         for view in [&invalid_url, &unknown_signal, &null_url, &empty_endpoint] {
             // SAFETY: all views are initialized, `response` is writable, and
             // `user_data` belongs to the live handle held for this test.
-            let status = unsafe {
-                otel_grpc_transport_send(view, &mut response, handle.transport.user_data)
-            };
+            let status =
+                unsafe { otel_grpc_exporter_send(view, &mut response, handle.exporter.user_data) };
             assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
             assert_eq!(error_bytes(&response), ERR_INVALID);
         }
@@ -773,7 +768,7 @@ mod tests {
     #[test]
     fn send_rejects_invalid_body() {
         let mut handle = new_handle();
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let url = cstr(b"https://localhost:4317/v1/traces\0");
         let mut null_body = request_view(url, b"body");
         null_body.body = ptr::null();
@@ -783,9 +778,8 @@ mod tests {
         for view in [&null_body, &oversized] {
             // SAFETY: both views are rejected before the body is read;
             // `user_data` belongs to the live handle held for this test.
-            let status = unsafe {
-                otel_grpc_transport_send(view, &mut response, handle.transport.user_data)
-            };
+            let status =
+                unsafe { otel_grpc_exporter_send(view, &mut response, handle.exporter.user_data) };
             assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
             assert_eq!(error_bytes(&response), ERR_INVALID);
         }
@@ -796,10 +790,10 @@ mod tests {
     #[test]
     fn send_rejects_bad_core_header_with_timeout() {
         let mut handle = new_handle();
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let bad_name = CString::new("bad name").unwrap();
         let value = CString::new("value").unwrap();
-        let headers = [otel_transport_header_t {
+        let headers = [otel_exporter_header_t {
             name: otel_str_t {
                 ptr: bad_name.as_ptr(),
                 len: bad_name.as_bytes().len(),
@@ -818,7 +812,7 @@ mod tests {
         // stay alive, and `user_data` belongs to the live handle. The bad core
         // header makes request construction fail before any network I/O.
         let status =
-            unsafe { otel_grpc_transport_send(&view, &mut response, handle.transport.user_data) };
+            unsafe { otel_grpc_exporter_send(&view, &mut response, handle.exporter.user_data) };
 
         assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
         assert_eq!(error_bytes(&response), ERR_INVALID);
@@ -834,17 +828,17 @@ mod tests {
 
         assert_eq!(
             // SAFETY: a null runtime is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_register(ptr::null_mut(), &handle) },
+            unsafe { otel_grpc_exporter_register(ptr::null_mut(), &handle) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: a null handle is rejected before it is dereferenced.
-            unsafe { otel_grpc_transport_register(&mut runtime, ptr::null()) },
+            unsafe { otel_grpc_exporter_register(&mut runtime, ptr::null()) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: the handle has no inner pointer, so no core symbol is called.
-            unsafe { otel_grpc_transport_register(&mut runtime, &handle) },
+            unsafe { otel_grpc_exporter_register(&mut runtime, &handle) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
     }
@@ -855,20 +849,20 @@ mod tests {
             &[("content-type", "application/grpc"), ("grpc-status", "0")],
             &framed(b"decoded"),
         );
-        let transport = GrpcTransport {
+        let exporter = GrpcExporter {
             agent: mock_agent(reply, false),
         };
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let mut view = request_view(cstr(b"http://localhost:4317/v1/traces\0"), b"payload");
-        view.timeout_ms = 1000;
+        view.timeout_ms = 60_000;
 
         // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `GrpcTransport`.
+        // call; `user_data` points to a live `GrpcExporter`.
         let status = unsafe {
-            otel_grpc_transport_send(
+            otel_grpc_exporter_send(
                 &view,
                 &mut response,
-                (&transport as *const GrpcTransport)
+                (&exporter as *const GrpcExporter)
                     .cast::<c_void>()
                     .cast_mut(),
             )
@@ -877,25 +871,29 @@ mod tests {
         assert_eq!(status, otel_result_t::OTEL_OK);
         assert_eq!(response.status_code, 200);
         assert_eq!(response.body_len, 7);
+        // SAFETY: the exporter copied the decoded message into thread-local
+        // storage that outlives the callback and this local `exporter`.
+        let body = unsafe { slice::from_raw_parts(response.body, response.body_len) };
+        assert_eq!(body, b"decoded");
         assert_eq!(response.error.len, 0);
     }
 
     #[test]
     fn send_accepts_reply_without_frame() {
-        let transport = GrpcTransport {
+        let exporter = GrpcExporter {
             agent: mock_agent(http_reply(&[("grpc-status", "0")], b"\x01"), false),
         };
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let mut view = request_view(cstr(b"http://localhost:4317/v1/traces\0"), b"payload");
-        view.timeout_ms = 1000;
+        view.timeout_ms = 60_000;
 
         // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `GrpcTransport`.
+        // call; `user_data` points to a live `GrpcExporter`.
         let status = unsafe {
-            otel_grpc_transport_send(
+            otel_grpc_exporter_send(
                 &view,
                 &mut response,
-                (&transport as *const GrpcTransport)
+                (&exporter as *const GrpcExporter)
                     .cast::<c_void>()
                     .cast_mut(),
             )
@@ -908,19 +906,19 @@ mod tests {
 
     #[test]
     fn send_reports_nonzero_grpc_status() {
-        let transport = GrpcTransport {
+        let exporter = GrpcExporter {
             agent: mock_agent(http_reply(&[("grpc-status", "7")], b""), false),
         };
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let view = request_view(cstr(b"http://localhost:4317/v1/traces\0"), b"payload");
 
         // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `GrpcTransport`.
+        // call; `user_data` points to a live `GrpcExporter`.
         let status = unsafe {
-            otel_grpc_transport_send(
+            otel_grpc_exporter_send(
                 &view,
                 &mut response,
-                (&transport as *const GrpcTransport)
+                (&exporter as *const GrpcExporter)
                     .cast::<c_void>()
                     .cast_mut(),
             )
@@ -931,20 +929,20 @@ mod tests {
     }
 
     #[test]
-    fn send_reports_transport_failure() {
-        let transport = GrpcTransport {
+    fn send_reports_exporter_failure() {
+        let exporter = GrpcExporter {
             agent: mock_agent(Vec::new(), true),
         };
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         let view = request_view(cstr(b"http://localhost:4317/v1/traces\0"), b"payload");
 
         // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `GrpcTransport`.
+        // call; `user_data` points to a live `GrpcExporter`.
         let status = unsafe {
-            otel_grpc_transport_send(
+            otel_grpc_exporter_send(
                 &view,
                 &mut response,
-                (&transport as *const GrpcTransport)
+                (&exporter as *const GrpcExporter)
                     .cast::<c_void>()
                     .cast_mut(),
             )
@@ -970,7 +968,7 @@ mod tests {
 
         assert_eq!(
             // SAFETY: both handles are initialized and stay alive for this call.
-            unsafe { otel_grpc_transport_register(&mut runtime, &handle) },
+            unsafe { otel_grpc_exporter_register(&mut runtime, &handle) },
             otel_result_t::OTEL_OK
         );
 

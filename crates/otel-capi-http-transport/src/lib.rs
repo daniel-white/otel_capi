@@ -1,265 +1,273 @@
-//! Optional loadable HTTP transport for `otel-capi`.
+//! Shared blocking HTTP transport for the loadable `otel-capi` exporters.
 //!
-//! The core library only defines the callback contract. This library uses the
-//! shared blocking HTTP client backed by the host TLS stack.
+//! Both the HTTP and gRPC exporters use this crate so they share one `ureq`
+//! version, one system-TLS configuration, and one ABI-to-response conversion.
 
-use std::ffi::{CStr, c_void};
-use std::mem::size_of;
+use std::cell::RefCell;
+use std::ffi::CString;
 use std::ptr;
+use std::slice;
+use std::time::Duration;
 
 use otel_capi::abi::{
-    find_core_symbol, init_handle, otel_result_t, otel_runtime_t, otel_set_transport_fn,
-    otel_str_t, otel_transport_request_t, otel_transport_response_t, otel_transport_send_fn,
-    otel_transport_t, release_handle,
+    otel_exporter_header_t, otel_exporter_request_t, otel_exporter_response_t, otel_str_t,
 };
-use otel_capi_http_client::{Method, RequestOptions, build_request, new_agent, send};
+pub use ureq::http::header::{HeaderMap, HeaderName, HeaderValue};
+pub use ureq::http::{Method, Request};
+use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
+pub use ureq::{self, Agent, Body};
 
-static ERR_INVALID: &[u8] = b"HTTP transport received invalid arguments";
-static ERR_EXPORT: &[u8] = b"HTTP transport request failed";
-const TRANSPORT_NAME: &[u8] = b"http\0";
-
-/// Caller-owned handle for an HTTP transport instance. Initialize with
-/// `OTEL_HTTP_TRANSPORT_T_INIT` and release with `otel_http_transport_release`.
-#[repr(C)]
-pub struct otel_http_transport_t {
-    /// Descriptor read by the core runtime. The transport owns its name.
-    pub transport: otel_transport_t,
-    /// @private Internal pointer. Treat as opaque; do not read or write it directly.
-    pub inner: *mut c_void,
+/// Failure converting or sending a core exporter request.
+#[derive(Debug, Clone, Copy)]
+pub enum RequestError {
+    /// A required pointer was NULL or a view had an invalid length.
+    InvalidArgument,
+    /// A header name or value could not be represented.
+    InvalidHeader,
+    /// The request body could not be represented.
+    InvalidBody,
+    /// The HTTP client could not complete the request.
+    Transport,
 }
 
-/// Options accepted by `otel_http_transport_new`.
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct otel_http_transport_options_t {
-    /// Set to `sizeof(otel_http_transport_options_t)`.
-    pub size: usize,
-    /// Whether redirects are followed. Defaults to `true`.
-    pub follow_redirects: bool,
-    /// Client connection timeout in milliseconds; zero uses the request timeout.
-    pub connect_timeout_ms: u64,
+/// Per-request overrides used when converting a core exporter request.
+#[derive(Default)]
+pub struct RequestOptions<'a> {
+    /// Headers appended before headers supplied by the core.
+    pub extra_headers: &'a [(HeaderName, HeaderValue)],
+    /// Core header names that must not be forwarded.
+    pub skip_headers: &'a [&'a str],
+    /// Replaces the body supplied by the core, used for gRPC framing.
+    pub body: Option<Vec<u8>>,
 }
 
-struct HttpTransport {
-    agent: otel_capi_http_client::Agent,
-}
-
-// Compile-time proof that the exported callback matches the core ABI.
-const _: otel_transport_send_fn = otel_http_transport_send;
-
-/// Returns the ABI version implemented by this transport.
-#[unsafe(no_mangle)]
-pub extern "C" fn otel_http_transport_abi_version() -> u32 {
-    1
-}
-
-/// Creates a transport instance from caller-owned options.
-///
-/// HTTPS uses the host's TLS implementation and trust store through
-/// `native-tls`.
-///
-/// # Safety
-/// The output pointer must reference writable, aligned storage for this handle type.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_http_transport_new(
-    handle: *mut otel_http_transport_t,
-    options: *const otel_http_transport_options_t,
-) -> otel_result_t {
-    if handle.is_null() || options.is_null() {
-        return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
-    }
-    // SAFETY: the caller supplies writable, aligned caller-owned storage.
-    unsafe {
-        ptr::write(
-            ptr::addr_of_mut!((*handle).transport),
-            otel_transport_t {
-                size: size_of::<otel_transport_t>(),
-                name: otel_str_t {
-                    ptr: ptr::null(),
-                    len: 0,
-                },
-                send: otel_http_transport_send,
-                user_data: ptr::null_mut(),
-            },
+/// Creates the shared blocking client using the host TLS stack and trust store.
+pub fn new_agent(follow_redirects: bool, connect_timeout_ms: u64) -> Agent {
+    let mut config = Agent::config_builder()
+        .max_redirects(if follow_redirects { 10 } else { 0 })
+        .http_status_as_error(false)
+        .tls_config(
+            TlsConfig::builder()
+                .provider(TlsProvider::NativeTls)
+                .root_certs(RootCerts::PlatformVerifier)
+                .build(),
         );
+    if connect_timeout_ms > 0 {
+        config = config.timeout_connect(Some(Duration::from_millis(connect_timeout_ms)));
     }
-    // SAFETY: the caller supplies an initialized options struct for this call.
-    let options = unsafe { *options };
-    if options.size != size_of::<otel_http_transport_options_t>() {
-        return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
+    Agent::new_with_config(config.build())
+}
+
+/// Converts the core ABI request into a `ureq` request.
+///
+/// The caller validates `method` and `url`; this function validates the
+/// caller-owned header and body views.
+pub fn build_request(
+    view: &otel_exporter_request_t,
+    method: Method,
+    url: &str,
+    options: &RequestOptions<'_>,
+) -> Result<Request<Vec<u8>>, RequestError> {
+    let mut builder = Request::builder().method(method).uri(url);
+    for (name, value) in options.extra_headers {
+        builder = builder.header(name.clone(), value.clone());
+    }
+    if view.header_count > 0 {
+        if view.headers.is_null() {
+            return Err(RequestError::InvalidArgument);
+        }
+        // SAFETY: the core library supplies `header_count` readable headers.
+        let headers = unsafe { slice::from_raw_parts(view.headers, view.header_count) };
+        for header in headers {
+            if header.name.ptr.is_null() || header.value.ptr.is_null() {
+                return Err(RequestError::InvalidArgument);
+            }
+            // SAFETY: the core library supplies borrowed views for this call.
+            let name = unsafe { str_slice(header.name) };
+            // SAFETY: The caller guarantees the pointer and length describe readable, initialized bytes for this call.
+            let value = unsafe { str_slice(header.value) };
+            let name = HeaderName::from_bytes(name).map_err(|_| RequestError::InvalidHeader)?;
+            if options
+                .skip_headers
+                .iter()
+                .any(|skipped| name.as_str().eq_ignore_ascii_case(skipped))
+            {
+                continue;
+            }
+            let value = HeaderValue::from_bytes(value).map_err(|_| RequestError::InvalidHeader)?;
+            builder = builder.header(name, value);
+        }
+    }
+    let body = if let Some(body) = &options.body {
+        body.clone()
+    } else if view.body_len == 0 {
+        Vec::new()
+    } else if view.body.is_null() {
+        return Err(RequestError::InvalidArgument);
+    } else {
+        // SAFETY: the core library guarantees `body_len` readable bytes.
+        unsafe { slice::from_raw_parts(view.body, view.body_len) }.to_vec()
+    };
+    builder.body(body).map_err(|_| RequestError::InvalidBody)
+}
+
+/// Sends a request with the core-provided timeout.
+pub fn send(
+    agent: &Agent,
+    request: Request<Vec<u8>>,
+    timeout_ms: u64,
+) -> Result<HttpResponse, RequestError> {
+    let request = agent
+        .configure_request(request)
+        .timeout_global(Some(Duration::from_millis(timeout_ms)))
+        .build();
+    HttpResponse::new(agent.run(request).map_err(|_| RequestError::Transport)?)
+}
+
+/// Owns the backing storage exposed by the most recent response view on a
+/// thread. The core copies the view after the callback returns, so the storage
+/// must outlive the callback's local values.
+#[derive(Default)]
+struct ResponseStorage {
+    owned: Vec<CString>,
+    header_views: Vec<otel_exporter_header_t>,
+    body: Vec<u8>,
+}
+
+thread_local! {
+    static RESPONSE_STORAGE: RefCell<ResponseStorage> = const {
+        RefCell::new(ResponseStorage {
+            owned: Vec::new(),
+            header_views: Vec::new(),
+            body: Vec::new(),
+        })
+    };
+}
+
+/// An HTTP response whose views are published through thread-local storage.
+pub struct HttpResponse {
+    status_code: u16,
+    headers: HeaderMap,
+    body: Vec<u8>,
+}
+
+impl HttpResponse {
+    fn new(reply: ureq::http::Response<Body>) -> Result<Self, RequestError> {
+        let status_code = reply.status().as_u16();
+        let headers = reply.headers().clone();
+        for (name, value) in &headers {
+            CString::new(name.as_str()).map_err(|_| RequestError::InvalidHeader)?;
+            CString::new(value.as_bytes()).map_err(|_| RequestError::InvalidHeader)?;
+        }
+        let body = reply
+            .into_body()
+            .read_to_vec()
+            .map_err(|_| RequestError::Transport)?;
+        Ok(Self {
+            status_code,
+            headers,
+            body,
+        })
     }
 
-    let agent = new_agent(options.follow_redirects, options.connect_timeout_ms);
-    // SAFETY: the caller supplies writable, aligned caller-owned storage.
-    let slot = unsafe { ptr::addr_of_mut!((*handle).inner).cast::<c_void>() };
-    // SAFETY: The caller provides writable, aligned handle storage; the core helper owns the pointer transfer.
-    let status = unsafe { init_handle(slot, HttpTransport { agent }) };
-    if status != otel_result_t::OTEL_OK {
-        return status;
+    pub fn status_code(&self) -> u16 {
+        self.status_code
     }
-    // SAFETY: The handle is initialized and remains alive for the duration of this call.
-    let user_data = unsafe { ptr::read(slot.cast::<*mut c_void>()) };
-    // SAFETY: The caller guarantees the preconditions of this unsafe operation.
-    unsafe {
-        (*handle).transport.name = otel_str_t {
-            ptr: TRANSPORT_NAME.as_ptr().cast(),
-            len: TRANSPORT_NAME.len() - 1,
+
+    pub fn headers(&self) -> &HeaderMap {
+        &self.headers
+    }
+
+    pub fn body(&self) -> &[u8] {
+        &self.body
+    }
+
+    /// Publishes a response view backed by thread-local storage. The view stays
+    /// valid until this thread publishes another response view.
+    pub fn write_into(&self, response: &mut otel_exporter_response_t) {
+        write_response_views(self.status_code, &self.headers, &self.body, response);
+    }
+
+    /// Publishes a response view with a replacement body, used for decoded gRPC
+    /// messages.
+    pub fn write_into_with_body(&self, body: &[u8], response: &mut otel_exporter_response_t) {
+        write_response_views(self.status_code, &self.headers, body, response);
+    }
+}
+
+fn write_response_views(
+    status_code: u16,
+    headers: &HeaderMap,
+    body: &[u8],
+    response: &mut otel_exporter_response_t,
+) {
+    RESPONSE_STORAGE.with(|cell| {
+        let mut storage = cell.borrow_mut();
+        storage.body.clear();
+        storage.body.extend_from_slice(body);
+        storage.owned.clear();
+        for (name, value) in headers {
+            if let Ok(name) = CString::new(name.as_str()) {
+                storage.owned.push(name);
+            }
+            if let Ok(value) = CString::new(value.as_bytes()) {
+                storage.owned.push(value);
+            }
+        }
+        // Build the views only after every allocation is final so pointers
+        // remain valid under Stacked Borrows until the next write.
+        storage.header_views.clear();
+        storage.header_views = storage
+            .owned
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .map(|pair| {
+                let name = &pair[0];
+                let value = &pair[1];
+                otel_exporter_header_t {
+                    name: otel_str_t {
+                        ptr: name.as_ptr().cast(),
+                        len: name.as_bytes().len(),
+                    },
+                    value: otel_str_t {
+                        ptr: value.as_ptr(),
+                        len: value.as_bytes().len(),
+                    },
+                }
+            })
+            .collect();
+
+        response.status_code = status_code;
+        response.headers = if storage.header_views.is_empty() {
+            ptr::null()
+        } else {
+            storage.header_views.as_ptr()
         };
-        (*handle).transport.user_data = user_data;
-    }
-    otel_result_t::OTEL_OK
-}
-
-/// Implements `otel_transport_send_fn` with the shared HTTP client.
-///
-/// # Safety
-/// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_http_transport_send(
-    request: *const otel_transport_request_t,
-    response: *mut otel_transport_response_t,
-    user_data: *mut c_void,
-) -> otel_result_t {
-    if request.is_null() || response.is_null() || user_data.is_null() {
-        return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
-    }
-
-    // SAFETY: the caller supplies valid views for the duration of this call.
-    unsafe {
-        *response = otel_transport_response_t {
-            status_code: 0,
-            body: ptr::null(),
-            body_len: 0,
-            headers: ptr::null(),
-            header_count: 0,
-            error: otel_str_t {
-                ptr: ptr::null(),
-                len: 0,
-            },
+        response.header_count = storage.header_views.len();
+        response.body = if storage.body.is_empty() {
+            ptr::null()
+        } else {
+            storage.body.as_ptr()
         };
-    }
-
-    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
-    let view = unsafe { &*request };
-    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
-    let response = unsafe { &mut *response };
-    // SAFETY: The caller guarantees the pointer references an initialized, aligned value for this call.
-    let transport = unsafe { &*(user_data.cast::<HttpTransport>()) };
-    if view.method.is_null() || view.url.is_null() {
-        return set_error(
-            response,
-            ERR_INVALID,
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-        );
-    }
-
-    // SAFETY: the core library passes NUL-terminated strings.
-    let method_bytes = unsafe { CStr::from_ptr(view.method) }.to_bytes();
-    let method = match Method::from_bytes(method_bytes) {
-        Ok(method) => method,
-        Err(_) => {
-            return set_error(
-                response,
-                ERR_INVALID,
-                otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-            );
-        }
-    };
-    // SAFETY: The caller guarantees the pointer is valid and the declared length or NUL terminator is accurate.
-    let url = match unsafe { CStr::from_ptr(view.url) }.to_str() {
-        Ok(url) => url,
-        Err(_) => {
-            return set_error(
-                response,
-                ERR_INVALID,
-                otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-            );
-        }
-    };
-    let request = match build_request(view, method, url, &RequestOptions::default()) {
-        Ok(request) => request,
-        Err(_) => {
-            return set_error(
-                response,
-                ERR_INVALID,
-                otel_result_t::OTEL_ERR_INVALID_ARGUMENT,
-            );
-        }
-    };
-    let reply = match send(&transport.agent, request, view.timeout_ms) {
-        Ok(reply) => reply,
-        Err(_) => return set_error(response, ERR_EXPORT, otel_result_t::OTEL_ERR_EXPORT),
-    };
-    reply.write_into(response);
-    otel_result_t::OTEL_OK
+        response.body_len = storage.body.len();
+    });
 }
 
-/// Registers this transport instance on a core runtime using the name `http`.
-///
-/// The core setter is resolved from the process so the loadable library does
-/// not need a link-time dependency on the core shared library.
-/// duration of the call.
-///
-/// # Safety
-/// Both pointers must be non-null and reference initialized storage for the
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_http_transport_register(
-    runtime: *mut otel_runtime_t,
-    handle: *const otel_http_transport_t,
-) -> otel_result_t {
-    if runtime.is_null() || handle.is_null() {
-        return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
+unsafe fn str_slice(view: otel_str_t) -> &'static [u8] {
+    if view.ptr.is_null() {
+        return &[];
     }
-    // SAFETY: the caller supplies an initialized handle for this call.
-    if unsafe { ptr::read(ptr::addr_of!((*handle).inner)) }.is_null() {
-        return otel_result_t::OTEL_ERR_INVALID_ARGUMENT;
-    }
-    let Some(set_transport) = find_core_symbol::<otel_set_transport_fn>(
-        c"otel_runtime_set_transport".to_bytes_with_nul(),
-    ) else {
-        return otel_result_t::OTEL_ERR_INTERNAL;
-    };
-    // SAFETY: the handle embeds a core-ABI descriptor with this transport's name.
-    unsafe { set_transport(runtime, ptr::addr_of!((*handle).transport)) }
-}
-
-/// Releases a transport instance created by `otel_http_transport_new`.
-///
-/// # Safety
-/// The handle must be null or point to an initialized handle of this type; the call clears the slot and drops the referenced object once no other references remain.
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_http_transport_release(handle: *mut otel_http_transport_t) {
-    if handle.is_null() {
-        return;
-    }
-    // SAFETY: the caller supplies an initialized handle from `init_handle`.
-    unsafe { release_handle::<HttpTransport>(ptr::addr_of_mut!((*handle).inner).cast::<c_void>()) };
-}
-
-fn set_error(
-    response: &mut otel_transport_response_t,
-    message: &'static [u8],
-    status: otel_result_t,
-) -> otel_result_t {
-    response.error = otel_str_t {
-        ptr: message.as_ptr().cast(),
-        len: message.len(),
-    };
-    status
+    // SAFETY: the caller guarantees the view is readable and length-aware.
+    unsafe { slice::from_raw_parts(view.ptr.cast::<u8>(), view.len) }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[cfg(all(not(miri), unix))]
-    use otel_capi::handles::otel_runtime_release;
-    #[cfg(all(not(miri), unix))]
-    use otel_capi::runtime::otel_runtime_new;
-    use otel_capi_http_client::ureq;
-    use std::ffi::{CStr, CString};
-    use std::mem::size_of;
-    use std::ptr::NonNull;
-    use std::slice;
+    use otel_capi::abi::otel_exporter_header_t;
+    use std::ffi::CStr;
+    use std::io;
     use ureq::config::Config;
     use ureq::http::Uri;
     use ureq::unversioned::resolver::{ResolvedSocketAddrs, Resolver};
@@ -267,60 +275,38 @@ mod tests {
         Buffers, ConnectionDetails, Connector, LazyBuffers, NextTimeout, Transport,
     };
 
-    fn cstr(bytes: &[u8]) -> &CStr {
-        CStr::from_bytes_with_nul(bytes).unwrap()
-    }
-
-    fn empty_handle() -> otel_http_transport_t {
-        otel_http_transport_t {
-            transport: otel_transport_t {
-                size: size_of::<otel_transport_t>(),
-                name: otel_str_t {
-                    ptr: ptr::null(),
-                    len: 0,
-                },
-                send: otel_http_transport_send,
-                user_data: ptr::null_mut(),
+    fn header_view(name: &CStr, value: &CStr) -> otel_exporter_header_t {
+        otel_exporter_header_t {
+            name: otel_str_t {
+                ptr: name.as_ptr(),
+                len: name.to_bytes().len(),
             },
-            inner: ptr::null_mut(),
+            value: otel_str_t {
+                ptr: value.as_ptr(),
+                len: value.to_bytes().len(),
+            },
         }
     }
 
-    fn new_handle() -> otel_http_transport_t {
-        let mut handle = empty_handle();
-        let options = otel_http_transport_options_t {
-            size: size_of::<otel_http_transport_options_t>(),
-            follow_redirects: false,
-            connect_timeout_ms: 0,
-        };
-        // SAFETY: `handle` is writable, aligned caller-owned storage and
-        // `options` points to an initialized options struct.
-        let status = unsafe { otel_http_transport_new(&mut handle, &options) };
-        assert_eq!(status, otel_result_t::OTEL_OK);
-        handle
-    }
-
-    fn release(handle: &mut otel_http_transport_t) {
-        // SAFETY: `handle` was initialized by `otel_http_transport_new`.
-        unsafe { otel_http_transport_release(handle) };
-    }
-
-    fn request_view(method: &CStr, url: &CStr) -> otel_transport_request_t {
-        otel_transport_request_t {
-            method: method.as_ptr(),
-            url: url.as_ptr(),
-            headers: ptr::null(),
-            header_count: 0,
-            body: b"body".as_ptr(),
-            body_len: 4,
-            timeout_ms: 1000,
+    fn request_view(headers: &[otel_exporter_header_t], body: &[u8]) -> otel_exporter_request_t {
+        otel_exporter_request_t {
+            method: c"POST".as_ptr(),
+            url: c"http://localhost:4318/v1/traces".as_ptr(),
+            headers: headers.as_ptr(),
+            header_count: headers.len(),
+            body: body.as_ptr(),
+            body_len: body.len(),
+            timeout_ms: 60_000,
         }
     }
 
-    fn error_bytes(response: &otel_transport_response_t) -> &[u8] {
-        // SAFETY: the callback filled `error` with a static byte string whose
-        // pointer and length stay valid for the test.
-        unsafe { slice::from_raw_parts(response.error.ptr.cast::<u8>(), response.error.len) }
+    fn response_with(headers: &[(&str, &str)], body: &[u8]) -> HttpResponse {
+        let mut builder = ureq::http::Response::builder().status(201);
+        for (name, value) in headers {
+            builder = builder.header(*name, *value);
+        }
+        let reply = builder.body(Body::builder().data(body.to_vec())).unwrap();
+        HttpResponse::new(reply).unwrap()
     }
 
     #[derive(Debug)]
@@ -371,7 +357,10 @@ mod tests {
 
         fn await_input(&mut self, _timeout: NextTimeout) -> Result<bool, ureq::Error> {
             if self.offset >= self.reply.len() {
-                return Ok(false);
+                return Err(ureq::Error::Io(io::Error::new(
+                    io::ErrorKind::UnexpectedEof,
+                    "mock response consumed",
+                )));
             }
             let appended = {
                 let input = self.buffers.input_append_buf();
@@ -406,16 +395,12 @@ mod tests {
         }
     }
 
-    fn mock_agent(reply: Vec<u8>, fail: bool) -> otel_capi_http_client::Agent {
-        let config = otel_capi_http_client::Agent::config_builder()
+    fn mock_agent(reply: Vec<u8>, fail: bool) -> Agent {
+        let config = Agent::config_builder()
             .http_status_as_error(false)
             .max_redirects(0)
             .build();
-        otel_capi_http_client::Agent::with_parts(
-            config,
-            MockConnector { reply, fail },
-            MockResolver,
-        )
+        Agent::with_parts(config, MockConnector { reply, fail }, MockResolver)
     }
 
     fn http_reply(headers: &[(&str, &str)], body: &[u8]) -> Vec<u8> {
@@ -434,267 +419,322 @@ mod tests {
         reply
     }
 
-    #[cfg(all(not(miri), unix))]
-    #[unsafe(no_mangle)]
-    pub unsafe extern "C" fn otel_runtime_set_transport(
-        _runtime: *mut otel_runtime_t,
-        _transport: *const otel_transport_t,
-    ) -> otel_result_t {
-        otel_result_t::OTEL_OK
+    #[test]
+    fn build_request_copies_headers_and_body() {
+        let name = CString::new("content-type").unwrap();
+        let value = CString::new("application/x-protobuf").unwrap();
+        let headers = [header_view(&name, &value)];
+        let body = b"encoded payload";
+        let view = request_view(&headers, body);
+
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        assert_eq!(request.method(), Method::POST);
+        assert_eq!(request.uri().to_string(), "http://localhost:4318/v1/traces");
+        assert_eq!(
+            request.headers().get("content-type").unwrap(),
+            "application/x-protobuf"
+        );
+        assert_eq!(request.body().as_slice(), body.as_slice());
     }
 
-    #[cfg(all(not(miri), unix))]
-    #[used]
-    static KEEP_TEST_SETTER: otel_set_transport_fn = otel_runtime_set_transport;
-
     #[test]
-    fn abi_version_is_one() {
-        assert_eq!(otel_http_transport_abi_version(), 1);
+    fn build_request_accepts_empty_view() {
+        let view = request_view(&[], b"");
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        assert!(request.headers().is_empty());
+        assert!(request.body().is_empty());
     }
 
     #[test]
-    fn new_rejects_null_arguments() {
-        let mut handle = empty_handle();
-        let options = otel_http_transport_options_t {
-            size: size_of::<otel_http_transport_options_t>(),
-            follow_redirects: false,
-            connect_timeout_ms: 0,
+    fn build_request_adds_extra_headers_and_skips_core_headers() {
+        let skipped = CString::new("Content-Type").unwrap();
+        let skipped_value = CString::new("text/plain").unwrap();
+        let kept = CString::new("x-keep").unwrap();
+        let kept_value = CString::new("kept").unwrap();
+        let headers = [
+            header_view(&skipped, &skipped_value),
+            header_view(&kept, &kept_value),
+        ];
+        let view = request_view(&headers, b"body");
+        let extra_headers = [(
+            HeaderName::from_static("content-type"),
+            HeaderValue::from_static("application/grpc"),
+        )];
+        let skip_headers = ["content-type"];
+        let options = RequestOptions {
+            extra_headers: &extra_headers,
+            skip_headers: &skip_headers,
+            body: None,
         };
 
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &options,
+        )
+        .unwrap();
+
         assert_eq!(
-            // SAFETY: a null handle is rejected before it is dereferenced.
-            unsafe { otel_http_transport_new(ptr::null_mut(), &options) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+            request.headers().get("content-type").unwrap(),
+            "application/grpc"
         );
-        assert_eq!(
-            // SAFETY: null options are rejected before they are dereferenced.
-            unsafe { otel_http_transport_new(&mut handle, ptr::null()) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
-        );
-        assert!(handle.inner.is_null());
+        assert_eq!(request.headers().get("x-keep").unwrap(), "kept");
+        assert_eq!(request.headers().len(), 2);
     }
 
     #[test]
-    fn new_rejects_invalid_options_size() {
-        let mut handle = empty_handle();
-        let options = otel_http_transport_options_t {
-            size: 1,
-            follow_redirects: false,
-            connect_timeout_ms: 0,
-        };
+    fn build_request_rejects_null_headers_with_nonzero_count() {
+        let mut view = request_view(&[], b"body");
+        view.headers = ptr::null();
+        view.header_count = 1;
 
-        // SAFETY: the handle is writable storage and the options struct is initialized.
-        let status = unsafe { otel_http_transport_new(&mut handle, &options) };
+        let result = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
 
-        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
-        assert!(handle.inner.is_null());
+        assert!(matches!(result, Err(RequestError::InvalidArgument)));
     }
 
     #[test]
-    fn new_initializes_descriptor_and_release_clears_it() {
-        let mut handle = new_handle();
+    fn build_request_rejects_null_header_name_and_value() {
+        let name = CString::new("x-test").unwrap();
+        let value = CString::new("value").unwrap();
+        let mut null_name = header_view(&name, &value);
+        null_name.name.ptr = ptr::null();
+        let mut null_value = header_view(&name, &value);
+        null_value.value.ptr = ptr::null();
+        let null_name_headers = [null_name];
+        let null_value_headers = [null_value];
+        let mut null_name_view = request_view(&null_name_headers, b"body");
+        let mut null_value_view = request_view(&null_value_headers, b"body");
+        null_name_view.headers = null_name_headers.as_ptr();
+        null_value_view.headers = null_value_headers.as_ptr();
 
-        assert_eq!(handle.transport.size, size_of::<otel_transport_t>());
-        // SAFETY: `name` points into the transport's static `http\0` byte string.
-        let name = unsafe {
-            slice::from_raw_parts(
-                handle.transport.name.ptr.cast::<u8>(),
-                handle.transport.name.len,
-            )
-        };
-        assert_eq!(name, b"http".as_slice());
-        let mut response = otel_transport_response_t::EMPTY;
-        assert_eq!(
-            // SAFETY: a NULL request is rejected by the callback before it is dereferenced.
-            unsafe {
-                (handle.transport.send)(ptr::null(), &mut response, handle.transport.user_data)
-            },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        let name_result = build_request(
+            &null_name_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
         );
-        assert!(!handle.inner.is_null());
-        assert_eq!(handle.transport.user_data, handle.inner);
+        let value_result = build_request(
+            &null_value_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
 
-        release(&mut handle);
-        assert!(handle.inner.is_null());
-        release(&mut handle);
-        // SAFETY: null handle is explicitly a no-op.
-        unsafe { otel_http_transport_release(ptr::null_mut()) };
+        assert!(matches!(name_result, Err(RequestError::InvalidArgument)));
+        assert!(matches!(value_result, Err(RequestError::InvalidArgument)));
     }
 
     #[test]
-    fn send_rejects_null_arguments() {
-        let mut response = otel_transport_response_t::EMPTY;
-        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost/v1/traces\0"));
-        let dangling = NonNull::<u8>::dangling().as_ptr().cast::<c_void>();
+    fn build_request_rejects_invalid_header_name_and_value() {
+        let bad_name = CString::new("bad name").unwrap();
+        let good_value = CString::new("value").unwrap();
+        let good_name = CString::new("x-test").unwrap();
+        let bad_value = CString::new("bad\nvalue").unwrap();
+        let bad_name_headers = [header_view(&bad_name, &good_value)];
+        let bad_value_headers = [header_view(&good_name, &bad_value)];
+        let mut name_view = request_view(&bad_name_headers, b"body");
+        let mut value_view = request_view(&bad_value_headers, b"body");
+        name_view.headers = bad_name_headers.as_ptr();
+        value_view.headers = bad_value_headers.as_ptr();
 
-        assert_eq!(
-            // SAFETY: a null request is rejected before it is dereferenced.
-            unsafe { otel_http_transport_send(ptr::null(), &mut response, dangling) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        let name_result = build_request(
+            &name_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
         );
-        assert_eq!(
-            // SAFETY: a null response is rejected before it is dereferenced.
-            unsafe { otel_http_transport_send(&view, ptr::null_mut(), dangling) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
+        let value_result = build_request(
+            &value_view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
         );
-        assert_eq!(
-            // SAFETY: a null user_data is rejected before it is dereferenced.
-            unsafe { otel_http_transport_send(&view, &mut response, ptr::null_mut()) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
-        );
+
+        assert!(matches!(name_result, Err(RequestError::InvalidHeader)));
+        assert!(matches!(value_result, Err(RequestError::InvalidHeader)));
     }
 
     #[test]
-    fn send_rejects_invalid_method_and_url() {
-        let mut handle = new_handle();
-        let mut response = otel_transport_response_t::EMPTY;
-        let url = cstr(b"http://localhost/v1/traces\0");
-        let invalid_method = request_view(cstr(b"NOT A METHOD\0"), url);
-        let bad_utf8 = CString::new([0xffu8, 0xfe]).unwrap();
-        let invalid_url = request_view(cstr(b"POST\0"), &bad_utf8);
-        let mut null_method = request_view(cstr(b"POST\0"), url);
-        null_method.method = ptr::null();
-        let mut null_url = request_view(cstr(b"POST\0"), url);
-        null_url.url = ptr::null();
-
-        for view in [&invalid_method, &invalid_url, &null_method, &null_url] {
-            // SAFETY: all views are initialized, `response` is writable, and
-            // `user_data` belongs to the live handle held for this test.
-            let status = unsafe {
-                otel_http_transport_send(view, &mut response, handle.transport.user_data)
-            };
-            assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
-            assert_eq!(error_bytes(&response), ERR_INVALID);
-        }
-
-        release(&mut handle);
-    }
-
-    #[test]
-    fn register_rejects_null_arguments_and_uninitialized_handle() {
-        let mut runtime = otel_runtime_t {
-            inner: ptr::null_mut(),
-        };
-        let handle = empty_handle();
-
-        assert_eq!(
-            // SAFETY: a null runtime is rejected before it is dereferenced.
-            unsafe { otel_http_transport_register(ptr::null_mut(), &handle) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
-        );
-        assert_eq!(
-            // SAFETY: a null handle is rejected before it is dereferenced.
-            unsafe { otel_http_transport_register(&mut runtime, ptr::null()) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
-        );
-        assert_eq!(
-            // SAFETY: the handle has no inner pointer, so no core symbol is called.
-            unsafe { otel_http_transport_register(&mut runtime, &handle) },
-            otel_result_t::OTEL_ERR_INVALID_ARGUMENT
-        );
-    }
-
-    #[test]
-    fn send_returns_http_response() {
-        let transport = HttpTransport {
-            agent: mock_agent(
-                http_reply(&[("content-type", "application/x-protobuf")], b"reply"),
-                false,
-            ),
-        };
-        let mut response = otel_transport_response_t::EMPTY;
-        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost:4318/v1/traces\0"));
-
-        // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `HttpTransport`.
-        let status = unsafe {
-            otel_http_transport_send(
-                &view,
-                &mut response,
-                (&transport as *const HttpTransport)
-                    .cast::<c_void>()
-                    .cast_mut(),
-            )
-        };
-
-        assert_eq!(status, otel_result_t::OTEL_OK);
-        assert_eq!(response.status_code, 200);
-        assert_eq!(response.body_len, 5);
-        assert_eq!(response.error.len, 0);
-    }
-
-    #[test]
-    fn send_reports_build_request_failure() {
-        let transport = HttpTransport {
-            agent: mock_agent(Vec::new(), false),
-        };
-        let mut response = otel_transport_response_t::EMPTY;
-        let url = cstr(b"http://localhost:4318/v1/traces\0");
-        let mut view = request_view(cstr(b"POST\0"), url);
+    fn build_request_rejects_null_body_with_nonzero_length() {
+        let mut view = request_view(&[], b"body");
         view.body = ptr::null();
 
-        // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `HttpTransport`.
-        let status = unsafe {
-            otel_http_transport_send(
-                &view,
-                &mut response,
-                (&transport as *const HttpTransport)
-                    .cast::<c_void>()
-                    .cast_mut(),
-            )
-        };
+        let result = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        );
 
-        assert_eq!(status, otel_result_t::OTEL_ERR_INVALID_ARGUMENT);
-        assert_eq!(error_bytes(&response), ERR_INVALID);
+        assert!(matches!(result, Err(RequestError::InvalidArgument)));
     }
 
     #[test]
-    fn send_reports_transport_failure() {
-        let transport = HttpTransport {
-            agent: mock_agent(Vec::new(), true),
-        };
-        let mut response = otel_transport_response_t::EMPTY;
-        let view = request_view(cstr(b"POST\0"), cstr(b"http://localhost:4318/v1/traces\0"));
-
-        // SAFETY: `view` and `response` are initialized and stay alive for this
-        // call; `user_data` points to a live `HttpTransport`.
-        let status = unsafe {
-            otel_http_transport_send(
-                &view,
-                &mut response,
-                (&transport as *const HttpTransport)
-                    .cast::<c_void>()
-                    .cast_mut(),
-            )
+    fn build_request_body_override_replaces_core_body() {
+        let mut view = request_view(&[], b"core body");
+        view.body = ptr::null();
+        let options = RequestOptions {
+            body: Some(b"override".to_vec()),
+            ..RequestOptions::default()
         };
 
-        assert_eq!(status, otel_result_t::OTEL_ERR_EXPORT);
-        assert_eq!(error_bytes(&response), ERR_EXPORT);
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &options,
+        )
+        .unwrap();
+
+        assert_eq!(request.body().as_slice(), b"override");
     }
 
-    #[cfg(all(not(miri), unix))]
     #[test]
-    fn register_uses_core_setter_for_initialized_handle() {
-        let mut handle = new_handle();
-        let mut runtime = otel_runtime_t {
-            inner: ptr::null_mut(),
+    fn http_response_conversion_keeps_views_valid() {
+        let mut view = otel_exporter_response_t::EMPTY;
+        {
+            let response = response_with(
+                &[
+                    ("content-type", "application/x-protobuf"),
+                    ("x-test", "value"),
+                ],
+                b"reply bytes",
+            );
+
+            assert_eq!(response.status_code(), 201);
+            assert_eq!(
+                response.headers().get("content-type").unwrap(),
+                "application/x-protobuf"
+            );
+            assert_eq!(response.body(), b"reply bytes");
+
+            response.write_into(&mut view);
+        }
+        assert_eq!(view.status_code, 201);
+        assert_eq!(view.header_count, 2);
+        assert_eq!(view.body_len, 11);
+        // SAFETY: `write_into` copied the response into thread-local storage,
+        // which outlives the dropped local `response`.
+        let headers = unsafe { slice::from_raw_parts(view.headers, view.header_count) };
+        let mut names = Vec::new();
+        for header in headers {
+            // SAFETY: the name view points into a C string in thread-local storage.
+            let name =
+                unsafe { slice::from_raw_parts(header.name.ptr.cast::<u8>(), header.name.len) };
+            names.push(String::from_utf8_lossy(name).into_owned());
+        }
+        assert!(names.iter().any(|name| name == "content-type"));
+        assert!(names.iter().any(|name| name == "x-test"));
+        // SAFETY: `view.body` points into thread-local storage that is still live.
+        let body = unsafe { slice::from_raw_parts(view.body, view.body_len) };
+        assert_eq!(body, b"reply bytes");
+    }
+
+    #[test]
+    fn http_response_empty_views_are_null() {
+        let response = response_with(&[], b"");
+        let mut view = otel_exporter_response_t::EMPTY;
+
+        response.write_into(&mut view);
+
+        assert_eq!(view.status_code, 201);
+        assert!(view.headers.is_null());
+        assert_eq!(view.header_count, 0);
+        assert!(view.body.is_null());
+        assert_eq!(view.body_len, 0);
+    }
+
+    #[test]
+    fn new_agent_applies_optional_connect_timeout() {
+        let _ = new_agent(true, 25);
+        let _ = new_agent(false, 0);
+    }
+
+    #[test]
+    fn send_uses_configured_agent_and_returns_response() {
+        let reply = http_reply(&[("content-type", "application/x-protobuf")], b"reply");
+        let agent = mock_agent(reply, false);
+        let view = request_view(&[], b"payload");
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+
+        let response = send(&agent, request, 60_000).unwrap();
+
+        assert_eq!(response.status_code(), 200);
+        assert_eq!(response.body(), b"reply");
+        assert_eq!(
+            response.headers().get("content-type").unwrap(),
+            "application/x-protobuf"
+        );
+    }
+
+    #[test]
+    fn send_reports_transport_and_body_read_errors() {
+        let view = request_view(&[], b"payload");
+
+        let failed = mock_agent(Vec::new(), true);
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+        assert!(matches!(
+            send(&failed, request, 1000),
+            Err(RequestError::Transport)
+        ));
+
+        let truncated =
+            b"HTTP/1.1 200 OK\r\nContent-Length: 8\r\nConnection: close\r\n\r\nshort".to_vec();
+        let agent = mock_agent(truncated, false);
+        let request = build_request(
+            &view,
+            Method::POST,
+            "http://localhost:4318/v1/traces",
+            &RequestOptions::default(),
+        )
+        .unwrap();
+        assert!(matches!(
+            send(&agent, request, 1000),
+            Err(RequestError::Transport)
+        ));
+    }
+
+    #[test]
+    fn str_slice_accepts_null_view() {
+        let view = otel_str_t {
+            ptr: ptr::null(),
+            len: 0,
         };
-
-        assert_eq!(
-            // SAFETY: `runtime` is writable, aligned storage for this handle type.
-            unsafe { otel_runtime_new(&mut runtime) },
-            otel_result_t::OTEL_OK
-        );
-
-        assert_eq!(
-            // SAFETY: both handles are initialized and stay alive for this call.
-            unsafe { otel_http_transport_register(&mut runtime, &handle) },
-            otel_result_t::OTEL_OK
-        );
-
-        // SAFETY: `runtime` is initialized and this drops our reference exactly once.
-        unsafe { otel_runtime_release(&mut runtime) };
-        release(&mut handle);
+        // SAFETY: a NULL pointer with zero length returns an empty slice without
+        // dereferencing the pointer.
+        assert!(unsafe { str_slice(view) }.is_empty());
     }
 }

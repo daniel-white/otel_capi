@@ -21,63 +21,63 @@ use opentelemetry_sdk::trace::{SdkTracer, SdkTracerProvider, Span as SdkSpan};
 pub use crate::abi::otel_runtime_t;
 use crate::abi::{handle_created, handle_destroyed, live_handle_count};
 use crate::error::{Error, Result, guard, otel_result_t};
-use crate::items::ItemTransport;
-use crate::transport::Transport;
+use crate::exporter::Exporter;
+use crate::items::ItemExporter;
 
 pub(crate) type ResourceInner = opentelemetry_sdk::Resource;
 
-/// Named transports and the in-memory item transport registered by the caller.
+/// Named exporters and the in-memory item exporter registered by the caller.
 pub(crate) struct RuntimeInner {
-    transports: RwLock<Vec<(String, Transport)>>,
-    item_transport: RwLock<Option<ItemTransport>>,
+    exporters: RwLock<Vec<(String, Exporter)>>,
+    item_exporter: RwLock<Option<ItemExporter>>,
 }
 
 impl RuntimeInner {
     pub(crate) fn new() -> Self {
         Self {
-            transports: RwLock::new(Vec::new()),
-            item_transport: RwLock::new(None),
+            exporters: RwLock::new(Vec::new()),
+            item_exporter: RwLock::new(None),
         }
     }
 
-    pub(crate) fn set_transport(&self, name: String, transport: Transport) -> Result<()> {
+    pub(crate) fn set_exporter(&self, name: String, exporter: Exporter) -> Result<()> {
         let mut slots = self
-            .transports
+            .exporters
             .write()
-            .map_err(|_| Error::internal("transport registry lock was poisoned"))?;
+            .map_err(|_| Error::internal("exporter registry lock was poisoned"))?;
         if let Some(slot) = slots.iter_mut().find(|(key, _)| key == &name) {
-            slot.1 = transport;
+            slot.1 = exporter;
         } else {
-            slots.push((name, transport));
+            slots.push((name, exporter));
         }
         Ok(())
     }
 
-    pub(crate) fn transport(&self, name: &str) -> Result<Option<Transport>> {
+    pub(crate) fn exporter(&self, name: &str) -> Result<Option<Exporter>> {
         let slots = self
-            .transports
+            .exporters
             .read()
-            .map_err(|_| Error::internal("transport registry lock was poisoned"))?;
+            .map_err(|_| Error::internal("exporter registry lock was poisoned"))?;
         Ok(slots
             .iter()
             .find(|(key, _)| key == name)
-            .map(|(_, transport)| *transport))
+            .map(|(_, exporter)| *exporter))
     }
 
-    pub(crate) fn set_item_transport(&self, transport: ItemTransport) -> Result<()> {
+    pub(crate) fn set_item_exporter(&self, exporter: ItemExporter) -> Result<()> {
         let mut slot = self
-            .item_transport
+            .item_exporter
             .write()
-            .map_err(|_| Error::internal("item transport lock was poisoned"))?;
-        *slot = Some(transport);
+            .map_err(|_| Error::internal("item exporter lock was poisoned"))?;
+        *slot = Some(exporter);
         Ok(())
     }
 
-    pub(crate) fn item_transport(&self) -> Result<Option<ItemTransport>> {
+    pub(crate) fn item_exporter(&self) -> Result<Option<ItemExporter>> {
         let slot = self
-            .item_transport
+            .item_exporter
             .read()
-            .map_err(|_| Error::internal("item transport lock was poisoned"))?;
+            .map_err(|_| Error::internal("item exporter lock was poisoned"))?;
         Ok(*slot)
     }
 }

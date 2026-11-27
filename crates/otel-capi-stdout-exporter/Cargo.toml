@@ -1,12 +1,12 @@
 [package]
-name = "otel-capi-stdout-transport"
+name = "otel-capi-stdout-exporter"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 description = "Optional loadable stdout exporter for otel-capi"
 
 [lib]
-name = "otel_capi_stdout_transport"
+name = "otel_capi_stdout_exporter"
 crate-type = ["cdylib"]
 
 [build-dependencies]

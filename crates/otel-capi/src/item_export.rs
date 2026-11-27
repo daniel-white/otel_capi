@@ -1,5 +1,5 @@
 //! SDK adapters that deliver telemetry to the application's in-memory item
-//! transport. Each adapter emits both typed C items and encoded OTLP bytes.
+//! exporter. Each adapter emits both typed C items and encoded OTLP bytes.
 
 use std::ffi::CString;
 use std::fmt;
@@ -31,7 +31,7 @@ use opentelemetry_sdk::trace::{Span, SpanData, SpanProcessor};
 use prost::Message;
 
 use crate::items::{
-    AttributeViews, ItemTransport, c_str_view, nanos, otel_histogram_point_t, otel_item_signal_t,
+    AttributeViews, ItemExporter, c_str_view, nanos, otel_histogram_point_t, otel_item_signal_t,
     otel_log_item_t, otel_metric_item_t, otel_metric_item_type_t, otel_metric_point_t,
     otel_metric_value_kind_t, otel_metric_value_t, otel_span_event_item_t, otel_span_item_t,
     otel_span_link_item_t, severity, span_id, span_kind, trace_id,
@@ -75,7 +75,7 @@ fn status_view(status: &Status) -> (otel_span_status_t, CString) {
     }
 }
 
-fn emit_typed_span(transport: &ItemTransport, span: &SpanData, resource: &Resource) {
+fn emit_typed_span(exporter: &ItemExporter, span: &SpanData, resource: &Resource) {
     let name = CString::new(span.name.as_ref()).unwrap_or_default();
     let (status, status_message) = status_view(&span.status);
     let attributes = AttributeViews::new(span.attributes.iter());
@@ -138,20 +138,20 @@ fn emit_typed_span(transport: &ItemTransport, span: &SpanData, resource: &Resour
         resource_attributes: resource_ptr,
         resource_attribute_count: resource_len,
     };
-    transport.emit_span(&item);
+    exporter.emit_span(&item);
 }
 
 /// Passes each finished span to the application as a typed item and an OTLP
 /// protobuf request.
 pub(crate) struct ItemSpanProcessor {
-    transport: ItemTransport,
+    exporter: ItemExporter,
     resource: RwLock<Resource>,
 }
 
 impl ItemSpanProcessor {
-    pub(crate) fn new(transport: ItemTransport) -> Self {
+    pub(crate) fn new(exporter: ItemExporter) -> Self {
         Self {
-            transport,
+            exporter,
             resource: RwLock::new(Resource::builder_empty().build()),
         }
     }
@@ -171,12 +171,12 @@ impl SpanProcessor for ItemSpanProcessor {
             return;
         }
         let resource = self.resource.read().expect("resource lock poisoned");
-        emit_typed_span(&self.transport, &span, &resource);
+        emit_typed_span(&self.exporter, &span, &resource);
         let proto_resource: ResourceAttributesWithSchema = (&*resource).into();
         let request = ExportTraceServiceRequest {
             resource_spans: vec![ResourceSpans::new(span, &proto_resource)],
         };
-        self.transport.emit_encoded(
+        self.exporter.emit_encoded(
             otel_item_signal_t::OTEL_ITEM_SIGNAL_TRACE,
             &request.encode_to_vec(),
         );
@@ -195,7 +195,7 @@ impl SpanProcessor for ItemSpanProcessor {
     }
 }
 
-fn emit_typed_log(transport: &ItemTransport, record: &SdkLogRecord, resource: &Resource) {
+fn emit_typed_log(exporter: &ItemExporter, record: &SdkLogRecord, resource: &Resource) {
     let severity_text = CString::new(record.severity_text().unwrap_or("")).unwrap_or_default();
     let empty_body = CString::new("").unwrap();
     let body = record.body().map(any_value_string).unwrap_or(empty_body);
@@ -227,20 +227,20 @@ fn emit_typed_log(transport: &ItemTransport, record: &SdkLogRecord, resource: &R
         resource_attributes: resource_ptr,
         resource_attribute_count: resource_len,
     };
-    transport.emit_log(&item);
+    exporter.emit_log(&item);
 }
 
 /// Passes each log record to the application as a typed item and an OTLP
 /// protobuf request.
 pub(crate) struct ItemLogProcessor {
-    transport: ItemTransport,
+    exporter: ItemExporter,
     resource: RwLock<Resource>,
 }
 
 impl ItemLogProcessor {
-    pub(crate) fn new(transport: ItemTransport) -> Self {
+    pub(crate) fn new(exporter: ItemExporter) -> Self {
         Self {
-            transport,
+            exporter,
             resource: RwLock::new(Resource::builder_empty().build()),
         }
     }
@@ -255,7 +255,7 @@ impl fmt::Debug for ItemLogProcessor {
 impl LogProcessor for ItemLogProcessor {
     fn emit(&self, data: &mut SdkLogRecord, instrumentation: &InstrumentationScope) {
         let resource = self.resource.read().expect("resource lock poisoned");
-        emit_typed_log(&self.transport, data, &resource);
+        emit_typed_log(&self.exporter, data, &resource);
         let proto_resource: ResourceAttributesWithSchema = (&*resource).into();
         let request = ExportLogsServiceRequest {
             resource_logs: vec![ResourceLogs::from((
@@ -263,7 +263,7 @@ impl LogProcessor for ItemLogProcessor {
                 &proto_resource,
             ))],
         };
-        self.transport.emit_encoded(
+        self.exporter.emit_encoded(
             otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG,
             &request.encode_to_vec(),
         );
@@ -430,7 +430,7 @@ fn histogram_points<'a, T: Copy + MetricValue + 'a>(
 }
 
 fn emit_metric_data<T: Copy + MetricValue>(
-    transport: &ItemTransport,
+    exporter: &ItemExporter,
     name: &CString,
     description: &CString,
     unit: &CString,
@@ -453,7 +453,7 @@ fn emit_metric_data<T: Copy + MetricValue>(
             resource_attributes: resource_ptr,
             resource_attribute_count: resource_len,
         };
-        transport.emit_metric(&item);
+        exporter.emit_metric(&item);
     };
 
     match data {
@@ -496,7 +496,7 @@ fn emit_metric_data<T: Copy + MetricValue>(
 }
 
 fn emit_typed_metric(
-    transport: &ItemTransport,
+    exporter: &ItemExporter,
     metric: &Metric,
     resource: (*const crate::attributes::otel_attribute_t, usize),
 ) {
@@ -505,13 +505,13 @@ fn emit_typed_metric(
     let unit = CString::new(metric.unit()).unwrap_or_default();
     match metric.data() {
         AggregatedMetrics::F64(data) => {
-            emit_metric_data(transport, &name, &description, &unit, data, resource);
+            emit_metric_data(exporter, &name, &description, &unit, data, resource);
         }
         AggregatedMetrics::U64(data) => {
-            emit_metric_data(transport, &name, &description, &unit, data, resource);
+            emit_metric_data(exporter, &name, &description, &unit, data, resource);
         }
         AggregatedMetrics::I64(data) => {
-            emit_metric_data(transport, &name, &description, &unit, data, resource);
+            emit_metric_data(exporter, &name, &description, &unit, data, resource);
         }
     }
 }
@@ -519,7 +519,7 @@ fn emit_typed_metric(
 /// Passes collected metrics to the application as typed items and one encoded
 /// OTLP protobuf request.
 pub(crate) struct ItemMetricExporter {
-    transport: ItemTransport,
+    exporter: ItemExporter,
 }
 
 impl fmt::Debug for ItemMetricExporter {
@@ -529,8 +529,8 @@ impl fmt::Debug for ItemMetricExporter {
 }
 
 impl ItemMetricExporter {
-    pub(crate) fn new(transport: ItemTransport) -> Self {
-        Self { transport }
+    pub(crate) fn new(exporter: ItemExporter) -> Self {
+        Self { exporter }
     }
 
     fn send(&self, metrics: &ResourceMetrics) -> OTelSdkResult {
@@ -539,11 +539,11 @@ impl ItemMetricExporter {
         let resource = resource_attributes.as_slice();
         for scope in metrics.scope_metrics() {
             for metric in scope.metrics() {
-                emit_typed_metric(&self.transport, metric, resource);
+                emit_typed_metric(&self.exporter, metric, resource);
             }
         }
         let request = ExportMetricsServiceRequest::from(metrics);
-        self.transport.emit_encoded(
+        self.exporter.emit_encoded(
             otel_item_signal_t::OTEL_ITEM_SIGNAL_METRIC,
             &request.encode_to_vec(),
         );
@@ -627,8 +627,8 @@ mod tests {
     }
 
     impl Capture {
-        fn transport(&self) -> ItemTransport {
-            ItemTransport {
+        fn exporter(&self) -> ItemExporter {
+            ItemExporter {
                 on_span: Some(capture_span),
                 on_log: Some(capture_log),
                 on_metric: Some(capture_metric),
@@ -1223,7 +1223,7 @@ mod tests {
     #[test]
     fn span_processor_emits_sampled_spans_only() {
         let capture = Capture::default();
-        let mut processor = ItemSpanProcessor::new(capture.transport());
+        let mut processor = ItemSpanProcessor::new(capture.exporter());
         processor.set_resource(
             &Resource::builder()
                 .with_attributes(vec![KeyValue::new("service.name", "test")])
@@ -1260,7 +1260,7 @@ mod tests {
     #[test]
     fn log_processor_emits_typed_and_encoded_records() {
         let capture = Capture::default();
-        let mut processor = ItemLogProcessor::new(capture.transport());
+        let mut processor = ItemLogProcessor::new(capture.exporter());
         processor.set_resource(&Resource::builder_empty().build());
         assert!(processor.force_flush().is_ok());
         assert!(processor.shutdown_with_timeout(Duration::ZERO).is_ok());
@@ -1305,7 +1305,7 @@ mod tests {
     #[test]
     fn metric_exporter_exposes_reader_contract_and_handles_empty_metrics() {
         let capture = Capture::default();
-        let exporter = ItemMetricExporter::new(capture.transport());
+        let exporter = ItemMetricExporter::new(capture.exporter());
         assert_eq!(exporter.temporality(), Temporality::Cumulative);
         assert!(exporter.force_flush().is_ok());
         assert!(format!("{exporter:?}").contains("ItemMetricExporter"));
@@ -1322,7 +1322,7 @@ mod tests {
     #[test]
     fn span_processor_emits_events_links_and_parent_span() {
         let capture = Capture::default();
-        let processor = ItemSpanProcessor::new(capture.transport());
+        let processor = ItemSpanProcessor::new(capture.exporter());
 
         let tracer_provider = SdkTracerProvider::builder().build();
         let tracer = tracer_provider.tracer("test");
@@ -1369,7 +1369,7 @@ mod tests {
     #[test]
     fn metric_exporter_emits_all_metric_data_variants() {
         let capture = Capture::default();
-        let exporter = ItemMetricExporter::new(capture.transport());
+        let exporter = ItemMetricExporter::new(capture.exporter());
         let metrics = fabricated_resource_metrics(vec![
             fabricated_metric("f64-gauge", aggregated_f64(gauge_metric_data(1.5))),
             fabricated_metric("u64-gauge", aggregated_u64(gauge_metric_data(2u64))),

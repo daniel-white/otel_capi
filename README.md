@@ -8,13 +8,15 @@ through generated headers and caller-owned handle structs.
 - `include/otel_capi*.h` — generated into `include/` by each crate's `build.rs`
   during `make build` and gitignored. Do not edit by hand. `otel_capi.h` is the
   umbrella header; it includes the core area headers plus the generated
-  `otel_capi_grpc_transport.h`, `otel_capi_http_transport.h`, and
-  `otel_capi_stdout_transport.h`, so Doxygen sees the transport APIs in the same
+  `otel_capi_grpc_exporter.h`, `otel_capi_http_exporter.h`, and
+  `otel_capi_stdout_exporter.h`, so Doxygen sees the exporter APIs in the same
   documentation set. Area headers can also be included individually.
   Semantic-convention helpers live in `otel_capi_semconv.h`, split into
   `otel_capi_semconv_attributes.h` and `otel_capi_semconv_metrics.h`.
 - `crates/otel-capi/` — shared ABI, allocation tracking, runtime, and C API.
-- `crates/otel-capi-*-transport/` — optional loadable transport libraries.
+- `crates/otel-capi-*-exporter/` — optional loadable exporter libraries.
+- `crates/otel-capi-http-transport/` — shared blocking HTTP sender used by
+  the HTTP and gRPC exporters.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
 - `CMakeLists.txt`, `cmake/` — CMake build/install with `find_package` support.
@@ -63,7 +65,7 @@ nix develop --command make miri
 ```
 
 Both `make test` and `make miri` run the unit tests in the core crate, the
-shared HTTP client, and all three loadable transports. The Miri target disables
+shared HTTP transport, and all three loadable exporters. The Miri target disables
 isolation so the tests can read the real clock and process environment.
 
 Collect coverage for the same tests with:
@@ -87,7 +89,7 @@ nix develop --command make docs
 
 The output is in `build/docs/html`. Doxygen is provided by the dev shell.
 
-Install the library, optional transport libraries, headers, and pkg-config metadata with:
+Install the library, optional exporter libraries, headers, and pkg-config metadata with:
 
 ```sh
 nix develop --command make install PREFIX=/path/to/prefix
@@ -310,7 +312,7 @@ applied.
 
 ### Runtime handle
 
-`otel_runtime_t` is a small transport holder created with `otel_runtime_new` and
+`otel_runtime_t` is a small exporter holder created with `otel_runtime_new` and
 passed to each provider constructor. Providers retain it internally, so the
 original handle can be released once all providers have been created. The core
 library does not own a Tokio runtime or create runtime worker threads.
@@ -318,75 +320,77 @@ library does not own a Tokio runtime or create runtime worker threads.
 is ignored. OpenTelemetry's own batch processors and metric readers still create
 their exporter threads.
 
-### Application transport callback
+### Application exporter callback
 
 The library does not embed an HTTP client. Register a generic callback on the
-runtime before creating providers. The callback's `otel_transport_t` descriptor
-carries the name the core should use, so `otel_runtime_set_transport` does not
+runtime before creating providers. The callback's `otel_exporter_t` descriptor
+carries the name the core should use, so `otel_runtime_set_exporter` does not
 take a protocol name as a separate argument:
 
 ```c
-static otel_result_t send_transport(const otel_transport_request_t *request,
-                                    otel_transport_response_t *response,
+static otel_result_t send_exporter(const otel_exporter_request_t *request,
+                                    otel_exporter_response_t *response,
                                     void *user_data) {
   /* Use your HTTP stack; request->timeout_ms is the configured timeout. */
-  *response = (otel_transport_response_t)OTEL_TRANSPORT_RESPONSE_INIT;
+  *response = (otel_exporter_response_t)OTEL_EXPORTER_RESPONSE_INIT;
   response->status_code = 200;
   return OTEL_OK;
 }
 
 otel_runtime_t runtime = OTEL_RUNTIME_T_INIT;
-otel_transport_t transport = OTEL_TRANSPORT_INIT;
-transport.name = OTEL_STR("http");
-transport.send = send_transport;
+otel_exporter_t exporter = OTEL_EXPORTER_INIT;
+exporter.name = OTEL_STR("http");
+exporter.send = send_exporter;
 otel_runtime_new(&runtime);
-otel_runtime_set_transport(&runtime, &transport);
+otel_runtime_set_exporter(&runtime, &exporter);
 ```
 
 The callback may run concurrently on OpenTelemetry background threads. Request
 pointers are borrowed for the call only; response bodies and headers are copied
-before the callback returns. Non-success HTTP statuses are valid responses;
-return a non-`OTEL_OK` result to report a transport failure. `user_data` must
-stay valid until the runtime is released.
+after the callback returns, so their storage must remain valid until the next
+callback on the same thread. Only 2xx statuses are treated as success; other
+statuses are reported as export failures. Return a non-`OTEL_OK` result to
+report an exporter failure. `user_data` must stay valid until the runtime is
+released.
 
-### Loadable transports
+### Loadable exporters
 
 The core library does not link Tokio, tonic, reqwest, ureq, or a concrete
-stdout client. Each optional transport is a separate shared library with its
+stdout client. Each optional exporter is a separate shared library with its
 own typed handle, options struct, and descriptor. The descriptor is embedded in
-the handle, so the transport supplies its own name to the core runtime:
+the handle, so the exporter supplies its own name to the core runtime:
 
-- `libotel_capi_http_transport` uses the shared blocking HTTP client.
-- `libotel_capi_grpc_transport` sends raw gRPC frames over that same client.
-- `libotel_capi_stdout_transport` decodes and summarizes each OTLP batch.
+- `libotel_capi_http_exporter` uses the shared blocking HTTP transport.
+- `libotel_capi_grpc_exporter` sends raw gRPC frames over that same transport.
+- `libotel_capi_stdout_exporter` decodes and summarizes each OTLP batch.
 
-The HTTP and gRPC transports both depend on the internal
-`otel-capi-http-client` crate. It configures one `ureq` client with
+The HTTP and gRPC exporters both depend on the internal
+`otel-capi-http-transport` crate. It configures one `ureq` client with
 `native-tls` and the platform trust store: Security Framework on macOS,
 Schannel on Windows, and OpenSSL on Linux and other Unix systems. Install the
 system TLS development headers (for example `libssl-dev` on Debian/Ubuntu or
-`openssl-devel` on Fedora) when building those transports from source. The
+`openssl-devel` on Fedora) when building those exporters from source. The
 gRPC `worker_count` option is retained for ABI compatibility but ignored.
 
 ```c
-/* POSIX sketch generated from the typed transport headers. */
-otel_http_transport_t http = OTEL_HTTP_TRANSPORT_T_INIT;
-otel_http_transport_options_t options = OTEL_HTTP_TRANSPORT_OPTIONS_INIT;
-otel_http_transport_new(&http, &options);
-otel_http_transport_register(&runtime, &http); /* reads http.transport.name */
+/* POSIX sketch generated from the typed exporter headers. */
+otel_http_exporter_t http = OTEL_HTTP_EXPORTER_T_INIT;
+otel_http_exporter_options_t options = OTEL_HTTP_EXPORTER_OPTIONS_INIT;
+otel_http_exporter_new(&http, &options);
+otel_http_exporter_register(&runtime, &http); /* reads http.exporter.name */
 /* ... create providers, emit telemetry, shut down ... */
-otel_http_transport_release(&http);
+otel_http_exporter_release(&http);
 ```
 
 The gRPC and stdout libraries use the same pattern with
-`OTEL_GRPC_TRANSPORT_T_INIT` / `OTEL_GRPC_TRANSPORT_OPTIONS_INIT` and
-`OTEL_STDOUT_TRANSPORT_T_INIT` / `OTEL_STDOUT_TRANSPORT_OPTIONS_INIT`. Their
-`*_register` helpers call `otel_runtime_set_transport` through a resolved core
+`OTEL_GRPC_EXPORTER_T_INIT` / `OTEL_GRPC_EXPORTER_OPTIONS_INIT` and
+`OTEL_STDOUT_EXPORTER_T_INIT` / `OTEL_STDOUT_EXPORTER_OPTIONS_INIT`. Their
+`*_register` helpers call `otel_runtime_set_exporter` through a resolved core
 symbol, so loadable libraries do not need a link-time dependency on the core
 shared library. Handles from all libraries are included in
 `otel_live_handle_count()` and `otel_ensure_all_released()`.
 
-### In-memory item transport
+### In-memory item exporter
 
 Set `OTEL_TRACES_EXPORTER`, `OTEL_METRICS_EXPORTER`, and
 `OTEL_LOGS_EXPORTER` to `item` to receive telemetry in-process instead of
@@ -394,12 +398,12 @@ encoding an OTLP request. Register callbacks on the runtime before creating
 providers:
 
 ```c
-otel_item_transport_t transport = OTEL_ITEM_TRANSPORT_INIT;
-transport.on_span = on_span;      // otel_span_item_fn
-transport.on_metric = on_metric;  // otel_metric_item_fn
-transport.on_log = on_log;        // otel_log_item_fn
-transport.on_encoded = on_encoded; // otel_encoded_item_fn
-otel_runtime_set_item_transport(&runtime, &transport);
+otel_item_exporter_t exporter = OTEL_ITEM_EXPORTER_INIT;
+exporter.on_span = on_span;      // otel_span_item_fn
+exporter.on_metric = on_metric;  // otel_metric_item_fn
+exporter.on_log = on_log;        // otel_log_item_fn
+exporter.on_encoded = on_encoded; // otel_encoded_item_fn
+otel_runtime_set_item_exporter(&runtime, &exporter);
 ```
 
 Typed callbacks receive one finished span, log record, or aggregated metric
@@ -418,7 +422,11 @@ Standard OpenTelemetry environment variables are read at provider creation:
 - `OTEL_TRACES_EXPORTER`, `OTEL_METRICS_EXPORTER`, `OTEL_LOGS_EXPORTER`
   - `otlp` (default), `item`/`memory`, `stdout`/`console`, or `none`
 - OTLP settings via `OTEL_EXPORTER_OTLP_*`, including signal-specific
-  endpoint variables
+  endpoint variables (used verbatim when set; the generic endpoint gets the
+  signal path appended), protocol, timeout, headers, and compression. Headers
+  prefer signal-specific variables and are percent-decoded; unavailable
+  compression values are warned about and ignored. Metric temporality follows
+  `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE`.
 - `OTEL_TRACES_SAMPLER` (`always_on`, `always_off`, `trace_id_ratio`) and
   `OTEL_TRACES_SAMPLER_ARG`
 - Batch intervals: `OTEL_BSP_SCHEDULE_DELAY`, `OTEL_METRIC_EXPORT_INTERVAL`,

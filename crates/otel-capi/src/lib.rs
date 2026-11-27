@@ -4,7 +4,7 @@
 //! `Arc`. Use the matching `otel_*_retain` and `otel_*_release` functions to
 //! manage ownership. Strings are borrowed only for the duration of a call.
 //!
-//! Loadable transports depend on this crate with `default-features = false`
+//! Loadable exporters depend on this crate with `default-features = false`
 //! and `features = ["abi"]`. That exposes the shared C ABI without linking the
 //! SDK or duplicating any `otel_*` exported symbols.
 
@@ -20,9 +20,13 @@ pub mod strings;
 #[cfg(feature = "full")]
 pub mod attributes;
 #[cfg(feature = "full")]
+mod callback_exporter;
+#[cfg(feature = "full")]
 mod config;
 #[cfg(feature = "full")]
 pub mod context;
+#[cfg(feature = "full")]
+pub mod exporter;
 #[cfg(feature = "full")]
 pub mod handles;
 #[cfg(feature = "full")]
@@ -43,8 +47,6 @@ pub mod runtime;
 pub mod trace;
 #[cfg(feature = "full")]
 pub mod tracking;
-#[cfg(feature = "full")]
-pub mod transport;
 #[cfg(feature = "full")]
 mod util;
 

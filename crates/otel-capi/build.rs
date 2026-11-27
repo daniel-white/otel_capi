@@ -293,16 +293,16 @@ const TYPED_BUFFER_MACROS: &str = r#"
 #define OTEL_BAGGAGE_VALUE_INIT_STR(s) { .value = s }
 "#;
 
-const TRANSPORT_MACROS: &str = r#"
-/* Initializers for transport descriptors and application views. */
-#define OTEL_TRANSPORT_INIT { .size = sizeof(otel_transport_t), .name = { NULL, 0 }, .send = NULL, .user_data = NULL }
-#define OTEL_TRANSPORT_HEADER_INIT { .name = { NULL, 0 }, .value = { NULL, 0 } }
-#define OTEL_TRANSPORT_REQUEST_INIT { .method = NULL, .url = NULL, .headers = NULL, .header_count = 0, .body = NULL, .body_len = 0, .timeout_ms = 0 }
-#define OTEL_TRANSPORT_RESPONSE_INIT { .status_code = 0, .body = NULL, .body_len = 0, .headers = NULL, .header_count = 0, .error = { NULL, 0 } }
+const EXPORTER_MACROS: &str = r#"
+/* Initializers for exporter descriptors and application views. */
+#define OTEL_EXPORTER_INIT { .size = sizeof(otel_exporter_t), .name = { NULL, 0 }, .send = NULL, .user_data = NULL }
+#define OTEL_EXPORTER_HEADER_INIT { .name = { NULL, 0 }, .value = { NULL, 0 } }
+#define OTEL_EXPORTER_REQUEST_INIT { .method = NULL, .url = NULL, .headers = NULL, .header_count = 0, .body = NULL, .body_len = 0, .timeout_ms = 0 }
+#define OTEL_EXPORTER_RESPONSE_INIT { .status_code = 0, .body = NULL, .body_len = 0, .headers = NULL, .header_count = 0, .error = { NULL, 0 } }
 "#;
 
 const ITEM_MACROS: &str = r#"
-/* Initializers for in-memory item transport views. All data pointers are
+/* Initializers for in-memory item exporter views. All data pointers are
  * borrowed and valid only for the duration of the callback. */
 #define OTEL_ENCODED_ITEM_INIT { .signal = OTEL_ITEM_SIGNAL_TRACE, .data = NULL, .len = 0 }
 #define OTEL_SPAN_EVENT_ITEM_INIT { .name = { NULL, 0 }, .timestamp_unix_nano = 0, .attributes = NULL, .attribute_count = 0 }
@@ -312,7 +312,7 @@ const ITEM_MACROS: &str = r#"
 #define OTEL_METRIC_POINT_INIT { .attributes = NULL, .attribute_count = 0, .value_kind = OTEL_METRIC_VALUE_U64, .value = { .as_u64 = 0 } }
 #define OTEL_HISTOGRAM_POINT_INIT { .attributes = NULL, .attribute_count = 0, .count = 0, .sum = 0, .has_min = false, .min = 0, .has_max = false, .max = 0, .bucket_boundaries = NULL, .bucket_counts = NULL, .bucket_count = 0 }
 #define OTEL_METRIC_ITEM_INIT { .name = { NULL, 0 }, .description = { NULL, 0 }, .unit = { NULL, 0 }, .kind = OTEL_METRIC_ITEM_GAUGE, .points = NULL, .point_count = 0, .histograms = NULL, .histogram_count = 0, .resource_attributes = NULL, .resource_attribute_count = 0 }
-#define OTEL_ITEM_TRANSPORT_INIT { .size = sizeof(otel_item_transport_t), .on_span = NULL, .on_log = NULL, .on_metric = NULL, .on_encoded = NULL, .user_data = NULL }
+#define OTEL_ITEM_EXPORTER_INIT { .size = sizeof(otel_item_exporter_t), .on_span = NULL, .on_log = NULL, .on_metric = NULL, .on_encoded = NULL, .user_data = NULL }
 "#;
 
 const OWNERSHIP_DOC: &str = r#"/* Ownership convention
@@ -362,7 +362,7 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
     common_body.push('\n');
     common_body.push_str(types);
     common_body.push_str(ATTRIBUTE_MACROS);
-    common_body.push_str(TRANSPORT_MACROS);
+    common_body.push_str(EXPORTER_MACROS);
     common_body.push_str(ITEM_MACROS);
     common_body.push_str("\n/* Sentinel values, handle initializers, and varargs terminator. */\n");
     common_body.push_str(&sentinel_macros(header));
@@ -455,9 +455,9 @@ fn compose_headers(header: &str, semconv: &str) -> Vec<(String, String)> {
         "#include \"otel_capi_trace.h\"\n",
         "#include \"otel_capi_metrics.h\"\n",
         "#include \"otel_capi_logs.h\"\n",
-        "#include \"otel_capi_grpc_transport.h\"\n",
-        "#include \"otel_capi_http_transport.h\"\n",
-        "#include \"otel_capi_stdout_transport.h\"\n\n",
+        "#include \"otel_capi_grpc_exporter.h\"\n",
+        "#include \"otel_capi_http_exporter.h\"\n",
+        "#include \"otel_capi_stdout_exporter.h\"\n\n",
         "#endif /* OTEL_CAPI_H */\n"
     );
     headers.push(("otel_capi.h".to_string(), umbrella.to_string()));

@@ -1,21 +1,21 @@
-//! Explicit transport handle created by the C caller.
+//! Explicit exporter handle created by the C caller.
 //!
 //! The core library does not own an async runtime. C code creates this handle
-//! once with `otel_runtime_new`, registers the transports its exporters need,
+//! once with `otel_runtime_new`, registers the exporters its exporters need,
 //! and passes it to provider constructors. Providers retain their own
 //! reference, so the C handle may be released at any time.
 
 use std::mem::size_of;
 use std::ptr;
 
-use crate::abi::otel_transport_t;
+use crate::abi::otel_exporter_t;
 use crate::error::{Error, guard, otel_result_t};
+use crate::exporter::Exporter;
 use crate::handles::{RuntimeInner, arc, const_slot, init, otel_runtime_t, slot, valid};
-use crate::items::{ItemTransport, otel_item_transport_t};
+use crate::items::{ItemExporter, otel_item_exporter_t};
 use crate::strings::str_slice;
-use crate::transport::Transport;
 
-/// Creates a transport handle for OTLP exporters.
+/// Creates an exporter handle for OTLP exporters.
 /// Writes into caller-owned `handle`; initialize it with `{0}` before calling.
 ///
 /// # Safety
@@ -29,7 +29,7 @@ pub unsafe extern "C" fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_r
     })
 }
 
-/// Creates a transport handle with a caller-selected worker-thread count.
+/// Creates an exporter handle with a caller-selected worker-thread count.
 ///
 /// The core library no longer creates runtime threads; the argument is kept for
 /// source compatibility. Implementations that need workers (such as the
@@ -61,12 +61,12 @@ pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -
     unsafe { valid(const_slot(runtime)) }
 }
 
-/// Registers a transport descriptor used by OTLP exporters.
+/// Registers an exporter descriptor used by OTLP exporters.
 ///
-/// The descriptor is normally embedded in a transport handle created by one of
-/// the loadable transport libraries, so the core never has to be told the
-/// transport's name separately. Applications providing their own callback can
-/// fill an `otel_transport_t` with `OTEL_TRANSPORT_INIT`. Call this before
+/// The descriptor is normally embedded in an exporter handle created by one of
+/// the loadable exporter libraries, so the core never has to be told the
+/// exporter's name separately. Applications providing their own callback can
+/// fill an `otel_exporter_t` with `OTEL_EXPORTER_INIT`. Call this before
 /// creating providers. The callback may run concurrently on OpenTelemetry
 /// background threads, so it and `user_data` must be thread-safe. `user_data`
 /// is borrowed until the runtime is released; no pointers from the request are
@@ -75,33 +75,33 @@ pub unsafe extern "C" fn otel_runtime_is_valid(runtime: *const otel_runtime_t) -
 /// # Safety
 /// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_runtime_set_transport(
+pub unsafe extern "C" fn otel_runtime_set_exporter(
     runtime: *mut otel_runtime_t,
-    transport: *const otel_transport_t,
+    exporter: *const otel_exporter_t,
 ) -> otel_result_t {
     guard(|| {
-        if transport.is_null() {
-            return Err(Error::invalid("transport descriptor must not be NULL"));
+        if exporter.is_null() {
+            return Err(Error::invalid("exporter descriptor must not be NULL"));
         }
         // SAFETY: the caller supplies a stable, aligned descriptor for this call.
-        let value = unsafe { ptr::read(transport) };
-        if value.size != size_of::<otel_transport_t>() {
-            return Err(Error::invalid("unexpected otel_transport_t size"));
+        let value = unsafe { ptr::read(exporter) };
+        if value.size != size_of::<otel_exporter_t>() {
+            return Err(Error::invalid("unexpected otel_exporter_t size"));
         }
         if value.send as usize == 0 {
-            return Err(Error::invalid("transport callback must not be NULL"));
+            return Err(Error::invalid("exporter callback must not be NULL"));
         }
         if value.name.ptr.is_null() || value.name.len == 0 {
-            return Err(Error::invalid("transport name must not be empty"));
+            return Err(Error::invalid("exporter name must not be empty"));
         }
         // SAFETY: the descriptor supplies a valid borrowed view for this call.
-        let name = unsafe { str_slice(value.name, "transport name") }?;
+        let name = unsafe { str_slice(value.name, "exporter name") }?;
         if name.is_empty() {
-            return Err(Error::invalid("transport name must not be empty"));
+            return Err(Error::invalid("exporter name must not be empty"));
         }
         // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let runtime = unsafe { arc::<RuntimeInner>(slot(runtime)) }?;
-        runtime.set_transport(name.to_owned(), Transport::new(value.send, value.user_data))?;
+        runtime.set_exporter(name.to_owned(), Exporter::new(value.send, value.user_data))?;
         Ok(())
     })
 }
@@ -111,22 +111,22 @@ pub unsafe extern "C" fn otel_runtime_set_transport(
 /// Call this before creating providers. Typed callbacks are invoked once per
 /// span, log record, or metric stream; the encoded callback is invoked once per
 /// OTLP batch. Callbacks may run concurrently on OpenTelemetry background
-/// threads, so they and `user_data` must be thread-safe. The transport struct
+/// threads, so they and `user_data` must be thread-safe. The exporter struct
 /// is copied; `user_data` is borrowed until the runtime is released.
 ///
 /// # Safety
 /// Callers must pass non-null, aligned pointers to initialized storage and keep all borrowed buffers alive for the duration of the call. Output slots must be writable; `otel_str_t` payloads must reference the stated number of readable bytes.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn otel_runtime_set_item_transport(
+pub unsafe extern "C" fn otel_runtime_set_item_exporter(
     runtime: *mut otel_runtime_t,
-    transport: *const otel_item_transport_t,
+    exporter: *const otel_item_exporter_t,
 ) -> otel_result_t {
     guard(|| {
-        if transport.is_null() {
-            return Err(Error::invalid("item transport must not be NULL"));
+        if exporter.is_null() {
+            return Err(Error::invalid("item exporter must not be NULL"));
         }
         // SAFETY: the caller supplies a stable, aligned struct for this call.
-        let value = unsafe { *transport };
+        let value = unsafe { *exporter };
         value.validate()?;
         if value.on_span.is_none()
             && value.on_log.is_none()
@@ -134,12 +134,12 @@ pub unsafe extern "C" fn otel_runtime_set_item_transport(
             && value.on_encoded.is_none()
         {
             return Err(Error::invalid(
-                "item transport must register at least one callback",
+                "item exporter must register at least one callback",
             ));
         }
         // SAFETY: The caller guarantees the handle is initialized; `arc` increments the strong count before taking ownership.
         let runtime = unsafe { arc::<RuntimeInner>(slot(runtime)) }?;
-        runtime.set_item_transport(ItemTransport::from(value))?;
+        runtime.set_item_exporter(ItemExporter::from(value))?;
         Ok(())
     })
 }
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn otel_runtime_set_item_transport(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::{otel_transport_request_t, otel_transport_response_t, otel_transport_send_fn};
+    use crate::abi::{otel_exporter_request_t, otel_exporter_response_t, otel_exporter_send_fn};
     use crate::handles::otel_runtime_release;
     use crate::items::{otel_encoded_item_t, otel_item_signal_t};
     use crate::strings::otel_str_t;
@@ -167,8 +167,8 @@ mod tests {
     }
 
     unsafe extern "C" fn test_send(
-        _request: *const otel_transport_request_t,
-        _response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        _response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         otel_result_t::OTEL_OK
@@ -176,9 +176,9 @@ mod tests {
 
     unsafe extern "C" fn test_encoded(_item: *const otel_encoded_item_t, _user_data: *mut c_void) {}
 
-    fn descriptor(name: otel_str_t, send: otel_transport_send_fn) -> otel_transport_t {
-        otel_transport_t {
-            size: size_of::<otel_transport_t>(),
+    fn descriptor(name: otel_str_t, send: otel_exporter_send_fn) -> otel_exporter_t {
+        otel_exporter_t {
+            size: size_of::<otel_exporter_t>(),
             name,
             send,
             user_data: ptr::null_mut(),
@@ -256,7 +256,7 @@ mod tests {
     }
 
     #[test]
-    fn set_transport_rejects_bad_descriptors() {
+    fn set_exporter_rejects_bad_descriptors() {
         let mut runtime = empty_runtime();
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
@@ -267,12 +267,12 @@ mod tests {
         let valid = descriptor(named(b"test"), test_send);
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(ptr::null_mut(), &valid) },
+            unsafe { otel_runtime_set_exporter(ptr::null_mut(), &valid) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, ptr::null()) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, ptr::null()) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -280,7 +280,7 @@ mod tests {
         bad.size = 0;
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -288,7 +288,7 @@ mod tests {
         bad.name = named(b"");
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -299,7 +299,7 @@ mod tests {
         };
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -308,7 +308,7 @@ mod tests {
         bad.name = named(&invalid);
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_UTF8
         );
 
@@ -317,7 +317,7 @@ mod tests {
     }
 
     #[test]
-    fn set_transport_registers_callback_and_user_data() {
+    fn set_exporter_registers_callback_and_user_data() {
         let mut runtime = empty_runtime();
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
@@ -326,18 +326,18 @@ mod tests {
         );
 
         let mut user_data = 7u32;
-        let mut transport = descriptor(named(b"test"), test_send);
-        transport.user_data = (&mut user_data as *mut u32).cast::<c_void>();
+        let mut exporter = descriptor(named(b"test"), test_send);
+        exporter.user_data = (&mut user_data as *mut u32).cast::<c_void>();
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &transport) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &exporter) },
             otel_result_t::OTEL_OK
         );
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let registered = unsafe { arc::<RuntimeInner>(const_slot(&runtime)) }.unwrap();
-        let found = registered.transport("test").unwrap().unwrap();
-        assert_eq!(found.user_data, transport.user_data);
-        let request = otel_transport_request_t {
+        let found = registered.exporter("test").unwrap().unwrap();
+        assert_eq!(found.user_data, exporter.user_data);
+        let request = otel_exporter_request_t {
             method: ptr::null(),
             url: ptr::null(),
             headers: ptr::null(),
@@ -346,7 +346,7 @@ mod tests {
             body_len: 0,
             timeout_ms: 0,
         };
-        let mut response = otel_transport_response_t::EMPTY;
+        let mut response = otel_exporter_response_t::EMPTY;
         assert_eq!(
             // SAFETY: the local views are initialized and the registered callback
             // only returns a status without dereferencing them.
@@ -360,14 +360,14 @@ mod tests {
         replacement.user_data = ptr::null_mut();
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_transport(&mut runtime, &replacement) },
+            unsafe { otel_runtime_set_exporter(&mut runtime, &replacement) },
             otel_result_t::OTEL_OK
         );
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let registered = unsafe { arc::<RuntimeInner>(const_slot(&runtime)) }.unwrap();
         assert!(
             registered
-                .transport("test")
+                .exporter("test")
                 .unwrap()
                 .unwrap()
                 .user_data
@@ -380,7 +380,7 @@ mod tests {
     }
 
     #[test]
-    fn set_item_transport_rejects_bad_descriptors_and_registers_callback() {
+    fn set_item_exporter_rejects_bad_descriptors_and_registers_callback() {
         let mut runtime = empty_runtime();
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
@@ -388,8 +388,8 @@ mod tests {
             otel_result_t::OTEL_OK
         );
 
-        let valid = otel_item_transport_t {
-            size: size_of::<otel_item_transport_t>(),
+        let valid = otel_item_exporter_t {
+            size: size_of::<otel_item_exporter_t>(),
             on_span: None,
             on_log: None,
             on_metric: None,
@@ -398,12 +398,12 @@ mod tests {
         };
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_item_transport(ptr::null_mut(), &valid) },
+            unsafe { otel_runtime_set_item_exporter(ptr::null_mut(), &valid) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, ptr::null()) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, ptr::null()) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -411,7 +411,7 @@ mod tests {
         bad.size = 0;
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
@@ -419,18 +419,18 @@ mod tests {
         bad.on_encoded = None;
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, &bad) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, &bad) },
             otel_result_t::OTEL_ERR_INVALID_ARGUMENT
         );
 
         assert_eq!(
             // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, &valid) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, &valid) },
             otel_result_t::OTEL_OK
         );
         // SAFETY: Test fixtures are local or intentionally invalid inputs that are validated before use.
         let registered = unsafe { arc::<RuntimeInner>(const_slot(&runtime)) }.unwrap();
-        let found = registered.item_transport().unwrap().unwrap();
+        let found = registered.item_exporter().unwrap().unwrap();
         assert!(found.on_encoded.is_some());
         assert!(found.on_span.is_none());
         let payload = [1u8, 2, 3];

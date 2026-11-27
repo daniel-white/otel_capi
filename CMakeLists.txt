@@ -13,9 +13,9 @@ file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_custom_target(otel_capi ALL
   COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi
-  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-grpc-transport
-  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-http-transport
-  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-stdout-transport
+  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-grpc-exporter
+  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-http-exporter
+  COMMAND "${CARGO_EXECUTABLE}" build --release --locked -p otel-capi-stdout-exporter
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   COMMENT "Building otel-capi with Cargo"
   VERBATIM)
@@ -43,18 +43,18 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 
 set(_static "${CMAKE_STATIC_LIBRARY_PREFIX}otel_capi${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(_shared "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi${CMAKE_SHARED_LIBRARY_SUFFIX}")
-set(_grpc_transport "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_grpc_transport${CMAKE_SHARED_LIBRARY_SUFFIX}")
-set(_http_transport "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_http_transport${CMAKE_SHARED_LIBRARY_SUFFIX}")
-set(_stdout_transport "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_stdout_transport${CMAKE_SHARED_LIBRARY_SUFFIX}")
+set(_grpc_exporter "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_grpc_exporter${CMAKE_SHARED_LIBRARY_SUFFIX}")
+set(_http_exporter "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_http_exporter${CMAKE_SHARED_LIBRARY_SUFFIX}")
+set(_stdout_exporter "${CMAKE_SHARED_LIBRARY_PREFIX}otel_capi_stdout_exporter${CMAKE_SHARED_LIBRARY_SUFFIX}")
 set(_release_dir "${CMAKE_CURRENT_SOURCE_DIR}/target/release")
 set(_install_libs "${_release_dir}/${_static}" "${_release_dir}/${_shared}"
-  "${_release_dir}/${_grpc_transport}" "${_release_dir}/${_http_transport}"
-  "${_release_dir}/${_stdout_transport}")
+  "${_release_dir}/${_grpc_exporter}" "${_release_dir}/${_http_exporter}"
+  "${_release_dir}/${_stdout_exporter}")
 if(WIN32)
   list(APPEND _install_libs "${_release_dir}/otel_capi.dll.lib"
-    "${_release_dir}/otel_capi_grpc_transport.dll.lib"
-    "${_release_dir}/otel_capi_http_transport.dll.lib"
-    "${_release_dir}/otel_capi_stdout_transport.dll.lib")
+    "${_release_dir}/otel_capi_grpc_exporter.dll.lib"
+    "${_release_dir}/otel_capi_http_exporter.dll.lib"
+    "${_release_dir}/otel_capi_stdout_exporter.dll.lib")
 endif()
 
 install(FILES ${_install_libs}
@@ -63,8 +63,8 @@ install(FILES ${_install_libs}
 
 if(WIN32)
   install(FILES "${_release_dir}/otel_capi.dll"
-    "${_release_dir}/otel_capi_grpc_transport.dll"
-    "${_release_dir}/otel_capi_stdout_transport.dll"
+    "${_release_dir}/otel_capi_grpc_exporter.dll"
+    "${_release_dir}/otel_capi_stdout_exporter.dll"
     DESTINATION "${CMAKE_INSTALL_BINDIR}"
     OPTIONAL)
 endif()

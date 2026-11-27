@@ -1,6 +1,6 @@
-//! Shared C ABI and allocation logic for the core library and loadable transports.
+//! Shared C ABI and allocation logic for the core library and loadable exporters.
 //!
-//! This module depends only on `std` and `libc`. Transport crates depend on
+//! This module depends only on `std` and `libc`. Exporter crates depend on
 //! `otel-capi` with the `abi` feature enabled so they use the exact same layouts
 //! and allocation accounting without importing the SDK or duplicating any
 //! `otel_*` definitions.
@@ -38,7 +38,7 @@ pub struct otel_str_t {
     pub len: usize,
 }
 
-/// Explicit transport handle created by the C caller. Initialize it with
+/// Explicit exporter handle created by the C caller. Initialize it with
 /// `{0}` before passing it to `otel_runtime_new`.
 #[repr(C)]
 pub struct otel_runtime_t {
@@ -46,67 +46,69 @@ pub struct otel_runtime_t {
     pub inner: *mut c_void,
 }
 
-/// Descriptor embedded in each transport handle. The core runtime reads the
-/// transport's name, callback, and state from this struct instead of taking a
+/// Descriptor embedded in each exporter handle. The core runtime reads the
+/// exporter's name, callback, and state from this struct instead of taking a
 /// protocol name as a separate argument.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_transport_t {
-    /// Set to `sizeof(otel_transport_t)`.
+pub struct otel_exporter_t {
+    /// Set to `sizeof(otel_exporter_t)`.
     pub size: usize,
-    /// Name owned by the transport crate.
+    /// Name owned by the exporter crate.
     pub name: otel_str_t,
-    /// Callback implementing `otel_transport_send_fn`.
-    pub send: otel_transport_send_fn,
-    /// Opaque state owned by the transport.
+    /// Callback implementing `otel_exporter_send_fn`.
+    pub send: otel_exporter_send_fn,
+    /// Opaque state owned by the exporter.
     pub user_data: *mut c_void,
 }
 
-/// One header view passed to a transport callback.
+/// One header view passed to an exporter callback.
 ///
 /// Both fields are borrowed and valid only for the duration of the callback.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_transport_header_t {
+pub struct otel_exporter_header_t {
     pub name: otel_str_t,
     pub value: otel_str_t,
 }
 
-/// A request passed to a transport callback.
+/// A request passed to an exporter callback.
 ///
 /// Every pointer is borrowed and valid only for the duration of the callback.
-/// `timeout_ms` is configured with `OTEL_EXPORTER_OTLP_*_TIMEOUT`; the transport
+/// `timeout_ms` is configured with `OTEL_EXPORTER_OTLP_*_TIMEOUT`; the exporter
 /// is responsible for honoring it.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_transport_request_t {
+pub struct otel_exporter_request_t {
     pub method: *const c_char,
     pub url: *const c_char,
-    pub headers: *const otel_transport_header_t,
+    pub headers: *const otel_exporter_header_t,
     pub header_count: usize,
     pub body: *const u8,
     pub body_len: usize,
     pub timeout_ms: u64,
 }
 
-/// A response filled in by a transport callback.
+/// A response filled in by an exporter callback.
 ///
-/// On `OTEL_OK`, set `status_code` and optionally `body` and `headers`. The
-/// core library copies all response data before the callback returns. On
-/// failure, return a non-`OTEL_OK` status and optionally set `error`.
+/// On `OTEL_OK`, set `status_code` to a 2xx value and optionally set `body` and
+/// `headers`. The core library copies response data after the callback returns,
+/// so views must remain valid until the next callback on the same thread. On
+/// failure, return a non-`OTEL_OK` status and optionally set `error`; non-2xx
+/// statuses are reported as export failures.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_transport_response_t {
+pub struct otel_exporter_response_t {
     pub status_code: u16,
     pub body: *const u8,
     pub body_len: usize,
-    pub headers: *const otel_transport_header_t,
+    pub headers: *const otel_exporter_header_t,
     pub header_count: usize,
     pub error: otel_str_t,
 }
 
-impl otel_transport_response_t {
-    /// A zeroed response, ready for a transport callback to fill in.
+impl otel_exporter_response_t {
+    /// A zeroed response, ready for an exporter callback to fill in.
     pub const EMPTY: Self = Self {
         status_code: 0,
         body: ptr::null(),
@@ -124,18 +126,19 @@ impl otel_transport_response_t {
 ///
 /// The callback may be invoked concurrently from OpenTelemetry background
 /// threads, so it and `user_data` must be safe to use concurrently. It must not
-/// retain any pointer from `request`; response pointers are copied before the
-/// callback returns. Non-success HTTP statuses are valid responses.
-pub type otel_transport_send_fn = unsafe extern "C" fn(
-    request: *const otel_transport_request_t,
-    response: *mut otel_transport_response_t,
+/// retain any pointer from `request`; response pointers are copied after the
+/// callback returns and must remain valid until the next callback on the same
+/// thread. Only 2xx statuses are treated as success.
+pub type otel_exporter_send_fn = unsafe extern "C" fn(
+    request: *const otel_exporter_request_t,
+    response: *mut otel_exporter_response_t,
     user_data: *mut c_void,
 ) -> otel_result_t;
 
-/// Registers a transport descriptor on the core runtime.
-pub type otel_set_transport_fn = unsafe extern "C" fn(
+/// Registers an exporter descriptor on the core runtime.
+pub type otel_set_exporter_fn = unsafe extern "C" fn(
     runtime: *mut otel_runtime_t,
-    transport: *const otel_transport_t,
+    exporter: *const otel_exporter_t,
 ) -> otel_result_t;
 
 type NotifyFn = unsafe extern "C" fn();
@@ -198,7 +201,7 @@ fn lookup_symbol<T: Copy>(_name: &[u8]) -> Option<T> {
     None
 }
 
-/// Finds an exported core function from a loadable transport.
+/// Finds an exported core function from a loadable exporter.
 pub fn find_core_symbol<T: Copy>(name: &[u8]) -> Option<T> {
     lookup_symbol(name)
 }

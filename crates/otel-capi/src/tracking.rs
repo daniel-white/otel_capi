@@ -1,8 +1,8 @@
-//! Shared allocation tracking exported for loadable transports.
+//! Shared allocation tracking exported for loadable exporters.
 //!
-//! Transports resolve these symbols from the core library so one
+//! Exporters resolve these symbols from the core library so one
 //! `otel_ensure_all_released()` check sees handles from the core and from every
-//! loadable transport in the process.
+//! loadable exporter in the process.
 
 /// Records one caller-owned handle allocation.
 #[unsafe(no_mangle)]

@@ -12,17 +12,13 @@ use opentelemetry::trace::{
     Span as _, SpanContext, SpanId, SpanKind, Status, TraceFlags, TraceId, TraceState, Tracer as _,
     TracerProvider as _,
 };
-use opentelemetry_otlp::{WithExportConfig, WithHttpConfig};
 use opentelemetry_sdk::trace::{
     BatchConfigBuilder, BatchSpanProcessor, Sampler, SdkTracerProvider, Span as SdkSpan,
 };
 
 use crate::attributes::{from_array, from_varargs, otel_attribute_t};
-use crate::config;
-use crate::config::{
-    OtlpProtocol, build_error, duration_ms, exporter_kind, otlp_protocol, resource_from_env,
-    sdk_disabled, sdk_error,
-};
+use crate::callback_exporter::{CallbackSpanExporter, span_exporter, stdout_span_exporter};
+use crate::config::{duration_ms, exporter_kind, resource_from_env, sdk_disabled, sdk_error};
 use crate::error::{Error, Result, c_str, guard, optional_utf8, otel_result_t, utf8};
 use crate::handles::ContextInner;
 use crate::handles::{
@@ -35,7 +31,6 @@ use crate::handles::{
 use crate::item_export::ItemSpanProcessor;
 use crate::propagation::{buffer_utf8, otel_traceparent_t};
 use crate::strings::{optional_str_slice, otel_str_t, str_slice};
-use crate::transport::callback_client;
 use crate::util::{copy_to_buffer, system_time};
 
 /// A 16-byte OpenTelemetry trace ID, stored as two big-endian 64-bit words.
@@ -313,43 +308,12 @@ fn sampler_from_env() -> Result<Sampler> {
     }
 }
 
-fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::SpanExporter> {
-    let protocol = otlp_protocol("TRACES")?;
-    let builder = opentelemetry_otlp::SpanExporter::builder();
-    let exporter = match protocol {
-        OtlpProtocol::Grpc => builder
-            .with_http()
-            .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
-            .with_http_client(callback_client(
-                runtime,
-                config::OTLP_GRPC_TRANSPORT,
-                "TRACES",
-            )?)
-            .build(),
-        OtlpProtocol::HttpBinary | OtlpProtocol::HttpJson => builder
-            .with_http()
-            .with_protocol(protocol.into())
-            .with_http_client(callback_client(
-                runtime,
-                config::OTLP_HTTP_TRANSPORT,
-                "TRACES",
-            )?)
-            .build(),
-    };
-    exporter.map_err(|err| build_error("failed to build OTLP span exporter", err))
+fn build_otlp_exporter(runtime: &Arc<RuntimeInner>) -> Result<CallbackSpanExporter> {
+    span_exporter(runtime)
 }
 
-fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<opentelemetry_otlp::SpanExporter> {
-    let exporter = opentelemetry_otlp::SpanExporter::builder()
-        .with_http()
-        .with_protocol(opentelemetry_otlp::Protocol::HttpBinary)
-        .with_http_client(callback_client(
-            runtime,
-            config::STDOUT_TRANSPORT,
-            "TRACES",
-        )?)
-        .build();
-    exporter.map_err(|err| build_error("failed to build stdout span exporter", err))
+fn build_stdout_exporter(runtime: &Arc<RuntimeInner>) -> Result<CallbackSpanExporter> {
+    stdout_span_exporter(runtime)
 }
 
 fn build_provider(
@@ -407,13 +371,13 @@ fn build_provider(
                         "item exporter requires an otel_runtime_t; pass one to otel_tracer_provider_new",
                     )
                 })?;
-                let transport = runtime.item_transport()?.ok_or_else(|| {
+                let exporter = runtime.item_exporter()?.ok_or_else(|| {
                     Error::new(
                         otel_result_t::OTEL_ERR_CONFIG,
-                        "item exporter requires otel_runtime_set_item_transport",
+                        "item exporter requires otel_runtime_set_item_exporter",
                     )
                 })?;
-                builder = builder.with_span_processor(ItemSpanProcessor::new(transport));
+                builder = builder.with_span_processor(ItemSpanProcessor::new(exporter));
             }
         }
     }
@@ -1562,18 +1526,18 @@ pub unsafe extern "C" fn otel_traceparent_span_id(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::otel_transport_t;
+    use crate::abi::otel_exporter_t;
     use crate::attributes::{otel_attribute_type_t, otel_attribute_value_t};
-    use crate::config::tests::EnvGuard;
+    use crate::config::{self, tests::EnvGuard};
     use crate::context::{otel_context_from_span, otel_context_release};
     use crate::handles::{
         otel_runtime_release, otel_span_release, otel_span_retain, otel_tracer_provider_release,
         otel_tracer_release,
     };
-    use crate::items::otel_item_transport_t;
+    use crate::items::otel_item_exporter_t;
     use crate::propagation::otel_traceparent_from_str;
     use crate::runtime::{
-        otel_runtime_new, otel_runtime_set_item_transport, otel_runtime_set_transport,
+        otel_runtime_new, otel_runtime_set_exporter, otel_runtime_set_item_exporter,
     };
     use std::ffi::{CStr, c_void};
 
@@ -1676,9 +1640,9 @@ mod tests {
         runtime
     }
 
-    unsafe extern "C" fn noop_transport_send(
-        _request: *const crate::abi::otel_transport_request_t,
-        _response: *mut crate::abi::otel_transport_response_t,
+    unsafe extern "C" fn noop_exporter_send(
+        _request: *const crate::abi::otel_exporter_request_t,
+        _response: *mut crate::abi::otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         otel_result_t::OTEL_OK
@@ -2555,17 +2519,17 @@ mod tests {
         env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
         env.set("OTEL_BSP_SCHEDULE_DELAY", "60000");
         let mut runtime = new_runtime();
-        for name in [config::STDOUT_TRANSPORT, config::OTLP_HTTP_TRANSPORT] {
-            let descriptor = otel_transport_t {
-                size: std::mem::size_of::<otel_transport_t>(),
+        for name in [config::STDOUT_EXPORTER, config::OTLP_HTTP_EXPORTER] {
+            let descriptor = otel_exporter_t {
+                size: std::mem::size_of::<otel_exporter_t>(),
                 name: str_view(name),
-                send: noop_transport_send,
+                send: noop_exporter_send,
                 user_data: ptr::null_mut(),
             };
             assert_eq!(
                 // SAFETY: `runtime` is initialized and `descriptor` has a valid
                 // size, a static name view, and a no-op callback.
-                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                unsafe { otel_runtime_set_exporter(&mut runtime, &descriptor) },
                 otel_result_t::OTEL_OK
             );
         }
@@ -2576,7 +2540,7 @@ mod tests {
             };
             assert_eq!(
                 // SAFETY: both handles are writable and aligned; the runtime is
-                // initialized and carries the callback transports registered above.
+                // initialized and carries the callback exporters registered above.
                 unsafe { otel_tracer_provider_new(&mut provider, ptr::null(), &runtime) },
                 otel_result_t::OTEL_OK
             );
@@ -2589,7 +2553,7 @@ mod tests {
             inner: ptr::null_mut(),
         };
         assert_eq!(
-            // SAFETY: both handles are writable and aligned; no item transport
+            // SAFETY: both handles are writable and aligned; no item exporter
             // was registered, so the configuration is rejected.
             unsafe { otel_tracer_provider_new(&mut provider, ptr::null(), &runtime) },
             otel_result_t::OTEL_ERR_CONFIG
@@ -2600,26 +2564,26 @@ mod tests {
     }
 
     #[test]
-    fn exporter_builders_use_registered_callback_transports() {
+    fn exporter_builders_use_registered_callback_exporters() {
         let mut env = EnvGuard::new();
         env.remove("OTEL_EXPORTER_OTLP_PROTOCOL");
         env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
         let mut runtime = new_runtime();
         for name in [
-            config::STDOUT_TRANSPORT,
-            config::OTLP_HTTP_TRANSPORT,
-            config::OTLP_GRPC_TRANSPORT,
+            config::STDOUT_EXPORTER,
+            config::OTLP_HTTP_EXPORTER,
+            config::OTLP_GRPC_EXPORTER,
         ] {
-            let descriptor = otel_transport_t {
-                size: std::mem::size_of::<otel_transport_t>(),
+            let descriptor = otel_exporter_t {
+                size: std::mem::size_of::<otel_exporter_t>(),
                 name: str_view(name),
-                send: noop_transport_send,
+                send: noop_exporter_send,
                 user_data: ptr::null_mut(),
             };
             assert_eq!(
                 // SAFETY: `runtime` is initialized and `descriptor` has a valid
                 // size, a static name view, and a no-op callback.
-                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                unsafe { otel_runtime_set_exporter(&mut runtime, &descriptor) },
                 otel_result_t::OTEL_OK
             );
         }
@@ -2650,8 +2614,8 @@ mod tests {
         env.remove("OTEL_EXPORTER_OTLP_TRACES_PROTOCOL");
         let mut runtime = new_runtime();
 
-        let item_transport = otel_item_transport_t {
-            size: std::mem::size_of::<otel_item_transport_t>(),
+        let item_exporter = otel_item_exporter_t {
+            size: std::mem::size_of::<otel_item_exporter_t>(),
             on_span: None,
             on_log: None,
             on_metric: None,
@@ -2659,22 +2623,22 @@ mod tests {
             user_data: ptr::null_mut(),
         };
         assert_eq!(
-            // SAFETY: `runtime` is initialized and `item_transport` is a fully
+            // SAFETY: `runtime` is initialized and `item_exporter` is a fully
             // initialized descriptor with a no-op encoded callback.
-            unsafe { otel_runtime_set_item_transport(&mut runtime, &item_transport) },
+            unsafe { otel_runtime_set_item_exporter(&mut runtime, &item_exporter) },
             otel_result_t::OTEL_OK
         );
-        for name in [config::STDOUT_TRANSPORT, config::OTLP_HTTP_TRANSPORT] {
-            let descriptor = otel_transport_t {
-                size: std::mem::size_of::<otel_transport_t>(),
+        for name in [config::STDOUT_EXPORTER, config::OTLP_HTTP_EXPORTER] {
+            let descriptor = otel_exporter_t {
+                size: std::mem::size_of::<otel_exporter_t>(),
                 name: str_view(name),
-                send: noop_transport_send,
+                send: noop_exporter_send,
                 user_data: ptr::null_mut(),
             };
             assert_eq!(
                 // SAFETY: `runtime` is initialized and `descriptor` has a valid
                 // size, a static name view, and a no-op callback.
-                unsafe { otel_runtime_set_transport(&mut runtime, &descriptor) },
+                unsafe { otel_runtime_set_exporter(&mut runtime, &descriptor) },
                 otel_result_t::OTEL_OK
             );
         }
@@ -2685,7 +2649,7 @@ mod tests {
         };
         assert_eq!(
             // SAFETY: both handles are writable and aligned; the runtime is
-            // initialized and carries the item transport registered above.
+            // initialized and carries the item exporter registered above.
             unsafe { otel_tracer_provider_new(&mut item_provider, ptr::null(), &runtime) },
             otel_result_t::OTEL_OK
         );

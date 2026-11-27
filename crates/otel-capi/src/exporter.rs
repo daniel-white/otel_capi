@@ -1,10 +1,10 @@
-//! Generic callback transport adapter for OTLP exporters.
+//! Generic callback exporter adapter for OTLP exporters.
 //!
 //! A C caller registers a callback by name on `otel_runtime_t`. The core
-//! library encodes telemetry with `opentelemetry-otlp` and invokes the selected
-//! callback synchronously from the exporter's own background thread. The core
-//! contains no HTTP client, Tokio reactor, or protocol-specific implementation;
-//! concrete transports live in their own loadable crates.
+//! encodes telemetry as OTLP protobuf and invokes the selected callback from
+//! the SDK exporter's own worker thread. The core contains no HTTP client,
+//! Tokio reactor, or protocol-specific implementation; concrete exporters
+//! live in their own loadable crates.
 
 use std::ffi::{CStr, CString, c_void};
 use std::fmt;
@@ -15,56 +15,56 @@ use async_trait::async_trait;
 use opentelemetry_http::{Bytes, HttpClient, HttpError, Request, Response};
 
 use crate::abi::{
-    otel_str_t, otel_transport_header_t, otel_transport_request_t, otel_transport_response_t,
-    otel_transport_send_fn,
+    otel_exporter_header_t, otel_exporter_request_t, otel_exporter_response_t,
+    otel_exporter_send_fn, otel_str_t,
 };
 use crate::config;
 use crate::error::{Error, otel_result_t, otel_strerror, set_error};
 use crate::handles::RuntimeInner;
 use crate::strings::str_slice;
 
-/// Function pointer and opaque state for a named transport.
+/// Function pointer and opaque state for a named exporter.
 #[derive(Copy, Clone)]
-pub(crate) struct Transport {
-    pub(crate) send: otel_transport_send_fn,
+pub(crate) struct Exporter {
+    pub(crate) send: otel_exporter_send_fn,
     pub(crate) user_data: *mut c_void,
 }
 
 // SAFETY: `user_data` is owned by the C caller, which must keep it valid and
-// safe for concurrent access until the runtime is released. The transport is
+// safe for concurrent access until the runtime is released. The exporter is
 // only invoked from OpenTelemetry exporter threads.
-unsafe impl Send for Transport {}
+unsafe impl Send for Exporter {}
 // SAFETY: the callback and `user_data` are safe for concurrent access for as
-// long as the runtime holds the transport.
-unsafe impl Sync for Transport {}
+// long as the runtime holds the exporter.
+unsafe impl Sync for Exporter {}
 
-impl Transport {
-    pub(crate) fn new(send: otel_transport_send_fn, user_data: *mut c_void) -> Self {
+impl Exporter {
+    pub(crate) fn new(send: otel_exporter_send_fn, user_data: *mut c_void) -> Self {
         Self { send, user_data }
     }
 }
 
 /// Adapts a registered C callback to `opentelemetry_http::HttpClient`.
-pub(crate) struct CallbackTransportClient {
+pub(crate) struct CallbackExporterClient {
     name: String,
-    transport: Transport,
+    exporter: Exporter,
     timeout_ms: u64,
 }
 
-impl CallbackTransportClient {
-    pub(crate) fn new(name: String, transport: Transport, timeout: Duration) -> Self {
+impl CallbackExporterClient {
+    pub(crate) fn new(name: String, exporter: Exporter, timeout: Duration) -> Self {
         Self {
             name,
-            transport,
+            exporter,
             timeout_ms: timeout.as_millis() as u64,
         }
     }
 }
 
-impl fmt::Debug for CallbackTransportClient {
+impl fmt::Debug for CallbackExporterClient {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
-            .debug_struct("CallbackTransportClient")
+            .debug_struct("CallbackExporterClient")
             .field("name", &self.name)
             .field("timeout_ms", &self.timeout_ms)
             .finish_non_exhaustive()
@@ -72,28 +72,28 @@ impl fmt::Debug for CallbackTransportClient {
 }
 
 /// Builds the callback client for `name` from the runtime registry.
-pub(crate) fn callback_client(
+pub(crate) fn callback_exporter_client(
     runtime: &RuntimeInner,
     name: &str,
     signal: &str,
-) -> crate::error::Result<CallbackTransportClient> {
-    let transport = runtime.transport(name)?.ok_or_else(|| {
+) -> crate::error::Result<CallbackExporterClient> {
+    let exporter = runtime.exporter(name)?.ok_or_else(|| {
         Error::new(
             otel_result_t::OTEL_ERR_CONFIG,
             format!(
-                "transport \"{name}\" is not registered; call otel_runtime_set_transport before creating providers"
+                "exporter \"{name}\" is not registered; call otel_runtime_set_exporter before creating providers"
             ),
         )
     })?;
-    Ok(CallbackTransportClient::new(
+    Ok(CallbackExporterClient::new(
         name.to_owned(),
-        transport,
+        exporter,
         config::otlp_timeout(signal)?,
     ))
 }
 
 #[async_trait]
-impl HttpClient for CallbackTransportClient {
+impl HttpClient for CallbackExporterClient {
     async fn send_bytes(
         &self,
         request: Request<Bytes>,
@@ -103,8 +103,11 @@ impl HttpClient for CallbackTransportClient {
     }
 }
 
-impl CallbackTransportClient {
-    fn invoke(&self, request: Request<Bytes>) -> std::result::Result<Response<Bytes>, HttpError> {
+impl CallbackExporterClient {
+    pub(crate) fn invoke(
+        &self,
+        request: Request<Bytes>,
+    ) -> std::result::Result<Response<Bytes>, HttpError> {
         let mut owned = Vec::with_capacity(2 + request.headers().len() * 2);
         owned.push(c_string(request.method().as_str().as_bytes(), "method")?);
         owned.push(c_string(request.uri().to_string().as_bytes(), "URL")?);
@@ -113,11 +116,11 @@ impl CallbackTransportClient {
             owned.push(c_string(value.as_bytes(), "header value")?);
         }
 
-        let headers: Vec<otel_transport_header_t> = owned[2..]
+        let headers: Vec<otel_exporter_header_t> = owned[2..]
             .as_chunks::<2>()
             .0
             .iter()
-            .map(|pair| otel_transport_header_t {
+            .map(|pair| otel_exporter_header_t {
                 name: otel_str_t {
                     ptr: pair[0].as_ptr(),
                     len: pair[0].as_bytes().len(),
@@ -129,7 +132,7 @@ impl CallbackTransportClient {
             })
             .collect();
         let body = request.body();
-        let request_view = otel_transport_request_t {
+        let request_view = otel_exporter_request_t {
             method: owned[0].as_ptr(),
             url: owned[1].as_ptr(),
             headers: headers.as_ptr(),
@@ -138,23 +141,19 @@ impl CallbackTransportClient {
             body_len: body.len(),
             timeout_ms: self.timeout_ms,
         };
-        let mut response_view = otel_transport_response_t::EMPTY;
+        let mut response_view = otel_exporter_response_t::EMPTY;
 
         // SAFETY: the callback is registered with a live runtime and `owned`
         // keeps every borrowed string alive for the call.
         let status = unsafe {
-            (self.transport.send)(&request_view, &mut response_view, self.transport.user_data)
+            (self.exporter.send)(&request_view, &mut response_view, self.exporter.user_data)
         };
         if status != otel_result_t::OTEL_OK {
             // SAFETY: The caller guarantees the preconditions of this unsafe operation.
             let detail = unsafe { response_error(&response_view) };
             let message = match detail {
-                Some(detail) => format!("transport \"{}\" failed: {detail}", self.name),
-                None => format!(
-                    "transport \"{}\" failed: {}",
-                    self.name,
-                    status_text(status)
-                ),
+                Some(detail) => format!("exporter \"{}\" failed: {detail}", self.name),
+                None => format!("exporter \"{}\" failed: {}", self.name, status_text(status)),
             };
             return Err(callback_error(status, message));
         }
@@ -163,7 +162,16 @@ impl CallbackTransportClient {
             return Err(callback_error(
                 otel_result_t::OTEL_ERR_EXPORT,
                 format!(
-                    "transport \"{}\" returned invalid status code {}",
+                    "exporter \"{}\" returned invalid status code {}",
+                    self.name, response_view.status_code
+                ),
+            ));
+        }
+        if !(200..=299).contains(&response_view.status_code) {
+            return Err(callback_error(
+                otel_result_t::OTEL_ERR_EXPORT,
+                format!(
+                    "exporter \"{}\" returned non-success status code {}",
                     self.name, response_view.status_code
                 ),
             ));
@@ -174,7 +182,7 @@ impl CallbackTransportClient {
             if response_view.headers.is_null() {
                 return Err(callback_error(
                     otel_result_t::OTEL_ERR_EXPORT,
-                    format!("transport \"{}\" response headers are NULL", self.name),
+                    format!("exporter \"{}\" response headers are NULL", self.name),
                 ));
             }
             // SAFETY: the callback guarantees this array for `header_count`.
@@ -197,7 +205,7 @@ impl CallbackTransportClient {
             if response_view.body.is_null() {
                 return Err(callback_error(
                     otel_result_t::OTEL_ERR_EXPORT,
-                    format!("transport \"{}\" response body is NULL", self.name),
+                    format!("exporter \"{}\" response body is NULL", self.name),
                 ));
             }
             // SAFETY: the callback guarantees `body_len` readable bytes.
@@ -221,12 +229,12 @@ fn c_string(bytes: &[u8], name: &str) -> std::result::Result<CString, HttpError>
     })
 }
 
-unsafe fn response_error(response: &otel_transport_response_t) -> Option<String> {
+unsafe fn response_error(response: &otel_exporter_response_t) -> Option<String> {
     if response.error.ptr.is_null() || response.error.len == 0 {
         return None;
     }
     // SAFETY: the callback supplies a valid view for the call.
-    unsafe { str_slice(response.error, "transport error") }
+    unsafe { str_slice(response.error, "exporter error") }
         .ok()
         .map(str::to_owned)
 }
@@ -258,7 +266,7 @@ impl fmt::Display for CallbackError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             formatter,
-            "transport callback failed ({}): {}",
+            "exporter callback failed ({}): {}",
             self.status as i32, self.message
         )
     }
@@ -290,13 +298,13 @@ mod tests {
     // The core copies response data after the callback returns, so these views
     // must point to storage that outlives the callback body.
     #[derive(Copy, Clone)]
-    struct Headers([otel_transport_header_t; 1]);
+    struct Headers([otel_exporter_header_t; 1]);
 
     // SAFETY: Static test headers are immutable and point only to static bytes.
     unsafe impl Sync for Headers {}
 
     static RESPONSE_BODY: &[u8] = b"accepted";
-    static RESPONSE_HEADERS: Headers = Headers([otel_transport_header_t {
+    static RESPONSE_HEADERS: Headers = Headers([otel_exporter_header_t {
         name: otel_str_t {
             ptr: b"x-test".as_ptr().cast::<c_char>(),
             len: b"x-test".len(),
@@ -306,7 +314,7 @@ mod tests {
             len: b"yes".len(),
         },
     }]);
-    static INVALID_UTF8_HEADERS: Headers = Headers([otel_transport_header_t {
+    static INVALID_UTF8_HEADERS: Headers = Headers([otel_exporter_header_t {
         name: otel_str_t {
             ptr: b"\xff".as_ptr().cast::<c_char>(),
             len: 1,
@@ -316,7 +324,7 @@ mod tests {
             len: b"yes".len(),
         },
     }]);
-    static INVALID_VALUE_HEADERS: Headers = Headers([otel_transport_header_t {
+    static INVALID_VALUE_HEADERS: Headers = Headers([otel_exporter_header_t {
         name: otel_str_t {
             ptr: b"x-test".as_ptr().cast::<c_char>(),
             len: b"x-test".len(),
@@ -332,7 +340,7 @@ mod tests {
         let mut future = pin!(future);
         match future.as_mut().poll(&mut task) {
             Poll::Ready(output) => output,
-            Poll::Pending => panic!("callback transport should be ready immediately"),
+            Poll::Pending => panic!("callback exporter should be ready immediately"),
         }
     }
 
@@ -345,17 +353,17 @@ mod tests {
             .unwrap()
     }
 
-    fn client(send: otel_transport_send_fn) -> CallbackTransportClient {
-        CallbackTransportClient::new(
+    fn client(send: otel_exporter_send_fn) -> CallbackExporterClient {
+        CallbackExporterClient::new(
             "unit".to_owned(),
-            Transport::new(send, ptr::null_mut()),
+            Exporter::new(send, ptr::null_mut()),
             Duration::from_millis(250),
         )
     }
 
     unsafe extern "C" fn record_and_succeed(
-        request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test invokes this callback with valid borrowed request and
@@ -373,21 +381,21 @@ mod tests {
             observed.body = slice::from_raw_parts(view.body, view.body_len).to_vec();
             observed.timeout_ms = view.timeout_ms;
 
-            *response = otel_transport_response_t {
+            *response = otel_exporter_response_t {
                 status_code: 202,
                 body: RESPONSE_BODY.as_ptr(),
                 body_len: RESPONSE_BODY.len(),
                 headers: RESPONSE_HEADERS.0.as_ptr(),
                 header_count: RESPONSE_HEADERS.0.len(),
-                ..otel_transport_response_t::EMPTY
+                ..otel_exporter_response_t::EMPTY
             };
         }
         otel_result_t::OTEL_OK
     }
 
     unsafe extern "C" fn fail_with_error(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         let message = b"backend down";
@@ -402,16 +410,16 @@ mod tests {
     }
 
     unsafe extern "C" fn fail_without_error(
-        _request: *const otel_transport_request_t,
-        _response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        _response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         otel_result_t::OTEL_ERR_INTERNAL
     }
 
     unsafe extern "C" fn invalid_status(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
@@ -419,9 +427,19 @@ mod tests {
         otel_result_t::OTEL_OK
     }
 
+    unsafe extern "C" fn non_success_status(
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
+        _user_data: *mut c_void,
+    ) -> otel_result_t {
+        // SAFETY: The test supplies a valid response pointer for this call.
+        unsafe { (*response).status_code = 503 };
+        otel_result_t::OTEL_OK
+    }
+
     unsafe extern "C" fn null_headers(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
@@ -433,8 +451,8 @@ mod tests {
     }
 
     unsafe extern "C" fn null_body(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
@@ -446,42 +464,42 @@ mod tests {
     }
 
     unsafe extern "C" fn invalid_utf8_header(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
         unsafe {
-            *response = otel_transport_response_t {
+            *response = otel_exporter_response_t {
                 status_code: 200,
                 headers: INVALID_UTF8_HEADERS.0.as_ptr(),
                 header_count: INVALID_UTF8_HEADERS.0.len(),
-                ..otel_transport_response_t::EMPTY
+                ..otel_exporter_response_t::EMPTY
             };
         }
         otel_result_t::OTEL_OK
     }
 
     unsafe extern "C" fn invalid_header_value(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
         unsafe {
-            *response = otel_transport_response_t {
+            *response = otel_exporter_response_t {
                 status_code: 200,
                 headers: INVALID_VALUE_HEADERS.0.as_ptr(),
                 header_count: INVALID_VALUE_HEADERS.0.len(),
-                ..otel_transport_response_t::EMPTY
+                ..otel_exporter_response_t::EMPTY
             };
         }
         otel_result_t::OTEL_OK
     }
 
     unsafe extern "C" fn empty_response(
-        _request: *const otel_transport_request_t,
-        response: *mut otel_transport_response_t,
+        _request: *const otel_exporter_request_t,
+        response: *mut otel_exporter_response_t,
         _user_data: *mut c_void,
     ) -> otel_result_t {
         // SAFETY: The test supplies a valid response pointer for this call.
@@ -492,9 +510,9 @@ mod tests {
     #[test]
     fn invoke_passes_request_fields_and_copies_response() {
         let mut observed = Observed::default();
-        let callback = CallbackTransportClient::new(
+        let callback = CallbackExporterClient::new(
             "unit".to_owned(),
-            Transport::new(
+            Exporter::new(
                 record_and_succeed,
                 (&mut observed as *mut Observed).cast::<c_void>(),
             ),
@@ -524,14 +542,14 @@ mod tests {
         let error = client(fail_with_error).invoke(request()).unwrap_err();
         assert_eq!(
             error.to_string(),
-            "transport callback failed (4): transport \"unit\" failed: backend down"
+            "exporter callback failed (4): exporter \"unit\" failed: backend down"
         );
 
         let error = client(fail_without_error).invoke(request()).unwrap_err();
         assert!(
             error
                 .to_string()
-                .contains("transport \"unit\" failed: internal error")
+                .contains("exporter \"unit\" failed: internal error")
         );
     }
 
@@ -539,6 +557,9 @@ mod tests {
     fn invoke_rejects_invalid_status_and_null_response_pointers() {
         let error = client(invalid_status).invoke(request()).unwrap_err();
         assert!(error.to_string().contains("invalid status code 99"));
+
+        let error = client(non_success_status).invoke(request()).unwrap_err();
+        assert!(error.to_string().contains("non-success status code 503"));
 
         let error = client(null_headers).invoke(request()).unwrap_err();
         assert!(error.to_string().contains("response headers are NULL"));
@@ -562,21 +583,18 @@ mod tests {
     }
 
     #[test]
-    fn transport_new_and_client_new_carry_callback_and_configuration() {
+    fn exporter_new_and_client_new_carry_callback_and_configuration() {
         let mut observed = Observed::default();
         let observed_ptr = (&mut observed as *mut Observed).cast::<c_void>();
-        let transport = Transport::new(record_and_succeed, observed_ptr);
-        assert_eq!(transport.user_data, observed_ptr);
-        let callback = CallbackTransportClient::new(
-            "named".to_owned(),
-            transport,
-            Duration::from_millis(1500),
-        );
+        let exporter = Exporter::new(record_and_succeed, observed_ptr);
+        assert_eq!(exporter.user_data, observed_ptr);
+        let callback =
+            CallbackExporterClient::new("named".to_owned(), exporter, Duration::from_millis(1500));
         assert_eq!(callback.name, "named");
         assert_eq!(callback.timeout_ms, 1500);
 
         let debug = format!("{callback:?}");
-        assert!(debug.contains("CallbackTransportClient"));
+        assert!(debug.contains("CallbackExporterClient"));
         assert!(debug.contains("named"));
         assert!(debug.contains("1500"));
 
@@ -587,22 +605,22 @@ mod tests {
     }
 
     #[test]
-    fn callback_client_reads_registered_transport_and_timeout() {
+    fn callback_exporter_client_reads_registered_exporter_and_timeout() {
         let mut env = EnvGuard::new();
         env.set("OTEL_EXPORTER_OTLP_TRACES_TIMEOUT", "1234");
         let runtime = RuntimeInner::new();
         let mut observed = Observed::default();
         runtime
-            .set_transport(
+            .set_exporter(
                 "unit".to_owned(),
-                Transport::new(
+                Exporter::new(
                     record_and_succeed,
                     (&mut observed as *mut Observed).cast::<c_void>(),
                 ),
             )
             .unwrap();
 
-        let callback = callback_client(&runtime, "unit", "TRACES").unwrap();
+        let callback = callback_exporter_client(&runtime, "unit", "TRACES").unwrap();
         assert_eq!(callback.name, "unit");
         assert_eq!(callback.timeout_ms, 1234);
         assert_eq!(callback.invoke(request()).unwrap().status(), 202);
@@ -610,25 +628,25 @@ mod tests {
     }
 
     #[test]
-    fn callback_client_reports_missing_transport_and_bad_timeout() {
+    fn callback_exporter_client_reports_missing_exporter_and_bad_timeout() {
         let mut env = EnvGuard::new();
         env.set("OTEL_EXPORTER_OTLP_TEST_TIMEOUT", "bad");
         let runtime = RuntimeInner::new();
 
         assert_eq!(
-            callback_client(&runtime, "missing", "TEST")
+            callback_exporter_client(&runtime, "missing", "TEST")
                 .unwrap_err()
                 .status,
             otel_result_t::OTEL_ERR_CONFIG
         );
         runtime
-            .set_transport(
+            .set_exporter(
                 "unit".to_owned(),
-                Transport::new(fail_without_error, ptr::null_mut()),
+                Exporter::new(fail_without_error, ptr::null_mut()),
             )
             .unwrap();
         assert_eq!(
-            callback_client(&runtime, "unit", "TEST")
+            callback_exporter_client(&runtime, "unit", "TEST")
                 .unwrap_err()
                 .status,
             otel_result_t::OTEL_ERR_CONFIG
@@ -638,9 +656,9 @@ mod tests {
     #[test]
     fn http_client_send_bytes_invokes_registered_callback() {
         let mut observed = Observed::default();
-        let callback = CallbackTransportClient::new(
+        let callback = CallbackExporterClient::new(
             "unit".to_owned(),
-            Transport::new(
+            Exporter::new(
                 record_and_succeed,
                 (&mut observed as *mut Observed).cast::<c_void>(),
             ),
@@ -658,13 +676,13 @@ mod tests {
         assert_eq!(c_string(b"POST", "method").unwrap().to_bytes(), b"POST");
         assert_eq!(
             c_string(b"a\0b", "URL").unwrap_err().to_string(),
-            "transport callback failed (1): URL contains a NUL byte"
+            "exporter callback failed (1): URL contains a NUL byte"
         );
     }
 
     #[test]
     fn response_error_reads_only_valid_error_views() {
-        let empty = otel_transport_response_t::EMPTY;
+        let empty = otel_exporter_response_t::EMPTY;
         assert_eq!(
             // SAFETY: the response is initialized and its error view is empty.
             unsafe { response_error(&empty) },
@@ -672,7 +690,7 @@ mod tests {
         );
 
         let message = b"backend down";
-        let mut with_error = otel_transport_response_t::EMPTY;
+        let mut with_error = otel_exporter_response_t::EMPTY;
         with_error.error = otel_str_t {
             ptr: message.as_ptr().cast::<c_char>(),
             len: message.len(),

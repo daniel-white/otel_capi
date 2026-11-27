@@ -20,26 +20,34 @@ fn main() {
         .with_config(config)
         .with_crate(&root)
         .generate()
-        .expect("cbindgen should generate the transport header")
+        .expect("cbindgen should generate the exporter header")
         .write(&mut bytes);
     let header = annotate_exports(&String::from_utf8(bytes).expect("header should be UTF-8"));
     let header = with_handle_init(
         header,
         concat!(
-            "\n/* Transport handle and options initializers. */\n",
-            "#define OTEL_HTTP_TRANSPORT_T_INIT { .transport = OTEL_TRANSPORT_INIT, .inner = NULL }\n",
-            "#define OTEL_HTTP_TRANSPORT_OPTIONS_INIT { \\\n",
-            "    .size = sizeof(otel_http_transport_options_t), \\\n",
-            "    .follow_redirects = true, \\\n",
-            "    .connect_timeout_ms = 0 \\\n",
+            "\n/* Exporter handle and options initializers. */\n",
+            "#define OTEL_STDOUT_EXPORTER_T_INIT { .exporter = OTEL_EXPORTER_INIT, .inner = NULL }\n",
+            "#define OTEL_STDOUT_EXPORTER_OPTIONS_INIT { \\\n",
+            "    .size = sizeof(otel_stdout_exporter_options_t), \\\n",
+            "    .print_url = true \\\n",
             "}\n"
         ),
     );
 
     let include = workspace.join("include");
     fs::create_dir_all(&include).expect("should create include/");
-    fs::write(include.join("otel_capi_http_transport.h"), header)
-        .expect("should write otel_capi_http_transport.h");
+    fs::write(include.join("otel_capi_stdout_exporter.h"), header)
+        .expect("should write otel_capi_stdout_exporter.h");
+    remove_stale_header(&include.join("otel_capi_stdout_transport.h"));
+}
+
+fn remove_stale_header(path: &Path) {
+    match fs::remove_file(path) {
+        Ok(()) => {}
+        Err(err) if err.kind() == std::io::ErrorKind::NotFound => {}
+        Err(err) => panic!("should remove {}: {err}", path.display()),
+    }
 }
 
 fn annotate_exports(header: &str) -> String {

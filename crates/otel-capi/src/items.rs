@@ -1,4 +1,4 @@
-//! In-memory item transport types for applications that want to batch or
+//! In-memory item exporter types for applications that want to batch or
 //! forward telemetry themselves.
 //!
 //! The typed callbacks receive borrowed SDK items; the encoded callback
@@ -183,12 +183,12 @@ pub type otel_encoded_item_fn =
 
 /// Callbacks registered by the application for in-memory export.
 ///
-/// Initialize with `OTEL_ITEM_TRANSPORT_INIT`, set the callbacks you want, and
-/// call `otel_runtime_set_item_transport`. The struct is copied; only
+/// Initialize with `OTEL_ITEM_EXPORTER_INIT`, set the callbacks you want, and
+/// call `otel_runtime_set_item_exporter`. The struct is copied; only
 /// `user_data` is borrowed and must remain valid until the runtime is released.
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct otel_item_transport_t {
+pub struct otel_item_exporter_t {
     pub size: usize,
     pub on_span: otel_span_item_fn,
     pub on_log: otel_log_item_fn,
@@ -197,11 +197,11 @@ pub struct otel_item_transport_t {
     pub user_data: *mut c_void,
 }
 
-impl otel_item_transport_t {
+impl otel_item_exporter_t {
     pub(crate) fn validate(&self) -> Result<(), Error> {
         if self.size < size_of::<Self>() {
             return Err(Error::invalid(format!(
-                "item transport size {} is smaller than {}",
+                "item exporter size {} is smaller than {}",
                 self.size,
                 size_of::<Self>()
             )));
@@ -212,7 +212,7 @@ impl otel_item_transport_t {
 
 /// Copied callback table stored on the runtime.
 #[derive(Copy, Clone, Default)]
-pub(crate) struct ItemTransport {
+pub(crate) struct ItemExporter {
     pub(crate) on_span: otel_span_item_fn,
     pub(crate) on_log: otel_log_item_fn,
     pub(crate) on_metric: otel_metric_item_fn,
@@ -220,8 +220,8 @@ pub(crate) struct ItemTransport {
     pub(crate) user_data: *mut c_void,
 }
 
-impl From<otel_item_transport_t> for ItemTransport {
-    fn from(value: otel_item_transport_t) -> Self {
+impl From<otel_item_exporter_t> for ItemExporter {
+    fn from(value: otel_item_exporter_t) -> Self {
         Self {
             on_span: value.on_span,
             on_log: value.on_log,
@@ -233,13 +233,13 @@ impl From<otel_item_transport_t> for ItemTransport {
 }
 
 // SAFETY: the C caller keeps `user_data` valid and thread-safe until the
-// runtime is released. The transport is invoked from exporter threads.
-unsafe impl Send for ItemTransport {}
+// runtime is released. The exporter is invoked from exporter threads.
+unsafe impl Send for ItemExporter {}
 // SAFETY: callbacks and `user_data` are safe to invoke concurrently; the C
 // caller keeps them valid until the runtime is released.
-unsafe impl Sync for ItemTransport {}
+unsafe impl Sync for ItemExporter {}
 
-impl ItemTransport {
+impl ItemExporter {
     pub(crate) fn emit_span(&self, item: &otel_span_item_t) {
         let Some(callback) = self.on_span else {
             return;
@@ -624,8 +624,8 @@ mod tests {
     }
 
     #[test]
-    fn item_transport_rejects_short_struct() {
-        let value = otel_item_transport_t {
+    fn item_exporter_rejects_short_struct() {
+        let value = otel_item_exporter_t {
             size: 1,
             on_span: None,
             on_log: None,
@@ -656,9 +656,9 @@ mod tests {
     }
 
     #[test]
-    fn transport_validates_size() {
-        let value = otel_item_transport_t {
-            size: size_of::<otel_item_transport_t>(),
+    fn exporter_validates_size() {
+        let value = otel_item_exporter_t {
+            size: size_of::<otel_item_exporter_t>(),
             on_span: None,
             on_log: None,
             on_metric: None,
@@ -666,7 +666,7 @@ mod tests {
             user_data: ptr::null_mut(),
         };
         assert!(value.validate().is_ok());
-        let short = otel_item_transport_t { size: 1, ..value };
+        let short = otel_item_exporter_t { size: 1, ..value };
         assert_eq!(
             short.validate().unwrap_err().status,
             crate::error::otel_result_t::OTEL_ERR_INVALID_ARGUMENT
@@ -787,27 +787,27 @@ mod tests {
     }
 
     #[test]
-    fn transport_dispatches_callbacks() {
+    fn exporter_dispatches_callbacks() {
         let counts = std::cell::Cell::new(Counts::default());
         let user_data = (&counts as *const std::cell::Cell<Counts>)
             .cast_mut()
             .cast::<c_void>();
-        let transport = otel_item_transport_t {
-            size: size_of::<otel_item_transport_t>(),
+        let exporter = otel_item_exporter_t {
+            size: size_of::<otel_item_exporter_t>(),
             on_span: Some(count_span),
             on_log: Some(count_log),
             on_metric: Some(count_metric),
             on_encoded: Some(count_encoded),
             user_data,
         };
-        let transport = ItemTransport::from(transport);
+        let exporter = ItemExporter::from(exporter);
         let span = sample_span();
         let log = sample_log();
         let metric = sample_metric();
-        transport.emit_span(&span);
-        transport.emit_log(&log);
-        transport.emit_metric(&metric);
-        transport.emit_encoded(otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG, &[1, 2, 3]);
+        exporter.emit_span(&span);
+        exporter.emit_log(&log);
+        exporter.emit_metric(&metric);
+        exporter.emit_encoded(otel_item_signal_t::OTEL_ITEM_SIGNAL_LOG, &[1, 2, 3]);
         assert_eq!(
             counts.get(),
             Counts {
@@ -821,7 +821,7 @@ mod tests {
         );
 
         counts.set(Counts::default());
-        let empty = ItemTransport::default();
+        let empty = ItemExporter::default();
         empty.emit_span(&span);
         empty.emit_log(&log);
         empty.emit_metric(&metric);

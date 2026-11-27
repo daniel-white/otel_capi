@@ -1,28 +1,29 @@
 //! Standard OpenTelemetry environment configuration and exporter selection.
 
 use std::env;
-use std::fmt::Display;
 use std::time::Duration;
 
 use crate::error::{Error, Result, otel_result_t};
+use http::{HeaderMap, HeaderName, HeaderValue};
 use opentelemetry::KeyValue;
-use opentelemetry_otlp::Protocol;
+use opentelemetry::otel_warn;
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::error::OTelSdkError;
+use opentelemetry_sdk::metrics::Temporality;
 
-/// Registry name used by the core when a loadable transport implements OTLP HTTP.
-pub(crate) const OTLP_HTTP_TRANSPORT: &str = "http";
-/// Registry name used by the core when a loadable transport implements OTLP gRPC.
-pub(crate) const OTLP_GRPC_TRANSPORT: &str = "grpc";
-/// Registry name used by the core when a loadable transport implements stdout export.
-pub(crate) const STDOUT_TRANSPORT: &str = "stdout";
+/// Registry name used by the core when a loadable exporter implements OTLP HTTP.
+pub(crate) const OTLP_HTTP_EXPORTER: &str = "http";
+/// Registry name used by the core when a loadable exporter implements OTLP gRPC.
+pub(crate) const OTLP_GRPC_EXPORTER: &str = "grpc";
+/// Registry name used by the core when a loadable exporter implements stdout export.
+pub(crate) const STDOUT_EXPORTER: &str = "stdout";
 
 /// Exporter selected by `OTEL_<SIGNAL>_EXPORTER`.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub(crate) enum ExporterKind {
     /// OTLP over the protocol/endpoint described by `OTEL_EXPORTER_OTLP_*`.
     Otlp,
-    /// In-memory item transport registered on the runtime.
+    /// In-memory item exporter registered on the runtime.
     Item,
     /// Human-readable exporter writing to stdout.
     Stdout,
@@ -36,17 +37,6 @@ pub(crate) enum OtlpProtocol {
     Grpc,
     HttpBinary,
     HttpJson,
-}
-
-impl From<OtlpProtocol> for Protocol {
-    fn from(protocol: OtlpProtocol) -> Self {
-        match protocol {
-            // gRPC is emitted through the callback transport as protobuf bytes.
-            OtlpProtocol::Grpc => Protocol::HttpBinary,
-            OtlpProtocol::HttpBinary => Protocol::HttpBinary,
-            OtlpProtocol::HttpJson => Protocol::HttpJson,
-        }
-    }
 }
 
 /// Builds a resource from `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`,
@@ -94,8 +84,9 @@ pub(crate) fn duration_ms(name: &str, default: u64) -> Result<Duration> {
 
 /// Reads the OTLP protocol, preferring the signal-specific variable.
 ///
-/// This matches `opentelemetry-otlp`'s feature default (`http/json` here), but
-/// reports invalid values instead of silently falling back.
+/// The protocol selects the registered callback exporter: `grpc` uses the gRPC
+/// exporter and both HTTP variants use the HTTP exporter. The core always
+/// encodes protobuf bodies.
 pub(crate) fn otlp_protocol(signal: &str) -> Result<OtlpProtocol> {
     let signal_var = format!("OTEL_EXPORTER_OTLP_{signal}_PROTOCOL");
     for name in [signal_var.as_str(), "OTEL_EXPORTER_OTLP_PROTOCOL"] {
@@ -133,6 +124,152 @@ pub(crate) fn otlp_timeout(signal: &str) -> Result<Duration> {
     Ok(Duration::from_secs(10))
 }
 
+/// Reads the full OTLP endpoint, preferring the signal-specific variable.
+///
+/// A signal-specific endpoint is used verbatim. The generic endpoint and the
+/// default are base URLs, so the signal path is appended to them.
+pub(crate) fn otlp_endpoint(signal: &str) -> Result<String> {
+    let signal_var = format!("OTEL_EXPORTER_OTLP_{signal}_ENDPOINT");
+    if let Ok(value) = env::var(&signal_var)
+        && !value.is_empty()
+    {
+        return Ok(value);
+    }
+    let base = env::var("OTEL_EXPORTER_OTLP_ENDPOINT").unwrap_or_default();
+    let base = if base.is_empty() {
+        "http://localhost:4318"
+    } else {
+        base.as_str()
+    };
+    Ok(join_endpoint(base, otlp_path(signal)))
+}
+
+/// Returns the OTLP HTTP path appended to generic endpoints.
+pub(crate) fn otlp_path(signal: &str) -> &'static str {
+    match signal {
+        "TRACES" => "/v1/traces",
+        "METRICS" => "/v1/metrics",
+        "LOGS" => "/v1/logs",
+        _ => "/v1/traces",
+    }
+}
+
+fn join_endpoint(base: &str, path: &str) -> String {
+    if base.ends_with('/') && path.starts_with('/') {
+        format!("{}{}", base, &path[1..])
+    } else {
+        format!("{base}{path}")
+    }
+}
+
+/// Reads OTLP request headers, preferring the signal-specific variable.
+///
+/// Invalid names and values are ignored, matching the standard exporters.
+pub(crate) fn otlp_headers(signal: &str) -> HeaderMap {
+    let signal_var = format!("OTEL_EXPORTER_OTLP_{signal}_HEADERS");
+    let input = match env::var(&signal_var) {
+        Ok(value) => value,
+        Err(_) => env::var("OTEL_EXPORTER_OTLP_HEADERS").unwrap_or_default(),
+    };
+    let mut headers = HeaderMap::new();
+    for entry in input.split_terminator(',') {
+        let Some((name, value)) = entry.trim().split_once('=') else {
+            continue;
+        };
+        let name = name.trim();
+        let value = url_decode(value.trim()).unwrap_or_else(|| value.trim().to_owned());
+        if name.is_empty() || value.is_empty() {
+            continue;
+        }
+        let (Ok(name), Ok(value)) = (
+            HeaderName::from_bytes(name.as_bytes()),
+            HeaderValue::from_bytes(value.as_bytes()),
+        ) else {
+            continue;
+        };
+        headers.insert(name, value);
+    }
+    headers
+}
+
+/// Validates OTLP compression settings. Compression is not available in the
+/// loadable exporters, so unsupported and unavailable values are warned about
+/// and ignored, matching the standard exporters built without compression
+/// features.
+pub(crate) fn validate_otlp_compression(signal: &str) -> Result<()> {
+    let signal_var = format!("OTEL_EXPORTER_OTLP_{signal}_COMPRESSION");
+    for name in [signal_var.as_str(), "OTEL_EXPORTER_OTLP_COMPRESSION"] {
+        let value = env::var(name).unwrap_or_default();
+        if value.trim().is_empty() {
+            continue;
+        }
+        if value.trim().eq_ignore_ascii_case("none") {
+            return Ok(());
+        }
+        if value.trim().eq_ignore_ascii_case("gzip") || value.trim().eq_ignore_ascii_case("zstd") {
+            otel_warn!(
+                name: "otlp_compression_ignored",
+                variable = name,
+                value = value.as_str(),
+                reason = "compression is not enabled",
+            );
+        } else {
+            otel_warn!(
+                name: "otlp_compression_ignored",
+                variable = name,
+                value = value.as_str(),
+                reason = "unsupported value",
+            );
+        }
+    }
+    Ok(())
+}
+
+/// Reads the metrics temporality preference, defaulting to cumulative.
+pub(crate) fn otlp_metrics_temporality() -> Temporality {
+    let value = env::var("OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE").unwrap_or_default();
+    if value.trim().is_empty() {
+        return Temporality::Cumulative;
+    }
+    match value.trim().parse::<Temporality>() {
+        Ok(temporality) => temporality,
+        Err(_) => {
+            otel_warn!(
+                name: "otlp_temporality_ignored",
+                variable = "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                value = value.as_str(),
+            );
+            Temporality::Cumulative
+        }
+    }
+}
+
+/// Percent-decodes an OTLP header value. Invalid encodings are reported by
+/// `None` so the caller can preserve the original value.
+fn url_decode(value: &str) -> Option<String> {
+    let mut result = String::with_capacity(value.len());
+    let mut bytes = Vec::<u8>::new();
+    let mut chars = value.chars();
+    loop {
+        let ch = chars.next();
+        if ch.is_some_and(|ch| ch == '%') {
+            let high = chars.next()?;
+            let low = chars.next()?;
+            let encoded = format!("{high}{low}");
+            bytes.push(u8::from_str_radix(&encoded, 16).ok()?);
+            continue;
+        }
+        if !bytes.is_empty() {
+            result.push_str(std::str::from_utf8(&bytes).ok()?);
+            bytes.clear();
+        }
+        match ch {
+            Some(ch) => result.push(ch),
+            None => return Some(result),
+        }
+    }
+}
+
 fn parse_protocol(value: &str) -> Option<OtlpProtocol> {
     match value.trim().to_ascii_lowercase().as_str() {
         "grpc" => Some(OtlpProtocol::Grpc),
@@ -156,10 +293,6 @@ pub(crate) fn sdk_disabled() -> bool {
 
 pub(crate) fn sdk_error(context: &str, err: OTelSdkError) -> Error {
     Error::new(otel_result_t::OTEL_ERR_EXPORT, format!("{context}: {err}"))
-}
-
-pub(crate) fn build_error<E: Display>(context: &str, err: E) -> Error {
-    Error::new(otel_result_t::OTEL_ERR_CONFIG, format!("{context}: {err}"))
 }
 
 #[cfg(test)]
@@ -301,6 +434,110 @@ pub(crate) mod tests {
     }
 
     #[test]
+    fn otlp_endpoint_uses_signal_endpoint_verbatim() {
+        let mut env = EnvGuard::new();
+        env.set(
+            "OTEL_EXPORTER_OTLP_TEST_ENDPOINT",
+            "https://signal.example/custom/",
+        );
+        env.set("OTEL_EXPORTER_OTLP_ENDPOINT", "https://global.example/");
+        assert_eq!(
+            otlp_endpoint("TEST").unwrap(),
+            "https://signal.example/custom/"
+        );
+        env.set("OTEL_EXPORTER_OTLP_TEST_ENDPOINT", "");
+        assert_eq!(
+            otlp_endpoint("TEST").unwrap(),
+            "https://global.example/v1/traces"
+        );
+        env.remove("OTEL_EXPORTER_OTLP_ENDPOINT");
+        assert_eq!(
+            otlp_endpoint("TEST").unwrap(),
+            "http://localhost:4318/v1/traces"
+        );
+    }
+
+    #[test]
+    fn otlp_endpoint_appends_path_once_to_generic_endpoint() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT");
+        env.set(
+            "OTEL_EXPORTER_OTLP_ENDPOINT",
+            "https://global.example/base/",
+        );
+        assert_eq!(
+            otlp_endpoint("TRACES").unwrap(),
+            "https://global.example/base/v1/traces"
+        );
+    }
+
+    #[test]
+    fn otlp_headers_prefer_signal_variable_and_decode_values() {
+        let mut env = EnvGuard::new();
+        env.set(
+            "OTEL_EXPORTER_OTLP_TEST_HEADERS",
+            "x-one=first%20value, x-two=second, bad, =ignored, x-empty=",
+        );
+        env.set("OTEL_EXPORTER_OTLP_HEADERS", "x-global=global");
+        let headers = otlp_headers("TEST");
+        assert_eq!(headers.get("x-one").unwrap(), "first value");
+        assert_eq!(headers.get("x-two").unwrap(), "second");
+        assert!(headers.get("x-global").is_none());
+        assert_eq!(headers.len(), 2);
+
+        env.remove("OTEL_EXPORTER_OTLP_TEST_HEADERS");
+        assert_eq!(otlp_headers("TEST").get("x-global").unwrap(), "global");
+
+        env.set(
+            "OTEL_EXPORTER_OTLP_TEST_HEADERS",
+            "x-bad\nname=value, x-value=bad\nvalue, x-invalid=%zz",
+        );
+        let headers = otlp_headers("TEST");
+        assert!(headers.get("x-value").is_none());
+        assert_eq!(headers.get("x-invalid").unwrap(), "%zz");
+        assert_eq!(headers.len(), 1);
+    }
+
+    #[test]
+    fn validate_otlp_compression_ignores_unsupported_values() {
+        let mut env = EnvGuard::new();
+        env.set("OTEL_EXPORTER_OTLP_TEST_COMPRESSION", "gzip");
+        env.set("OTEL_EXPORTER_OTLP_COMPRESSION", "zstd");
+        assert!(validate_otlp_compression("TEST").is_ok());
+        env.set("OTEL_EXPORTER_OTLP_TEST_COMPRESSION", "bogus");
+        assert!(validate_otlp_compression("TEST").is_ok());
+        env.set("OTEL_EXPORTER_OTLP_TEST_COMPRESSION", "NONE");
+        assert!(validate_otlp_compression("TEST").is_ok());
+        env.remove("OTEL_EXPORTER_OTLP_TEST_COMPRESSION");
+        env.remove("OTEL_EXPORTER_OTLP_COMPRESSION");
+        assert!(validate_otlp_compression("TEST").is_ok());
+    }
+
+    #[test]
+    fn otlp_metrics_temporality_honors_preference() {
+        let mut env = EnvGuard::new();
+        env.remove("OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE");
+        assert_eq!(otlp_metrics_temporality(), Temporality::Cumulative);
+        for (value, expected) in [
+            ("cumulative", Temporality::Cumulative),
+            ("DELTA", Temporality::Delta),
+            (" lowMemory ", Temporality::LowMemory),
+            ("bogus", Temporality::Cumulative),
+        ] {
+            env.set("OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE", value);
+            assert_eq!(otlp_metrics_temporality(), expected, "{value}");
+        }
+    }
+
+    #[test]
+    fn otlp_path_maps_standard_signals() {
+        assert_eq!(otlp_path("TRACES"), "/v1/traces");
+        assert_eq!(otlp_path("METRICS"), "/v1/metrics");
+        assert_eq!(otlp_path("LOGS"), "/v1/logs");
+        assert_eq!(otlp_path("UNKNOWN"), "/v1/traces");
+    }
+
+    #[test]
     fn exporter_kind_trims_whitespace_and_reports_bad_values() {
         let mut env = EnvGuard::new();
         env.set("OTEL_TEST_EXPORTER", "  OTLP  ");
@@ -310,16 +547,6 @@ pub(crate) mod tests {
         env.set("OTEL_TEST_EXPORTER", "BOGUS ");
         let error = exporter_kind("TEST").unwrap_err();
         assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
-    }
-
-    #[test]
-    fn otlp_protocol_converts_to_sdk_protocol() {
-        assert_eq!(Protocol::from(OtlpProtocol::Grpc), Protocol::HttpBinary);
-        assert_eq!(
-            Protocol::from(OtlpProtocol::HttpBinary),
-            Protocol::HttpBinary
-        );
-        assert_eq!(Protocol::from(OtlpProtocol::HttpJson), Protocol::HttpJson);
     }
 
     #[test]
@@ -391,9 +618,6 @@ pub(crate) mod tests {
         let error = sdk_error("flush", OTelSdkError::InternalFailure("broken".into()));
         assert_eq!(error.status, otel_result_t::OTEL_ERR_EXPORT);
         assert!(error.message.starts_with("flush: "));
-        let error = build_error("config", std::fmt::Error);
-        assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
-        assert!(error.message.starts_with("config: "));
         let error = Error::from(env::VarError::NotPresent);
         assert_eq!(error.status, otel_result_t::OTEL_ERR_CONFIG);
     }
