@@ -17,9 +17,21 @@ LIBRARY_NAMES = (
     "libotel_capi.a",
     "libotel_capi.so",
     "libotel_capi.dylib",
+    "libotel_capi_grpc_transport.so",
+    "libotel_capi_grpc_transport.dylib",
+    "libotel_capi_http_transport.so",
+    "libotel_capi_http_transport.dylib",
+    "libotel_capi_stdout_transport.so",
+    "libotel_capi_stdout_transport.dylib",
     "otel_capi.lib",
     "otel_capi.dll.lib",
     "otel_capi.dll",
+    "otel_capi_grpc_transport.dll.lib",
+    "otel_capi_grpc_transport.dll",
+    "otel_capi_http_transport.dll.lib",
+    "otel_capi_http_transport.dll",
+    "otel_capi_stdout_transport.dll.lib",
+    "otel_capi_stdout_transport.dll",
 )
 
 

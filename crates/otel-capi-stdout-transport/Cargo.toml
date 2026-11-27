@@ -1,0 +1,23 @@
+[package]
+name = "otel-capi-stdout-transport"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Optional loadable stdout exporter for otel-capi"
+
+[lib]
+name = "otel_capi_stdout_transport"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+cbindgen = "0.29.4"
+
+[dependencies]
+otel-capi = { path = "../otel-capi", default-features = false, features = ["abi"] }
+opentelemetry-proto = { version = "0.33.1", default-features = false, features = [
+  "gen-tonic-messages",
+  "trace",
+  "metrics",
+  "logs",
+] }
+prost = "0.14"

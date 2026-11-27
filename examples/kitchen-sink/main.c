@@ -4,6 +4,9 @@
  * Build against the generated header and the static library, then run with:
  *   OTEL_CAPI_EXPORTER=stdout ./kitchen-sink
  *   OTEL_CAPI_EXPORTER=none ./kitchen-sink
+ *   OTEL_CAPI_EXPORTER=otlp OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf ./kitchen-sink
+ *   OTEL_CAPI_EXPORTER=otlp OTEL_EXPORTER_OTLP_PROTOCOL=grpc ./kitchen-sink
+ *   OTEL_CAPI_EXPORTER=item ./kitchen-sink
  */
 
 #ifndef _POSIX_C_SOURCE
@@ -11,11 +14,16 @@
 #endif
 
 #include "otel_capi.h"
+#include "otel_capi_grpc_transport.h"
+#include "otel_capi_http_transport.h"
+#include "otel_capi_stdout_transport.h"
 
+#include <dlfcn.h>
 #include <pthread.h>
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 _Static_assert(OTEL_RESULT_SENTINEL > OTEL_ERR_LEAK,
@@ -53,6 +61,104 @@ typedef struct {
   atomic_int *failures;
   int id;
 } worker_args_t;
+
+static atomic_int http_transport_calls = 0;
+static atomic_int grpc_transport_calls = 0;
+static atomic_int stdout_transport_calls = 0;
+static atomic_int item_span_calls = 0;
+static atomic_int item_metric_calls = 0;
+static atomic_int item_log_calls = 0;
+static atomic_int item_encoded_calls = 0;
+
+static void print_view(otel_str_t view) {
+  if (view.ptr != NULL && view.len > 0) {
+    fwrite(view.ptr, 1, view.len, stdout);
+  }
+}
+
+static otel_result_t app_http_send(const otel_transport_request_t *request,
+                                   otel_transport_response_t *response,
+                                   void *user_data) {
+  (void)user_data;
+  if (request == NULL || response == NULL) {
+    return OTEL_ERR_INVALID_ARGUMENT;
+  }
+
+  atomic_fetch_add(&http_transport_calls, 1);
+  *response = (otel_transport_response_t)OTEL_TRANSPORT_RESPONSE_INIT;
+  response->status_code = 200;
+  printf("http transport callback: %s %s (%zu bytes, timeout=%llu ms)\n",
+         request->method != NULL ? request->method : "?",
+         request->url != NULL ? request->url : "?", request->body_len,
+         (unsigned long long)request->timeout_ms);
+  return OTEL_OK;
+}
+
+static otel_result_t app_grpc_send(const otel_transport_request_t *request,
+                                   otel_transport_response_t *response,
+                                   void *user_data) {
+  (void)user_data;
+  if (request == NULL || response == NULL) {
+    return OTEL_ERR_INVALID_ARGUMENT;
+  }
+
+  atomic_fetch_add(&grpc_transport_calls, 1);
+  *response = (otel_transport_response_t)OTEL_TRANSPORT_RESPONSE_INIT;
+  response->status_code = 200;
+  printf("grpc transport callback: %s (%zu protobuf bytes, timeout=%llu ms)\n",
+         request->url != NULL ? request->url : "?", request->body_len,
+         (unsigned long long)request->timeout_ms);
+  return OTEL_OK;
+}
+
+static otel_result_t app_stdout_send(const otel_transport_request_t *request,
+                                     otel_transport_response_t *response,
+                                     void *user_data) {
+  (void)user_data;
+  if (request == NULL || response == NULL) {
+    return OTEL_ERR_INVALID_ARGUMENT;
+  }
+
+  atomic_fetch_add(&stdout_transport_calls, 1);
+  *response = (otel_transport_response_t)OTEL_TRANSPORT_RESPONSE_INIT;
+  response->status_code = 200;
+  printf("stdout transport callback: %s (%zu OTLP bytes)\n",
+         request->url != NULL ? request->url : "?", request->body_len);
+  return OTEL_OK;
+}
+
+static void app_span_item(const otel_span_item_t *item, void *user_data) {
+  (void)user_data;
+  atomic_fetch_add(&item_span_calls, 1);
+  printf("item span callback: ");
+  print_view(item->name);
+  printf(" (attrs=%zu events=%zu links=%zu)\n", item->attribute_count,
+         item->event_count, item->link_count);
+}
+
+static void app_metric_item(const otel_metric_item_t *item, void *user_data) {
+  (void)user_data;
+  atomic_fetch_add(&item_metric_calls, 1);
+  printf("item metric callback: ");
+  print_view(item->name);
+  printf(" (points=%zu histograms=%zu)\n", item->point_count,
+         item->histogram_count);
+}
+
+static void app_log_item(const otel_log_item_t *item, void *user_data) {
+  (void)user_data;
+  atomic_fetch_add(&item_log_calls, 1);
+  printf("item log callback: severity=%d ", (int)item->severity);
+  print_view(item->body);
+  printf(" (attrs=%zu)\n", item->attribute_count);
+}
+
+static void app_encoded_item(const otel_encoded_item_t *item, void *user_data) {
+  (void)user_data;
+  atomic_fetch_add(&item_encoded_calls, 1);
+  printf("item encoded callback: signal=%d len=%zu\n", (int)item->signal,
+         item->len);
+}
 
 static void configure_environment(void) {
   const char *exporter = getenv("OTEL_CAPI_EXPORTER");
@@ -119,6 +225,151 @@ static void *worker(void *arg) {
   return NULL;
 }
 
+#if defined(__APPLE__)
+#define OTEL_TRANSPORT_EXT "dylib"
+#else
+#define OTEL_TRANSPORT_EXT "so"
+#endif
+
+typedef uint32_t (*transport_abi_version_fn)(void);
+typedef otel_result_t (*transport_new_fn)(void *, const void *);
+typedef otel_result_t (*transport_register_fn)(otel_runtime_t *, const void *);
+typedef void (*transport_release_fn)(void *);
+
+#define LOAD_SYMBOL(library_, name_, variable_)                                \
+  do {                                                                         \
+    dlerror();                                                                 \
+    void *symbol_ = dlsym((library_), (name_));                                \
+    const char *error_ = dlerror();                                            \
+    if (symbol_ == NULL || error_ != NULL) {                                   \
+      fprintf(stderr, "dlsym(%s) failed: %s\n", (name_),                       \
+              error_ != NULL ? error_ : "symbol is NULL");                     \
+      goto cleanup;                                                            \
+    }                                                                          \
+    memcpy(&(variable_), &symbol_, sizeof(variable_));                         \
+  } while (0)
+
+/* Exercises every symbol and typed option struct exposed by the loadable
+ * transport libraries. Allocation tracking is shared with the core library, so
+ * the live-handle count must return to zero after all releases. */
+static int loadable_transport_smoke_test(void) {
+  int status = 1;
+  void *http_library = NULL;
+  void *grpc_library = NULL;
+  void *stdout_library = NULL;
+  transport_abi_version_fn http_abi = NULL;
+  transport_abi_version_fn grpc_abi = NULL;
+  transport_abi_version_fn stdout_abi = NULL;
+  transport_new_fn http_new = NULL;
+  transport_new_fn grpc_new = NULL;
+  transport_new_fn stdout_new = NULL;
+  transport_register_fn http_register = NULL;
+  transport_register_fn grpc_register = NULL;
+  transport_register_fn stdout_register = NULL;
+  transport_release_fn http_release = NULL;
+  transport_release_fn grpc_release = NULL;
+  transport_release_fn stdout_release = NULL;
+  otel_runtime_t runtime = OTEL_RUNTIME_T_INIT;
+  otel_http_transport_t http = OTEL_HTTP_TRANSPORT_T_INIT;
+  otel_grpc_transport_t grpc = OTEL_GRPC_TRANSPORT_T_INIT;
+  otel_stdout_transport_t stdout_transport = OTEL_STDOUT_TRANSPORT_T_INIT;
+  otel_http_transport_options_t http_options = OTEL_HTTP_TRANSPORT_OPTIONS_INIT;
+  otel_grpc_transport_options_t grpc_options = OTEL_GRPC_TRANSPORT_OPTIONS_INIT;
+  otel_stdout_transport_options_t stdout_options =
+      OTEL_STDOUT_TRANSPORT_OPTIONS_INIT;
+
+  if (getenv("OTEL_CAPI_SKIP_TRANSPORT_SMOKE") != NULL) {
+    printf("loadable transport smoke test skipped\n");
+    return 0;
+  }
+  if (otel_live_handle_count() != 0) {
+    fprintf(stderr, "live handle count before smoke test is %zu\n",
+            otel_live_handle_count());
+    goto cleanup;
+  }
+
+  CHECK(otel_runtime_new(&runtime));
+  http_library = dlopen("target/release/libotel_capi_http_transport."
+                        OTEL_TRANSPORT_EXT,
+                        RTLD_NOW | RTLD_LOCAL);
+  grpc_library = dlopen("target/release/libotel_capi_grpc_transport."
+                        OTEL_TRANSPORT_EXT,
+                        RTLD_NOW | RTLD_LOCAL);
+  stdout_library = dlopen("target/release/libotel_capi_stdout_transport."
+                          OTEL_TRANSPORT_EXT,
+                          RTLD_NOW | RTLD_LOCAL);
+  if (http_library == NULL || grpc_library == NULL || stdout_library == NULL) {
+    fprintf(stderr, "dlopen failed: %s\n", dlerror());
+    goto cleanup;
+  }
+
+  LOAD_SYMBOL(http_library, "otel_http_transport_abi_version", http_abi);
+  LOAD_SYMBOL(grpc_library, "otel_grpc_transport_abi_version", grpc_abi);
+  LOAD_SYMBOL(stdout_library, "otel_stdout_transport_abi_version", stdout_abi);
+  if (http_abi() == 0 || grpc_abi() == 0 || stdout_abi() == 0) {
+    fprintf(stderr, "transport ABI version is zero\n");
+    goto cleanup;
+  }
+
+  LOAD_SYMBOL(http_library, "otel_http_transport_new", http_new);
+  LOAD_SYMBOL(grpc_library, "otel_grpc_transport_new", grpc_new);
+  LOAD_SYMBOL(stdout_library, "otel_stdout_transport_new", stdout_new);
+  LOAD_SYMBOL(http_library, "otel_http_transport_register", http_register);
+  LOAD_SYMBOL(grpc_library, "otel_grpc_transport_register", grpc_register);
+  LOAD_SYMBOL(stdout_library, "otel_stdout_transport_register", stdout_register);
+  LOAD_SYMBOL(http_library, "otel_http_transport_release", http_release);
+  LOAD_SYMBOL(grpc_library, "otel_grpc_transport_release", grpc_release);
+  LOAD_SYMBOL(stdout_library, "otel_stdout_transport_release", stdout_release);
+
+  CHECK(http_new(&http, &http_options));
+  CHECK(grpc_new(&grpc, &grpc_options));
+  CHECK(stdout_new(&stdout_transport, &stdout_options));
+  if (otel_live_handle_count() != 4) {
+    fprintf(stderr, "transport handles are not counted by the core: %zu\n",
+            otel_live_handle_count());
+    goto cleanup;
+  }
+
+  CHECK(http_register(&runtime, &http));
+  CHECK(grpc_register(&runtime, &grpc));
+  CHECK(stdout_register(&runtime, &stdout_transport));
+  printf("loadable transport registration ok\n");
+
+  otel_runtime_release(&runtime);
+  http_release(&http);
+  grpc_release(&grpc);
+  stdout_release(&stdout_transport);
+  if (otel_live_handle_count() != 0) {
+    fprintf(stderr, "transport handles leaked: %zu\n",
+            otel_live_handle_count());
+    goto cleanup;
+  }
+  printf("transport allocation tracking ok\n");
+  status = 0;
+
+cleanup:
+  if (stdout_transport.inner != NULL && stdout_release != NULL) {
+    stdout_release(&stdout_transport);
+  }
+  if (grpc.inner != NULL && grpc_release != NULL) {
+    grpc_release(&grpc);
+  }
+  if (http.inner != NULL && http_release != NULL) {
+    http_release(&http);
+  }
+  otel_runtime_release(&runtime);
+  if (stdout_library != NULL) {
+    dlclose(stdout_library);
+  }
+  if (grpc_library != NULL) {
+    dlclose(grpc_library);
+  }
+  if (http_library != NULL) {
+    dlclose(http_library);
+  }
+  return status;
+}
+
 int main(void) {
   int status = 1;
   pthread_t threads[WORKER_COUNT];
@@ -127,7 +378,12 @@ int main(void) {
 
   {
     /* Every handle is caller-owned storage. Use the generated INIT macros. */
+    otel_runtime_t default_runtime OTEL_AUTO_RUNTIME = OTEL_RUNTIME_T_INIT;
     otel_runtime_t runtime OTEL_AUTO_RUNTIME = OTEL_RUNTIME_T_INIT;
+    otel_transport_t app_http = OTEL_TRANSPORT_INIT;
+    otel_transport_t app_grpc = OTEL_TRANSPORT_INIT;
+    otel_transport_t app_stdout = OTEL_TRANSPORT_INIT;
+    otel_item_transport_t item_transport = OTEL_ITEM_TRANSPORT_INIT;
     otel_resource_t resource OTEL_AUTO_RESOURCE = OTEL_RESOURCE_T_INIT;
     otel_tracer_provider_t tracer_provider OTEL_AUTO_TRACER_PROVIDER =
         OTEL_TRACER_PROVIDER_T_INIT;
@@ -168,8 +424,32 @@ int main(void) {
 
     configure_environment();
     printf("otel-capi version %s\n", otel_version());
+    otel_handle_created();
+    otel_handle_destroyed();
+    printf("allocation tracking api ok\n");
 
-    CHECK(otel_runtime_new(&runtime));
+    CHECK(otel_runtime_new(&default_runtime));
+    CHECK(otel_runtime_new_with_threads(&runtime, 1));
+    otel_runtime_release(&default_runtime);
+    app_http.name = OTEL_STR("http");
+    app_http.send = app_http_send;
+    app_grpc.name = OTEL_STR("grpc");
+    app_grpc.send = app_grpc_send;
+    app_stdout.name = OTEL_STR("stdout");
+    app_stdout.send = app_stdout_send;
+    CHECK(otel_runtime_set_transport(&runtime, &app_http));
+    CHECK(otel_runtime_set_transport(&runtime, &app_grpc));
+    CHECK(otel_runtime_set_transport(&runtime, &app_stdout));
+    item_transport.on_span = app_span_item;
+    item_transport.on_metric = app_metric_item;
+    item_transport.on_log = app_log_item;
+    item_transport.on_encoded = app_encoded_item;
+    CHECK(otel_runtime_set_item_transport(&runtime, &item_transport));
+    printf("runtime configured without background workers\n");
+    printf("http transport registered\n");
+    printf("grpc transport registered\n");
+    printf("stdout transport registered\n");
+    printf("item transport registered\n");
     const otel_attribute_t *resource_attributes[] = {
         otel_attr_string("deployment.environment", "kitchen-sink"),
         otel_attr_i64("otel_capi.kitchen_sink", 1),
@@ -181,7 +461,7 @@ int main(void) {
       goto cleanup;
     }
 
-    /* The async engine is explicit at construction time; providers retain it. */
+    /* Providers retain the transport handle; the C slot can be released now. */
     CHECK(otel_tracer_provider_new(&tracer_provider, &resource, &runtime));
     CHECK(otel_meter_provider_new(&meter_provider, &resource, &runtime));
     CHECK(otel_logger_provider_new(&logger_provider, &resource, &runtime));
@@ -459,11 +739,27 @@ int main(void) {
     CHECK(otel_logger_provider_shutdown(&logger_provider));
     CHECK(otel_tracer_provider_shutdown(&tracer_provider));
 
+    if (atomic_load(&http_transport_calls) > 0) {
+      printf("http transport callback ok\n");
+    }
+    if (atomic_load(&grpc_transport_calls) > 0) {
+      printf("grpc transport callback ok\n");
+    }
+    if (atomic_load(&stdout_transport_calls) > 0) {
+      printf("stdout transport callback ok\n");
+    }
+    printf("item callback counts: spans=%d metrics=%d logs=%d encoded=%d\n",
+           atomic_load(&item_span_calls), atomic_load(&item_metric_calls),
+           atomic_load(&item_log_calls), atomic_load(&item_encoded_calls));
     printf("all signals completed\n");
     status = 0;
 
   cleanup:
     ;
+  }
+
+  if (loadable_transport_smoke_test() != 0) {
+    status = 1;
   }
 
   if (otel_ensure_all_released() != OTEL_OK) {

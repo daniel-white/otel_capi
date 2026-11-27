@@ -36,21 +36,31 @@ VERSION_CPPFLAGS := $(CPPFLAGS) \
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 SHARED_EXT := dylib
+# Expose statically linked core symbols so dlsym-based transport registration
+# and allocation tracking work in the kitchen-sink example.
+EXAMPLE_EXPORT_LDFLAGS := -Wl,-export_dynamic
 else
 SHARED_EXT := so
+EXAMPLE_EXPORT_LDFLAGS := -rdynamic
 endif
 SHARED_LIB := target/release/libotel_capi.$(SHARED_EXT)
+GRPC_SHARED_LIB := target/release/libotel_capi_grpc_transport.$(SHARED_EXT)
+HTTP_SHARED_LIB := target/release/libotel_capi_http_transport.$(SHARED_EXT)
+STDOUT_SHARED_LIB := target/release/libotel_capi_stdout_transport.$(SHARED_EXT)
 PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
-.PHONY: all build test docs example-gcc example-clang example-musl compile-checks pkg-config-file check clean install
+.PHONY: all build test docs example-gcc example-clang example-musl compile-checks transport-checks pkg-config-file check clean install
 
 all: build
 
 build:
-	$(CARGO) build --release
+	$(CARGO) build --release -p otel-capi
+	$(CARGO) build --release -p otel-capi-grpc-transport
+	$(CARGO) build --release -p otel-capi-http-transport
+	$(CARGO) build --release -p otel-capi-stdout-transport
 
 test:
-	$(CARGO) test --lib
+	$(CARGO) test --lib -p otel-capi
 
 docs: build | $(BUILD_DIR)
 	python3 scripts/generate_docs.py --out-dir $(DOCS_DIR)
@@ -60,12 +70,14 @@ $(BUILD_DIR):
 
 example-gcc: build | $(BUILD_DIR)
 	$(GCC) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
-		$(LDFLAGS) $(LDLIBS) -o $(BUILD_DIR)/kitchen-sink-gcc
+		$(LDFLAGS) $(EXAMPLE_EXPORT_LDFLAGS) $(LDLIBS) \
+		-o $(BUILD_DIR)/kitchen-sink-gcc
 	$(EXAMPLE_CHECK) $(BUILD_DIR)/kitchen-sink-gcc $(BUILD_DIR)/stdout-gcc.log
 
 example-clang: build | $(BUILD_DIR)
 	$(CLANG) $(CFLAGS) $(CPPFLAGS) $(EXAMPLE_SRC) $(STATIC_LIB) \
-		$(LDFLAGS) $(LDLIBS) -o $(BUILD_DIR)/kitchen-sink-clang
+		$(LDFLAGS) $(EXAMPLE_EXPORT_LDFLAGS) $(LDLIBS) \
+		-o $(BUILD_DIR)/kitchen-sink-clang
 	$(EXAMPLE_CHECK) $(BUILD_DIR)/kitchen-sink-clang $(BUILD_DIR)/stdout-clang.log
 
 example-musl: | $(BUILD_DIR)
@@ -87,13 +99,39 @@ pkg-config-file: $(PKG_CONFIG_FILE)
 $(PKG_CONFIG_FILE): otel-capi.pc.in Makefile | $(BUILD_DIR)
 	sed -e 's|@PREFIX@|$(PREFIX)|g' -e 's|@VERSION@|$(VERSION)|g' $< > $@
 
-check: test example-gcc example-clang compile-checks
+transport-checks: build | $(BUILD_DIR)
+	@test -f $(GRPC_SHARED_LIB)
+	@nm -g $(GRPC_SHARED_LIB) | grep -q 'otel_grpc_transport_send'
+	@nm -g $(GRPC_SHARED_LIB) | grep -q 'otel_grpc_transport_new'
+	@nm -g $(GRPC_SHARED_LIB) | grep -q 'otel_grpc_transport_register'
+	@nm -g $(GRPC_SHARED_LIB) | grep -q 'otel_grpc_transport_release'
+	@test -f $(HTTP_SHARED_LIB)
+	@nm -g $(HTTP_SHARED_LIB) | grep -q 'otel_http_transport_send'
+	@nm -g $(HTTP_SHARED_LIB) | grep -q 'otel_http_transport_new'
+	@nm -g $(HTTP_SHARED_LIB) | grep -q 'otel_http_transport_register'
+	@nm -g $(HTTP_SHARED_LIB) | grep -q 'otel_http_transport_release'
+	@test -f $(STDOUT_SHARED_LIB)
+	@nm -g $(STDOUT_SHARED_LIB) | grep -q 'otel_stdout_transport_send'
+	@nm -g $(STDOUT_SHARED_LIB) | grep -q 'otel_stdout_transport_new'
+	@nm -g $(STDOUT_SHARED_LIB) | grep -q 'otel_stdout_transport_register'
+	@nm -g $(STDOUT_SHARED_LIB) | grep -q 'otel_stdout_transport_release'
+	@for lib in $(GRPC_SHARED_LIB) $(HTTP_SHARED_LIB) $(STDOUT_SHARED_LIB); do \
+		if nm -g $$lib | grep -Eq ' T otel_(runtime_|handle_|live_handle_count|ensure_all_released)'; then \
+			echo "$$lib exports core symbols"; exit 1; \
+		fi; \
+	done
+	@echo "loadable transport exports verified"
+
+check: test example-gcc example-clang compile-checks transport-checks
 
 install: build pkg-config-file
 	install -d $(DESTDIR)$(PREFIX)/include $(DESTDIR)$(PREFIX)/lib $(DESTDIR)$(PREFIX)/lib/pkgconfig
 	install -m 644 $(HEADERS) $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(GRPC_SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(HTTP_SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(STDOUT_SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(PKG_CONFIG_FILE) $(DESTDIR)$(PREFIX)/lib/pkgconfig/
 
 clean:
