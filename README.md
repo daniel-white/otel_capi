@@ -26,7 +26,8 @@ through generated headers and caller-owned handle structs.
 - `otel-capi.pc.in` — pkg-config metadata template.
 - `scripts/package_release.py` — packages Cargo release output into archives.
 - `scripts/generate_docs.py` — renders Doxygen HTML from the generated headers.
-- `.github/workflows/` — CI, release-please, and release artifact builds.
+- `.github/workflows/` — CI, PR docs previews, release-please, and release
+  artifact builds.
 - `Formula/`, `bucket/`, `conanfile.py`, `ports/otel-capi/` — package-manager
   manifests for Homebrew, Scoop, Conan, and vcpkg.
 - `flake.nix` — optional dev shell that provides Rust 1.100.0 and C compilers.
@@ -90,6 +91,11 @@ nix develop --command make docs
 ```
 
 The output is in `build/docs/html`. Doxygen is provided by the dev shell.
+
+On pull requests, the **Docs preview** workflow generates the same HTML and
+posts a comment with a link to the uploaded artifact; the link is refreshed on
+each push to the PR. For PRs from forks, GitHub gives the workflow a read-only
+token, so the artifact is still uploaded but the comment is skipped.
 
 Install the library, optional exporter libraries, headers, and pkg-config metadata with:
 
