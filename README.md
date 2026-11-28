@@ -499,6 +499,7 @@ contains the Doxygen HTML reference for the generated headers and the linking
 guide. The same reference is published on release at
 <https://daniel-white.github.io/otel_capi/>. For example:
 
+<!-- x-release-please-start-version -->
 ```sh
 version=0.2.1
 target=x86_64-unknown-linux-gnu
@@ -508,6 +509,7 @@ tar xzf "otel-capi-${version}-${target}-static.tar.gz"
 curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-docs.tar.gz"
 tar xzf "otel-capi-${version}-docs.tar.gz"
 ```
+<!-- x-release-please-end -->
 
 ## Package managers
 

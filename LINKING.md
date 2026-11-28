@@ -53,12 +53,14 @@ state and handle tracking.
 
 Dynamic linking (archive `otel-capi-<version>-x86_64-unknown-linux-gnu-shared.tar.gz`):
 
+<!-- x-release-please-start-version -->
 ```sh
 tar xzf otel-capi-0.2.1-x86_64-unknown-linux-gnu-shared.tar.gz
 cd otel-capi-0.2.1-x86_64-unknown-linux-gnu
 cc -std=c11 -Iinclude app.c -Llib -lotel_capi -pthread -ldl -lm \
   -Wl,-rpath,'$ORIGIN/../lib' -o app
 ```
+<!-- x-release-please-end -->
 
 The rpath is optional; without it, set `LD_LIBRARY_PATH` to the extracted
 `lib/` directory or install the library system-wide.
@@ -78,11 +80,13 @@ library at run time.
 
 The musl archive is intended for static, self-contained binaries:
 
+<!-- x-release-please-start-version -->
 ```sh
 tar xzf otel-capi-0.2.1-x86_64-unknown-linux-musl-static.tar.gz
 cd otel-capi-0.2.1-x86_64-unknown-linux-musl
 musl-gcc -static -std=c11 -Iinclude app.c lib/libotel_capi.a -pthread -lm -o app
 ```
+<!-- x-release-please-end -->
 
 Use the matching musl toolchain; `gcc` cannot link the musl archive into a
 glibc executable.
@@ -92,12 +96,14 @@ glibc executable.
 Pick `x86_64-apple-darwin` for Intel or `aarch64-apple-darwin` for Apple
 Silicon. Dynamic linking:
 
+<!-- x-release-please-start-version -->
 ```sh
 tar xzf otel-capi-0.2.1-aarch64-apple-darwin-shared.tar.gz
 cd otel-capi-0.2.1-aarch64-apple-darwin
 clang -std=c11 -Iinclude app.c -Llib -lotel_capi -pthread -lm \
   -Wl,-rpath,@executable_path/../lib -o app
 ```
+<!-- x-release-please-end -->
 
 Use `@loader_path` instead of `@executable_path` when the rpath should be
 relative to a library rather than the executable. `DYLD_LIBRARY_PATH` is the
@@ -119,22 +125,26 @@ libraries with `lipo`.
 Use an **x64 Native Tools Command Prompt**. Static linking uses
 `otel_capi.lib` from the `-static` zip:
 
+<!-- x-release-please-start-version -->
 ```powershell
 Expand-Archive otel-capi-0.2.1-x86_64-pc-windows-msvc-static.zip
 cl /std:c11 /Iotel-capi-0.2.1-x86_64-pc-windows-msvc-static\include `
   app.c otel-capi-0.2.1-x86_64-pc-windows-msvc-static\lib\otel_capi.lib
 ```
+<!-- x-release-please-end -->
 
 Dynamic linking uses the import library `otel_capi.dll.lib`, not the static
 `otel_capi.lib`. Copy `otel_capi.dll` next to the executable (or put it on
 `PATH`):
 
+<!-- x-release-please-start-version -->
 ```powershell
 Expand-Archive otel-capi-0.2.1-x86_64-pc-windows-msvc-shared.zip
 cl /std:c11 /Iotel-capi-0.2.1-x86_64-pc-windows-msvc-shared\include `
   app.c otel-capi-0.2.1-x86_64-pc-windows-msvc-shared\lib\otel_capi.dll.lib
 copy otel-capi-0.2.1-x86_64-pc-windows-msvc-shared\bin\otel_capi.dll .
 ```
+<!-- x-release-please-end -->
 
 `otel_capi.lib` and `otel_capi.dll.lib` are different files with different
 purposes; linking the wrong one produces duplicate symbols or an unresolved
@@ -207,6 +217,7 @@ cannot resolve the core setter dynamically: `otel_*_exporter_register` returns
 
 ## Building the variants from source
 
+<!-- x-release-please-start-version -->
 ```sh
 make build                    # core static + shared libraries and exporters
 make install PREFIX=/path/to/prefix
@@ -214,6 +225,7 @@ python3 scripts/package_release.py \
   --target x86_64-unknown-linux-gnu --version v0.2.1 \
   --target-dir target/x86_64-unknown-linux-gnu/release
 ```
+<!-- x-release-please-end -->
 
 The packaging script writes the combined, `-static`, and `-shared` archives
 plus checksums into `dist/`. The release workflow uploads all of them as
