@@ -6,6 +6,7 @@
 //! `otel_*` definitions.
 
 use std::ffi::{c_char, c_void};
+#[cfg(unix)]
 use std::mem::transmute_copy;
 use std::ptr;
 use std::sync::Arc;

@@ -13,15 +13,53 @@
   ],
   "packages": {
     ".": {
-      "release-type": "rust",
+      "release-type": "simple",
       "package-name": "otel-capi",
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
+        {
+          "type": "toml",
+          "path": "Cargo.toml",
+          "jsonpath": "$.workspace.package.version"
+        },
+        {
+          "type": "toml",
+          "path": "Cargo.lock",
+          "jsonpath": "$.package[?(@.name.value=='otel-capi')].version"
+        },
+        {
+          "type": "toml",
+          "path": "Cargo.lock",
+          "jsonpath": "$.package[?(@.name.value=='otel-capi-grpc-exporter')].version"
+        },
+        {
+          "type": "toml",
+          "path": "Cargo.lock",
+          "jsonpath": "$.package[?(@.name.value=='otel-capi-http-exporter')].version"
+        },
+        {
+          "type": "toml",
+          "path": "Cargo.lock",
+          "jsonpath": "$.package[?(@.name.value=='otel-capi-http-transport')].version"
+        },
+        {
+          "type": "toml",
+          "path": "Cargo.lock",
+          "jsonpath": "$.package[?(@.name.value=='otel-capi-stdout-exporter')].version"
+        },
         "Formula/otel-capi.rb",
-        "bucket/otel-capi.json",
+        {
+          "type": "json",
+          "path": "bucket/otel-capi.json",
+          "jsonpath": "$.version"
+        },
         "conanfile.py",
-        "ports/otel-capi/vcpkg.json"
+        {
+          "type": "json",
+          "path": "ports/otel-capi/vcpkg.json",
+          "jsonpath": "$.version-string"
+        }
       ]
     }
   }

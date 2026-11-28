@@ -219,7 +219,16 @@ pub unsafe extern "C" fn otel_http_exporter_register(
     else {
         return otel_result_t::OTEL_ERR_INTERNAL;
     };
-    // SAFETY: the handle embeds a core-ABI descriptor with this exporter's name.
+    register_with_setter(runtime, handle, set_exporter)
+}
+
+fn register_with_setter(
+    runtime: *mut otel_runtime_t,
+    handle: *const otel_http_exporter_t,
+    set_exporter: otel_set_exporter_fn,
+) -> otel_result_t {
+    // SAFETY: the caller validated the runtime and handle, and the handle
+    // embeds a core-ABI descriptor with this exporter's name.
     unsafe { set_exporter(runtime, ptr::addr_of!((*handle).exporter)) }
 }
 
@@ -256,6 +265,7 @@ mod tests {
     use std::mem::size_of;
     use std::ptr::NonNull;
     use std::slice;
+    use std::sync::atomic::{AtomicUsize, Ordering};
     use ureq::config::Config;
     use ureq::http::Uri;
     use ureq::unversioned::resolver::{ResolvedSocketAddrs, Resolver};
@@ -429,25 +439,6 @@ mod tests {
         reply.extend_from_slice(body);
         reply
     }
-
-    #[cfg(all(not(miri), unix))]
-    unsafe extern "C" {
-        fn otel_runtime_new(handle: *mut otel_runtime_t) -> otel_result_t;
-        fn otel_runtime_release(handle: *mut otel_runtime_t);
-    }
-
-    #[cfg(all(not(miri), unix))]
-    #[unsafe(no_mangle)]
-    pub unsafe extern "C" fn otel_runtime_set_exporter(
-        _runtime: *mut otel_runtime_t,
-        _exporter: *const otel_exporter_t,
-    ) -> otel_result_t {
-        otel_result_t::OTEL_OK
-    }
-
-    #[cfg(all(not(miri), unix))]
-    #[used]
-    static KEEP_TEST_SETTER: otel_set_exporter_fn = otel_runtime_set_exporter;
 
     #[test]
     fn abi_version_is_one() {
@@ -674,28 +665,32 @@ mod tests {
         assert_eq!(error_bytes(&response), ERR_EXPORT);
     }
 
-    #[cfg(all(not(miri), unix))]
     #[test]
-    fn register_uses_core_setter_for_initialized_handle() {
-        let mut handle = new_handle();
+    fn register_passes_initialized_handle_to_setter() {
+        static SETTER_CALLS: AtomicUsize = AtomicUsize::new(0);
+
+        unsafe extern "C" fn setter(
+            runtime: *mut otel_runtime_t,
+            exporter: *const otel_exporter_t,
+        ) -> otel_result_t {
+            assert!(!runtime.is_null());
+            assert!(!exporter.is_null());
+            SETTER_CALLS.fetch_add(1, Ordering::SeqCst);
+            otel_result_t::OTEL_OK
+        }
+
         let mut runtime = otel_runtime_t {
             inner: ptr::null_mut(),
         };
+        let mut handle = new_handle();
+        SETTER_CALLS.store(0, Ordering::SeqCst);
 
         assert_eq!(
-            // SAFETY: `runtime` is writable, aligned storage for this handle type.
-            unsafe { otel_runtime_new(&mut runtime) },
+            register_with_setter(&mut runtime, &handle, setter),
             otel_result_t::OTEL_OK
         );
+        assert_eq!(SETTER_CALLS.load(Ordering::SeqCst), 1);
 
-        assert_eq!(
-            // SAFETY: both handles are initialized and stay alive for this call.
-            unsafe { otel_http_exporter_register(&mut runtime, &handle) },
-            otel_result_t::OTEL_OK
-        );
-
-        // SAFETY: `runtime` is initialized and this drops our reference exactly once.
-        unsafe { otel_runtime_release(&mut runtime) };
         release(&mut handle);
     }
 }

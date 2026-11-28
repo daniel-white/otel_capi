@@ -55,12 +55,19 @@ HTTP_SHARED_LIB := target/release/libotel_capi_http_exporter.$(SHARED_EXT)
 STDOUT_SHARED_LIB := target/release/libotel_capi_stdout_exporter.$(SHARED_EXT)
 PKG_CONFIG_FILE := $(BUILD_DIR)/otel-capi.pc
 
-.PHONY: all build test fmt fmt-check clippy lint miri coverage docs example-gcc example-clang example-musl compile-checks exporter-checks pkg-config-file check clean install
+.PHONY: all build headers test fmt fmt-check clippy lint miri coverage docs example-gcc example-clang example-musl compile-checks exporter-checks pkg-config-file check clean install
 
 all: build
 
 build:
 	$(CARGO) build --release -p otel-capi
+	$(CARGO) build --release -p otel-capi-grpc-exporter
+	$(CARGO) build --release -p otel-capi-http-exporter
+	$(CARGO) build --release -p otel-capi-stdout-exporter
+
+# Exporter build scripts emit their headers into include/. Host builds must run
+# before the musl C compile, which only links the musl core static library.
+headers:
 	$(CARGO) build --release -p otel-capi-grpc-exporter
 	$(CARGO) build --release -p otel-capi-http-exporter
 	$(CARGO) build --release -p otel-capi-stdout-exporter
