@@ -48,6 +48,14 @@
           "path": "Cargo.lock",
           "jsonpath": "$.package[?(@.name.value=='otel-capi-stdout-exporter')].version"
         },
+        {
+          "type": "generic",
+          "path": "README.md"
+        },
+        {
+          "type": "generic",
+          "path": "LINKING.md"
+        },
         "Formula/otel-capi.rb",
         {
           "type": "json",

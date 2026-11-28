@@ -19,12 +19,15 @@ through generated headers and caller-owned handle structs.
   the HTTP and gRPC exporters.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
+- `LINKING.md` — static and dynamic linking instructions for Linux, macOS, and
+  Windows.
 - `CMakeLists.txt`, `cmake/` — CMake build/install with `find_package` support.
 - `checks/` — compile-pass and compile-fail checks for the C API.
 - `otel-capi.pc.in` — pkg-config metadata template.
 - `scripts/package_release.py` — packages Cargo release output into archives.
 - `scripts/generate_docs.py` — renders Doxygen HTML from the generated headers.
-- `.github/workflows/` — CI, release-please, and release artifact builds.
+- `.github/workflows/` — CI, PR docs previews, release-please, and release
+  artifact builds.
 - `Formula/`, `bucket/`, `conanfile.py`, `ports/otel-capi/` — package-manager
   manifests for Homebrew, Scoop, Conan, and vcpkg.
 - `flake.nix` — optional dev shell that provides Rust 1.100.0 and C compilers.
@@ -89,6 +92,11 @@ nix develop --command make docs
 
 The output is in `build/docs/html`. Doxygen is provided by the dev shell.
 
+On pull requests, the **Docs preview** workflow generates the same HTML and
+posts a comment with a link to the uploaded artifact; the link is refreshed on
+each push to the PR. For PRs from forks, GitHub gives the workflow a read-only
+token, so the artifact is still uploaded but the comment is skipped.
+
 Install the library, optional exporter libraries, headers, and pkg-config metadata with:
 
 ```sh
@@ -96,6 +104,9 @@ nix develop --command make install PREFIX=/path/to/prefix
 ```
 
 ## Using the C API
+
+See [LINKING.md](LINKING.md) for the static and shared library variants, the
+per-platform include/link commands, and the release archives that contain them.
 
 Include `otel_capi.h`, declare handles as zero-initialized storage, and pass their
 addresses to the matching `_new` function:
@@ -471,22 +482,34 @@ every handle was released.
 ## Release archives
 
 Each GitHub release publishes archives for Linux (x86_64 glibc and musl), macOS
-(x86_64 and arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
-contains the generated headers, static and shared libraries, a relocatable
-`otel-capi.pc`, `LICENSE`, and `README.md`. A separate
-`otel-capi-<version>-docs.tar.gz` contains the Doxygen HTML reference for the
-generated headers. The same reference is published on release at
+(x86_64 and arm64), and Windows (x86_64), with a `.sha256` sidecar per archive.
+Every target has three variants:
+
+- `otel-capi-<version>-<target>.tar.gz` (`.zip` on Windows) — the generated
+  headers, static and shared core libraries, optional exporters, a relocatable
+  `otel-capi.pc`, `LICENSE`, `README.md`, `CHANGELOG.md`, and `LINKING.md`.
+- `otel-capi-<version>-<target>-static.tar.gz` — the same headers and metadata
+  with only the static core library.
+- `otel-capi-<version>-<target>-shared.tar.gz` — the same headers and metadata
+  with the shared core library and optional exporters.
+
+See [LINKING.md](LINKING.md) for which variant to use and the include/link
+commands on each platform. A separate `otel-capi-<version>-docs.tar.gz`
+contains the Doxygen HTML reference for the generated headers and the linking
+guide. The same reference is published on release at
 <https://daniel-white.github.io/otel_capi/>. For example:
 
+<!-- x-release-please-start-version -->
 ```sh
-version=0.1.0
+version=0.2.1
 target=x86_64-unknown-linux-gnu
-curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}.tar.gz"
-tar xzf "otel-capi-${version}-${target}.tar.gz"
+curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}-static.tar.gz"
+tar xzf "otel-capi-${version}-${target}-static.tar.gz"
 
 curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-docs.tar.gz"
 tar xzf "otel-capi-${version}-docs.tar.gz"
 ```
+<!-- x-release-please-end -->
 
 ## Package managers
 

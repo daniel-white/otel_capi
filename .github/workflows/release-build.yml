@@ -87,6 +87,19 @@ jobs:
           VERSION: ${{ env.RELEASE_REF }}
         run: python scripts/package_release.py --target $env:TARGET --version $env:VERSION --target-dir "target/$env:TARGET/release"
 
+      - name: Verify library archive variants (Unix)
+        if: runner.os != 'Windows'
+        env:
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ env.RELEASE_REF }}
+        run: |
+          version="${VERSION#v}"
+          for suffix in "" "-static" "-shared"; do
+            base="dist/otel-capi-${version}-${TARGET}${suffix}"
+            test -f "${base}.tar.gz"
+            test -f "${base}.tar.gz.sha256"
+          done
+
       - name: Upload release assets (Unix)
         if: runner.os != 'Windows'
         env:
@@ -95,6 +108,20 @@ jobs:
           shopt -s nullglob
           assets=(dist/*.tar.gz dist/*.tar.gz.sha256 dist/*.zip dist/*.zip.sha256)
           gh release upload "$RELEASE_REF" "${assets[@]}" --clobber
+
+      - name: Verify library archive variants (Windows)
+        if: runner.os == 'Windows'
+        env:
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ env.RELEASE_REF }}
+        run: |
+          $version = $env:VERSION.TrimStart('v')
+          $target = $env:TARGET
+          foreach ($suffix in @('', '-static', '-shared')) {
+            $base = "dist/otel-capi-$version-$($target)$($suffix)"
+            if (-not (Test-Path "${base}.zip")) { throw "missing ${base}.zip" }
+            if (-not (Test-Path "${base}.zip.sha256")) { throw "missing ${base}.zip.sha256" }
+          }
 
       - name: Upload release assets (Windows)
         if: runner.os == 'Windows'
