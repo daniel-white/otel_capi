@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.3.0](https://github.com/daniel-white/otel_capi/compare/v0.2.1...v0.3.0) (2026-11-28)
+
+
+### Features
+
+* **http:** add shared native-tls HTTP client ([2f816f3](https://github.com/daniel-white/otel_capi/commit/2f816f35ed9a3eeee2ec1b0a8bad7e2b1b0b261e))
+* **transports:** add loadable HTTP, gRPC and stdout libraries ([8e95059](https://github.com/daniel-white/otel_capi/commit/8e95059f8ca554f162b28c46871f0508d3244af5))
+
+
+### Bug Fixes
+
+* restore CI checks after exporter refactor ([c882a9b](https://github.com/daniel-white/otel_capi/commit/c882a9befca0f9360d3056dd1654b86a65e1671c))
+* use Windows-compatible timestamp test ([eddd9c0](https://github.com/daniel-white/otel_capi/commit/eddd9c0015e245a1f9547a3adf573a06af02cc38))
+
+
+### Code Refactoring
+
+* **core:** move C API into workspace crate ([3fef1aa](https://github.com/daniel-white/otel_capi/commit/3fef1aade1f5705e33dfa5df4f295ba03cb9727a))
+* rename transports to exporters ([a58b86a](https://github.com/daniel-white/otel_capi/commit/a58b86ab814dfaa692be2f629d671ca68c20c263))
+
+
+### Build System
+
+* configure system TLS for source builds ([b111572](https://github.com/daniel-white/otel_capi/commit/b11157224db5020de5457fd8c2735530c88b8939))
+* enforce strict linting and Miri validation ([80276b7](https://github.com/daniel-white/otel_capi/commit/80276b71f035dbafce746340569147ae65de11ff))
+
+
+### Tests
+
+* add coverage for Miri-validated tests ([ce2e16a](https://github.com/daniel-white/otel_capi/commit/ce2e16a6b6329d47f14275c51924e3dd9b56c322))
+* expand workspace-wide Rust coverage ([213e291](https://github.com/daniel-white/otel_capi/commit/213e291a5babf16ab5e81b9ec3a598931da897a2))
+* reach 90% workspace coverage without build scripts ([458c315](https://github.com/daniel-white/otel_capi/commit/458c315ff4af3fb8777cbc4b7db1ff43981ab07d))
+
+
+### Miscellaneous Chores
+
+* document and publish static/shared library variants ([#4](https://github.com/daniel-white/otel_capi/issues/4)) ([ce67ef4](https://github.com/daniel-white/otel_capi/commit/ce67ef4409e1fd1a7e4ede6ea2c67b2e6c18c032))
+* sync rebased workspace lockfile ([17c59d3](https://github.com/daniel-white/otel_capi/commit/17c59d3dd7e483dc8f89111112c2588db1a0f4d4))
+
 ## [0.2.1](https://github.com/daniel-white/otel_capi/compare/v0.2.0...v0.2.1) (2026-11-26)
 
 

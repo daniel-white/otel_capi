@@ -501,7 +501,7 @@ guide. The same reference is published on release at
 
 <!-- x-release-please-start-version -->
 ```sh
-version=0.2.1
+version=0.3.0
 target=x86_64-unknown-linux-gnu
 curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}-static.tar.gz"
 tar xzf "otel-capi-${version}-${target}-static.tar.gz"
