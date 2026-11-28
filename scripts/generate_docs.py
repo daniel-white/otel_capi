@@ -21,7 +21,9 @@ def cargo_version() -> str:
 
 
 def render_doxyfile(version: str, out_dir: Path, headers: list[Path]) -> str:
-    inputs = " ".join(f'"{path}"' for path in [ROOT / "README.md", *headers])
+    inputs = " ".join(
+        f'"{path}"' for path in [ROOT / "README.md", ROOT / "LINKING.md", *headers]
+    )
     return f"""PROJECT_NAME           = "otel-capi"
 PROJECT_NUMBER         = "{version}"
 PROJECT_BRIEF          = "C API for OpenTelemetry"

@@ -19,6 +19,8 @@ through generated headers and caller-owned handle structs.
   the HTTP and gRPC exporters.
 - `examples/kitchen-sink/main.c` — C example covering all signals.
 - `Makefile` — standard build/test/install entrypoint.
+- `LINKING.md` — static and dynamic linking instructions for Linux, macOS, and
+  Windows.
 - `CMakeLists.txt`, `cmake/` — CMake build/install with `find_package` support.
 - `checks/` — compile-pass and compile-fail checks for the C API.
 - `otel-capi.pc.in` — pkg-config metadata template.
@@ -96,6 +98,9 @@ nix develop --command make install PREFIX=/path/to/prefix
 ```
 
 ## Using the C API
+
+See [LINKING.md](LINKING.md) for the static and shared library variants, the
+per-platform include/link commands, and the release archives that contain them.
 
 Include `otel_capi.h`, declare handles as zero-initialized storage, and pass their
 addresses to the matching `_new` function:
@@ -471,18 +476,28 @@ every handle was released.
 ## Release archives
 
 Each GitHub release publishes archives for Linux (x86_64 glibc and musl), macOS
-(x86_64 and arm64), and Windows (x86_64), with a `.sha256` sidecar per archive. An archive
-contains the generated headers, static and shared libraries, a relocatable
-`otel-capi.pc`, `LICENSE`, and `README.md`. A separate
-`otel-capi-<version>-docs.tar.gz` contains the Doxygen HTML reference for the
-generated headers. The same reference is published on release at
+(x86_64 and arm64), and Windows (x86_64), with a `.sha256` sidecar per archive.
+Every target has three variants:
+
+- `otel-capi-<version>-<target>.tar.gz` (`.zip` on Windows) — the generated
+  headers, static and shared core libraries, optional exporters, a relocatable
+  `otel-capi.pc`, `LICENSE`, `README.md`, `CHANGELOG.md`, and `LINKING.md`.
+- `otel-capi-<version>-<target>-static.tar.gz` — the same headers and metadata
+  with only the static core library.
+- `otel-capi-<version>-<target>-shared.tar.gz` — the same headers and metadata
+  with the shared core library and optional exporters.
+
+See [LINKING.md](LINKING.md) for which variant to use and the include/link
+commands on each platform. A separate `otel-capi-<version>-docs.tar.gz`
+contains the Doxygen HTML reference for the generated headers and the linking
+guide. The same reference is published on release at
 <https://daniel-white.github.io/otel_capi/>. For example:
 
 ```sh
-version=0.1.0
+version=0.2.1
 target=x86_64-unknown-linux-gnu
-curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}.tar.gz"
-tar xzf "otel-capi-${version}-${target}.tar.gz"
+curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-${target}-static.tar.gz"
+tar xzf "otel-capi-${version}-${target}-static.tar.gz"
 
 curl -LO "https://github.com/daniel-white/otel_capi/releases/download/v${version}/otel-capi-${version}-docs.tar.gz"
 tar xzf "otel-capi-${version}-docs.tar.gz"

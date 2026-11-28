@@ -13,8 +13,11 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LIBRARY_NAMES = (
+STATIC_LIBRARIES = (
     "libotel_capi.a",
+    "otel_capi.lib",
+)
+SHARED_LIBRARIES = (
     "libotel_capi.so",
     "libotel_capi.dylib",
     "libotel_capi_grpc_exporter.so",
@@ -23,7 +26,6 @@ LIBRARY_NAMES = (
     "libotel_capi_http_exporter.dylib",
     "libotel_capi_stdout_exporter.so",
     "libotel_capi_stdout_exporter.dylib",
-    "otel_capi.lib",
     "otel_capi.dll.lib",
     "otel_capi.dll",
     "otel_capi_grpc_exporter.dll.lib",
@@ -33,6 +35,8 @@ LIBRARY_NAMES = (
     "otel_capi_stdout_exporter.dll.lib",
     "otel_capi_stdout_exporter.dll",
 )
+LIBRARY_NAMES = STATIC_LIBRARIES + SHARED_LIBRARIES
+DOC_FILES = ("LICENSE", "README.md", "CHANGELOG.md", "LINKING.md")
 
 
 def cargo_version() -> str:
@@ -55,7 +59,9 @@ def render_pc(template: Path, version: str) -> str:
     )
 
 
-def stage_tree(target_dir: Path, version: str, target: str) -> Path:
+def stage_tree(
+    target_dir: Path, version: str, target: str, libraries_to_stage: tuple[str, ...]
+) -> Path:
     stage = Path(tempfile.mkdtemp(prefix=f"otel-capi-{version}-{target}-"))
     package = stage / f"otel-capi-{version}-{target}"
     (package / "include").mkdir(parents=True)
@@ -68,14 +74,18 @@ def stage_tree(target_dir: Path, version: str, target: str) -> Path:
     for header in headers:
         shutil.copy2(header, package / "include" / header.name)
 
-    libraries = [target_dir / name for name in LIBRARY_NAMES if (target_dir / name).is_file()]
+    libraries = [
+        target_dir / name for name in libraries_to_stage if (target_dir / name).is_file()
+    ]
     if not libraries:
-        raise SystemExit(f"no otel_capi libraries found in {target_dir}")
+        raise SystemExit(
+            f"no otel_capi libraries for this variant found in {target_dir}"
+        )
     for library in libraries:
         destination = package / ("bin" if library.name.endswith(".dll") else "lib")
         shutil.copy2(library, destination / library.name)
 
-    for name in ("LICENSE", "README.md", "CHANGELOG.md"):
+    for name in DOC_FILES:
         source = ROOT / name
         if source.is_file():
             shutil.copy2(source, package / name)
@@ -85,19 +95,22 @@ def stage_tree(target_dir: Path, version: str, target: str) -> Path:
     return stage
 
 
-def create_archive(stage: Path, out_dir: Path, version: str, target: str) -> Path:
-    base = f"otel-capi-{version}-{target}"
-    package = stage / base
+def create_archive(
+    stage: Path, out_dir: Path, version: str, target: str, suffix: str = ""
+) -> Path:
+    package_name = f"otel-capi-{version}-{target}"
+    archive_name = f"{package_name}{suffix}"
+    package = stage / package_name
     if "windows" in target:
-        archive = out_dir / f"{base}.zip"
+        archive = out_dir / f"{archive_name}.zip"
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as bundle:
             for path in sorted(package.rglob("*")):
                 if path.is_file():
                     bundle.write(path, path.relative_to(stage))
     else:
-        archive = out_dir / f"{base}.tar.gz"
+        archive = out_dir / f"{archive_name}.tar.gz"
         with tarfile.open(archive, "w:gz") as bundle:
-            bundle.add(package, arcname=base)
+            bundle.add(package, arcname=archive_name)
     return archive
 
 
@@ -125,15 +138,21 @@ def main() -> None:
         out_dir = ROOT / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    stage = stage_tree(target_dir, version, args.target)
-    try:
-        archive = create_archive(stage, out_dir, version, args.target)
-        checksum = write_checksum(archive)
-    finally:
-        shutil.rmtree(stage)
+    variants = (
+        (LIBRARY_NAMES, ""),
+        (STATIC_LIBRARIES, "-static"),
+        (SHARED_LIBRARIES, "-shared"),
+    )
+    for libraries, suffix in variants:
+        stage = stage_tree(target_dir, version, args.target, libraries)
+        try:
+            archive = create_archive(stage, out_dir, version, args.target, suffix)
+            checksum = write_checksum(archive)
+        finally:
+            shutil.rmtree(stage)
 
-    print(archive)
-    print(checksum)
+        print(archive)
+        print(checksum)
 
 
 if __name__ == "__main__":
