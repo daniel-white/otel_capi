@@ -887,9 +887,10 @@ mod tests {
 
         let epoch = std::time::UNIX_EPOCH;
         assert_eq!(nanos(epoch), 0);
+        // Windows SystemTime has 100ns granularity, so use a representable offset.
         assert_eq!(
-            nanos(epoch + std::time::Duration::new(1, 42)),
-            1_000_000_042
+            nanos(epoch + std::time::Duration::new(1, 100)),
+            1_000_000_100
         );
         assert_eq!(nanos(epoch - std::time::Duration::from_secs(1)), 0);
     }
