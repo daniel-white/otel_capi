@@ -55,8 +55,8 @@ Dynamic linking (archive `otel-capi-<version>-x86_64-unknown-linux-gnu-shared.ta
 
 <!-- x-release-please-start-version -->
 ```sh
-tar xzf otel-capi-0.2.1-x86_64-unknown-linux-gnu-shared.tar.gz
-cd otel-capi-0.2.1-x86_64-unknown-linux-gnu
+tar xzf otel-capi-0.3.0-unknown-linux-gnu-shared.tar.gz
+cd otel-capi-0.3.0-unknown-linux-gnu
 cc -std=c11 -Iinclude app.c -Llib -lotel_capi -pthread -ldl -lm \
   -Wl,-rpath,'$ORIGIN/../lib' -o app
 ```
@@ -82,8 +82,8 @@ The musl archive is intended for static, self-contained binaries:
 
 <!-- x-release-please-start-version -->
 ```sh
-tar xzf otel-capi-0.2.1-x86_64-unknown-linux-musl-static.tar.gz
-cd otel-capi-0.2.1-x86_64-unknown-linux-musl
+tar xzf otel-capi-0.3.0-unknown-linux-musl-static.tar.gz
+cd otel-capi-0.3.0-unknown-linux-musl
 musl-gcc -static -std=c11 -Iinclude app.c lib/libotel_capi.a -pthread -lm -o app
 ```
 <!-- x-release-please-end -->
@@ -98,8 +98,8 @@ Silicon. Dynamic linking:
 
 <!-- x-release-please-start-version -->
 ```sh
-tar xzf otel-capi-0.2.1-aarch64-apple-darwin-shared.tar.gz
-cd otel-capi-0.2.1-aarch64-apple-darwin
+tar xzf otel-capi-0.3.0-apple-darwin-shared.tar.gz
+cd otel-capi-0.3.0-apple-darwin
 clang -std=c11 -Iinclude app.c -Llib -lotel_capi -pthread -lm \
   -Wl,-rpath,@executable_path/../lib -o app
 ```
@@ -127,9 +127,9 @@ Use an **x64 Native Tools Command Prompt**. Static linking uses
 
 <!-- x-release-please-start-version -->
 ```powershell
-Expand-Archive otel-capi-0.2.1-x86_64-pc-windows-msvc-static.zip
-cl /std:c11 /Iotel-capi-0.2.1-x86_64-pc-windows-msvc-static\include `
-  app.c otel-capi-0.2.1-x86_64-pc-windows-msvc-static\lib\otel_capi.lib
+Expand-Archive otel-capi-0.3.0-pc-windows-msvc-static.zip
+cl /std:c11 /Iotel-capi-0.3.0-pc-windows-msvc-static\include `
+  app.c otel-capi-0.3.0-pc-windows-msvc-static\lib\otel_capi.lib
 ```
 <!-- x-release-please-end -->
 
@@ -139,10 +139,10 @@ Dynamic linking uses the import library `otel_capi.dll.lib`, not the static
 
 <!-- x-release-please-start-version -->
 ```powershell
-Expand-Archive otel-capi-0.2.1-x86_64-pc-windows-msvc-shared.zip
-cl /std:c11 /Iotel-capi-0.2.1-x86_64-pc-windows-msvc-shared\include `
-  app.c otel-capi-0.2.1-x86_64-pc-windows-msvc-shared\lib\otel_capi.dll.lib
-copy otel-capi-0.2.1-x86_64-pc-windows-msvc-shared\bin\otel_capi.dll .
+Expand-Archive otel-capi-0.3.0-pc-windows-msvc-shared.zip
+cl /std:c11 /Iotel-capi-0.3.0-pc-windows-msvc-shared\include `
+  app.c otel-capi-0.3.0-pc-windows-msvc-shared\lib\otel_capi.dll.lib
+copy otel-capi-0.3.0-pc-windows-msvc-shared\bin\otel_capi.dll .
 ```
 <!-- x-release-please-end -->
 
@@ -222,7 +222,7 @@ cannot resolve the core setter dynamically: `otel_*_exporter_register` returns
 make build                    # core static + shared libraries and exporters
 make install PREFIX=/path/to/prefix
 python3 scripts/package_release.py \
-  --target x86_64-unknown-linux-gnu --version v0.2.1 \
+  --target x86_64-unknown-linux-gnu --version v0.3.0 \
   --target-dir target/x86_64-unknown-linux-gnu/release
 ```
 <!-- x-release-please-end -->
